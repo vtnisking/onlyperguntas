@@ -1,0 +1,12 @@
+{
+  "name": "onlyperguntas",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "@supabase/supabase-js": "^2.48.1"
+  }
+}
