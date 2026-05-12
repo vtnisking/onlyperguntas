@@ -17,9 +17,9 @@
       body {
         background: linear-gradient(
           180deg,
-          #8b0101 0%,
-          #570101 35%,
-          #5f0303 100%
+          #ffffff 0%,
+          #bbcdd8 35%,
+          #7e7d7d 100%
         );
 
         color: rgb(255, 255, 255);
@@ -40,40 +40,19 @@
         margin-bottom: 26px;
       }
 
-      .logo-area {
-        display: flex;
-        align-items: center;
-        gap: 14px;
+      .logo-full{
+        display:flex;
+        align-items:center;
+        text-decoration:none;
+        height: 70px;
       }
 
-      .logo {
-        width: 58px;
-        height: 58px;
-        border-radius: 18px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .logo-text h1 {
-        font-size: 38px;
-        font-weight: 900;
-        display: block;
-        align-items: center;
-        text-align: center;
-      }
-
-      .logo-text p {
-        color: #ffffff;
-        margin-top: 4px;
-        font-size: 16px;
+      .logo-full img{
+        height:240px;
+        width:auto;
+        object-fit:contain;
+        display:flex;
+        margin-top: 40px;
       }
 
       .settings {
@@ -521,15 +500,11 @@
     <div class="container">
       <header>
         <div class="logo-area">
-          <div class="logo">
-            <img src="logo.png" alt="CentralizaChat" />
-          </div>
+          
+<a href="/" class="logo-full">
+  <img src="logo.png" alt="CentralizeChat">
+</a>
 
-          <div class="logo-text">
-            <h1>CentralizaChat</h1>
-            <p>Todas as Perguntas em um só lugar</p>
-          </div>
-        </div>
       </header>
 
       <div class="stats-card">
@@ -548,7 +523,7 @@
 
       <div class="question-card">
         <div class="top-row">
-          <div class="store">🏪 Mercado Livre - VNJ</div>
+          <div class="store">🏪 Mercado Livre - VN</div>
 
           <div class="status">● PENDENTE</div>
         </div>
