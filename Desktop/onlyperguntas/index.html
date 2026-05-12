@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Centralize</title>
+
+<link rel="manifest" href="/manifest.json">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:
+    linear-gradient(
+      180deg,
+      #000000 0%,
+      #570101 35%,
+      #5f0303 100%
+    );
+
+  color:rgb(255, 255, 255);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+}
+  
+.container{
+  max-width:700px;
+  margin:0 auto;
+  padding:22px 16px 120px;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:26px;
+}
+
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo{
+  width:66px;
+  height:66px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#ff2d2d,#680000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  box-shadow:0 12px 30px rgba(255,0,0,.28);
+}
+
+.logo-text h1{
+  font-size:38px;
+  font-weight:900;
+}
+
+.logo-text p{
+  color:#ffffff;
+  margin-top:4px;
+  font-size:16px;
+}
+
+.settings{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  border:1px solid rgba(255, 255, 255, 0.08);
+  background:rgba(255,255,255,.04);
+  color:white;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.stats-card{
+  background:#1b1818;
+  border:1px solid rgb(255, 0, 0);
+  border-radius:26px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
+  box-shadow:0 10px 40px rgba(255, 0, 0, 0.45);
+  min-height:140px;
+}
+
+.stats-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex:1;
+}
+
+.stats-icon{
+  width:76px;
+  height:76px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#ff0000,#630000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  box-shadow:0 10px 24px rgba(255,0,0,.22);
+  flex-shrink:0;
+}
+
+.stats-info{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.stats-info h2{
+  font-size:22px;
+  line-height:1.15;
+  margin-bottom:6px;
+  font-weight:900;
+}
+
+.stats-number{
+  font-size:44px;
+  color:#ff2d2d;
+  font-weight:900;
+  line-height:1;
+}
+
+.stats-sub{
+  color:#ffffff;
+  margin-top:6px;
+  font-size:15px;
+}
+
+.refresh-btn{
+  width:72px;
+  height:72px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:#ff2d2d;
+  font-size:30px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+@media(max-width:768px){
+
+  .stats-card{
+    padding:16Epx;
+    min-height:120px;
+    border-radius:22px;
+  }
+
+  .stats-left{
+    gap:14px;
+  }
+
+  .stats-icon{
+    width:64px;
+    height:64px;
+    border-radius:18px;
+    font-size:28px;
+  }
+
+  .stats-info h2{
+    font-size:18px;
+    margin-bottom:4px;
+  }
+
+  .stats-number{
+    font-size:36px;
+  }
+
+  .stats-sub{
+    font-size:13px;
+    margin-top:4px;
+  }
+
+  .refresh-btn{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    font-size:24px;
+  }
+
+}
+
+.question-card{
+  background:rgb(20, 20, 20);
+  border-radius:28px;
+  border:1px solid rgb(255, 0, 0);
+  padding:22px;
+  margin-bottom:22px;
+}
+
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:22px;
+}
+
+.store{
+  background:linear-gradient(135deg,#b91c1c,#7f1d1d);
+  color:rgb(255, 255, 255);
+  padding:12px 18px;
+  border-radius:16px;
+  font-weight:900;
+  font-size:16px;
+}
+
+.status{
+  background:rgba(255,0,0,.12);
+  border:1px solid rgba(255,0,0,.25);
+  color:#ff4d4d;
+  padding:12px 18px;
+  border-radius:16px;
+  font-weight:900;
+}
+
+.product{
+  display:flex;
+  gap:18px;
+  margin-bottom:22px;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(255, 255, 255, 0.06);
+}
+
+.product img{
+  width:110px;
+  height:110px;
+  border-radius:20px;
+  object-fit:cover;
+  background:rgb(255, 255, 255);
+}
+
+.product-info{
+  flex:1;
+}
+
+.meta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  font-size:15px;
+  margin-bottom:10px;
+}
+
+.sku{
+  color:#ffffff;
+}
+
+.stock{
+  color:#00ff5e;
+  font-weight:900;
+}
+
+.product-title{
+  font-size:28px;
+  font-weight:900;
+  line-height:1.2;
+  margin-bottom:12px;
+}
+
+.price{
+  color:#00c742;
+}
+
+.client{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+  font-size:22px;
+  font-weight:900;
+}
+
+.client-icon{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgb(255, 0, 0);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#ff2d2d;
+  font-size:22px;
+}
+
+.question{
+  background:rgba(255, 255, 255, 0.226);
+  border:1px solid rgba(255, 0, 0, 0);
+  border-left:5px solid #ff0000;
+  border-radius:22px;
+  padding:24px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+.meta-bottom{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  color:#ffffff;
+  font-size:16px;
+  margin-bottom:12px;
+
+}
+
+.previous{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:18px;
+  padding:18px;
+  color:#ff0000;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.answer-box{
+  background:rgba(255,255,255,.02);
+  border-radius:24px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,.05);
+}
+
+.answer-title{
+  color:white;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:6px;
+  text-align: center;
+}
+
+textarea{
+  width:100%;
+  height:60px;
+  border-radius:20px;
+  border:1px solid rgb(255, 255, 255);
+  background:#ffffff;
+  color:white;
+  padding:14px;
+  font-size:16px;
+  resize:none;
+  outline:none;
+}
+
+textarea:focus{
+  border-color:#ff2d2d;
+}
+
+.send-btn{
+  width:100%;
+  margin-top:14px;
+  border:none;
+  border-radius:16px;
+  padding:16px;
+  background:linear-gradient(135deg,#ff2d2d,#d90429);
+  color:white;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.footer-menu{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:rgba(5,8,16,.96);
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:16px;
+  display:flex;
+  justify-content:space-around;
+  backdrop-filter:blur(12px);
+}
+
+.footer-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  color:#9ca3af;
+  font-size:13px;
+}
+
+.footer-item.active{
+  color:#ff0000;
+}
+
+.footer-icon{
+  font-size:24px;
+}
+
+@media(max-width:768px){
+
+  .container{
+    padding:16px 12px 120px;
+  }
+
+  .logo{
+    width:54px;
+    height:54px;
+    font-size:24px;
+  }
+
+  .logo-text h1{
+    font-size:26px;
+  }
+
+  .logo-text p{
+    font-size:13px;
+  }
+
+  .settings{
+    width:48px;
+    height:48px;
+  }
+
+  .stats-card{
+    padding:18px;
+    border-radius:22px;
+  }
+
+  .stats-icon{
+    width:72px;
+    height:72px;
+    font-size:30px;
+  }
+
+  .stats-info h2{
+    font-size:22px;
+  }
+
+  .stats-number{
+    font-size:42px;
+  }
+
+  .refresh-btn{
+  width:64px;
+  height:64px;
+    font-size:28px;
+  }
+
+  .question-card{
+    padding:18px;
+    border-radius:24px;
+  }
+
+  .store{
+    font-size:13px;
+    padding:10px 14px;
+  }
+
+  .status{
+    font-size:13px;
+    padding:10px 14px;
+  }
+
+  .product img{
+    width:90px;
+    height:90px;
+  }
+
+  .meta{
+    font-size:12px;
+  }
+
+  .product-title{
+    font-size:18px;
+  }
+
+  .price{
+    font-size:14px;
+  }
+
+  .client{
+    font-size:18px;
+  }
+
+  .client-icon{
+    width:42px;
+    height:42px;
+  }
+
+  .question{
+    font-size:18px;
+    padding:18px;
+    border-radius:18px;
+  }
+
+  .meta-bottom{
+    font-size:13px;
+  }
+
+  textarea{
+    height:60px;
+    font-size:18px;
+    padding:16px;
+  }
+
+  .send-btn{
+    font-size:20px;
+    padding:5px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+  <div class="logo-area">
+    <div class="logo">💬</div>
+
+    <div class="logo-text">
+      <h1>Centralize</h1>
+      <p>Todas as Perguntas em um só lugar</p>
+    </div>
+  </div>
+
+  <button class="settings">⚙️</button>
+
+</header>
+
+<div class="stats-card">
+
+  <div class="stats-left">
+
+    <div class="stats-icon">
+      💬
+    </div>
+
+    <div class="stats-info">
+      <h2>Perguntas Pendentes</h2>
+      <div class="stats-number">1</div>
+      <div class="stats-sub">Aguardando resposta</div>
+    </div>
+
+  </div>
+
+  <button class="refresh-btn">
+    🔄
+  </button>
+
+</div>
+
+<div class="question-card">
+
+  <div class="top-row">
+
+    <div class="store">
+      🏪 Mercado Livre - VNJ
+    </div>
+
+    <div class="status">
+      ● PENDENTE
+    </div>
+
+  </div>
+
+  <div class="product">
+
+    <img src="https://http2.mlstatic.com/D_NQ_NP_2X_861239-MLB82117752341_012025-F.webp">
+
+    <div class="product-info">
+
+      <div class="meta">
+        <span class="sku">SKU 114625</span>
+        <span class="stock">1 Unidade Disponível</span>
+      </div>
+
+      <div class="product-title">
+        Parafuso D/cilindro Xt 660 2005 A 2018 Original
+      </div>
+
+      <div class="price">
+        R$ 49,90
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="client">
+
+    <div class="client-icon">
+      👤
+    </div>
+
+    GUARUSAO
+
+  </div>
+
+  <div class="question">
+    Boa noite consegue ver se vc tem pra xt 600 este parafuso da pinça traseiro
+  </div>
+
+  <div class="meta-bottom">
+    <span>🕒 Pergunta feita às 21:15</span>
+    <span>⏳ Em aberto há 12h</span>
+  </div>
+
+  <div class="previous">
+    📄 Ver perguntas anteriores (1)
+  </div>
+
+  <div class="answer-box">
+
+
+
+    <textarea placeholder="Digite sua resposta..."></textarea>
+
+    <button class="send-btn">
+      Responder ✔
+    </button>
+
+  </div>
+
+</div>
+
+</div>
+
+<div class="footer-menu">
+
+  <div class="footer-item active">
+    <div class="footer-icon">📥</div>
+    <div>Pendentes</div>
+  </div>
+
+  <div class="footer-item">
+    <div class="footer-icon">✅</div>
+    <div>Respondidas</div>
+  </div>
+
+  <div class="footer-item">
+    <div class="footer-icon">📊</div>
+    <div>Estatísticas</div>
+  </div>
+
+  <div class="footer-item">
+    <div class="footer-icon">⚙️</div>
+    <div>Ajustes</div>
+  </div>
+
+</div>
+
+</body>
+</html>
