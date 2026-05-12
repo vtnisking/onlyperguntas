@@ -360,16 +360,18 @@ textarea:focus{
 }
 
 .send-btn{
-  width:100%;
+  width:40%;
   margin-top:14px;
-  border:none;
-  border-radius:16px;
+  border-radius:15px;
+  border-color: #fbff0081;
   padding:16px;
-  background:linear-gradient(135deg,#ff2d2d,#d90429);
+  background:linear-gradient(135deg,#640d0d,#ff0000);
   color:white;
   font-size:18px;
   font-weight:900;
   cursor:pointer;
+  text-align: center;
+  align-items: center;
 }
 
 .footer-menu{
@@ -378,7 +380,7 @@ textarea:focus{
   left:0;
   width:100%;
   background:rgba(5,8,16,.96);
-  border-top:1px solid rgba(255,255,255,.06);
+  border-top:1px solid rgb(255, 255, 255);
   padding:16px;
   display:flex;
   justify-content:space-around;
@@ -504,14 +506,17 @@ textarea:focus{
   }
 
   textarea{
-    height:60px;
-    font-size:18px;
-    padding:16px;
+    height:47px;
+    font-size:14px;
+    padding:14px;
+    text-align: center;
   }
 
   .send-btn{
-    font-size:20px;
+    font-size:15px;
     padding:5px;
+    display: block;
+    margin: 14px auto 0;
   }
 
 }
@@ -624,7 +629,8 @@ textarea:focus{
 
 
 
-    <textarea placeholder="Digite sua resposta..."></textarea>
+    <textarea placeholder="Digite sua resposta aqui..."></textarea>
+  
 
     <button class="send-btn">
       Responder ✔
