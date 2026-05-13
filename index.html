@@ -789,7 +789,7 @@ function renderPreviousQuestions(item){
       ` : ''}
 
       <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
-        ${formatDate(q.date_created)} • ${translateStatus(q.status)}
+${formatDate(q.date_created)} • ${q.status === 'ANSWERED' ? 'Respondida' : 'Pendente'}
       </div>
     </div>
   `).join('');
