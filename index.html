@@ -555,26 +555,29 @@
 
  
 
-    <div class="footer-menu">
-      <div class="footer-item active">
-        <div class="footer-icon">📥</div>
-        <div>Pendentes</div>
-      </div>
+<div class="footer-menu">
 
-      <div class="footer-item">
-        <div class="footer-icon">✅</div>
-        <div>Respondidas</div>
-      </div>
+  <div class="footer-item active" onclick="showTab('pending', this)">
+    <div class="footer-icon">📥</div>
+    <div>Pendentes</div>
+  </div>
 
-      <div class="footer-item">
-        <div class="footer-icon">📊</div>
-        <div>Estatísticas</div>
-      </div>
+  <div class="footer-item" onclick="showTab('answered', this)">
+    <div class="footer-icon">✅</div>
+    <div>Respondidas</div>
+  </div>
 
-      <div class="footer-item">
-        <div class="footer-icon">⚙️</div>
-        <div>Ajustes</div>
-      </div>
+  <div class="footer-item" onclick="showTab('stats', this)">
+    <div class="footer-icon">📊</div>
+    <div>Estatísticas</div>
+  </div>
+
+  <div class="footer-item" onclick="showTab('settings', this)">
+    <div class="footer-icon">⚙️</div>
+    <div>Ajustes</div>
+  </div>
+
+</div>
     </div>
 
 <script>
@@ -748,6 +751,164 @@ function formatPrice(value){
 }
 
 loadQuestions();
+
+async function showTab(tab, element){
+
+  document.querySelectorAll('.footer-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  element.classList.add('active');
+
+  const container = document.getElementById('questions');
+
+  if(tab === 'pending'){
+    loadQuestions();
+    return;
+  }
+
+  if(tab === 'answered'){
+
+    container.innerHTML = `
+      <div class="empty">
+        Carregando perguntas respondidas...
+      </div>
+    `;
+
+    try{
+
+      const response = await fetch('/api/answered');
+      const data = await response.json();
+
+      const questions = data.questions || [];
+
+      container.innerHTML = '';
+
+      if(questions.length === 0){
+        container.innerHTML = `
+          <div class="empty">
+            Nenhuma pergunta respondida.
+          </div>
+        `;
+        return;
+      }
+
+      questions.forEach(item => {
+
+        container.innerHTML += `
+          <div class="question-card">
+
+            <div class="top-row">
+              <div class="store">
+                🏪 ${item.store_name}
+              </div>
+
+              <div class="status" style="background:#052e16;color:#22c55e;">
+                ✓ RESPONDIDA
+              </div>
+            </div>
+
+            <div class="client">
+              <div class="client-icon">👤</div>
+              ${item.client_nickname || 'Cliente'}
+            </div>
+
+            <div class="question">
+              ${item.text}
+            </div>
+
+            <div class="answer-box">
+
+              <div class="answer-title">
+                Resposta enviada:
+              </div>
+
+              <div class="question" style="border-left-color:#22c55e;">
+                ${item.answer?.text || 'Sem resposta'}
+              </div>
+
+            </div>
+
+            <div class="meta-bottom">
+              <span>
+                🕒 Respondida às
+                ${formatDate(item.answer?.date_created)}
+              </span>
+            </div>
+
+          </div>
+        `;
+
+      });
+
+    }catch(error){
+
+      container.innerHTML = `
+        <div class="empty">
+          Erro ao carregar perguntas respondidas.
+        </div>
+      `;
+
+    }
+
+    return;
+  }
+
+  if(tab === 'stats'){
+
+    container.innerHTML = `
+      <div class="question-card">
+
+        <div class="product-title">
+          📊 Estatísticas
+        </div>
+
+        <div class="question">
+          Em breve você poderá acompanhar:
+          <br><br>
+          • Quantas respostas cada funcionário respondeu
+          <br>
+          • Respostas por dia/mês/ano
+          <br>
+          • Tempo médio de resposta
+          <br>
+          • Ranking de atendimento
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  if(tab === 'settings'){
+
+    container.innerHTML = `
+      <div class="question-card">
+
+        <div class="product-title">
+          ⚙️ Ajustes
+        </div>
+
+        <div class="question">
+          • Notificações
+          <br>
+          • Sons
+          <br>
+          • Lojas integradas
+          <br>
+          • Integrações Mercado Livre/Shopee
+          <br>
+          • Configurações da conta
+        </div>
+
+      </div>
+    `;
+
+  }
+
+}
+
 </script>
 
   </body>
