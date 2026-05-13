@@ -596,18 +596,20 @@ let knownQuestionIds = new Set();
 let firstLoadDone = false;
 
 async function requestNotificationPermission(){
-  if("Notification" in window && Notification.permission === "default"){
-    await Notification.requestPermission();
-  }
-}
 
-function notifyNewQuestion(){
-  if("Notification" in window && Notification.permission === "granted"){
-    new Notification("Nova pergunta recebida", {
-      body: "Você recebeu uma nova pergunta no CentralizaChat.",
-      icon: "/icon-192.png"
-    });
+  if(!("Notification" in window)){
+    alert("Este navegador não suporta notificações.");
+    return;
   }
+
+  const permission = await Notification.requestPermission();
+
+  if(permission === "granted"){
+    alert("Notificações ativadas com sucesso!");
+  }else{
+    alert("Notificações não foram permitidas.");
+  }
+
 }
 
 
@@ -799,6 +801,7 @@ function formatPrice(value){
   });
 }
 
+window.requestNotificationPermission = requestNotificationPermission;
 requestNotificationPermission();
 loadQuestions();
 
@@ -990,8 +993,6 @@ if(tab === 'stats'){
   }
 
 }
-
-window.requestNotificationPermission = requestNotificationPermission;
 
 </script>
 
