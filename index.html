@@ -968,27 +968,52 @@ if(tab === 'stats'){
 }
   if(tab === 'settings'){
 
-    container.innerHTML = `
-      <div class="question-card">
+container.innerHTML = `
+  <div class="question-card">
 
-        <div class="product-title">
-          ⚙️ Ajustes
-        </div>
+    <div class="product-title">
+      ⚙️ Ajustes
+    </div>
 
-        <div class="question">
-          • Notificações
-          <br>
-          • Sons
-          <br>
-          • Lojas integradas
-          <br>
-          • Integrações Mercado Livre/Shopee
-          <br>
-          • Configurações da conta
-        </div>
+    <div class="answer-box">
 
+      <div class="answer-title">
+        🔔 Notificações
       </div>
-    `;
+
+      <button class="send-btn"
+        onclick="requestNotificationPermission()">
+        Ativar notificações
+      </button>
+
+    </div>
+
+    <div class="answer-box">
+
+      <div class="answer-title">
+        🏪 Integrações
+      </div>
+
+      <div class="previous-answer">
+        Mercado Livre conectado
+      </div>
+
+    </div>
+
+    <div class="answer-box">
+
+      <div class="answer-title">
+        👥 Usuários
+      </div>
+
+      <div class="previous-answer">
+        Em breve será possível adicionar funcionários.
+      </div>
+
+    </div>
+
+  </div>
+`;
 
   }
 
