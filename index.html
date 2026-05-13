@@ -820,7 +820,11 @@ async function showTab(tab, element){
 
             <div class="client">
               <div class="client-icon">👤</div>
-              ${item.client_nickname || 'Cliente'}
+              ${
+  item.client_name && item.client_name !== 'Cliente'
+    ? `${item.client_name} ${item.client_nickname ? `(${item.client_nickname})` : ''}`
+    : `${item.client_nickname || 'Cliente'}`
+}
             </div>
 
             <div class="question">

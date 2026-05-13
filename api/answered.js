@@ -29,6 +29,38 @@ async function refreshStoreToken(store, supabase) {
   };
 }
 
+async function getCustomerData(userId, accessToken) {
+  try {
+    if (!userId) {
+      return {
+        name: "Cliente",
+        nickname: null,
+      };
+    }
+
+    const response = await axios.get(
+      `https://api.mercadolibre.com/users/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    const user = response.data;
+
+    return {
+      name: user.first_name || "Cliente",
+      nickname: user.nickname || null,
+    };
+  } catch (error) {
+    return {
+      name: "Cliente",
+      nickname: null,
+    };
+  }
+}
+
 export default async function handler(req, res) {
   try {
     const supabase = createClient(
@@ -87,13 +119,20 @@ export default async function handler(req, res) {
 
         const questions = response.data.questions || [];
 
-        questions.forEach((question) => {
-          allAnswered.push({
-            ...question,
-            store_name: store.name,
-            store_id: store.id,
-          });
-        });
+for (const question of questions) {
+  const customerData = await getCustomerData(
+    question.from?.id,
+    store.access_token,
+  );
+
+  allAnswered.push({
+    ...question,
+    store_name: store.name,
+    store_id: store.id,
+    client_name: customerData.name,
+    client_nickname: customerData.nickname,
+  });
+}
       } catch (storeError) {
         console.log(
           `Erro na loja ${store.name}`,
