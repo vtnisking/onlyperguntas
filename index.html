@@ -591,6 +591,27 @@ html, body{
     </div>
 
 <script>
+
+let knownQuestionIds = new Set();
+let firstLoadDone = false;
+
+async function requestNotificationPermission(){
+  if("Notification" in window && Notification.permission === "default"){
+    await Notification.requestPermission();
+  }
+}
+
+function notifyNewQuestion(){
+  if("Notification" in window && Notification.permission === "granted"){
+    new Notification("Nova pergunta recebida", {
+      body: "Você recebeu uma nova pergunta no CentralizaChat.",
+      icon: "/icon-192.png"
+    });
+  }
+}
+
+
+
 async function loadQuestions(){
   const container = document.getElementById('questions');
 
@@ -609,6 +630,19 @@ async function loadQuestions(){
       .filter(item => item.status === "UNANSWERED")
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
+
+      const currentIds = questions.map(item => String(item.id));
+
+if(firstLoadDone){
+  const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
+
+  if(hasNewQuestion){
+    notifyNewQuestion();
+  }
+}
+
+knownQuestionIds = new Set(currentIds);
+firstLoadDone = true;
 
     document.getElementById('totalQuestions').innerText = questions.length;
 
@@ -677,6 +711,11 @@ async function loadQuestions(){
               Responder ✓
             </button>
           </div>
+
+          <button onclick="requestNotificationPermission()">
+  🔔 Ativar notificações
+</button>
+
         </div>
       `;
     });
@@ -760,6 +799,7 @@ function formatPrice(value){
   });
 }
 
+requestNotificationPermission();
 loadQuestions();
 
 async function showTab(tab, element){
@@ -950,6 +990,8 @@ if(tab === 'stats'){
   }
 
 }
+
+window.requestNotificationPermission = requestNotificationPermission;
 
 </script>
 
