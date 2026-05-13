@@ -868,33 +868,61 @@ async function showTab(tab, element){
     return;
   }
 
-  if(tab === 'stats'){
+if(tab === 'stats'){
+
+  container.innerHTML = `
+    <div class="empty">Carregando estatísticas...</div>
+  `;
+
+  try{
+    const response = await fetch('/api/stats?period=day');
+    const data = await response.json();
+
+    const users = Object.entries(data.by_user || {});
 
     container.innerHTML = `
       <div class="question-card">
 
         <div class="product-title">
-          📊 Estatísticas
+          📊 Estatísticas de hoje
         </div>
 
         <div class="question">
-          Em breve você poderá acompanhar:
-          <br><br>
-          • Quantas respostas cada funcionário respondeu
-          <br>
-          • Respostas por dia/mês/ano
-          <br>
-          • Tempo médio de resposta
-          <br>
-          • Ranking de atendimento
+          Total de respostas hoje: <strong>${data.total}</strong>
+        </div>
+
+        <div class="answer-box">
+          <div class="answer-title">
+            Respostas por usuário
+          </div>
+
+          ${
+            users.length === 0
+              ? `<div class="previous-answer">Nenhuma resposta registrada hoje.</div>`
+              : users.map(([email, total]) => `
+                  <div class="previous-item">
+                    <div class="previous-question">${email}</div>
+                    <div class="previous-answer">${total} resposta(s)</div>
+                  </div>
+                `).join('')
+          }
         </div>
 
       </div>
     `;
 
-    return;
+  }catch(error){
+
+    container.innerHTML = `
+      <div class="empty">
+        Erro ao carregar estatísticas.
+      </div>
+    `;
+
   }
 
+  return;
+}
   if(tab === 'settings'){
 
     container.innerHTML = `
