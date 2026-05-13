@@ -767,6 +767,60 @@ async function sendAnswer(questionId, storeId, button){
   }
 }
 
+function renderPreviousQuestions(item){
+  const previous = item.previous_questions || [];
+
+  if(previous.length === 0){
+    return '';
+  }
+
+  const html = previous.map(q => `
+    <div class="previous">
+      <div style="color:white;margin-bottom:8px;">
+        ${q.text}
+      </div>
+
+      ${q.answer ? `
+        <div style="color:#22c55e;font-size:14px;">
+          Resposta: ${q.answer}
+        </div>
+      ` : ''}
+
+      <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
+        ${formatDate(q.date_created)} • ${translateStatus(q.status)}
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <button
+      class="previous"
+      onclick="togglePrevious('${item.id}')"
+      type="button"
+      style="width:100%;cursor:pointer;"
+    >
+      Ver perguntas anteriores (${previous.length})
+    </button>
+
+    <div id="previous-${item.id}" style="display:none;">
+      ${html}
+    </div>
+  `;
+}
+
+function togglePrevious(questionId){
+  const box = document.getElementById(`previous-${questionId}`);
+
+  if(!box){
+    return;
+  }
+
+  box.style.display =
+    box.style.display === 'block'
+      ? 'none'
+      : 'block';
+}
+
 function formatDate(dateString){
   const date = new Date(dateString);
   return date.toLocaleTimeString('pt-BR', {
@@ -801,6 +855,7 @@ function formatPrice(value){
 let currentTab = "pending";
 
 window.requestNotificationPermission = requestNotificationPermission;
+window.togglePrevious = togglePrevious;
 
 loadQuestions();
 
@@ -900,6 +955,7 @@ currentTab = tab;
             </div>
 
             <div class="meta-bottom">
+              ${renderPreviousQuestions(item)}
               <span>
                 🕒 Respondida às
                 ${formatDate(item.answer?.date_created)}
