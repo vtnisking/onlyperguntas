@@ -170,7 +170,7 @@ html, body{
 
       @media (max-width: 768px) {
         .stats-card {
-          padding: 16Epx;
+          padding: 16px;
           min-height: 120px;
           border-radius: 22px;
         }
@@ -821,9 +821,7 @@ function togglePrevious(questionId){
     box.style.display === 'block'
       ? 'none'
       : 'block';
-}
 
-function renderPreviousQuestions(item){
   const previous = item.previous_questions || [];
 
   if(previous.length === 0){
@@ -864,8 +862,6 @@ function renderPreviousQuestions(item){
   `;
 }
 
-function togglePrevious(questionId){
-  const box = document.getElementById(`previous-${questionId}`);
 
   if(!box){
     return;
@@ -875,7 +871,7 @@ function togglePrevious(questionId){
     box.style.display === 'block'
       ? 'none'
       : 'block';
-}
+
 
 function formatDate(dateString){
   const date = new Date(dateString);
