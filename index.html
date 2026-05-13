@@ -2,7 +2,7 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>CentralizaChat</title>
 
     <link rel="manifest" href="/manifest.json">
@@ -17,7 +17,15 @@
         box-sizing: border-box;
       }
 
+html, body{
+  overscroll-behavior:none;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
       body {
+        overflow-x: hidden;
         background: linear-gradient(
           180deg,
           #ffffff 0%,
