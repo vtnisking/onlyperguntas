@@ -800,6 +800,16 @@ function formatPrice(value){
 window.requestNotificationPermission = requestNotificationPermission;
 loadQuestions();
 
+setInterval(() => {
+
+  const typing = document.activeElement.tagName === 'TEXTAREA';
+
+  if(!typing){
+    loadQuestions();
+  }
+
+}, 10000);
+
 async function showTab(tab, element){
 
   document.querySelectorAll('.footer-item').forEach(item => {
