@@ -639,9 +639,9 @@ async function loadQuestions(){
 if(firstLoadDone){
   const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
 
-  if(hasNewQuestion){
-    notifyNewQuestion();
-  }
+  if(typeof notifyNewQuestion === "function"){
+  notifyNewQuestion();
+}
 }
 
 knownQuestionIds = new Set(currentIds);
@@ -789,7 +789,7 @@ function renderPreviousQuestions(item){
       ` : ''}
 
       <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
-${formatDate(q.date_created)} • ${q.status === 'ANSWERED' ? 'Respondida' : 'Pendente'}
+        ${formatDate(q.date_created)} • ${q.status === 'ANSWERED' ? 'Respondida' : 'Pendente'}
       </div>
     </div>
   `).join('');
@@ -821,65 +821,13 @@ function togglePrevious(questionId){
     box.style.display === 'block'
       ? 'none'
       : 'block';
-
-  const previous = item.previous_questions || [];
-
-  if(previous.length === 0){
-    return '';
-  }
-
-  const html = previous.map(q => `
-    <div class="previous">
-      <div style="color:white;margin-bottom:8px;">
-        ${q.text}
-      </div>
-
-      ${q.answer ? `
-        <div style="color:#22c55e;font-size:14px;">
-          Resposta: ${q.answer}
-        </div>
-      ` : ''}
-
-      <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
-        ${formatDate(q.date_created)} • ${translateStatus(q.status)}
-      </div>
-    </div>
-  `).join('');
-
-  return `
-    <button
-      class="previous"
-      onclick="togglePrevious('${item.id}')"
-      type="button"
-      style="width:100%;cursor:pointer;"
-    >
-      Ver perguntas anteriores (${previous.length})
-    </button>
-
-    <div id="previous-${item.id}" style="display:none;">
-      ${html}
-    </div>
-  `;
 }
 
-
-  if(!box){
-    return;
-  }
-
-  box.style.display =
-    box.style.display === 'block'
-      ? 'none'
-      : 'block';
-
-
-function formatDate(dateString){
   const date = new Date(dateString);
   return date.toLocaleTimeString('pt-BR', {
     hour:'2-digit',
     minute:'2-digit'
   });
-}
 
 function timeAgo(dateString){
   const now = new Date();
