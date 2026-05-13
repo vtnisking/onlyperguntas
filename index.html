@@ -823,11 +823,18 @@ function togglePrevious(questionId){
       : 'block';
 }
 
+function formatDate(dateString){
+  if(!dateString){
+    return '--:--';
+  }
+
   const date = new Date(dateString);
+
   return date.toLocaleTimeString('pt-BR', {
     hour:'2-digit',
     minute:'2-digit'
   });
+}
 
 function timeAgo(dateString){
   const now = new Date();
