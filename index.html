@@ -576,5 +576,179 @@
         <div>Ajustes</div>
       </div>
     </div>
+
+<script>
+async function loadQuestions(){
+  const container = document.getElementById('questions');
+
+  if(!container){
+    alert('Erro: não encontrei a div id="questions"');
+    return;
+  }
+
+  container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
+
+  try{
+    const response = await fetch('/api/questions');
+    const data = await response.json();
+
+    const questions = data.questions
+      .filter(item => item.status === "UNANSWERED")
+      .filter(item => item.hold === false)
+      .filter(item => item.deleted_from_listing === false);
+
+    document.getElementById('totalQuestions').innerText = questions.length;
+
+    container.innerHTML = '';
+
+    if(questions.length === 0){
+      container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
+      return;
+    }
+
+    questions.forEach(item => {
+      container.innerHTML += `
+        <div class="question-card">
+          <div class="top-row">
+            <div class="store">🏪 ${item.store_name}</div>
+            <div class="status">• PENDENTE</div>
+          </div>
+
+          <div class="product">
+            ${item.product_thumbnail ? `
+              <a href="${item.product_link || '#'}" target="_blank">
+                <img src="${item.product_thumbnail}">
+              </a>
+            ` : ''}
+
+            <div class="product-info">
+              <div class="meta">
+                <span class="sku">SKU ${item.product_sku || ''}</span>
+                <span class="${item.product_quantity > 5 ? 'stock' : 'stock-low'}">
+                  ${item.product_quantity || 0} Unidade Disponível
+                </span>
+              </div>
+
+              <div class="product-title">
+                ${item.product_title || item.item_id}
+              </div>
+
+              ${item.product_price ? `
+                <div class="price">${formatPrice(item.product_price)}</div>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="client">
+            <div class="client-icon">👤</div>
+            ${
+              item.client_name && item.client_name !== 'Cliente'
+                ? `${item.client_name} ${item.client_nickname ? `(${item.client_nickname})` : ''}`
+                : `${item.client_nickname || 'Cliente'}`
+            }
+          </div>
+
+          <div class="question">${item.text}</div>
+
+          <div class="meta-bottom">
+            <span>🕒 Pergunta feita às ${formatDate(item.date_created)}</span>
+            <span>⏳ Em aberto há ${timeAgo(item.date_created)}</span>
+          </div>
+
+          <div class="answer-box">
+            <div class="answer-title">✈️ Responda o cliente abaixo</div>
+
+            <textarea id="answer-${item.id}" placeholder="Digite sua resposta aqui..."></textarea>
+
+            <button class="send-btn" onclick="sendAnswer('${item.id}', '${item.store_id}', this)">
+              Responder ✓
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+  }catch(error){
+    container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
+  }
+}
+
+async function sendAnswer(questionId, storeId, button){
+  const textarea = document.getElementById(`answer-${questionId}`);
+  const text = textarea.value.trim();
+
+  if(!text){
+    alert('Digite uma resposta.');
+    return;
+  }
+
+  button.disabled = true;
+  button.innerText = 'Enviando...';
+
+  try{
+    const response = await fetch('/api/answer', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        question_id: questionId,
+        store_id: storeId,
+        text
+      })
+    });
+
+    const data = await response.json();
+
+    if(data.success){
+      button.innerText = 'Respondido ✓';
+      setTimeout(() => {
+        loadQuestions();
+      }, 1000);
+    }else{
+      alert('Erro ao responder.');
+      button.disabled = false;
+      button.innerText = 'Responder ✓';
+    }
+
+  }catch(error){
+    alert('Erro no sistema.');
+    button.disabled = false;
+    button.innerText = 'Responder ✓';
+  }
+}
+
+function formatDate(dateString){
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('pt-BR', {
+    hour:'2-digit',
+    minute:'2-digit'
+  });
+}
+
+function timeAgo(dateString){
+  const now = new Date();
+  const created = new Date(dateString);
+  const diffMs = now - created;
+  const minutes = Math.floor(diffMs / 60000);
+
+  if(minutes < 1) return 'agora';
+  if(minutes < 60) return `${minutes} min`;
+
+  const hours = Math.floor(minutes / 60);
+  if(hours < 24) return `${hours}h`;
+
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
+function formatPrice(value){
+  return Number(value).toLocaleString('pt-BR', {
+    style:'currency',
+    currency:'BRL'
+  });
+}
+
+loadQuestions();
+</script>
+
   </body>
 </html>
