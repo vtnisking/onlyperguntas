@@ -803,15 +803,29 @@ loadQuestions();
 
 setInterval(() => {
 
+  setInterval(() => {
+  const typing =
+    document.activeElement &&
+    document.activeElement.tagName === "TEXTAREA";
+
+  if(!typing && currentTab === "pending"){
+    loadQuestions();
+  }
+}, 10000);
+
   const typing = document.activeElement.tagName === 'TEXTAREA';
 
   if(!typing){
+    let currentTab = "pending";
     loadQuestions();
   }
 
 }, 10000);
 
 async function showTab(tab, element){
+
+  let currentTab = "pending";
+  currentTab = tab;
 
   document.querySelectorAll('.footer-item').forEach(item => {
     item.classList.remove('active');
@@ -822,6 +836,7 @@ async function showTab(tab, element){
   const container = document.getElementById('questions');
 
   if(tab === 'pending'){
+    let currentTab = "pending";
     loadQuestions();
     return;
   }
