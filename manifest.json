@@ -1,10 +1,11 @@
 {
-  "name": "OnlyPerguntas",
-  "short_name": "OnlyPerguntas",
+  "name": "CentralizaChat",
+  "short_name": "Centraliza",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f6f8fc",
-  "theme_color": "#07142d",
+  "background_color": "#111827",
+  "theme_color": "#7f0000",
+
   "icons": [
     {
       "src": "/icon-192.png",
