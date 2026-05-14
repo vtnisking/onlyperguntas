@@ -105,7 +105,7 @@ export default async function handler(req, res) {
             store = await refreshStoreToken(store, supabase);
 
             response = await axios.get(
-              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=20`,
+              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=100`,
               {
                 headers: {
                   Authorization: `Bearer ${store.access_token}`,
@@ -146,6 +146,8 @@ for (const question of questions) {
       const dateB = new Date(b.answer?.date_created || b.date_created);
       return dateB - dateA;
     });
+
+    allAnswered = allAnswered.slice(0, 20);
 
     return res.status(200).json({
       total: allAnswered.length,
