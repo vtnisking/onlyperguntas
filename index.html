@@ -593,7 +593,6 @@ html, body{
 
 <script>
 
-let renderedQuestions = new Set();
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
 
@@ -655,14 +654,14 @@ firstLoadDone = true;
       return;
     }
 
-questions.reverse().forEach(item => {
+questions.forEach(item => {
 
   if(renderedQuestions.has(String(item.id))){
     return;
   }
 
   renderedQuestions.add(String(item.id));
-      container.insertAdjacentHTML('afterbegin', `
+container.innerHTML += `
         <div class="question-card">
           <div class="top-row">
             <div class="store">🏪 ${item.store_name}</div>
@@ -723,7 +722,7 @@ questions.reverse().forEach(item => {
           </div>
 
         </div>
-      `);
+      `;
     });
 
   }catch(error){
