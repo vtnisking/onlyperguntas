@@ -631,8 +631,8 @@ if(!silent){
     const response = await fetch('/api/questions');
     const data = await response.json();
 
-    const questions = data.questions
-      .filter(item => item.status === "UNANSWERED")
+const questions = (data.questions || [])
+  .filter(item => item.status === "UNANSWERED")
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
 
@@ -990,13 +990,10 @@ questions.reverse().forEach(item => {
 
       });
 
-    }catch(error){
-
-      container.innerHTML = `
-        <div class="empty">
-          Erro ao carregar perguntas respondidas.
-        </div>
-      `;
+}catch(error){
+  console.log("Erro ao carregar perguntas:", error);
+  container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
+}
 
     }
 
@@ -1109,7 +1106,6 @@ container.innerHTML = `
 
   }
 
-}
 
 </script>
 
