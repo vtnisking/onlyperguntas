@@ -6,7 +6,8 @@
     "start": "vercel dev"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
     "axios": "^1.7.9",
-    "@supabase/supabase-js": "^2.48.1"
+    "web-push": "^3.6.7"
   }
 }
