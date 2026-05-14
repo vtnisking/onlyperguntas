@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
         try {
           response = await axios.get(
-            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=100&sort_fields=date_created&sort_types=DESC`
+            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=100&sort_fields=date_created&sort_types=DESC`,
             {
               headers: {
                 Authorization: `Bearer ${store.access_token}`,
@@ -119,20 +119,20 @@ export default async function handler(req, res) {
 
         const questions = response.data.questions || [];
 
-for (const question of questions) {
-  const customerData = await getCustomerData(
-    question.from?.id,
-    store.access_token,
-  );
+        for (const question of questions) {
+          const customerData = await getCustomerData(
+            question.from?.id,
+            store.access_token,
+          );
 
-  allAnswered.push({
-    ...question,
-    store_name: store.name,
-    store_id: store.id,
-    client_name: customerData.name,
-    client_nickname: customerData.nickname,
-  });
-}
+          allAnswered.push({
+            ...question,
+            store_name: store.name,
+            store_id: store.id,
+            client_name: customerData.name,
+            client_nickname: customerData.nickname,
+          });
+        }
       } catch (storeError) {
         console.log(
           `Erro na loja ${store.name}`,
