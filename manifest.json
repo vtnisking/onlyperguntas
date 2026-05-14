@@ -1,6 +1,6 @@
 {
   "name": "CentralizaChat",
-  "short_name": "Centraliza",
+  "short_name": "CentralizaChat",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111827",
