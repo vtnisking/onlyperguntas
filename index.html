@@ -615,7 +615,7 @@ async function requestNotificationPermission(){
 
 
 
-async function loadQuestions(){
+async function loadQuestions(silent = false){
   const container = document.getElementById('questions');
 
   if(!container){
@@ -623,7 +623,9 @@ async function loadQuestions(){
     return;
   }
 
+if(!silent){
   container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
+}
 
   try{
     const response = await fetch('/api/questions');
@@ -872,9 +874,9 @@ setInterval(() => {
     document.activeElement &&
     document.activeElement.tagName === "TEXTAREA";
 
-  if(!typing && currentTab === "pending"){
-    loadQuestions();
-  }
+if(!typing && currentTab === "pending"){
+  loadQuestions(true);
+}
 
 }, 60000);
 
