@@ -595,6 +595,7 @@ html, body{
 
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
+let renderedQuestions = new Set();
 
 async function requestNotificationPermission(){
 
@@ -1106,7 +1107,6 @@ container.innerHTML = `
 
   }
 
-
 </script>
 
 <script>
@@ -1117,5 +1117,5 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-  </body>
+</body>
 </html>
