@@ -614,57 +614,42 @@ async function requestNotificationPermission(){
 
 }
 
-
-
 async function loadQuestions(silent = false){
   const container = document.getElementById('questions');
 
-  if(!container){
-    alert('Erro: não encontrei a div id="questions"');
-    return;
-  }
+  if(!container) return;
 
-if(!silent){
-  container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
-}
+  if(!silent){
+    renderedQuestions = new Set();
+    container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
+  }
 
   try{
     const response = await fetch('/api/questions');
     const data = await response.json();
 
-const questions = (data.questions || [])
-  .filter(item => item.status === "UNANSWERED")
+    const questions = (data.questions || [])
+      .filter(item => item.status === "UNANSWERED")
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
 
-      const currentIds = questions.map(item => String(item.id));
-
-if(firstLoadDone){
-  const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
-
-  if(typeof notifyNewQuestion === "function"){
-  notifyNewQuestion();
-}
-}
-
-knownQuestionIds = new Set(currentIds);
-firstLoadDone = true;
-
     document.getElementById('totalQuestions').innerText = questions.length;
 
-    if(questions.length === 0){
+    if(!silent){
+      container.innerHTML = '';
+    }
+
+    if(questions.length === 0 && !silent){
       container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
       return;
     }
 
-questions.forEach(item => {
+    questions.forEach(item => {
+      if(renderedQuestions.has(String(item.id))) return;
 
-  if(renderedQuestions.has(String(item.id))){
-    return;
-  }
+      renderedQuestions.add(String(item.id));
 
-  renderedQuestions.add(String(item.id));
-container.innerHTML += `
+      container.innerHTML += `
         <div class="question-card">
           <div class="top-row">
             <div class="store">🏪 ${item.store_name}</div>
@@ -723,12 +708,12 @@ container.innerHTML += `
               Responder ✓
             </button>
           </div>
-
         </div>
       `;
     });
 
   }catch(error){
+    console.log("Erro ao carregar perguntas:", error);
     container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
   }
 }
