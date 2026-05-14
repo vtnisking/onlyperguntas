@@ -47,13 +47,11 @@ export default async function handler(req, res) {
 
         if (alreadyNotified) continue;
 
-        const payload = JSON.stringify({
-          title: "Nova pergunta recebida",
-          body:
-            question.text ||
-            "Você recebeu uma nova pergunta no CentralizaChat.",
-          url: "/",
-        });
+const payload = JSON.stringify({
+  title: store.name || "Nova pergunta recebida",
+  body: question.text || "Você recebeu uma nova pergunta.",
+  url: "/",
+});
 
         await Promise.allSettled(
           (subscriptions || []).map((item) =>
