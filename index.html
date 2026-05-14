@@ -593,6 +593,7 @@ html, body{
 
 <script>
 
+let renderedQuestions = new Set();
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
 
@@ -649,15 +650,19 @@ firstLoadDone = true;
 
     document.getElementById('totalQuestions').innerText = questions.length;
 
-    container.innerHTML = '';
-
     if(questions.length === 0){
       container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
       return;
     }
 
-    questions.forEach(item => {
-      container.innerHTML += `
+questions.reverse().forEach(item => {
+
+  if(renderedQuestions.has(String(item.id))){
+    return;
+  }
+
+  renderedQuestions.add(String(item.id));
+      container.insertAdjacentHTML('afterbegin', `
         <div class="question-card">
           <div class="top-row">
             <div class="store">🏪 ${item.store_name}</div>
@@ -718,7 +723,7 @@ firstLoadDone = true;
           </div>
 
         </div>
-      `;
+      `);
     });
 
   }catch(error){
@@ -753,6 +758,13 @@ async function sendAnswer(questionId, storeId, button){
 
     if(data.success){
       button.innerText = 'Respondido ✓';
+      const card = button.closest('.question-card');
+
+if(card){
+  setTimeout(() => {
+    card.remove();
+  }, 800);
+}
       setTimeout(() => {
         loadQuestions();
       }, 1000);
@@ -921,7 +933,13 @@ currentTab = tab;
         return;
       }
 
-      questions.forEach(item => {
+questions.reverse().forEach(item => {
+
+  if(renderedQuestions.has(String(item.id))){
+    return;
+  }
+
+  renderedQuestions.add(String(item.id));
 
         container.innerHTML += `
           <div class="question-card">
