@@ -595,7 +595,6 @@ html, body{
 
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
-let renderedQuestions = new Set();
 
 async function requestNotificationPermission(){
 
@@ -614,41 +613,50 @@ async function requestNotificationPermission(){
 
 }
 
-async function loadQuestions(silent = false){
+
+
+async function loadQuestions(){
   const container = document.getElementById('questions');
 
-  if(!container) return;
-
-  if(!silent){
-    renderedQuestions = new Set();
-    container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
+  if(!container){
+    alert('Erro: não encontrei a div id="questions"');
+    return;
   }
+
+  container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
 
   try{
     const response = await fetch('/api/questions');
     const data = await response.json();
 
-    const questions = (data.questions || [])
+    const questions = data.questions
       .filter(item => item.status === "UNANSWERED")
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
 
+      const currentIds = questions.map(item => String(item.id));
+
+if(firstLoadDone){
+  const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
+
+  if(typeof notifyNewQuestion === "function"){
+  notifyNewQuestion();
+}
+}
+
+knownQuestionIds = new Set(currentIds);
+firstLoadDone = true;
+
     document.getElementById('totalQuestions').innerText = questions.length;
 
-    if(!silent){
-      container.innerHTML = '';
-    }
+    container.innerHTML = '';
 
-    if(questions.length === 0 && !silent){
+    if(questions.length === 0){
       container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
       return;
     }
 
     questions.forEach(item => {
-      if(renderedQuestions.has(String(item.id))) return;
-
-      renderedQuestions.add(String(item.id));
-
       container.innerHTML += `
         <div class="question-card">
           <div class="top-row">
@@ -708,12 +716,12 @@ async function loadQuestions(silent = false){
               Responder ✓
             </button>
           </div>
+
         </div>
       `;
     });
 
   }catch(error){
-    console.log("Erro ao carregar perguntas:", error);
     container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
   }
 }
@@ -745,13 +753,6 @@ async function sendAnswer(questionId, storeId, button){
 
     if(data.success){
       button.innerText = 'Respondido ✓';
-      const card = button.closest('.question-card');
-
-if(card){
-  setTimeout(() => {
-    card.remove();
-  }, 800);
-}
       setTimeout(() => {
         loadQuestions();
       }, 1000);
@@ -866,13 +867,15 @@ window.togglePrevious = togglePrevious;
 loadQuestions();
 
 setInterval(() => {
+
   const typing =
     document.activeElement &&
     document.activeElement.tagName === "TEXTAREA";
 
   if(!typing && currentTab === "pending"){
-    loadQuestions(true);
+    loadQuestions();
   }
+
 }, 60000);
 
 async function showTab(tab, element){
@@ -918,13 +921,7 @@ currentTab = tab;
         return;
       }
 
-questions.reverse().forEach(item => {
-
-  if(renderedQuestions.has(String(item.id))){
-    return;
-  }
-
-  renderedQuestions.add(String(item.id));
+      questions.forEach(item => {
 
         container.innerHTML += `
           <div class="question-card">
@@ -976,10 +973,13 @@ questions.reverse().forEach(item => {
 
       });
 
-}catch(error){
-  console.log("Erro ao carregar perguntas:", error);
-  container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
-}
+    }catch(error){
+
+      container.innerHTML = `
+        <div class="empty">
+          Erro ao carregar perguntas respondidas.
+        </div>
+      `;
 
     }
 
@@ -1092,6 +1092,8 @@ container.innerHTML = `
 
   }
 
+}
+
 </script>
 
 <script>
@@ -1102,5 +1104,5 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-</body>
+  </body>
 </html>
