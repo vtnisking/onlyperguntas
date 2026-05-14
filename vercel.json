@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/notify-new-questions",
+      "schedule": "*/1 * * * *"
+    }
+  ]
+}
