@@ -531,11 +531,13 @@ html, body{
   <body>
     <div class="container">
       <header>
-        <div class="logo-area">
+        <div class="logo-area">     
           
 <a href="/" class="logo-full">
   <img src="logo.png" alt="CentralizeChat">
 </a>
+
+ <div id="loggedUserName"></div>
 
       </header>
 
@@ -592,6 +594,17 @@ html, body{
     </div>
 
 <script>
+
+const loggedUser = JSON.parse(
+  localStorage.getItem("centralizachat_user")
+);
+
+if(!loggedUser){
+  window.location.href = "/login.html";
+}
+
+document.getElementById("loggedUserName").innerText =
+  loggedUser.name;
 
 let knownQuestionIds = new Set();
 let firstLoadDone = false;

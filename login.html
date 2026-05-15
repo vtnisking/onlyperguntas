@@ -81,6 +81,14 @@ button{
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+const loggedUser = JSON.parse(
+  localStorage.getItem("centralizachat_user")
+);
+
+if(!loggedUser){
+  window.location.href = "/login.html";
+}
+
 const supabase = createClient(
   "https://vspcitxnssbsztqnfhmj.supabase.co",
   "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS"
