@@ -73,8 +73,8 @@ export default async function handler(req, res) {
           );
 
 const payload = JSON.stringify({
-  title: "TESTE CENTRALIZACHAT",
-  body: "Teste de alteração da notificação",
+  title: productTitle,
+  body: question.text || "Você recebeu uma nova pergunta.",
   url: "/",
 });
 
