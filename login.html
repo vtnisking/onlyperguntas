@@ -99,6 +99,10 @@ async function login(){
   }
 
 const { data, error } = await supabase
+  .from("users_app")
+  .select("*");
+  
+console.log(data, error);
 
 
 if(error || !data){
