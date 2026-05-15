@@ -144,10 +144,13 @@ export default async function handler(req, res) {
       process.env.SUPABASE_ANON_KEY
     );
 
-    const { data: stores, error } = await supabase
-      .from("stores")
-      .select("*")
-      .eq("platform", "mercadolivre");
+const companyId = req.query.company_id;
+
+const { data: stores, error } = await supabase
+  .from("stores")
+  .select("*")
+  .eq("platform", "mercadolivre")
+  .eq("company_id", companyId);
 
     if (error || !stores || stores.length === 0) {
       return res.status(400).json({

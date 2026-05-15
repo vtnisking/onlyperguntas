@@ -685,7 +685,9 @@ if(!silent){
 }
 
   try{
-    const response = await fetch('/api/questions');
+const response = await fetch(
+  `/api/questions?company_id=${loggedUser.company_id}`
+);
     const data = await response.json();
 
     const questions = data.questions
