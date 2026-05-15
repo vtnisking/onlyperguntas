@@ -34,6 +34,51 @@ export default async function handler(req, res) {
       });
     }
 
+if (action === "stats") {
+  const period = req.query.period || "day";
+
+  const now = new Date();
+  let startDate = new Date();
+
+  if (period === "day") {
+    startDate.setHours(0, 0, 0, 0);
+  }
+
+  if (period === "month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  if (period === "year") {
+    startDate = new Date(now.getFullYear(), 0, 1);
+  }
+
+  const { data, error } = await supabase
+    .from("answer_logs")
+    .select("*")
+    .eq("company_id", company_id)
+    .gte("created_at", startDate.toISOString())
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return res.status(500).json({ error });
+  }
+
+  const byUser = {};
+
+  data.forEach((log) => {
+    const user = log.user_email || "Sem usuário";
+    byUser[user] = (byUser[user] || 0) + 1;
+  });
+
+  return res.status(200).json({
+    success: true,
+    period,
+    total: data.length,
+    by_user: byUser,
+    logs: data,
+  });
+}
+
     return res.status(404).json({
       error: "Ação não encontrada",
     });

@@ -1054,7 +1054,9 @@ if(tab === 'stats'){
   `;
 
   try{
-    const response = await fetch('/api/stats?period=day');
+const response = await fetch(
+  `/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`
+);
     const data = await response.json();
 
     const users = Object.entries(data.by_user || {});
