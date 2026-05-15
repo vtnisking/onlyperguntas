@@ -100,7 +100,10 @@ async function login(){
 
 const { data, error } = await supabase
   .from("users_app")
-  .select("*");
+  .select("*")
+  .eq("email", email)
+  .eq("password", password)
+  .single();
   
 console.log(data, error);
 
