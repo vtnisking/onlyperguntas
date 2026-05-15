@@ -73,7 +73,7 @@ export default async function handler(req, res) {
           );
 
 const payload = JSON.stringify({
-  title: productTitle,
+  title: "TESTE TITULO PRODUTO",
   body: question.text || "Você recebeu uma nova pergunta.",
   url: "/",
 });
