@@ -110,11 +110,6 @@ if(error || !data){
   return;
 }
 
-  if(data.status !== "active"){
-    errorBox.innerText = "Usuário inativo.";
-    return;
-  }
-
 if(!data.company_id){
   errorBox.innerText = "Empresa não vinculada.";
   return;
