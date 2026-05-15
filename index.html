@@ -598,16 +598,20 @@ html, body{
 
 <script>
 
+const loggedUser = JSON.parse(
+  localStorage.getItem("centralizachat_user")
+);
+
+if(!loggedUser){
+  window.location.href = "/login.html";
+}
+
 function logout(){
   localStorage.removeItem("centralizachat_user");
   window.location.href = "/login.html";
 }
 
 window.logout = logout;
-
-const loggedUser = JSON.parse(
-  localStorage.getItem("centralizachat_user")
-);
 
 if(!loggedUser){
   window.location.href = "/login.html";
@@ -1063,6 +1067,39 @@ if(tab === 'stats'){
   try{
     const response = await fetch('/api/stats?period=day');
     const data = await response.json();
+
+const userBox = document.createElement("div");
+
+userBox.style.position = "fixed";
+userBox.style.top = "10px";
+userBox.style.right = "10px";
+userBox.style.zIndex = "9999";
+userBox.style.background = "#111";
+userBox.style.padding = "10px";
+userBox.style.borderRadius = "10px";
+userBox.style.color = "white";
+
+userBox.innerHTML = `
+  <div style="margin-bottom:8px;">
+    ${loggedUser.name}
+  </div>
+
+  <button id="logoutBtn">
+    Sair
+  </button>
+`;
+
+document.body.appendChild(userBox);
+
+document
+  .getElementById("logoutBtn")
+  .addEventListener("click", () => {
+
+    localStorage.removeItem("centralizachat_user");
+
+    window.location.href = "/login.html";
+});
+
 
     const users = Object.entries(data.by_user || {});
 
