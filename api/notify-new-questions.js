@@ -27,43 +27,53 @@ export default async function handler(req, res) {
     let sent = 0;
 
     for (const store of stores || []) {
-      const response = await axios.get(
-        `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=UNANSWERED`,
-        {
-          headers: {
-            Authorization: `Bearer ${store.access_token}`,
+      try {
+        const response = await axios.get(
+          `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=UNANSWERED`,
+          {
+            headers: {
+              Authorization: `Bearer ${store.access_token}`,
+            },
           },
-        },
-      );
-
-      const questions = response.data.questions || [];
-
-      for (const question of questions) {
-        const { data: alreadyNotified } = await supabase
-          .from("notified_questions")
-          .select("question_id")
-          .eq("question_id", String(question.id))
-          .maybeSingle();
-
-        if (alreadyNotified) continue;
-
-const payload = JSON.stringify({
-  title: store.name || "Nova pergunta recebida",
-  body: question.text || "Você recebeu uma nova pergunta.",
-  url: "/",
-});
-
-        await Promise.allSettled(
-          (subscriptions || []).map((item) =>
-            webpush.sendNotification(item.subscription, payload),
-          ),
         );
 
-        await supabase.from("notified_questions").insert({
-          question_id: String(question.id),
-        });
+        const questions = response.data.questions || [];
 
-        sent++;
+        for (const question of questions) {
+          const { data: alreadyNotified } = await supabase
+            .from("notified_questions")
+            .select("question_id")
+            .eq("question_id", String(question.id))
+            .maybeSingle();
+
+          if (alreadyNotified) {
+            continue;
+          }
+
+          const payload = JSON.stringify({
+            title: store.name || "Nova pergunta recebida",
+            body: question.text || "Você recebeu uma nova pergunta.",
+            url: "/",
+          });
+
+          await Promise.allSettled(
+            (subscriptions || []).map((item) =>
+              webpush.sendNotification(item.subscription, payload),
+            ),
+          );
+
+          await supabase.from("notified_questions").insert({
+            question_id: String(question.id),
+          });
+
+          sent++;
+        }
+      } catch (storeError) {
+        console.log(
+          "Erro na loja:",
+          store.name,
+          storeError.response?.data || storeError.message,
+        );
       }
     }
 
