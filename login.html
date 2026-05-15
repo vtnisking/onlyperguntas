@@ -101,10 +101,10 @@ async function login(){
 const { data, error } = await supabase
 
 
-  if(error || !data){
-    errorBox.innerText = "E-mail ou senha inválidos.";
-    return;
-  }
+if(error || !data){
+  errorBox.innerText = JSON.stringify(error);
+  return;
+}
 
   if(data.status !== "active"){
     errorBox.innerText = "Usuário inativo.";
