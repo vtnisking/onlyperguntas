@@ -87,18 +87,62 @@ const supabase = createClient(
 );
 
 async function login(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("error");
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+  errorBox.innerText = "";
 
-  if(error){
-    document.getElementById("error").innerText = "E-mail ou senha inválidos.";
+  if(!email || !password){
+    errorBox.innerText = "Preencha e-mail e senha.";
     return;
   }
+
+  const { data, error } = await supabase
+    .from("users_app")
+    .select(`
+      id,
+      name,
+      email,
+      password,
+      role,
+      status,
+      company_id,
+      companies (
+        id,
+        name,
+        status,
+        plan
+      )
+    `)
+    .eq("email", email)
+    .eq("password", password)
+    .single();
+
+  if(error || !data){
+    errorBox.innerText = "E-mail ou senha inválidos.";
+    return;
+  }
+
+  if(data.status !== "active"){
+    errorBox.innerText = "Usuário inativo.";
+    return;
+  }
+
+  if(data.companies?.status !== "active"){
+    errorBox.innerText = "Empresa inativa ou mensalidade pendente.";
+    return;
+  }
+
+  localStorage.setItem("centralizachat_user", JSON.stringify({
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    role: data.role,
+    company_id: data.company_id,
+    company_name: data.companies?.name,
+    company_plan: data.companies?.plan
+  }));
 
   window.location.href = "/";
 }
