@@ -531,16 +531,11 @@ html, body{
   <body>
     <div class="container">
       <header>
-        <div class="logo-area">     
+        <div class="logo-area">
           
 <a href="/" class="logo-full">
   <img src="logo.png" alt="CentralizeChat">
 </a>
-
- <div id="loggedUserName"></div>
- <button onclick="logout()" id="logoutBtn">
-  Sair
-</button>
 
       </header>
 
@@ -598,137 +593,62 @@ html, body{
 
 <script>
 
-const loggedUser = JSON.parse(
-  localStorage.getItem("centralizachat_user")
-);
-
-if(!loggedUser){
-  window.location.href = "/login.html";
-}
-
-function logout(){
-  localStorage.removeItem("centralizachat_user");
-  window.location.href = "/login.html";
-}
-
-window.logout = logout;
-
-if(!loggedUser){
-  window.location.href = "/login.html";
-}
-
-document.getElementById("loggedUserName").innerText =
-  loggedUser.name;
-
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
+let renderedQuestions = new Set();
 
 async function requestNotificationPermission(){
 
-  try{
-    if(!("Notification" in window)){
-      alert("Este navegador não suporta notificações.");
-      return;
-    }
-
-    if(!("serviceWorker" in navigator)){
-      alert("Service Worker não suportado.");
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-
-    if(permission !== "granted"){
-      alert("Notificações não permitidas.");
-      return;
-    }
-
-    const registration = await navigator.serviceWorker.ready;
-
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        "BC_KYGVTkWCoFjiLrG9ID7MoXoXt8Y05cmFkbPIacOYeQ95tsU3sGsM50tNALd2KMyRjHHdJnCP5IqjMU13eoXA"
-      )
-    });
-
-    const result = await fetch("/api/save-subscription", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        subscription,
-        user_email:"admin@centralizachat.com"
-      })
-    });
-
-    const saved = await result.json();
-
-    alert(JSON.stringify(saved));
-
-  }catch(error){
-    alert("Erro ao ativar notificações: " + error.message);
+  if(!("Notification" in window)){
+    alert("Este navegador não suporta notificações.");
+    return;
   }
+
+  const permission = await Notification.requestPermission();
+
+  if(permission === "granted"){
+    alert("Notificações ativadas com sucesso!");
+  }else{
+    alert("Notificações não foram permitidas.");
+  }
+
 }
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-}
-
 
 async function loadQuestions(silent = false){
   const container = document.getElementById('questions');
 
-  if(!container){
-    alert('Erro: não encontrei a div id="questions"');
-    return;
-  }
+  if(!container) return;
 
-if(!silent){
-  container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
-}
+  if(!silent){
+    renderedQuestions = new Set();
+    container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
+  }
 
   try{
     const response = await fetch('/api/questions');
     const data = await response.json();
 
-    const questions = data.questions
+    const questions = (data.questions || [])
       .filter(item => item.status === "UNANSWERED")
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
 
-      const currentIds = questions.map(item => String(item.id));
-
-if(firstLoadDone){
-  const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
-
-  if(typeof notifyNewQuestion === "function"){
-  notifyNewQuestion();
-}
-}
-
-knownQuestionIds = new Set(currentIds);
-firstLoadDone = true;
-
     document.getElementById('totalQuestions').innerText = questions.length;
 
-    container.innerHTML = '';
+    if(!silent){
+      container.innerHTML = '';
+    }
 
-    if(questions.length === 0){
+    if(questions.length === 0 && !silent){
       container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
       return;
     }
 
     questions.forEach(item => {
+      if(renderedQuestions.has(String(item.id))) return;
+
+      renderedQuestions.add(String(item.id));
+
       container.innerHTML += `
         <div class="question-card">
           <div class="top-row">
@@ -788,12 +708,12 @@ firstLoadDone = true;
               Responder ✓
             </button>
           </div>
-
         </div>
       `;
     });
 
   }catch(error){
+    console.log("Erro ao carregar perguntas:", error);
     container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
   }
 }
@@ -825,6 +745,13 @@ async function sendAnswer(questionId, storeId, button){
 
     if(data.success){
       button.innerText = 'Respondido ✓';
+      const card = button.closest('.question-card');
+
+if(card){
+  setTimeout(() => {
+    card.remove();
+  }, 800);
+}
       setTimeout(() => {
         loadQuestions();
       }, 1000);
@@ -939,15 +866,13 @@ window.togglePrevious = togglePrevious;
 loadQuestions();
 
 setInterval(() => {
-
   const typing =
     document.activeElement &&
     document.activeElement.tagName === "TEXTAREA";
 
-if(!typing && currentTab === "pending"){
-  loadQuestions(true);
-}
-
+  if(!typing && currentTab === "pending"){
+    loadQuestions(true);
+  }
 }, 60000);
 
 async function showTab(tab, element){
@@ -993,7 +918,13 @@ currentTab = tab;
         return;
       }
 
-      questions.forEach(item => {
+questions.reverse().forEach(item => {
+
+  if(renderedQuestions.has(String(item.id))){
+    return;
+  }
+
+  renderedQuestions.add(String(item.id));
 
         container.innerHTML += `
           <div class="question-card">
@@ -1045,13 +976,10 @@ currentTab = tab;
 
       });
 
-    }catch(error){
-
-      container.innerHTML = `
-        <div class="empty">
-          Erro ao carregar perguntas respondidas.
-        </div>
-      `;
+}catch(error){
+  console.log("Erro ao carregar perguntas:", error);
+  container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
+}
 
     }
 
@@ -1067,39 +995,6 @@ if(tab === 'stats'){
   try{
     const response = await fetch('/api/stats?period=day');
     const data = await response.json();
-
-const userBox = document.createElement("div");
-
-userBox.style.position = "fixed";
-userBox.style.top = "10px";
-userBox.style.right = "10px";
-userBox.style.zIndex = "9999";
-userBox.style.background = "#111";
-userBox.style.padding = "10px";
-userBox.style.borderRadius = "10px";
-userBox.style.color = "white";
-
-userBox.innerHTML = `
-  <div style="margin-bottom:8px;">
-    ${loggedUser.name}
-  </div>
-
-  <button id="logoutBtn">
-    Sair
-  </button>
-`;
-
-document.body.appendChild(userBox);
-
-document
-  .getElementById("logoutBtn")
-  .addEventListener("click", () => {
-
-    localStorage.removeItem("centralizachat_user");
-
-    window.location.href = "/login.html";
-});
-
 
     const users = Object.entries(data.by_user || {});
 
@@ -1158,6 +1053,22 @@ container.innerHTML = `
     <div class="answer-box">
 
       <div class="answer-title">
+        👤 Usuário logado
+      </div>
+
+      <div class="previous-answer" style="color:white;font-weight:bold;text-align:center;margin-bottom:12px;">
+        ${loggedUser.name}
+      </div>
+
+      <button class="send-btn" onclick="logout()">
+        Sair
+      </button>
+
+    </div>
+
+    <div class="answer-box">
+
+      <div class="answer-title">
         🔔 Notificações
       </div>
 
@@ -1197,8 +1108,6 @@ container.innerHTML = `
 
   }
 
-}
-
 </script>
 
 <script>
@@ -1209,5 +1118,5 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-  </body>
+</body>
 </html>
