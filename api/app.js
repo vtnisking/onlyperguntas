@@ -79,6 +79,42 @@ if (action === "stats") {
   });
 }
 
+if (action === "create-user") {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Método não permitido" });
+  }
+
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      error: "Nome, e-mail e senha são obrigatórios",
+    });
+  }
+
+  const { data, error } = await supabase
+    .from("users_app")
+    .insert({
+      company_id,
+      name,
+      email,
+      password,
+      role: role || "employee",
+      status: "active",
+    })
+    .select("id, name, email, role, status")
+    .single();
+
+  if (error) {
+    return res.status(500).json({ error });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: data,
+  });
+}
+
     return res.status(404).json({
       error: "Ação não encontrada",
     });
