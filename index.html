@@ -538,6 +538,9 @@ html, body{
 </a>
 
  <div id="loggedUserName"></div>
+ <button onclick="logout()" id="logoutBtn">
+  Sair
+</button>
 
       </header>
 
@@ -594,6 +597,13 @@ html, body{
     </div>
 
 <script>
+
+function logout(){
+  localStorage.removeItem("centralizachat_user");
+  window.location.href = "/login.html";
+}
+
+window.logout = logout;
 
 const loggedUser = JSON.parse(
   localStorage.getItem("centralizachat_user")
