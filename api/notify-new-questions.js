@@ -51,7 +51,7 @@ export default async function handler(req, res) {
           }
 
           const payload = JSON.stringify({
-            title: store.name || "Nova pergunta recebida",
+            title: question.item?.title || "Nova pergunta recebida",
             body: question.text || "Você recebeu uma nova pergunta.",
             url: "/",
           });
