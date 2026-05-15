@@ -8,6 +8,23 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY,
 );
 
+async function getProductTitle(itemId, accessToken) {
+  try {
+    const response = await axios.get(
+      `https://api.mercadolibre.com/items/${itemId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    return response.data.title || "Nova pergunta recebida";
+  } catch (error) {
+    return "Nova pergunta recebida";
+  }
+}
+
 export default async function handler(req, res) {
   try {
     const supabase = createClient(
@@ -50,11 +67,16 @@ export default async function handler(req, res) {
             continue;
           }
 
-          const payload = JSON.stringify({
-            title: question.item?.title || "Nova pergunta recebida",
-            body: question.text || "Você recebeu uma nova pergunta.",
-            url: "/",
-          });
+          const productTitle = await getProductTitle(
+            question.item_id,
+            store.access_token,
+          );
+
+const payload = JSON.stringify({
+  title: productTitle,
+  body: question.text || "Você recebeu uma nova pergunta.",
+  url: "/",
+});
 
           await Promise.allSettled(
             (subscriptions || []).map((item) =>
