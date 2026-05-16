@@ -1142,21 +1142,25 @@ container.innerHTML = `
 
     <div class="answer-box">
 
-<div class="answer-title">
-  👥 Usuários
-</div>
+      <div class="answer-title">
+        🏪 Integrações
+      </div>
 
-<input id="newUserName" placeholder="Nome do funcionário">
-<input id="newUserEmail" placeholder="E-mail do funcionário">
-<input id="newUserPassword" placeholder="Senha">
+      <div class="previous-answer">
+        Mercado Livre conectado
+      </div>
 
-<button class="send-btn" onclick="createUser()">
-  Criar usuário
-</button>
+    </div>
 
-<div id="usersList" class="previous-answer">
-  Carregando usuários...
-</div>
+    <div class="answer-box">
+
+      <div class="answer-title">
+        👥 Usuários
+      </div>
+
+      <div class="previous-answer">
+        Em breve será possível adicionar funcionários.
+      </div>
 
     </div>
 
@@ -1166,55 +1170,6 @@ container.innerHTML = `
   }
 
 }
-
-async function createUser(){
-
-  const name =
-    document.getElementById("newUserName").value.trim();
-
-  const email =
-    document.getElementById("newUserEmail").value.trim();
-
-  const password =
-    document.getElementById("newUserPassword").value.trim();
-
-  if(!name || !email || !password){
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-const response = await fetch(
-  `/api/questions?company_id=${loggedUser.company_id}`
-);
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        role: "employee"
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  if(!data.success){
-    alert("Erro ao criar usuário.");
-    return;
-  }
-
-  alert("Usuário criado com sucesso!");
-
-  document.getElementById("newUserName").value = "";
-  document.getElementById("newUserEmail").value = "";
-  document.getElementById("newUserPassword").value = "";
-
-}
-
-window.createUser = createUser;
 
 </script>
 
