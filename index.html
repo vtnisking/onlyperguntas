@@ -1183,9 +1183,9 @@ async function createUser(){
     return;
   }
 
-  const response = await fetch(
-    `/api/app?action=create-user&company_id=${loggedUser.company_id}`,
-    {
+const response = await fetch(
+  `/api/questions?company_id=${loggedUser.company_id}`
+);
       method: "POST",
       headers: {
         "Content-Type": "application/json"
