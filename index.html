@@ -1152,24 +1152,157 @@ container.innerHTML = `
 
     </div>
 
-    <div class="answer-box">
+<div class="answer-box">
 
-      <div class="answer-title">
-        👥 Usuários
-      </div>
-
-      <div class="previous-answer">
-        Em breve será possível adicionar funcionários.
-      </div>
-
-    </div>
-
+  <div class="answer-title">
+    👥 Usuários
   </div>
+
+  <input id="newUserName" placeholder="Nome do funcionário">
+
+  <input id="newUserEmail" placeholder="E-mail do funcionário">
+
+  <input id="newUserPassword" placeholder="Senha">
+
+  <button class="send-btn" onclick="createUser()">
+    Criar usuário
+  </button>
+
+  <div
+    id="usersList"
+    style="
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    "
+  >
+    Carregando usuários...
+  </div>
+
+</div>
 `;
 
   }
 
 }
+
+async function loadUsers(){
+
+  const box = document.getElementById("usersList");
+
+  if(!box){
+    return;
+  }
+
+  box.innerHTML = "Carregando usuários...";
+
+  try{
+
+    const response = await fetch(
+      `/api/app?action=users&company_id=${loggedUser.company_id}`
+    );
+
+    const data = await response.json();
+
+    const users = data.users || [];
+
+    if(users.length === 0){
+      box.innerHTML = "Nenhum usuário.";
+      return;
+    }
+
+    box.innerHTML = users.map(user => `
+
+      <div style="
+        background:rgba(255,255,255,.05);
+        padding:12px;
+        border-radius:12px;
+      ">
+
+        <div style="font-weight:bold;">
+          ${user.name}
+        </div>
+
+        <div style="font-size:13px;margin-top:4px;">
+          ${user.email}
+        </div>
+
+        <div style="margin-top:10px;">
+
+          <button
+            onclick="deleteUser('${user.id}')"
+            style="
+              background:red;
+              color:white;
+              border:none;
+              padding:8px 12px;
+              border-radius:8px;
+              cursor:pointer;
+            "
+          >
+            Excluir
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join('');
+
+  }catch(error){
+
+    box.innerHTML = "Erro ao carregar usuários.";
+
+  }
+
+}
+
+async function deleteUser(userId){
+
+  const confirmed = confirm(
+    "Deseja excluir este usuário?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+  const response = await fetch(
+    `/api/app?action=delete-user&company_id=${loggedUser.company_id}`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        user_id:userId
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if(!data.success){
+    alert("Erro ao excluir usuário.");
+    return;
+  }
+
+  loadUsers();
+
+}
+
+const originalShowTab = showTab;
+
+showTab = async function(tab, element){
+
+  await originalShowTab(tab, element);
+
+  if(tab === "settings"){
+    loadUsers();
+  }
+
+};
 
 </script>
 
