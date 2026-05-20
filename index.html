@@ -20,13 +20,15 @@
 
 html, body{
   width:100%;
+  min-height:100%;
   overflow-x:hidden;
 
 }
 
 body {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
+  min-height: 100vh;
   background: linear-gradient(
     180deg,
     #ffffff 0%,
@@ -528,6 +530,12 @@ body {
         .footer-menu{
           z-index:9999;
         }
+
+body::after{
+  content:"";
+  display:block;
+  height:260px;
+}
 
       }
     </style>
