@@ -1158,29 +1158,12 @@ container.innerHTML = `
     👥 Usuários
   </div>
 
-  <input id="newUserName" placeholder="Nome do funcionário">
-
-  <input id="newUserEmail" placeholder="E-mail do funcionário">
-
-  <input id="newUserPassword" placeholder="Senha">
-
-  <button class="send-btn" onclick="createUser()">
-    Criar usuário
+  <button class="send-btn" onclick="openUsersPanel()">
+    Gerenciar usuários
   </button>
 
-  <div
-    id="usersList"
-    style="
-      margin-top:20px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    "
-  >
-    Carregando usuários...
-  </div>
-
 </div>
+
 `;
 
   }
@@ -1288,21 +1271,63 @@ async function deleteUser(userId){
     return;
   }
 
-  loadUsers();
+loadUsers();
 
 }
+    
+function openUsersPanel()
 
-const originalShowTab = showTab;
+{
 
-showTab = async function(tab, element){
+  const container = document.getElementById('questions');
 
-  await originalShowTab(tab, element);
+  container.innerHTML = `
+    <div class="question-card">
 
-  if(tab === "settings"){
-    loadUsers();
-  }
+      <div class="product-title">
+        👥 Gerenciar usuários
+      </div>
 
-};
+      <div class="answer-box">
+
+        <div class="answer-title">
+          Criar novo usuário
+        </div>
+
+        <input id="newUserName" placeholder="Nome do funcionário">
+        <input id="newUserEmail" placeholder="E-mail do funcionário">
+        <input id="newUserPassword" placeholder="Senha">
+
+        <button class="send-btn" onclick="createUser()">
+          Criar usuário
+        </button>
+
+      </div>
+
+      <div class="answer-box">
+
+        <div class="answer-title">
+          Usuários cadastrados
+        </div>
+
+        <div id="usersList">
+          Carregando usuários...
+        </div>
+
+      </div>
+
+      <button class="send-btn" onclick="showTab('settings', document.querySelector('.footer-item:nth-child(4)'))">
+        Voltar
+      </button>
+
+    </div>
+  `;
+
+  loadUsers();
+}
+
+window.openUsersPanel = openUsersPanel;
+window.createUser = createUser;
 
 </script>
 
