@@ -1197,39 +1197,73 @@ async function loadUsers(){
 
     box.innerHTML = users.map(user => `
 
+    <div style="
+  background:linear-gradient(180deg,#1f1f1f,#141414);
+  border:1px solid rgba(255,255,255,.08);
+  padding:18px;
+  border-radius:18px;
+  box-shadow:0 8px 25px rgba(0,0,0,.25);
+">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+  ">
+
+    <div>
+
       <div style="
-        background:rgba(255,255,255,.05);
-        padding:12px;
-        border-radius:12px;
+        font-size:20px;
+        font-weight:800;
+        color:white;
+        margin-bottom:6px;
       ">
-
-        <div style="font-weight:bold;">
-          ${user.name}
-        </div>
-
-        <div style="font-size:13px;margin-top:4px;">
-          ${user.email}
-        </div>
-
-        <div style="margin-top:10px;">
-
-          <button
-            onclick="deleteUser('${user.id}')"
-            style="
-              background:red;
-              color:white;
-              border:none;
-              padding:8px 12px;
-              border-radius:8px;
-              cursor:pointer;
-            "
-          >
-            Excluir
-          </button>
-
-        </div>
-
+        ${user.name}
       </div>
+
+      <div style="
+        color:#cbd5e1;
+        font-size:14px;
+        margin-bottom:6px;
+      ">
+        ${user.email}
+      </div>
+
+      <div style="
+        display:inline-block;
+        padding:6px 10px;
+        border-radius:999px;
+        background:rgba(34,197,94,.15);
+        color:#22c55e;
+        font-size:12px;
+        font-weight:700;
+      ">
+        ${user.role}
+      </div>
+
+    </div>
+
+    <button
+      onclick="deleteUser('${user.id}')"
+      style="
+        background:linear-gradient(135deg,#ff0000,#7f0000);
+        color:white;
+        border:none;
+        padding:10px 14px;
+        border-radius:12px;
+        cursor:pointer;
+        font-weight:700;
+        box-shadow:0 8px 20px rgba(255,0,0,.25);
+      "
+    >
+      Excluir
+    </button>
+
+  </div>
+
+</div>
 
     `).join('');
 
