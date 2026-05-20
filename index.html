@@ -1240,7 +1240,9 @@ async function loadUsers(){
         font-size:12px;
         font-weight:700;
       ">
-        ${user.role}
+     ${user.role === 'owner'
+  ? 'Administrador'
+  : 'Funcionário'}
       </div>
 
     </div>
