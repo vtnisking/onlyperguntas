@@ -43,7 +43,7 @@ body {
 .container {
   max-width: 700px;
   margin: 0 auto;
-  padding: 22px 16px 150px;
+  padding: 22px 16px 120px;
 }
 
       header {
@@ -420,7 +420,7 @@ body {
 
       @media (max-width: 768px) {
         .container {
-          padding: 16px 12px 150px;
+          padding: 16px 12px 120px;
         }
 
         .logo {
@@ -527,15 +527,26 @@ body {
           margin: 14px auto 0;
         }
 
-        .footer-menu{
-          z-index:9999;
+        body{
+          position: relative;
         }
 
-      #questions{
-        min-height:calc(100vh - 220px);
-      }
+        #questions{
+          display:block;
+          min-height:auto;
+          padding-bottom:40px;
+        }
 
-/* TESTE */
+        .question-card{
+          overflow:visible;
+        }
+
+        .footer-menu{
+          position:fixed;
+          bottom:0;
+          left:0;
+          z-index:9999;
+        }
 
       }
     </style>
