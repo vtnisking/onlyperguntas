@@ -132,28 +132,34 @@ export default async function handler(req, res) {
           logsMap[String(log.question_id)] = log;
         });
 
-        for (const question of questions) {
-          const customerData = await getCustomerData(
-            question.from?.id,
-            store.access_token,
-          );
-          
-          const log = logsMap[String(question.id)];
+const enrichedQuestions = await Promise.all(
+  questions.map(async (question) => {
+    const customerData = await getCustomerData(
+      question.from?.id,
+      store.access_token,
+    );
 
-      allAnswered.push({
-        ...question,
-        store_name: store.name,
-        store_id: store.id,
-        client_name: customerData.name,
-        client_nickname: customerData.nickname,
-        answer: {
-          ...question.answer,
-          user_name: log?.user_name || null,
-          user_email: log?.user_email || null,
-          date_created: log?.created_at || question.answer?.date_created,
-        },
-      });
-        }
+    const log = logsMap[String(question.id)];
+
+    return {
+      ...question,
+      store_name: store.name,
+      store_id: store.id,
+      client_name: customerData.name,
+      client_nickname: customerData.nickname,
+
+      answer: {
+        ...question.answer,
+        user_name: log?.user_name || null,
+        user_email: log?.user_email || null,
+        date_created: log?.created_at || question.answer?.date_created,
+      },
+    };
+  }),
+);
+
+allAnswered.push(...enrichedQuestions);
+
       } catch (storeError) {
         console.log(
           `Erro na loja ${store.name}`,
