@@ -1208,6 +1208,57 @@ async function loadStats(){
 return;
 }
 
+if(tab === 'stats'){
+
+container.innerHTML = `
+
+<div class="question-card">
+
+  <div class="product-title">
+    📊 Estatísticas
+  </div>
+
+  <div class="answer-box" style="
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:18px;
+  ">
+
+    <select id="statsPeriod" style="
+      padding:14px;
+      border-radius:16px;
+      background:#1f1f1f;
+      color:white;
+      border:1px solid rgba(255,255,255,.08);
+      font-size:16px;
+    ">
+
+      <option value="day">Hoje</option>
+      <option value="7days">Últimos 7 dias</option>
+      <option value="30days">Últimos 30 dias</option>
+      <option value="month">Este mês</option>
+      <option value="year">Este ano</option>
+
+    </select>
+
+    <button class="send-btn" onclick="loadStats()">
+      Atualizar estatísticas
+    </button>
+
+  </div>
+
+  <div id="statsContent"></div>
+
+</div>
+
+`;
+
+await loadStats();
+
+return;
+}
+
 if(tab === 'settings'){
 
 container.innerHTML = `
