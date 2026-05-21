@@ -749,11 +749,20 @@ firstLoadDone = true;
 
     container.innerHTML = '';
 
-    if(questions.length === 0){
-      container.innerHTML = '<div class="empty">Nenhuma pergunta pendente no momento.</div>';
-      return;
-    }
+ if(questions.length === 0){
+  container.innerHTML = `
+    <div class="empty">
+      Nenhuma pergunta pendente no momento.
+    </div>
 
+    <div id="monthlyRanking">
+      Carregando ranking...
+    </div>
+  `;
+
+  loadMonthlyRanking();
+  return;
+}
     questions.forEach(item => {
       container.innerHTML += `
         <div class="question-card">
@@ -1616,6 +1625,55 @@ window.openCreateUserPanel = openCreateUserPanel;
 
 window.openUsersPanel = openUsersPanel;
 window.createUser = createUser;
+
+async function loadMonthlyRanking(){
+  const box = document.getElementById("monthlyRanking");
+
+  if(!box) return;
+
+  const response = await fetch(
+    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
+  );
+
+  const data = await response.json();
+
+  const ranking = Object.entries(data.by_user || {})
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,3);
+
+  if(ranking.length === 0){
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="question-card">
+      <div class="product-title">
+        🏆 Top funcionários do mês
+      </div>
+
+      ${ranking.map(([name,total], index) => `
+        <div style="
+          margin-top:14px;
+          padding:18px;
+          border-radius:22px;
+          background:${index === 0 ? 'linear-gradient(135deg,#7f0000,#ff0000)' : 'rgba(255,255,255,.05)'};
+          border:${index === 0 ? '1px solid #facc15' : '1px solid rgba(255,255,255,.08)'};
+          box-shadow:${index === 0 ? '0 0 25px rgba(255,0,0,.45)' : 'none'};
+        ">
+          <div style="font-size:18px;font-weight:900;">
+            ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} ${name}
+          </div>
+
+          <div style="margin-top:8px;font-size:14px;">
+            ${total} resposta(s) neste mês
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 
 </script>
 
