@@ -44,6 +44,14 @@ export default async function handler(req, res) {
         startDate.setHours(0, 0, 0, 0);
       }
 
+      if (period === "7days") {
+        startDate.setDate(now.getDate() - 7);
+      }
+
+      if (period === "30days") {
+        startDate.setDate(now.getDate() - 30);
+      }
+
       if (period === "month") {
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
       }
