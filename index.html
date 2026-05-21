@@ -1106,9 +1106,20 @@ async function loadStats(){
   const period =
     document.getElementById("statsPeriod")?.value || "day";
 
-  const response = await fetch(
-    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`
-  );
+    const start =
+  document.getElementById("statsStartDate")?.value;
+
+const end =
+  document.getElementById("statsEndDate")?.value;
+
+let url =
+  `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
+
+if(period === "custom"){
+  url += `&start=${start}&end=${end}`;
+}
+
+  const response = await fetch(url);
 
   const data = await response.json();
 
@@ -1302,6 +1313,17 @@ container.innerHTML = `
 `;
 
 await loadStats();
+
+document
+  .getElementById("statsPeriod")
+  ?.addEventListener("change", function(){
+
+    document.getElementById("customDateBox").style.display =
+      this.value === "custom"
+        ? "flex"
+        : "none";
+
+});
 
 return;
 }
