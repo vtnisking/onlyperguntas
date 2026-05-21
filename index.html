@@ -1430,6 +1430,45 @@ function openCreateUserPanel(){
   `;
 }
 
+async function createUser(){
+  const name = document.getElementById("newUserName").value.trim();
+  const email = document.getElementById("newUserEmail").value.trim();
+  const password = document.getElementById("newUserPassword").value.trim();
+
+  if(!name || !email || !password){
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  const response = await fetch(
+    `/api/app?action=create-user&company_id=${loggedUser.company_id}`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        name,
+        email,
+        password,
+        role:"employee"
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if(!data.success){
+    alert("Erro ao criar usuário.");
+    return;
+  }
+
+  alert("Usuário criado com sucesso!");
+  openUsersPanel();
+}
+
+window.createUser = createUser;
+
 window.openCreateUserPanel = openCreateUserPanel;
 
 window.openUsersPanel = openUsersPanel;
