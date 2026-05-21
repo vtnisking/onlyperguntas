@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
         try {
           response = await axios.get(
-            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=100&sort_fields=date_created&sort_types=DESC`,
+            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=10&sort_fields=date_created&sort_types=DESC`,
             {
               headers: {
                 Authorization: `Bearer ${store.access_token}`,
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
             store = await refreshStoreToken(store, supabase);
 
             response = await axios.get(
-              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=100`,
+              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=10`,
               {
                 headers: {
                   Authorization: `Bearer ${store.access_token}`,
