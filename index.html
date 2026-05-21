@@ -1265,6 +1265,30 @@ container.innerHTML = `
 
     </select>
 
+    <div id="customDateBox" style="
+  display:none;
+  gap:10px;
+  flex-direction:column;
+">
+
+  <input id="statsStartDate" type="date" style="
+    padding:14px;
+    border-radius:16px;
+    background:#1f1f1f;
+    color:white;
+    border:1px solid rgba(255,255,255,.08);
+  ">
+
+  <input id="statsEndDate" type="date" style="
+    padding:14px;
+    border-radius:16px;
+    background:#1f1f1f;
+    color:white;
+    border:1px solid rgba(255,255,255,.08);
+  ">
+
+</div>
+
     <button class="send-btn" onclick="loadStats()">
       Atualizar estatísticas
     </button>
