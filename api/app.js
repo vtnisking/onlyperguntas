@@ -36,7 +36,8 @@ export default async function handler(req, res) {
 
     if (action === "stats") {
       const period = req.query.period || "day";
-
+      const start = req.query.start;
+      const end = req.query.end;
       const now = new Date();
       let startDate = new Date();
 
@@ -65,7 +66,15 @@ export default async function handler(req, res) {
         .select("*")
         .eq("company_id", company_id)
         .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString())
         .order("created_at", { ascending: false });
+
+  let endDate = new Date();
+
+  if (period === "custom" && start && end) {
+    startDate = new Date(start + "T00:00:00");
+    endDate = new Date(end + "T23:59:59");
+  }
 
       if (error) {
         return res.status(500).json({ error });
