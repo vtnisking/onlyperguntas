@@ -1458,11 +1458,10 @@ async function createUser(){
 
   const data = await response.json();
 
-  if(!data.success){
-    alert("Erro ao criar usuário.");
-    return;
-  }
-
+if(!data.success){
+  alert(JSON.stringify(data));
+  return;
+}
   alert("Usuário criado com sucesso!");
   openUsersPanel();
 }
