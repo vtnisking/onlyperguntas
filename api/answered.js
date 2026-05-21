@@ -125,13 +125,25 @@ export default async function handler(req, res) {
             store.access_token,
           );
 
-          allAnswered.push({
-            ...question,
-            store_name: store.name,
-            store_id: store.id,
-            client_name: customerData.name,
-            client_nickname: customerData.nickname,
-          });
+      const { data: log } = await supabase
+        .from("answer_logs")
+        .select("user_name, user_email, created_at")
+        .eq("question_id", String(question.id))
+        .maybeSingle();
+
+      allAnswered.push({
+        ...question,
+        store_name: store.name,
+        store_id: store.id,
+        client_name: customerData.name,
+        client_nickname: customerData.nickname,
+        answer: {
+          ...question.answer,
+          user_name: log?.user_name || null,
+          user_email: log?.user_email || null,
+          date_created: log?.created_at || question.answer?.date_created,
+        },
+      });
         }
       } catch (storeError) {
         console.log(
