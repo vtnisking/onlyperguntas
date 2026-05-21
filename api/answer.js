@@ -80,14 +80,15 @@ export default async function handler(req, res) {
     try {
       response = await sendMercadoLivreAnswer(store, question_id, text);
       await supabase.from("answer_logs").insert({
-        question_id,
-        store_id,
-        store_name: store.name,
-        user_id: "admin",
-        user_email: "admin@centralizachat.com",
-        answer_text: text,
-        user_name: req.body.user_name,
-        company_id: store.company_id,
+  question_id,
+  store_id,
+  store_name: store.name,
+  company_id: store.company_id,
+  user_id: req.body.user_id,
+  user_name: req.body.user_name,
+  user_email: req.body.user_email,
+  answer_text: text,
+
       });
     } catch (tokenError) {
       const errorData = tokenError.response?.data;
@@ -100,15 +101,17 @@ export default async function handler(req, res) {
         const refreshedStore = await refreshStoreToken(store, supabase);
         response = await sendMercadoLivreAnswer(refreshedStore, question_id, text);
         await supabase.from("answer_logs").insert({
-          question_id,
-          store_id,
-          store_name: store.name,
-          user_id: "admin",
-          user_email: "admin@centralizachat.com",
-          answer_text: text,
-          user_name: req.body.user_name,
-          company_id: store.company_id,
-        });
+  question_id,
+  store_id,
+  store_name: store.name,
+  company_id: store.company_id,
+  user_id: req.body.user_id,
+  user_name: req.body.user_name,
+  user_email: req.body.user_email,
+  answer_text: text,
+});
+
+
       } else {
         throw tokenError;
       }
