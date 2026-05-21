@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       const byUser = {};
 
       data.forEach((log) => {
-        const user = log.user_email || "Sem usuário";
+        const user = log.user_name || log.user_email || "Sem usuário";
         byUser[user] = (byUser[user] || 0) + 1;
       });
 
