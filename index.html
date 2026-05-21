@@ -43,7 +43,7 @@ body {
 .container {
   max-width: 700px;
   margin: 0 auto;
-  padding: 22px 16px 220px;
+  padding: 22px 16px 140px;
 }
 
       header {
@@ -420,7 +420,7 @@ body {
 
       @media (max-width: 768px) {
         .container {
-          padding: 16px 12px 220px;
+          padding: 16px 12px 140px;
         }
 
         .logo {
@@ -541,12 +541,25 @@ body {
           overflow:visible;
         }
 
-        .footer-menu{
-          position:fixed;
-          bottom:0;
-          left:0;
-          z-index:9999;
-        }
+    .footer-menu{
+      position:fixed;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:90px;
+
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+
+      background:#020617;
+
+      border-top:1px solid rgba(255,255,255,.08);
+
+      z-index:999999;
+
+      backdrop-filter:blur(12px);
+    }
 
       }
     </style>
