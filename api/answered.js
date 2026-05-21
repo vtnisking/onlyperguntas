@@ -119,17 +119,26 @@ export default async function handler(req, res) {
 
         const questions = response.data.questions || [];
 
+        const questionIds = questions.map((q) => String(q.id));
+
+        const { data: logs } = await supabase
+          .from("answer_logs")
+          .select("question_id, user_name, user_email, created_at")
+          .in("question_id", questionIds);
+
+        const logsMap = {};
+
+        logs?.forEach((log) => {
+          logsMap[String(log.question_id)] = log;
+        });
+
         for (const question of questions) {
           const customerData = await getCustomerData(
             question.from?.id,
             store.access_token,
           );
-
-      const { data: log } = await supabase
-        .from("answer_logs")
-        .select("user_name, user_email, created_at")
-        .eq("question_id", String(question.id))
-        .maybeSingle();
+          
+          const log = logsMap[String(question.id)];
 
       allAnswered.push({
         ...question,
