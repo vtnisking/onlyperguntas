@@ -87,6 +87,7 @@ export default async function handler(req, res) {
         user_email: "admin@centralizachat.com",
         answer_text: text,
         user_name: req.body.user_name,
+        company_id: store.company_id,
       });
     } catch (tokenError) {
       const errorData = tokenError.response?.data;
@@ -106,6 +107,7 @@ export default async function handler(req, res) {
           user_email: "admin@centralizachat.com",
           answer_text: text,
           user_name: req.body.user_name,
+          company_id: store.company_id,
         });
       } else {
         throw tokenError;
