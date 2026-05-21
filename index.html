@@ -828,10 +828,13 @@ async function sendAnswer(questionId, storeId, button){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        question_id: questionId,
-        store_id: storeId,
-        text
-      })
+      question_id: questionId,
+      store_id: storeId,
+      text,
+      user_id: loggedUser.id,
+      user_name: loggedUser.name,
+      user_email: loggedUser.email
+    })
     });
 
     const data = await response.json();
@@ -1046,14 +1049,19 @@ currentTab = tab;
 
             </div>
 
-            <div class="meta-bottom">
-              <span>
-                🕒 Respondida às
-                ${formatDate(item.answer?.date_created)}
-              </span>
-            </div>
+<div class="meta-bottom">
 
-          </div>
+  <span>
+    🕒 Respondida às
+    ${formatDate(item.answer?.date_created)}
+  </span>
+
+  <span>
+    👤 Respondida por:
+    ${item.answer?.user_name || item.answer?.user_email || 'Usuário'}
+  </span>
+
+</div>
         `;
 
       });
