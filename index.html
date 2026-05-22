@@ -1115,8 +1115,19 @@ const end =
 let url =
   `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
 
+function formatDateToApi(value){
+  if(!value) return "";
+
+  if(value.includes("/")){
+    const [day, month, year] = value.split("/");
+    return `${year}-${month}-${day}`;
+  }
+
+  return value;
+}
+
 if(period === "custom"){
-  url += `&start=${start}&end=${end}`;
+  url += `&start=${formatDateToApi(start)}&end=${formatDateToApi(end)}`;
 }
 
   const response = await fetch(url);
