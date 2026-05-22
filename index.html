@@ -1130,6 +1130,8 @@ if(period === "custom"){
   url += `&start=${formatDateToApi(start)}&end=${formatDateToApi(end)}`;
 }
 
+alert(url);
+
   const response = await fetch(url);
 
   const data = await response.json();
