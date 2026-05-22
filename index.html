@@ -1130,7 +1130,7 @@ if(period === "custom"){
   url += `&start=${formatDateToApi(start)}&end=${formatDateToApi(end)}`;
 }
 
-alert(url);
+window.loadStats = loadStats;
 
   const response = await fetch(url);
 
@@ -1313,7 +1313,7 @@ container.innerHTML = `
 
 </div>
 
-    <button class="send-btn" onclick="loadStats()">
+    <button class="send-btn" onclick="window.loadStats()">
       Atualizar estatísticas
     </button>
 
