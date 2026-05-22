@@ -439,28 +439,19 @@ body {
   cursor:pointer;
 }
 
-      .footer-item.active {
+  .footer-item.active {
         color: #ff0000;
       }
 
-      .footer-item.active::before{
-      content:"";
-      position:absolute;
-      top:-9px;
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#ff2d2d;
-      box-shadow:0 0 14px #ff2d2d;
-    }
-
-    .footer-item.active::after{
+.footer-item.active::after{
   content:"";
   position:absolute;
-  top:-15px;
+  top:-12px;
   width:80%;
   height:2px;
+
   border-radius:999px;
+
   background:linear-gradient(
     90deg,
     transparent,
@@ -468,7 +459,6 @@ body {
     transparent
   );
 }
-
       .footer-icon {
   font-size:27px;
   line-height:1;
@@ -610,7 +600,7 @@ body {
         }
 
     .footer-menu{
-      
+
     position:fixed;
       bottom:14px;
 
