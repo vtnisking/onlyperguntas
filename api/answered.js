@@ -29,6 +29,46 @@ async function refreshStoreToken(store, supabase) {
   };
 }
 
+async function getProductData(itemId, accessToken) {
+  try {
+    const response = await axios.get(
+      `https://api.mercadolibre.com/items/${itemId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    const item = response.data;
+
+    const sku =
+      item.seller_custom_field ||
+      item.attributes?.find((attr) => attr.id === "SELLER_SKU")?.value_name ||
+      item.attributes?.find((attr) => attr.id === "SKU")?.value_name ||
+      item.variations?.[0]?.seller_custom_field ||
+      item.variations?.[0]?.attributes?.find((attr) => attr.id === "SELLER_SKU")
+        ?.value_name ||
+      null;
+
+    return {
+      title: item.title || itemId,
+      sku,
+      thumbnail: item.thumbnail || null,
+      permalink: item.permalink || null,
+      available_quantity: item.available_quantity || 0,
+      price: item.price || null,
+    };
+  } catch (error) {
+    return {
+      title: itemId,
+      sku: null,
+      thumbnail: null,
+    };
+  }
+}
+
+
 async function getCustomerData(userId, accessToken) {
   try {
     if (!userId) {
@@ -37,7 +77,7 @@ async function getCustomerData(userId, accessToken) {
         nickname: null,
       };
     }
-
+    
     const response = await axios.get(
       `https://api.mercadolibre.com/users/${userId}`,
       {
@@ -139,6 +179,8 @@ const enrichedQuestions = await Promise.all(
       store.access_token,
     );
 
+const productData = await getProductData(question.item_id, store.access_token);
+    
     const log = logsMap[String(question.id)];
 
     return {
@@ -147,6 +189,12 @@ const enrichedQuestions = await Promise.all(
       store_id: store.id,
       client_name: customerData.name,
       client_nickname: customerData.nickname,
+      product_title: productData.title,
+      product_sku: productData.sku,
+      product_thumbnail: productData.thumbnail,
+      product_link: productData.permalink,
+      product_quantity: productData.available_quantity,
+      product_price: productData.price,
 
       answer: {
         ...question.answer,
