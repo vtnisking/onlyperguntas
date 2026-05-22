@@ -567,6 +567,8 @@ body {
 
   <body>
 
+    <audio id="notificationSound" src="/notification.mp3" preload="auto"></audio>
+
 <header>
   <div class="logo-area">
     <a href="/" class="logo-full">
@@ -737,9 +739,16 @@ const response = await fetch(
 if(firstLoadDone){
   const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
 
+if(hasNewQuestion){
+
   if(typeof notifyNewQuestion === "function"){
-  notifyNewQuestion();
+    notifyNewQuestion();
+  }
+
+  playNotificationSound();
+
 }
+
 }
 
 knownQuestionIds = new Set(currentIds);
@@ -1894,6 +1903,20 @@ window.openCalendarBox = openCalendarBox;
 window.selectCalendarDate = selectCalendarDate;
 window.changeCalendarMonth = changeCalendarMonth;
 window.applyCalendarPeriod = applyCalendarPeriod;
+
+function playNotificationSound(){
+  const audio = document.getElementById("notificationSound");
+
+  if(!audio){
+    return;
+  }
+
+  audio.currentTime = 0;
+
+  audio.play().catch(() => {
+    console.log("Som bloqueado até o usuário interagir com o app.");
+  });
+}
 
 </script>
 
