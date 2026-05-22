@@ -1871,10 +1871,14 @@ function changeCalendarMonth(value){
 }
 
 function applyCalendarPeriod(){
-  if(!calendarStart || !calendarEnd){
-    alert("Selecione a data inicial e final.");
-    return;
-  }
+ if(!calendarStart){
+  alert("Selecione uma data.");
+  return;
+}
+
+if(!calendarEnd){
+  calendarEnd = calendarStart;
+}
 
   document.getElementById("statsPeriod").value = "custom";
 
