@@ -391,9 +391,10 @@ body {
       .footer-menu {
         position:fixed;
         bottom:14px;
-        left:50%;
-        transform:translateX(-50%);
-        width:94%;
+        left:12px;
+        transform:none;
+        width:auto;
+        right:12px;
         max-width:520px;
         height:96px;
 
@@ -609,23 +610,28 @@ body {
         }
 
     .footer-menu{
-      position:fixed;
-      bottom:0;
-      left:0;
-      width:100%;
-      height:90px;
+      
+    position:fixed;
+      bottom:14px;
+
+      left:12px;
+      right:12px;
+
+      width:auto;
+
+      height:96px;
 
       display:flex;
-      justify-content:space-around;
       align-items:center;
+      justify-content:space-around;
 
-      background:#020617;
+      background:rgba(8,10,18,.88);
+      backdrop-filter:blur(18px);
 
-      border-top:1px solid rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:28px;
 
-      z-index:999999;
-
-      backdrop-filter:blur(12px);
+      z-index:99999;
     }
 
       }
