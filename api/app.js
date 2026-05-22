@@ -40,6 +40,7 @@ export default async function handler(req, res) {
       const end = req.query.end;
       const now = new Date();
       let startDate = new Date();
+      let endDate = new Date();
 
       if (period === "day") {
         startDate.setHours(0, 0, 0, 0);
