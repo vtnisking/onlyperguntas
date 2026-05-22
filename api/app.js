@@ -86,11 +86,21 @@ export default async function handler(req, res) {
         byUser[user] = (byUser[user] || 0) + 1;
       });
 
+      const { data: allUsers } = await supabase
+        .from("users_app")
+        .select("name, email")
+        .eq("company_id", company_id);
+
       return res.status(200).json({
         success: true,
         period,
         total: data.length,
-        by_user: byUser,
+        by_user: Object.fromEntries(
+          (allUsers || []).map((user) => [
+            user.name || user.email,
+            byUser[user.name] || byUser[user.email] || 0,
+          ]),
+        ),
         logs: data,
       });
     }
