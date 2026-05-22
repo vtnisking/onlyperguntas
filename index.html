@@ -567,7 +567,7 @@ body {
 
   <body>
 
-    <audio id="notificationSound" src="/notification.mp3" preload="auto"></audio>
+    <audio id="notificationSound" src="./notification.mp3" preload="auto"></audio>
 
 <header>
   <div class="logo-area">
@@ -991,7 +991,7 @@ setInterval(() => {
     document.activeElement &&
     document.activeElement.tagName === "TEXTAREA";
 
-if(!typing && currentTab === "pending"){
+if(!typing){
   loadQuestions(true);
 }
 
@@ -1903,6 +1903,37 @@ window.openCalendarBox = openCalendarBox;
 window.selectCalendarDate = selectCalendarDate;
 window.changeCalendarMonth = changeCalendarMonth;
 window.applyCalendarPeriod = applyCalendarPeriod;
+
+let audioUnlocked = false;
+
+document.addEventListener("click", () => {
+
+  if(audioUnlocked){
+    return;
+  }
+
+  const audio =
+    document.getElementById("notificationSound");
+
+  if(audio){
+
+    audio.volume = 0;
+
+    audio.play()
+      .then(() => {
+
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1;
+
+        audioUnlocked = true;
+
+      })
+      .catch(() => {});
+
+  }
+
+}, { once:true });
 
 function playNotificationSound(){
   const audio = document.getElementById("notificationSound");
