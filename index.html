@@ -1307,15 +1307,15 @@ container.innerHTML = `
       gap:10px;
     ">
 
-      <input id="statsStartDate" type="date">
+    <button class="send-btn" onclick="openCalendarBox()">
+  📅 Selecionar período
+</button>
 
-      <input id="statsEndDate" type="date">
+<div id="selectedPeriodText" style="text-align:center;font-weight:bold;">
+  Nenhum período selecionado
+</div>
 
-      <button class="send-btn" onclick="applyCalendarPeriod()">
-        Aplicar período
-      </button>
-
-    </div>
+<div id="calendarBox" style="display:none;"></div>
 
     <button class="send-btn" onclick="window.loadStats()">
       Atualizar estatísticas
@@ -1756,7 +1756,139 @@ function applyCalendarPeriod(){
   loadStats();
 }
 
+
+let calendarStart = null;
+let calendarEnd = null;
+let calendarMonth = new Date();
+
+function openCalendarBox(){
+  const box = document.getElementById("calendarBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarBox");
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  const monthName = calendarMonth.toLocaleDateString("pt-BR", {
+    month: "long"
+  });
+
+  let days = "";
+
+  for(let i = 0; i < firstDay; i++){
+    days += `<div></div>`;
+  }
+
+  for(let day = 1; day <= lastDate; day++){
+    const date = `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+    const active =
+      date === calendarStart || date === calendarEnd
+        ? "background:#2563eb;color:white;border-radius:50%;"
+        : "";
+
+    days += `
+      <div onclick="selectCalendarDate('${date}')" style="
+        padding:10px;
+        text-align:center;
+        cursor:pointer;
+        font-weight:bold;
+        ${active}
+      ">
+        ${day}
+      </div>
+    `;
+  }
+
+  box.innerHTML = `
+    <div style="
+      background:white;
+      color:black;
+      border-radius:18px;
+      padding:18px;
+      margin-top:14px;
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        font-weight:bold;
+        font-size:18px;
+        margin-bottom:18px;
+      ">
+        <button onclick="changeCalendarMonth(-1)">‹</button>
+        <span>${monthName}</span>
+        <button onclick="changeCalendarMonth(1)">›</button>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(7,1fr);
+        gap:8px;
+        text-align:center;
+        margin-bottom:8px;
+      ">
+        <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(7,1fr);
+        gap:8px;
+      ">
+        ${days}
+      </div>
+
+      <button class="send-btn" onclick="applyCalendarPeriod()">
+        Aplicar período
+      </button>
+
+    </div>
+  `;
+}
+
+function selectCalendarDate(date){
+  if(!calendarStart || calendarEnd){
+    calendarStart = date;
+    calendarEnd = null;
+  }else{
+    calendarEnd = date;
+  }
+
+  renderCalendar();
+}
+
+function changeCalendarMonth(value){
+  calendarMonth.setMonth(calendarMonth.getMonth() + value);
+  renderCalendar();
+}
+
+function applyCalendarPeriod(){
+  if(!calendarStart || !calendarEnd){
+    alert("Selecione a data inicial e final.");
+    return;
+  }
+
+  document.getElementById("statsPeriod").value = "custom";
+
+  document.getElementById("selectedPeriodText").innerText =
+    `${calendarStart} até ${calendarEnd}`;
+
+  document.getElementById("calendarBox").style.display = "none";
+
+  loadStats();
+}
+
 window.openCalendarBox = openCalendarBox;
+window.selectCalendarDate = selectCalendarDate;
+window.changeCalendarMonth = changeCalendarMonth;
 window.applyCalendarPeriod = applyCalendarPeriod;
 
 </script>
