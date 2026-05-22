@@ -62,8 +62,6 @@ export default async function handler(req, res) {
         startDate = new Date(now.getFullYear(), 0, 1);
       }
 
-      let endDate = new Date();
-
       if (period === "custom" && start && end) {
         startDate = new Date(start + "T00:00:00");
         endDate = new Date(end + "T23:59:59");
