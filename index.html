@@ -1056,6 +1056,32 @@ currentTab = tab;
               </div>
             </div>
 
+<div class="product">
+  ${item.product_thumbnail ? `
+    <a href="${item.product_link || '#'}" target="_blank">
+      <img src="${item.product_thumbnail}">
+    </a>
+  ` : ''}
+
+  <div class="product-info">
+    <div class="meta">
+      <span class="sku">SKU ${item.product_sku || ''}</span>
+      <span class="${item.product_quantity > 5 ? 'stock' : 'stock-low'}">
+        ${item.product_quantity || 0} Unidade Disponível
+      </span>
+    </div>
+
+    <div class="product-title">
+      ${item.product_title || item.item_id}
+    </div>
+
+    ${item.product_price ? `
+      <div class="price">${formatPrice(item.product_price)}</div>
+    ` : ''}
+  </div>
+</div>
+
+
             <div class="client">
               <div class="client-icon">👤</div>
               ${
