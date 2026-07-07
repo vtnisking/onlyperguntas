@@ -1790,48 +1790,60 @@ function openDetail(item){
   content.style.display = 'block';
 
   content.innerHTML = `
-    <div class="detail-header">
-      <div class="status status-pending">● Pendente</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+      <div style="font-size:12px;color:var(--text3);font-weight:500;">Pergunta pendente</div>
       <button class="detail-close" onclick="closeDetail()">✕</button>
     </div>
 
-    ${item.product_thumbnail
-      ? `<a href="${item.product_link||'#'}" target="_blank"><img class="detail-product-img" src="${item.product_thumbnail}" alt="produto"></a>`
-      : `<div class="detail-product-img-placeholder">📦</div>`}
-
-    <div class="detail-section">
-      <div class="detail-label">Produto</div>
-      <div class="detail-value">${item.product_title||item.item_id}</div>
+    <!-- Produto -->
+    <div style="
+      display:flex;align-items:center;gap:12px;
+      padding:14px 0;
+      border-bottom:1px solid var(--border);
+      margin-bottom:14px;
+    ">
+      ${item.product_thumbnail ? `
+        <img src="${item.product_thumbnail}" style="
+          width:48px;height:48px;border-radius:4px;
+          object-fit:cover;border:1px solid var(--border);flex-shrink:0;
+        ">
+      ` : ''}
+      <div style="flex:1;min-width:0;">
+        ${item.product_sku ? `<div style="font-size:12px;color:var(--text3);margin-bottom:2px;">SKU ${item.product_sku}</div>` : ''}
+        <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          ${item.product_title||item.item_id}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);">${item.product_quantity||0} unidades</div>
+        ${item.product_price ? `<div style="font-size:13px;font-weight:600;color:var(--text);">${formatPrice(item.product_price)}</div>` : ''}
+      </div>
     </div>
 
-    <div class="detail-meta">
-      ${item.product_sku ? `<span class="detail-tag sku">SKU ${item.product_sku}</span>` : ''}
-      <span class="detail-tag ${item.product_quantity>5?'stock':'stock-low'}">${item.product_quantity||0} un.</span>
-      ${item.product_price ? `<span class="detail-tag" style="color:var(--green);background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);padding:4px 10px;border-radius:999px;">${formatPrice(item.product_price)}</span>` : ''}
+    <!-- Cliente e loja -->
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+      <span style="font-weight:600;color:var(--text2);">${clientName(item)}</span>
+      <span>|</span>
+      <span>${item.store_name}</span>
     </div>
 
-    <div class="detail-divider"></div>
-
-    <div class="detail-section">
-      <div class="detail-label">Cliente</div>
-      <div class="detail-value">👤 ${clientName(item)}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-label">Pergunta</div>
-      <div class="detail-bubble">${item.text}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-label" style="margin-bottom:4px;">🕒 ${formatDate(item.date_created)} · ⏳ ${timeAgo(item.date_created)}</div>
+    <!-- Ponto azul + pergunta -->
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;">
+      <span style="
+        width:9px;height:9px;border-radius:50%;
+        background:#3483fa;flex-shrink:0;margin-top:5px;
+      "></span>
+      <div>
+        <span style="font-size:15px;font-weight:700;color:var(--text);">${item.text}</span>
+        <span style="font-size:12px;color:var(--text3);margin-left:8px;">Há ${timeAgo(item.date_created)}</span>
+      </div>
     </div>
 
     ${(item.previous_questions||[]).length > 0 ? `
-      <div class="detail-divider"></div>
       <button class="previous-toggle" onclick="togglePrevious('detail-prev-${item.id}')">
         🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
       </button>
-      <div id="detail-prev-${item.id}" style="display:none;">
+      <div id="detail-prev-${item.id}" style="display:none;margin-bottom:12px;">
         ${item.previous_questions.map(q => `
           <div class="previous" style="margin-bottom:8px;">
             <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
@@ -1842,25 +1854,54 @@ function openDetail(item){
       </div>
     ` : ''}
 
-    <div class="detail-divider"></div>
-
-    <div class="detail-label">Sua resposta</div>
-    <textarea
-      class="detail-textarea"
-      id="detail-answer-${item.id}"
-      placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
-      maxlength="2000"
-      oninput="updateCounter('detail-${item.id}', this.value.length)"
-    ></textarea>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;margin-bottom:10px;">
-      <div style="font-size:12px;color:var(--text3);">ℹ️ Digite # para respostas rápidas.</div>
-      <div style="font-size:12px;color:var(--text3);" id="counter-detail-${item.id}">0 / 2000</div>
+    <!-- Botão respostas rápidas -->
+    <div style="margin-bottom:10px;">
+      <button style="
+        display:inline-flex;align-items:center;gap:6px;
+        padding:6px 14px;border-radius:4px;
+        border:1px solid #3483fa;background:transparent;
+        color:#3483fa;font-size:13px;font-weight:600;
+        font-family:'Inter',Arial,sans-serif;cursor:pointer;
+      " onclick="document.getElementById('detail-answer-${item.id}').value='# ';document.getElementById('detail-answer-${item.id}').focus();">
+        # Respostas rápidas
+      </button>
     </div>
-    <button class="detail-send-btn" onclick="sendAnswer('${item.id}','${item.store_id}',this)">
-      Responder
-    </button>
+
+    <!-- Textarea + botão lado a lado -->
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <div style="flex:1;">
+        <textarea
+          class="detail-textarea"
+          id="detail-answer-${item.id}"
+          placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+          maxlength="2000"
+          oninput="updateCounter('detail-${item.id}', this.value.length)"
+          style="border-radius:4px;"
+        ></textarea>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <div style="font-size:12px;color:var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+          <div style="font-size:12px;color:var(--text3);" id="counter-detail-${item.id}">0 / 2000</div>
+        </div>
+      </div>
+
+      <button
+        onclick="sendAnswer('${item.id}','${item.store_id}',this)"
+        style="
+          padding:10px 20px;border-radius:4px;
+          border:1px solid var(--border2);
+          background:var(--surface2);color:var(--text2);
+          font-size:14px;font-weight:600;
+          font-family:'Inter',Arial,sans-serif;
+          cursor:pointer;white-space:nowrap;flex-shrink:0;
+          transition:all .2s;
+        "
+        onmouseover="this.style.background='var(--surface3)'"
+        onmouseout="this.style.background='var(--surface2)'"
+      >
+        Responder
+      </button>
+    </div>
   `;
-}
 
 function closeDetail(){
   selectedQuestionId = null;
