@@ -2968,6 +2968,136 @@ function playNotificationSound(){
   audio.play().catch(()=>{});
 }
 
+function buildDesktopRow(item){
+  const cardId   = `ml-card-${item.id}`;
+  const expandId = `ml-expanded-${item.id}`;
+  const arrowId  = `ml-arrow-${item.id}`;
+  const taId     = `ml-ta-${item.id}`;
+  const cntId    = `ml-cnt-${item.id}`;
+
+  return `
+    <div class="ml-card" id="${cardId}">
+      <div class="ml-card-product">
+        ${item.product_thumbnail
+          ? `<img src="${item.product_thumbnail}" alt="produto">`
+          : `<div style="width:52px;height:52px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`
+        }
+        <div class="ml-card-product-info">
+          ${item.product_sku ? `<div class="ml-card-product-sku">SKU ${item.product_sku}</div>` : ''}
+          <div class="ml-card-product-title">${item.product_title || item.item_id}</div>
+        </div>
+        <div class="ml-card-product-meta">
+          <div>${item.product_quantity || 0} unidades</div>
+          ${item.product_price ? `<div>${formatPrice(item.product_price)}</div>` : ''}
+          <div class="ml-card-product-freight">Frete grátis</div>
+        </div>
+        <button class="ml-card-dots" title="Opções">•••</button>
+      </div>
+
+      <div class="ml-card-question-row" onclick="toggleMlCard('${item.id}')">
+        <span class="ml-card-dot"></span>
+        <span class="ml-card-question-text">${item.text}</span>
+        <span class="ml-card-time">Há ${timeAgo(item.date_created)}</span>
+        <span class="ml-card-urgency">Responda o quanto antes</span>
+        <span class="ml-card-arrow" id="${arrowId}">▼</span>
+      </div>
+
+      <div class="ml-card-expanded" id="${expandId}">
+        <div class="ml-card-client">
+          <span>${clientName(item)}</span>
+          <span>|</span>
+          <span>${item.store_name || ''}</span>
+        </div>
+        <div class="ml-card-q-full">
+          <span class="ml-card-dot" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <span class="ml-card-q-full-text">${item.text}</span>
+            <span class="ml-card-q-full-time">Há ${timeAgo(item.date_created)}</span>
+          </div>
+        </div>
+        ${(item.previous_questions||[]).length > 0 ? `
+          <button class="previous-toggle" style="margin-bottom:10px;" onclick="togglePrevious('ml-prev-${item.id}')">
+            🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
+          </button>
+          <div id="ml-prev-${item.id}" style="display:none;margin-bottom:12px;">
+            ${item.previous_questions.map(q => `
+              <div class="previous" style="margin-bottom:8px;">
+                <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
+                ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ''}
+                <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status==='ANSWERED'?'Respondida':'Pendente'}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        <button class="ml-quick-btn" onclick="document.getElementById('${taId}').value='# ';document.getElementById('${taId}').focus();">
+          # Respostas rápidas
+        </button>
+        <div class="ml-answer-row">
+          <div class="ml-answer-wrap">
+            <textarea
+              id="${taId}"
+              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+              maxlength="2000"
+              oninput="document.getElementById('${cntId}').innerText=this.value.length+' / 2000'"
+            ></textarea>
+            <div class="ml-counter-row">
+              <span class="ml-counter-hint">ℹ️ Digite # para acessar suas respostas rápidas.</span>
+              <span class="ml-counter-num" id="${cntId}">0 / 2000</span>
+            </div>
+          </div>
+          <button class="ml-reply-btn" onclick="sendAnswerMl('${item.id}','${item.store_id}','${taId}',this)">
+            Responder
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleMlCard(id){
+  const expanded = document.getElementById(`ml-expanded-${id}`);
+  const arrow    = document.getElementById(`ml-arrow-${id}`);
+  if(!expanded) return;
+  const isOpen = expanded.classList.contains('open');
+  expanded.classList.toggle('open', !isOpen);
+  if(arrow) arrow.classList.toggle('open', !isOpen);
+}
+
+async function sendAnswerMl(questionId, storeId, taId, button){
+  const textarea = document.getElementById(taId);
+  const text = textarea?.value.trim();
+  if(!text){ alert('Digite uma resposta.'); return; }
+  const originalText = button.innerText;
+  button.disabled = true;
+  button.innerText = 'Enviando...';
+  try{
+    const response = await fetch('/api/answer',{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question_id: questionId, store_id: storeId, text,
+        user_id: loggedUser.id, user_name: loggedUser.name, user_email: loggedUser.email
+      })
+    });
+    const data = await response.json();
+    if(data.success){
+      button.innerText = '✓ Respondido!';
+      setTimeout(() => { loadQuestions(); }, 800);
+    } else {
+      alert('Erro ao responder: ' + JSON.stringify(data));
+      button.disabled = false;
+      button.innerText = originalText;
+    }
+  } catch(e){
+    alert('Erro: ' + e.message);
+    button.disabled = false;
+    button.innerText = originalText;
+  }
+}
+
+window.toggleMlCard = toggleMlCard;
+window.sendAnswerMl = sendAnswerMl;
+      
 // ──────────────────────────────────────
 // INIT
 // ──────────────────────────────────────
