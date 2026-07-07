@@ -1104,11 +1104,12 @@
 
     <!-- ══════════════ MOBILE ══════════════ -->
     <div class="mobile-container">
-      <header class="mobile-header">
-        <a href="/" class="logo-full">
-          <img src="logo.png" alt="CentralizaChat">
-        </a>
-      </header>
+<header class="mobile-header">
+  <a href="/" class="logo-full">
+    <img src="logo.png" alt="CentralizaChat">
+  </a>
+  <button class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile">🌙</button>
+</header>
 
       <div class="stats-card">
         <div class="stats-left">
@@ -1195,12 +1196,13 @@
       <div class="main-content">
 
         <!-- Topbar -->
-        <div class="topbar">
-          <div class="topbar-title" id="desktopTopbarTitle">Perguntas Pendentes</div>
-          <div class="topbar-right">
-            <button class="topbar-btn primary" onclick="desktopReload()">↻ Atualizar</button>
-          </div>
-        </div>
+<div class="topbar">
+  <div class="topbar-title" id="desktopTopbarTitle">Perguntas Pendentes</div>
+  <div class="topbar-right">
+    <button class="topbar-btn" onclick="toggleTheme()" id="themeBtn">🌙 Escuro</button>
+    <button class="topbar-btn primary" onclick="desktopReload()">↻ Atualizar</button>
+  </div>
+</div>
 
         <!-- Page area -->
         <div class="page-area">
