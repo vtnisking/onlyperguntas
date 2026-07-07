@@ -1535,36 +1535,156 @@ window.toggleTheme = toggleTheme;
       
 function buildMobileCard(item){
   return `
-    <div class="question-card">
-      <div class="top-row">
-        <div class="store">🏪 ${item.store_name}</div>
-        <div class="status status-pending">● Pendente</div>
-      </div>
-      <div class="product">
-        ${item.product_thumbnail ? `<a href="${item.product_link||'#'}" target="_blank"><img src="${item.product_thumbnail}" alt="produto"></a>` : ''}
-        <div class="product-info">
-          <div class="meta">
-            ${item.product_sku ? `<span class="sku">SKU ${item.product_sku}</span>` : ''}
-            <span class="${item.product_quantity>5?'stock':'stock-low'}">${item.product_quantity||0} un.</span>
+    <div class="question-card" style="padding:0;overflow:hidden;">
+
+      <!-- Produto -->
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:14px;
+        padding:16px 20px;
+        border-bottom:1px solid var(--border);
+      ">
+        ${item.product_thumbnail ? `
+          <a href="${item.product_link||'#'}" target="_blank">
+            <img src="${item.product_thumbnail}" style="
+              width:52px;height:52px;
+              border-radius:8px;
+              object-fit:cover;
+              border:1px solid var(--border);
+              flex-shrink:0;
+            ">
+          </a>
+        ` : ''}
+
+        <div style="flex:1;min-width:0;">
+          ${item.product_sku ? `
+            <div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:2px;">
+              SKU ${item.product_sku}
+            </div>
+          ` : ''}
+          <div style="
+            font-size:14px;font-weight:600;color:var(--text);
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+            margin-bottom:2px;
+          ">${item.product_title||item.item_id}</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">
+            ${item.product_quantity||0} unidades
           </div>
-          <div class="product-title">${item.product_title||item.item_id}</div>
-          ${item.product_price ? `<div class="price">${formatPrice(item.product_price)}</div>` : ''}
+          ${item.product_price ? `
+            <div style="font-size:14px;font-weight:700;color:var(--text);">
+              ${formatPrice(item.product_price)}
+            </div>
+          ` : ''}
         </div>
       </div>
-      <div class="client">
-        <div class="client-icon">👤</div>
-        <span>${clientName(item)}</span>
-      </div>
-      <div class="question">${item.text}</div>
-      <div class="meta-bottom">
-        <span>🕒 ${formatDate(item.date_created)}</span>
-        <span>⏳ ${timeAgo(item.date_created)}</span>
-      </div>
-      ${renderPreviousQuestions(item)}
-      <div class="answer-box">
-        <div class="answer-title">Sua resposta</div>
-        <textarea id="answer-${item.id}" placeholder="Digite sua resposta aqui..."></textarea>
-        <button class="send-btn send-btn-full" onclick="sendAnswer('${item.id}','${item.store_id}',this)">Enviar resposta ✓</button>
+
+      <!-- Pergunta -->
+      <div style="padding:16px 20px;">
+
+        <!-- Cliente -->
+        <div style="
+          display:flex;
+          align-items:center;
+          gap:8px;
+          margin-bottom:10px;
+          font-size:13px;
+          color:var(--text2);
+          font-weight:600;
+        ">
+          <span>${clientName(item)}</span>
+          <span style="color:var(--border2);">|</span>
+          <span style="color:var(--text3);font-weight:400;">🏪 ${item.store_name}</span>
+        </div>
+
+        <!-- Texto da pergunta -->
+        <div style="
+          display:flex;
+          align-items:flex-start;
+          gap:10px;
+          margin-bottom:14px;
+        ">
+          <span style="
+            width:10px;height:10px;
+            border-radius:50%;
+            background:var(--accent);
+            flex-shrink:0;
+            margin-top:5px;
+          "></span>
+          <div>
+            <span style="font-size:16px;font-weight:700;color:var(--text);">
+              ${item.text}
+            </span>
+            <span style="font-size:13px;color:var(--text3);margin-left:8px;">
+              Há ${timeAgo(item.date_created)}
+            </span>
+          </div>
+        </div>
+
+        ${renderPreviousQuestions(item)}
+
+        <!-- Contador e textarea -->
+        <div style="position:relative;">
+          <textarea
+            id="answer-${item.id}"
+            placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+            maxlength="2000"
+            oninput="updateCounter('${item.id}', this.value.length)"
+            style="
+              width:100%;
+              height:80px;
+              border-radius:8px;
+              border:1px solid var(--border2);
+              background:var(--surface);
+              color:var(--text);
+              padding:12px 14px;
+              font-size:14px;
+              font-family:'Inter',Arial,sans-serif;
+              resize:none;
+              outline:none;
+              line-height:1.5;
+            "
+          ></textarea>
+          <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-top:6px;
+          ">
+            <div style="font-size:12px;color:var(--text3);">
+              ℹ️ Digite # para acessar respostas rápidas.
+            </div>
+            <div style="font-size:12px;color:var(--text3);" id="counter-${item.id}">
+              0 / 2000
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão responder -->
+        <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+          <button
+            onclick="sendAnswer('${item.id}','${item.store_id}',this)"
+            style="
+              padding:10px 28px;
+              border-radius:8px;
+              border:none;
+              background:linear-gradient(135deg,var(--accent),#8b5cf6);
+              color:white;
+              font-size:14px;
+              font-weight:700;
+              font-family:'Inter',Arial,sans-serif;
+              cursor:pointer;
+              transition:all .2s;
+              box-shadow:0 4px 12px rgba(108,99,255,0.2);
+            "
+          >
+            Responder
+          </button>
+        </div>
+
       </div>
     </div>
   `;
@@ -1646,6 +1766,12 @@ async function loadDesktopQuestions(silent=false){
   }
 }
 
+function updateCounter(id, length){
+  const el = document.getElementById(`counter-${id}`);
+  if(el) el.innerText = `${length} / 2000`;
+}
+window.updateCounter = updateCounter;
+      
 function desktopReload(){
   if(isDesktop()) loadDesktopQuestions();
   else location.reload();
@@ -1726,9 +1852,19 @@ function openDetail(item){
     <div class="detail-divider"></div>
 
     <div class="detail-label">Sua resposta</div>
-    <textarea class="detail-textarea" id="detail-answer-${item.id}" placeholder="Digite sua resposta aqui..."></textarea>
+    <textarea
+      class="detail-textarea"
+      id="detail-answer-${item.id}"
+      placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+      maxlength="2000"
+      oninput="updateCounter('detail-${item.id}', this.value.length)"
+    ></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;margin-bottom:10px;">
+      <div style="font-size:12px;color:var(--text3);">ℹ️ Digite # para respostas rápidas.</div>
+      <div style="font-size:12px;color:var(--text3);" id="counter-detail-${item.id}">0 / 2000</div>
+    </div>
     <button class="detail-send-btn" onclick="sendAnswer('${item.id}','${item.store_id}',this)">
-      Enviar resposta ✓
+      Responder
     </button>
   `;
 }
