@@ -2291,6 +2291,7 @@ function showDesktopTab(tab, element){
   const titleEl = document.getElementById('desktopTopbarTitle');
   if(titleEl) titleEl.innerText = titles[tab] || '';
 
+  if(tab === 'pending') loadDesktopQuestions();
   if(tab === 'answered') loadDesktopAnswered();
   if(tab === 'stats') loadDesktopStats();
 }
