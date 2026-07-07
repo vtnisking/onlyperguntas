@@ -2197,24 +2197,106 @@ function formatPrice(value){
   return Number(value).toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
 }
 
-async function loadMonthlyRanking(){
-  const box = document.getElementById("monthlyRanking");
+async function loadDesktopMonthlyRanking(){
+  const box = document.getElementById("desktopMonthlyRanking");
   if(!box) return;
-  const response = await fetch(`/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`);
+
+  const response = await fetch(
+    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
+  );
   const data = await response.json();
-  const ranking = Object.entries(data.by_user||{}).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  if(ranking.length===0){ box.innerHTML=""; return; }
+
+  const ranking = Object.entries(data.by_user || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if(ranking.length === 0){ box.innerHTML = ""; return; }
+
+  const medals = ['🥇', '🥈', '🥉'];
+
   box.innerHTML = `
-    <div class="question-card" style="margin-top:0;">
-      <div class="section-title">🏆 Top do mês</div>
-      ${ranking.map(([name,total],index) => `
-        <div class="ranking-item ${index===0?'first':''}" style="margin-bottom:10px;">
-          <div class="ranking-left">
-            <div class="rank-badge">${index===0?'🥇':index===1?'🥈':'🥉'}</div>
-            <div><div class="rank-name">${name}</div><div class="rank-role">${total} resposta(s)</div></div>
+    <div style="
+      max-width: 100%;
+      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    ">
+      <div style="
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 20px;
+      ">🏆 Top funcionários do mês</div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        ${ranking.map(([name, total], index) => `
+          <div style="
+            background: ${index === 0
+              ? 'linear-gradient(135deg, rgba(108,99,255,0.08), rgba(139,92,246,0.04))'
+              : 'var(--surface2)'};
+            border: 1px solid ${index === 0
+              ? 'rgba(108,99,255,0.2)'
+              : 'var(--border)'};
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: ${index === 0
+              ? '0 4px 20px rgba(108,99,255,0.1)'
+              : '0 1px 4px rgba(0,0,0,0.04)'};
+          ">
+            ${index === 0 ? `
+              <div style="
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 2px;
+                background: linear-gradient(90deg, var(--accent), #8b5cf6);
+                border-radius: 2px 2px 0 0;
+              "></div>
+            ` : ''}
+
+            <div style="font-size: 36px; margin-bottom: 12px; line-height: 1;">
+              ${medals[index]}
+            </div>
+
+            <div style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--text);
+              margin-bottom: 6px;
+              letter-spacing: -0.01em;
+            ">${name}</div>
+
+            <div style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              background: rgba(22,163,74,0.08);
+              border: 1px solid rgba(22,163,74,0.2);
+              color: var(--green);
+              font-size: 22px;
+              font-weight: 900;
+              border-radius: 999px;
+              padding: 6px 18px;
+              margin-top: 8px;
+              letter-spacing: -0.01em;
+            ">${total}</div>
+
+            <div style="
+              font-size: 12px;
+              color: var(--text3);
+              font-weight: 500;
+              margin-top: 6px;
+            ">respostas este mês</div>
           </div>
-        </div>
-      `).join('')}
+        `).join('')}
+      </div>
     </div>
   `;
 }
