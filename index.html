@@ -2,797 +2,906 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="theme-color" content="#7f0000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#0f0f13">
     <title>CentralizaChat</title>
 
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
-
     <link rel="icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-      * {
+      *, *::before, *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
 
-html, body{
-  width:100%;
-  min-height:100%;
-  overflow-x:hidden;
+      :root {
+        --bg:        #0f0f13;
+        --surface:   #17171f;
+        --surface2:  #1e1e28;
+        --border:    rgba(255,255,255,0.07);
+        --border2:   rgba(255,255,255,0.12);
+        --accent:    #6c63ff;
+        --accent2:   #8b85ff;
+        --green:     #22c55e;
+        --yellow:    #f59e0b;
+        --red:       #ef4444;
+        --text:      #f1f1f5;
+        --text2:     #9999b3;
+        --text3:     #55556a;
+        --radius-sm: 12px;
+        --radius-md: 18px;
+        --radius-lg: 24px;
+        --radius-xl: 30px;
+      }
 
-}
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        overflow-x: hidden;
+      }
 
-body {
-  overflow-x: hidden;
-  overflow-y: auto;
-  min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #bbcdd8 35%,
-    #7e7d7d 100%
-  );
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', Arial, sans-serif;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+      }
 
-  color: rgb(255, 255, 255);
-  font-family: Arial, Helvetica, sans-serif;
-}
+      /* ─── Layout ─── */
+      .container {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 20px 16px 130px;
+      }
 
-.container {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 22px 16px 135px;
-}
-
+      /* ─── Header ─── */
       header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 26px;
+        margin-bottom: 24px;
+        padding-top: 4px;
       }
 
-      .logo-full{
-        display:flex;
-
-        align-items:center;
-        text-decoration:none;
-        height: 70px;
+      .logo-full {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        height: 48px;
       }
 
-      .logo-full img{
-        height:240px;
-        width:auto;
-        object-fit:contain;
-        display:flex;
-        margin-top: 25px;
+      .logo-full img {
+        height: 160px;
+        width: auto;
+        object-fit: contain;
+        margin-top: 20px;
       }
 
-      .settings {
-        width: 56px;
-        height: 56px;
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.04);
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-      }
-
+      /* ─── Stats card ─── */
       .stats-card {
-        background: #1b1818;
-        border: 1px solid rgb(255, 196, 0);
-        border-radius: 26px;
-        padding: 20px;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-xl);
+        padding: 22px 24px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 22px;
-        min-height: 140px;
+        margin-bottom: 20px;
+        min-height: 110px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0.6;
       }
 
       .stats-left {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 18px;
         flex: 1;
       }
 
       .stats-icon {
-        width: 76px;
-        height: 76px;
-        border-radius: 22px;
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(108,99,255,0.05));
+        border: 1px solid rgba(108,99,255,0.25);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 34px;
-        box-shadow: 0 10px 24px rgba(255, 0, 0, 0.22);
+        font-size: 26px;
         flex-shrink: 0;
       }
 
       .stats-info {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        gap: 2px;
       }
 
       .stats-info h2 {
-        font-size: 22px;
-        line-height: 1.15;
-        margin-bottom: 6px;
-        font-weight: 900;
-        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text2);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
       }
 
       .stats-number {
-        font-size: 44px;
-        color: #ff2d2d;
+        font-size: 42px;
         font-weight: 900;
-        line-height: 1;
-
-
+        color: var(--text);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
       }
 
       .stats-sub {
-        color: #ffffff;
-        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text3);
+        font-weight: 500;
+      }
+
+      .refresh-btn {
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: var(--radius-md);
+        background: rgba(108,99,255,0.15);
+        border: 1px solid rgba(108,99,255,0.25);
+        color: var(--accent2);
+        font-size: 22px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .2s ease;
+        flex-shrink: 0;
+      }
+
+      .refresh-btn:hover {
+        background: rgba(108,99,255,0.25);
+        transform: rotate(20deg);
+      }
+
+      .refresh-btn:active {
+        transform: scale(0.94);
+      }
+
+      /* ─── Question card ─── */
+      .question-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        padding: 22px;
+        margin-bottom: 16px;
+        transition: border-color .2s;
+      }
+
+      .question-card:hover {
+        border-color: var(--border2);
+      }
+
+      /* ─── Top row ─── */
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 10px;
+      }
+
+      .store {
+        background: rgba(108,99,255,0.12);
+        border: 1px solid rgba(108,99,255,0.2);
+        color: var(--accent2);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 55%;
+      }
+
+      .status {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .status-pending {
+        background: rgba(245,158,11,0.12);
+        border: 1px solid rgba(245,158,11,0.25);
+        color: var(--yellow);
+      }
+
+      .status-answered {
+        background: rgba(34,197,94,0.12);
+        border: 1px solid rgba(34,197,94,0.25);
+        color: var(--green);
+      }
+
+      /* ─── Product ─── */
+      .product {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 18px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .product img {
+        width: 90px;
+        height: 90px;
+        border-radius: var(--radius-md);
+        object-fit: cover;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+
+      .product-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      .sku {
+        color: var(--text3);
+        background: var(--surface2);
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+      }
+
+      .stock {
+        color: var(--green);
+        background: rgba(34,197,94,0.08);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .stock-low {
+        color: var(--red);
+        background: rgba(239,68,68,0.08);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .product-title {
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.35;
+        margin-bottom: 8px;
+        color: var(--text);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .price {
+        color: var(--green);
+        font-weight: 800;
         font-size: 15px;
       }
 
-.refresh-btn{
-  width:58px;
-  height:58px;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#ff2d2d,#7f0000);
-  color:white;
-  font-size:24px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.05),
-    0 10px 25px rgba(255,0,0,.35);
-  transition:.25s ease;
-}
+      /* ─── Client ─── */
+      .client {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+      }
 
-.refresh-btn:hover{
-  transform:translateY(-2px) scale(1.04);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.08),
-    0 16px 35px rgba(255,0,0,.45);
-}
+      .client-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
 
-.refresh-btn:active{
-  transform:scale(.96);
-}
+      /* ─── Question bubble ─── */
+      .question {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        line-height: 1.6;
+        margin-bottom: 14px;
+        font-size: 15px;
+        color: var(--text);
+      }
 
-      @media (max-width: 768px) {
-        .stats-card {
-          padding: 16px;
-          min-height: 120px;
-          border-radius: 22px;
+      /* ─── Meta bottom ─── */
+      .meta-bottom {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        color: var(--text3);
+        font-size: 12px;
+        margin-bottom: 14px;
+        font-weight: 500;
+      }
+
+      /* ─── Previous questions ─── */
+      .previous-toggle {
+        width: 100%;
+        cursor: pointer;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
+        color: var(--accent2);
+        font-weight: 600;
+        font-size: 13px;
+        text-align: left;
+        margin-bottom: 10px;
+        transition: background .2s;
+      }
+
+      .previous-toggle:hover {
+        background: rgba(108,99,255,0.08);
+      }
+
+      .previous {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        margin-bottom: 10px;
+      }
+
+      /* ─── Answer box ─── */
+      .answer-box {
+        background: var(--surface2);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        border: 1px solid var(--border);
+        margin-top: 4px;
+      }
+
+      .answer-title {
+        color: var(--text2);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 72px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border2);
+        background: var(--surface);
+        color: var(--text);
+        padding: 14px 16px;
+        font-size: 15px;
+        font-family: 'Inter', Arial, sans-serif;
+        resize: none;
+        outline: none;
+        transition: border-color .2s;
+        line-height: 1.5;
+      }
+
+      textarea::placeholder {
+        color: var(--text3);
+      }
+
+      textarea:focus {
+        border-color: var(--accent);
+      }
+
+      .send-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: var(--radius-md);
+        border: none;
+        padding: 13px 24px;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Inter', Arial, sans-serif;
+        cursor: pointer;
+        transition: all .2s ease;
+        letter-spacing: 0.02em;
+      }
+
+      .send-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(108,99,255,0.35);
+      }
+
+      .send-btn:active {
+        transform: scale(0.97);
+      }
+
+      .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .send-btn-full {
+        width: 100%;
+      }
+
+      /* ─── Empty state ─── */
+      .empty {
+        text-align: center;
+        color: var(--text3);
+        padding: 48px 24px;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+        opacity: 0.5;
+      }
+
+      /* ─── Footer nav ─── */
+      .footer-menu {
+        position: fixed;
+        bottom: 14px;
+        left: 12px;
+        right: 12px;
+        max-width: 520px;
+        margin: 0 auto;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        background: rgba(23, 23, 31, 0.92);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-xl);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+        z-index: 99999;
+      }
+
+      /* Centralizar no desktop */
+      @media (min-width: 520px) {
+        .footer-menu {
+          left: 50%;
+          transform: translateX(-50%);
+          width: 520px;
+          right: auto;
         }
+      }
 
-        .stats-left {
-          gap: 14px;
-        }
+      .footer-item {
+        flex: 1;
+        height: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: var(--text3);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        border-radius: var(--radius-md);
+        position: relative;
+        transition: all .2s ease;
+        cursor: pointer;
+        margin: 0 4px;
+      }
 
-        .stats-icon {
-          width: 64px;
-          height: 64px;
-          border-radius: 18px;
-          font-size: 28px;
-        }
+      .footer-item:hover {
+        color: var(--text2);
+      }
 
-        .stats-info h2 {
-          font-size: 18px;
-          margin-bottom: 4px;
+      .footer-item.active {
+        color: var(--accent2);
+      }
+
+      .footer-item.active .footer-icon-wrap {
+        background: rgba(108,99,255,0.15);
+        border-color: rgba(108,99,255,0.2);
+      }
+
+      .footer-icon-wrap {
+        width: 40px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .2s ease;
+      }
+
+      .footer-icon {
+        font-size: 20px;
+        line-height: 1;
+        transition: transform .2s ease;
+      }
+
+      .footer-item.active .footer-icon {
+        transform: scale(1.1);
+      }
+
+      /* ─── Inputs genéricos (settings) ─── */
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input:not([type="submit"]):not([type="button"]) {
+        width: 100%;
+        padding: 13px 16px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        color: var(--text);
+        font-size: 15px;
+        font-family: 'Inter', Arial, sans-serif;
+        outline: none;
+        transition: border-color .2s;
+        display: block;
+      }
+
+      input:focus {
+        border-color: var(--accent);
+      }
+
+      input::placeholder {
+        color: var(--text3);
+      }
+
+      select {
+        width: 100%;
+        padding: 13px 16px;
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border2);
+        font-size: 15px;
+        font-family: 'Inter', Arial, sans-serif;
+        outline: none;
+        transition: border-color .2s;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239999b3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+      }
+
+      select:focus {
+        border-color: var(--accent);
+      }
+
+      select option {
+        background: var(--surface);
+      }
+
+      /* ─── Ranking card ─── */
+      .ranking-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        margin-top: 10px;
+        border-radius: var(--radius-md);
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        transition: border-color .2s;
+      }
+
+      .ranking-item:hover {
+        border-color: var(--border2);
+      }
+
+      .ranking-item.first {
+        background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(139,92,246,0.08));
+        border-color: rgba(108,99,255,0.3);
+      }
+
+      .ranking-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .rank-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--text2);
+        flex-shrink: 0;
+      }
+
+      .rank-name {
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--text);
+      }
+
+      .rank-role {
+        font-size: 12px;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      .rank-count {
+        background: rgba(34,197,94,0.15);
+        border: 1px solid rgba(34,197,94,0.25);
+        color: var(--green);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 14px;
+        min-width: 48px;
+        text-align: center;
+      }
+
+      /* ─── Section title ─── */
+      .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 18px;
+        letter-spacing: -0.01em;
+      }
+
+      /* ─── Settings items ─── */
+      .settings-item {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+
+      .settings-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 12px;
+      }
+
+      .status-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--green);
+      }
+
+      .status-dot::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px rgba(34,197,94,0.6);
+        flex-shrink: 0;
+      }
+
+      .user-info-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      /* ─── Calendar ─── */
+      #calendarBox {
+        background: #1e1e28;
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-top: 12px;
+      }
+
+      /* ─── Responsive ─── */
+      @media (max-width: 480px) {
+        .container {
+          padding: 16px 12px 120px;
         }
 
         .stats-number {
           font-size: 36px;
         }
 
-        .stats-sub {
-          font-size: 13px;
-          margin-top: 4px;
-        }
-
-        .refresh-btn {
-          width: 60px;
-          height: 60px;
-          border-radius: 18px;
-          font-size: 24px;
-        }
-      }
-
-      .question-card {
-        background: rgb(20, 20, 20);
-        border-radius: 28px;
-        border: 1px solid rgb(255, 0, 0);
-        padding: 22px;
-        margin-bottom: 22px;
-      }
-
-      .top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 22px;
-      }
-
-      .store {
-        background: linear-gradient(135deg, #b91c1c, #7f1d1d);
-        color: rgb(255, 255, 255);
-        padding: 12px 18px;
-        border-radius: 16px;
-        font-weight: 900;
-        font-size: 16px;
-      }
-
-      .status {
-        background: rgba(255, 0, 0, 0.12);
-        border: 1px solid rgb(255, 187, 0);
-        color: #ffee00;
-        padding: 12px 18px;
-        border-radius: 16px;
-        font-weight: 900;
-      }
-
-      .product {
-        display: flex;
-        gap: 18px;
-        margin-bottom: 22px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .product img {
-        width: 110px;
-        height: 110px;
-        border-radius: 20px;
-        object-fit: cover;
-        background: rgb(255, 255, 255);
-      }
-
-      .product-info {
-        flex: 1;
-      }
-
-      .meta {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        font-size: 15px;
-        margin-bottom: 10px;
-      }
-
-      .sku {
-        color: #ffffff;
-      }
-
-      .stock {
-        color: #00ff5e;
-        font-weight: 900;
-      }
-
-      .product-title {
-        font-size: 28px;
-        font-weight: 900;
-        line-height: 1.2;
-        margin-bottom: 12px;
-      }
-
-      .price {
-        color: #00c742;
-      }
-
-      .client {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 18px;
-        font-size: 22px;
-        font-weight: 900;
-      }
-
-      .client-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: rgb(110, 0, 0);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #ff2d2d;
-        font-size: 22px;
-      }
-
-      .question {
-        background: rgba(255, 255, 255, 0.226);
-        border: 1px solid rgba(255, 0, 0, 0);
-        border-left: 5px solid #ff0000;
-        border-radius: 22px;
-        padding: 24px;
-        line-height: 1.5;
-        margin-bottom: 18px;
-      }
-
-      .meta-bottom {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        color: #ffffff;
-        font-size: 16px;
-        margin-bottom: 12px;
-      }
-
-      .previous {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 18px;
-        padding: 18px;
-        color: #ff0000;
-        font-weight: 900;
-        margin-bottom: 12px;
-      }
-
-      .answer-box {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 24px;
-        padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .answer-title {
-        color: rgb(255, 255, 255);
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 6px;
-        text-align: center;
-      }
-
-      textarea {
-        width: 100%;
-        height: 60px;
-        border-radius: 20px;
-        border: 1px solid rgb(255, 255, 255);
-        background: #ffffff;
-        color: rgb(0, 0, 0);
-        padding: 14px;
-        font-size: 16px;
-        resize: none;
-        outline: none;
-      }
-
-      textarea:focus {
-        border-color: #ff2d2d;
-      }
-
-      .send-btn {
-        width: 40%;
-        margin-top: 14px;
-        border-radius: 15px;
-        border-color: #fbff0081;
-        padding: 16px;
-        background: linear-gradient(135deg, #640d0d, #ff0000);
-        color: white;
-        font-size: 18px;
-        font-weight: 900;
-        cursor: pointer;
-        text-align: center;
-        align-items: center;
-      }
-
-      .footer-menu {
-        position:fixed;
-        bottom:14px;
-        left:12px;
-        transform:none;
-        width:auto;
-        right:12px;
-        max-width:520px;
-        height:96px;
-
-        display:flex;
-        align-items:center;
-        justify-content:space-around;
-
-        background:rgba(8,10,18,.88);
-        backdrop-filter:blur(18px);
-        -webkit-backdrop-filter:blur(18px);
-
-        border:1px solid rgba(255,255,255,.12);
-        border-radius:28px;
-
-        box-shadow:
-          0 18px 45px rgba(0,0,0,.55),
-          inset 0 1px 0 rgba(255,255,255,.08);
-
-        z-index:99999;
-}
-
-      .footer-item {
- flex:1;
-  height:74px;
-  margin:0 5px;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:7px;
-
-  color:#b8bdca;
-  font-size:13px;
-  font-weight:600;
-
-  border-radius:22px;
-  position:relative;
-
-  transition:.25s ease;
-  cursor:pointer;
-}
-
-  .footer-item.active {
-        color: #ff0000;
-      }
-
-.footer-item.active::after{
-  content:"";
-  position:absolute;
-  top:-12px;
-  width:80%;
-  height:2px;
-
-  border-radius:999px;
-
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #ff2d2d,
-    transparent
-  );
-}
-      .footer-icon {
-  font-size:27px;
-  line-height:1;
-  filter:grayscale(1);
-  opacity:.85;
-  transition:.25s ease;
-}
-
-
-
-.footer-item.active .footer-icon{
-  filter:none;
-  opacity:1;
-  transform:translateY(-2px) scale(1.08);
-}
-      
-
-      @media (max-width: 768px) {
-        .container {
-          padding: 16px 12px 135px;
-        }
-
-        .logo {
-          width: 54px;
-          height: 54px;
-          font-size: 24px;
-        }
-
-        .logo-text h1 {
-          font-size: 26px;
-        }
-
-        .logo-text p {
-          font-size: 13px;
-        }
-
-        .stats-card {
-          padding: 18px;
-          border-radius: 22px;
-        }
-
-        .stats-icon {
-          width: 72px;
-          height: 72px;
-          font-size: 30px;
-        }
-
-        .stats-info h2 {
-          font-size: 22px;
-        }
-
-        .stats-number {
-          font-size: 42px;
-        }
-
-        .refresh-btn {
-          width: 64px;
-          height: 64px;
-          font-size: 28px;
-        }
-
-        .question-card {
-          padding: 18px;
-          border-radius: 24px;
-        }
-
-        .store {
-          font-size: 13px;
-          padding: 10px 14px;
-        }
-
-        .status {
-          font-size: 13px;
-          padding: 10px 14px;
-        }
-
         .product img {
-          width: 90px;
-          height: 90px;
-        }
-
-        .meta {
-          font-size: 12px;
+          width: 76px;
+          height: 76px;
         }
 
         .product-title {
-          font-size: 18px;
-        }
-
-        .price {
           font-size: 14px;
-        }
-
-        .client {
-          font-size: 18px;
-        }
-
-        .client-icon {
-          width: 42px;
-          height: 42px;
         }
 
         .question {
-          font-size: 18px;
-          padding: 18px;
-          border-radius: 18px;
-        }
-
-        .meta-bottom {
-          font-size: 13px;
-        }
-
-        textarea {
-          height: 47px;
           font-size: 14px;
-          padding: 14px;
-          text-align: center;
         }
 
-        .send-btn {
-          font-size: 15px;
-          padding: 5px;
-          display: block;
-          margin: 14px auto 0;
+        .footer-menu {
+          height: 74px;
+          border-radius: var(--radius-lg);
         }
 
-        body{
-          position: relative;
+        .footer-item {
+          font-size: 10px;
         }
 
-        #questions{
-          display:block;
-          min-height:auto;
-          padding-bottom:120px;
+        .footer-icon {
+          font-size: 18px;
         }
-
-        .question-card{
-          overflow:visible;
-        }
-
-    .footer-menu{
-
-    position:fixed;
-      bottom:14px;
-
-      left:12px;
-      right:12px;
-
-      width:auto;
-
-      height:96px;
-
-      display:flex;
-      align-items:center;
-      justify-content:space-around;
-
-      background:rgba(8,10,18,.88);
-      backdrop-filter:blur(18px);
-
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:28px;
-
-      z-index:99999;
-    }
-
       }
     </style>
   </head>
 
   <body>
-
     <audio id="notificationSound" src="./notification.mp3" preload="auto"></audio>
 
-<header>
-  <div class="logo-area">
-    <a href="/" class="logo-full">
-      <img src="logo.png" alt="CentralizeChat">
-    </a>
-  </div>
-</header>
+    <div class="container">
 
-<div class="stats-card">
+      <header>
+        <a href="/" class="logo-full">
+          <img src="logo.png" alt="CentralizaChat">
+        </a>
+      </header>
 
+      <div class="stats-card">
+        <div class="stats-left">
+          <div class="stats-icon">📥</div>
+          <div class="stats-info">
+            <h2>Pendentes</h2>
+            <div class="stats-number" id="totalQuestions">0</div>
+            <div class="stats-sub">Aguardando resposta</div>
+          </div>
+        </div>
+        <button class="refresh-btn" onclick="location.reload()" title="Atualizar">↻</button>
+      </div>
 
-  <!-- teste de comentário -->
-  
-  <div class="stats-left">
+      <div id="questions">
+        <div class="empty">
+          <span class="empty-icon">⏳</span>
+          Carregando perguntas...
+        </div>
+      </div>
 
+    </div><!-- /container -->
 
-    
-    <div class="stats-info">
-      <h2>Perguntas Pendentes</h2>
-      <div class="stats-number" id="totalQuestions">0</div>
-      <div class="stats-sub">Aguardando resposta</div>
-    </div>
-  </div>
+    <nav class="footer-menu">
+      <div class="footer-item active" onclick="showTab('pending', this)">
+        <div class="footer-icon-wrap">
+          <div class="footer-icon">📥</div>
+        </div>
+        <div>Pendentes</div>
+      </div>
+      <div class="footer-item" onclick="showTab('answered', this)">
+        <div class="footer-icon-wrap">
+          <div class="footer-icon">✅</div>
+        </div>
+        <div>Respondidas</div>
+      </div>
+      <div class="footer-item" onclick="showTab('stats', this)">
+        <div class="footer-icon-wrap">
+          <div class="footer-icon">📊</div>
+        </div>
+        <div>Estatísticas</div>
+      </div>
+      <div class="footer-item" onclick="showTab('settings', this)">
+        <div class="footer-icon-wrap">
+          <div class="footer-icon">⚙️</div>
+        </div>
+        <div>Ajustes</div>
+      </div>
+    </nav>
 
-<button class="refresh-btn" onclick="location.reload()">
-  ↻ 
-</button>
+    <script>
 
-</div>
-
-<div id="questions">
-  <div class="empty">Carregando perguntas...</div>
-</div>
-
- 
-
-<div class="footer-menu">
-
-  <div class="footer-item active" onclick="showTab('pending', this)">
-    <div class="footer-icon">📥</div>
-    <div>Pendentes</div>
-  </div>
-
-  <div class="footer-item" onclick="showTab('answered', this)">
-    <div class="footer-icon">☑️</div>
-    <div>Respondidas</div>
-  </div>
-
-  <div class="footer-item" onclick="showTab('stats', this)">
-    <div class="footer-icon">📊</div>
-    <div>Estatísticas</div>
-  </div>
-
-  <div class="footer-item" onclick="showTab('settings', this)">
-    <div class="footer-icon">⚙️</div>
-    <div>Ajustes</div>
-  </div>
-
-</div>
-
-</div>
-    </div>
-
-<script>
-
-const loggedUser = JSON.parse(
-  localStorage.getItem("centralizachat_user")
-);
-
-if(!loggedUser){
-  window.location.href = "/login.html";
-}
+const loggedUser = JSON.parse(localStorage.getItem("centralizachat_user"));
+if(!loggedUser){ window.location.href = "/login.html"; }
 
 function logout(){
   localStorage.removeItem("centralizachat_user");
   window.location.href = "/login.html";
 }
-
 window.logout = logout;
 
 let knownQuestionIds = new Set();
 let firstLoadDone = false;
 
 async function requestNotificationPermission(){
-
   try{
-    if(!("Notification" in window)){
-      alert("Este navegador não suporta notificações.");
-      return;
-    }
-
-    if(!("serviceWorker" in navigator)){
-      alert("Service Worker não suportado.");
-      return;
-    }
-
+    if(!("Notification" in window)){ alert("Este navegador não suporta notificações."); return; }
+    if(!("serviceWorker" in navigator)){ alert("Service Worker não suportado."); return; }
     const permission = await Notification.requestPermission();
-
-    if(permission !== "granted"){
-      alert("Notificações não permitidas.");
-      return;
-    }
-
+    if(permission !== "granted"){ alert("Notificações não permitidas."); return; }
     const registration = await navigator.serviceWorker.ready;
-
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        "BC_KYGVTkWCoFjiLrG9ID7MoXoXt8Y05cmFkbPIacOYeQ95tsU3sGsM50tNALd2KMyRjHHdJnCP5IqjMU13eoXA"
-      )
+      applicationServerKey: urlBase64ToUint8Array("BC_KYGVTkWCoFjiLrG9ID7MoXoXt8Y05cmFkbPIacOYeQ95tsU3sGsM50tNALd2KMyRjHHdJnCP5IqjMU13eoXA")
     });
-
-    const result = await fetch("/api/save-subscription", {
+    const result = await fetch("/api/save-subscription",{
       method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        subscription,
-        user_email:"admin@centralizachat.com"
-      })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ subscription, user_email:"admin@centralizachat.com" })
     });
-
     const saved = await result.json();
-
     alert(JSON.stringify(saved));
-
   }catch(error){
     alert("Erro ao ativar notificações: " + error.message);
   }
 }
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
-
+function urlBase64ToUint8Array(base64String){
+  const padding = "=".repeat((4-(base64String.length%4))%4);
+  const base64 = (base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
   const rawData = window.atob(base64);
-
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
 }
 
-
-async function loadQuestions(silent = false){
+async function loadQuestions(silent=false){
   const container = document.getElementById('questions');
+  if(!container) return;
 
-  if(!container){
-    alert('Erro: não encontrei a div id="questions"');
-    return;
+  if(!silent){
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>`;
   }
 
-if(!silent){
-  container.innerHTML = '<div class="empty">Carregando perguntas...</div>';
-}
-
   try{
-const response = await fetch(
-  `/api/questions?company_id=${loggedUser.company_id}`
-);
+    const response = await fetch(`/api/questions?company_id=${loggedUser.company_id}`);
     const data = await response.json();
 
     const questions = data.questions
@@ -800,225 +909,151 @@ const response = await fetch(
       .filter(item => item.hold === false)
       .filter(item => item.deleted_from_listing === false);
 
-      const currentIds = questions.map(item => String(item.id));
+    const currentIds = questions.map(item => String(item.id));
 
-if(firstLoadDone){
-  const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
+    if(firstLoadDone){
+      const hasNewQuestion = currentIds.some(id => !knownQuestionIds.has(id));
+      if(hasNewQuestion){
+        if(typeof notifyNewQuestion === "function") notifyNewQuestion();
+        playNotificationSound();
+      }
+    }
 
-if(hasNewQuestion){
-
-  if(typeof notifyNewQuestion === "function"){
-    notifyNewQuestion();
-  }
-
-  playNotificationSound();
-
-}
-
-}
-
-knownQuestionIds = new Set(currentIds);
-firstLoadDone = true;
-
+    knownQuestionIds = new Set(currentIds);
+    firstLoadDone = true;
     document.getElementById('totalQuestions').innerText = questions.length;
-
     container.innerHTML = '';
 
- if(questions.length === 0){
-  container.innerHTML = `
-    <div class="empty">
-      Nenhuma pergunta pendente no momento.
-    </div>
+    if(questions.length === 0){
+      container.innerHTML = `
+        <div class="empty">
+          <span class="empty-icon">🎉</span>
+          Nenhuma pergunta pendente!
+        </div>
+        <div id="monthlyRanking"></div>
+      `;
+      loadMonthlyRanking();
+      return;
+    }
 
-    <div id="monthlyRanking">
-      Carregando ranking...
-    </div>
-  `;
-
-  loadMonthlyRanking();
-  return;
-}
     questions.forEach(item => {
       container.innerHTML += `
         <div class="question-card">
           <div class="top-row">
             <div class="store">🏪 ${item.store_name}</div>
-            <div class="status">• PENDENTE</div>
+            <div class="status status-pending">● Pendente</div>
           </div>
 
           <div class="product">
             ${item.product_thumbnail ? `
               <a href="${item.product_link || '#'}" target="_blank">
-                <img src="${item.product_thumbnail}">
-              </a>
-            ` : ''}
-
+                <img src="${item.product_thumbnail}" alt="produto">
+              </a>` : ''}
             <div class="product-info">
               <div class="meta">
-                <span class="sku">SKU ${item.product_sku || ''}</span>
+                ${item.product_sku ? `<span class="sku">SKU ${item.product_sku}</span>` : ''}
                 <span class="${item.product_quantity > 5 ? 'stock' : 'stock-low'}">
-                  ${item.product_quantity || 0} Unidade Disponível
+                  ${item.product_quantity || 0} un.
                 </span>
               </div>
-
-              <div class="product-title">
-                ${item.product_title || item.item_id}
-              </div>
-
-              ${item.product_price ? `
-                <div class="price">${formatPrice(item.product_price)}</div>
-              ` : ''}
+              <div class="product-title">${item.product_title || item.item_id}</div>
+              ${item.product_price ? `<div class="price">${formatPrice(item.product_price)}</div>` : ''}
             </div>
           </div>
 
           <div class="client">
             <div class="client-icon">👤</div>
-            ${
+            <span>${
               item.client_name && item.client_name !== 'Cliente'
-                ? `${item.client_name} ${item.client_nickname ? `(${item.client_nickname})` : ''}`
-                : `${item.client_nickname || 'Cliente'}`
-            }
+                ? `${item.client_name}${item.client_nickname ? ` (${item.client_nickname})` : ''}`
+                : (item.client_nickname || 'Cliente')
+            }</span>
           </div>
 
           <div class="question">${item.text}</div>
 
           <div class="meta-bottom">
-            <span>🕒 Pergunta feita às ${formatDate(item.date_created)}</span>
-            <span>⏳ Em aberto há ${timeAgo(item.date_created)}</span>
+            <span>🕒 ${formatDate(item.date_created)}</span>
+            <span>⏳ ${timeAgo(item.date_created)}</span>
           </div>
 
           ${renderPreviousQuestions(item)}
 
           <div class="answer-box">
-            <div class="answer-title">⬇ Responda o cliente abaixo</div>
-
+            <div class="answer-title">Sua resposta</div>
             <textarea id="answer-${item.id}" placeholder="Digite sua resposta aqui..."></textarea>
-
-            <button class="send-btn" onclick="sendAnswer('${item.id}', '${item.store_id}', this)">
-              Responder ✓
+            <button class="send-btn send-btn-full" onclick="sendAnswer('${item.id}', '${item.store_id}', this)">
+              Enviar resposta ✓
             </button>
           </div>
-
         </div>
       `;
     });
 
   }catch(error){
-    container.innerHTML = '<div class="empty">Erro ao carregar perguntas.</div>';
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar perguntas.</div>`;
   }
 }
 
 async function sendAnswer(questionId, storeId, button){
   const textarea = document.getElementById(`answer-${questionId}`);
   const text = textarea.value.trim();
-
-  if(!text){
-    alert('Digite uma resposta.');
-    return;
-  }
-
+  if(!text){ alert('Digite uma resposta.'); return; }
   button.disabled = true;
   button.innerText = 'Enviando...';
-
   try{
-    const response = await fetch('/api/answer', {
+    const response = await fetch('/api/answer',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-      question_id: questionId,
-      store_id: storeId,
-      text,
-      user_id: loggedUser.id,
-      user_name: loggedUser.name,
-      user_email: loggedUser.email
-    })
+        question_id: questionId, store_id: storeId, text,
+        user_id: loggedUser.id, user_name: loggedUser.name, user_email: loggedUser.email
+      })
     });
-
     const data = await response.json();
-
     if(data.success){
-      button.innerText = 'Respondido ✓';
-      setTimeout(() => {
-        loadQuestions();
-      }, 1000);
+      button.innerText = '✓ Respondido!';
+      setTimeout(() => loadQuestions(), 1000);
     }else{
       alert('Erro ao responder.');
       button.disabled = false;
-      button.innerText = 'Responder ✓';
+      button.innerText = 'Enviar resposta ✓';
     }
-
   }catch(error){
     alert('Erro no sistema.');
     button.disabled = false;
-    button.innerText = 'Responder ✓';
+    button.innerText = 'Enviar resposta ✓';
   }
 }
 
 function renderPreviousQuestions(item){
   const previous = item.previous_questions || [];
-
-  if(previous.length === 0){
-    return '';
-  }
-
+  if(previous.length === 0) return '';
   const html = previous.map(q => `
     <div class="previous">
-      <div style="color:white;margin-bottom:8px;">
-        ${q.text}
-      </div>
-
-      ${q.answer ? `
-        <div style="color:#22c55e;font-size:14px;">
-          Resposta: ${q.answer}
-        </div>
-      ` : ''}
-
-      <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
-        ${formatDate(q.date_created)} • ${q.status === 'ANSWERED' ? 'Respondida' : 'Pendente'}
-      </div>
+      <div style="color:var(--text);margin-bottom:6px;font-size:14px;">${q.text}</div>
+      ${q.answer ? `<div style="color:var(--green);font-size:13px;margin-bottom:4px;">↳ ${q.answer}</div>` : ''}
+      <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status === 'ANSWERED' ? 'Respondida' : 'Pendente'}</div>
     </div>
   `).join('');
-
   return `
-    <button
-      class="previous"
-      onclick="togglePrevious('${item.id}')"
-      type="button"
-      style="width:100%;cursor:pointer;"
-    >
-      Ver perguntas anteriores (${previous.length})
+    <button class="previous-toggle" onclick="togglePrevious('${item.id}')">
+      🕐 Ver ${previous.length} pergunta(s) anterior(es)
     </button>
-
-    <div id="previous-${item.id}" style="display:none;">
-      ${html}
-    </div>
+    <div id="previous-${item.id}" style="display:none;">${html}</div>
   `;
 }
 
 function togglePrevious(questionId){
   const box = document.getElementById(`previous-${questionId}`);
-
-  if(!box){
-    return;
-  }
-
-  box.style.display =
-    box.style.display === 'block'
-      ? 'none'
-      : 'block';
+  if(!box) return;
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
 function formatDate(dateString){
-  if(!dateString){
-    return '--:--';
-  }
-
+  if(!dateString) return '--:--';
   const date = new Date(dateString);
-
-  return date.toLocaleTimeString('pt-BR', {
-    hour:'2-digit',
-    minute:'2-digit'
-  });
+  return date.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
 }
 
 function timeAgo(dateString){
@@ -1026,22 +1061,16 @@ function timeAgo(dateString){
   const created = new Date(dateString);
   const diffMs = now - created;
   const minutes = Math.floor(diffMs / 60000);
-
   if(minutes < 1) return 'agora';
-  if(minutes < 60) return `${minutes} min`;
-
-  const hours = Math.floor(minutes / 60);
+  if(minutes < 60) return `${minutes}min`;
+  const hours = Math.floor(minutes/60);
   if(hours < 24) return `${hours}h`;
-
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(hours/24);
   return `${days}d`;
 }
 
 function formatPrice(value){
-  return Number(value).toLocaleString('pt-BR', {
-    style:'currency',
-    currency:'BRL'
-  });
+  return Number(value).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 }
 
 let currentTab = "pending";
@@ -1052,25 +1081,13 @@ window.togglePrevious = togglePrevious;
 loadQuestions();
 
 setInterval(() => {
-
-  const typing =
-    document.activeElement &&
-    document.activeElement.tagName === "TEXTAREA";
-
-if(!typing){
-  loadQuestions(true);
-}
-
+  const typing = document.activeElement && document.activeElement.tagName === "TEXTAREA";
+  if(!typing) loadQuestions(true);
 }, 60000);
 
 async function showTab(tab, element){
-
-currentTab = tab;
-
-  document.querySelectorAll('.footer-item').forEach(item => {
-    item.classList.remove('active');
-  });
-
+  currentTab = tab;
+  document.querySelectorAll('.footer-item').forEach(item => item.classList.remove('active'));
   element.classList.add('active');
 
   const container = document.getElementById('questions');
@@ -1081,669 +1098,261 @@ currentTab = tab;
   }
 
   if(tab === 'answered'){
-
-    container.innerHTML = `
-      <div class="empty">
-        Carregando perguntas respondidas...
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando respondidas...</div>`;
     try{
-
       const response = await fetch('/api/answered');
       const data = await response.json();
-
       const questions = data.questions || [];
-
       container.innerHTML = '';
-
       if(questions.length === 0){
-        container.innerHTML = `
-          <div class="empty">
-            Nenhuma pergunta respondida.
-          </div>
-        `;
+        container.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Nenhuma pergunta respondida.</div>`;
         return;
       }
-
       questions.forEach(item => {
-
         container.innerHTML += `
           <div class="question-card">
-
             <div class="top-row">
-              <div class="store">
-                🏪 ${item.store_name}
-              </div>
-
-              <div class="status" style="background:#052e16;color:#22c55e;">
-                ✓ RESPONDIDA
+              <div class="store">🏪 ${item.store_name}</div>
+              <div class="status status-answered">✓ Respondida</div>
+            </div>
+            <div class="product">
+              ${item.product_thumbnail ? `
+                <a href="${item.product_link || '#'}" target="_blank">
+                  <img src="${item.product_thumbnail}" alt="produto">
+                </a>` : ''}
+              <div class="product-info">
+                <div class="meta">
+                  ${item.product_sku ? `<span class="sku">SKU ${item.product_sku}</span>` : ''}
+                  <span class="${item.product_quantity > 5 ? 'stock' : 'stock-low'}">${item.product_quantity || 0} un.</span>
+                </div>
+                <div class="product-title">${item.product_title || item.item_id}</div>
+                ${item.product_price ? `<div class="price">${formatPrice(item.product_price)}</div>` : ''}
               </div>
             </div>
-
-<div class="product">
-  ${item.product_thumbnail ? `
-    <a href="${item.product_link || '#'}" target="_blank">
-      <img src="${item.product_thumbnail}">
-    </a>
-  ` : ''}
-
-  <div class="product-info">
-    <div class="meta">
-      <span class="sku">SKU ${item.product_sku || ''}</span>
-      <span class="${item.product_quantity > 5 ? 'stock' : 'stock-low'}">
-        ${item.product_quantity || 0} Unidade Disponível
-      </span>
-    </div>
-
-    <div class="product-title">
-      ${item.product_title || item.item_id}
-    </div>
-
-    ${item.product_price ? `
-      <div class="price">${formatPrice(item.product_price)}</div>
-    ` : ''}
-  </div>
-</div>
-
-
             <div class="client">
               <div class="client-icon">👤</div>
-              ${
-  item.client_name && item.client_name !== 'Cliente'
-    ? `${item.client_name} ${item.client_nickname ? `(${item.client_nickname})` : ''}`
-    : `${item.client_nickname || 'Cliente'}`
-}
+              <span>${
+                item.client_name && item.client_name !== 'Cliente'
+                  ? `${item.client_name}${item.client_nickname ? ` (${item.client_nickname})` : ''}`
+                  : (item.client_nickname || 'Cliente')
+              }</span>
             </div>
-
-            <div class="question">
-              ${item.text}
-            </div>
-
+            <div class="question">${item.text}</div>
             <div class="answer-box">
-
-              <div class="answer-title">
-                Resposta enviada:
-              </div>
-
-              <div class="question" style="border-left-color:#22c55e;">
+              <div class="answer-title">Resposta enviada</div>
+              <div class="question" style="border-left-color:var(--green);margin-bottom:0;">
                 ${item.answer?.text || 'Sem resposta'}
               </div>
-
             </div>
-
-<div class="meta-bottom">
-
-  <span>
-    🕒 Respondida às
-    ${formatDate(item.answer?.date_created)}
-  </span>
-
-  <span>
-    👤 Respondida por:
-    ${item.answer?.user_name || item.answer?.user_email || 'Usuário'}
-  </span>
-
-</div>
+            <div class="meta-bottom" style="margin-top:12px;margin-bottom:0;">
+              <span>🕒 ${formatDate(item.answer?.date_created)}</span>
+              <span>👤 ${item.answer?.user_name || item.answer?.user_email || 'Usuário'}</span>
+            </div>
+          </div>
         `;
-
       });
-
     }catch(error){
-
-      container.innerHTML = `
-        <div class="empty">
-          Erro ao carregar perguntas respondidas.
-        </div>
-      `;
-
+      container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
     }
-
     return;
   }
+
+  if(tab === 'stats'){
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="section-title">📊 Estatísticas</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <select id="statsPeriod">
+            <option value="day">Hoje</option>
+            <option value="7days">Últimos 7 dias</option>
+            <option value="30days">Últimos 30 dias</option>
+            <option value="month">Este mês</option>
+            <option value="year">Este ano</option>
+            <option value="custom">Período personalizado</option>
+          </select>
+          <button class="send-btn" onclick="openCalendarBox()">📅 Selecionar período</button>
+          <div id="selectedPeriodText" style="text-align:center;color:var(--text2);font-weight:600;font-size:14px;">
+            Nenhum período selecionado
+          </div>
+          <div id="calendarBox" style="display:none;"></div>
+          <button class="send-btn send-btn-full" onclick="window.loadStats()">Atualizar</button>
+        </div>
+        <div id="statsContent"></div>
+      </div>
+    `;
+    await loadStats();
+    document.getElementById("statsPeriod")?.addEventListener("change", function(){
+      if(this.value !== "custom") document.getElementById("calendarBox").style.display = "none";
+    });
+    return;
+  }
+
+  if(tab === 'settings'){
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="section-title">⚙️ Ajustes</div>
+
+        <div class="settings-item">
+          <div class="settings-label">Usuário logado</div>
+          <div class="user-info-name">${loggedUser.name}</div>
+          <div style="color:var(--text3);font-size:13px;margin-bottom:14px;">${loggedUser.email}</div>
+          <button class="send-btn" onclick="logout()">Sair da conta</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-label">Notificações</div>
+          <button class="send-btn" onclick="requestNotificationPermission()">🔔 Ativar notificações</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-label">Equipe</div>
+          <button class="send-btn" onclick="openUsersPanel()">👥 Gerenciar usuários</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-label">Integrações</div>
+          <div class="status-dot">Mercado Livre conectado</div>
+        </div>
+      </div>
+    `;
+  }
+}
 
 async function loadStats(){
+  const period = document.getElementById("statsPeriod")?.value || "day";
+  const start = document.getElementById("statsStartDate")?.value;
+  const end = document.getElementById("statsEndDate")?.value;
 
-  const period =
-    document.getElementById("statsPeriod")?.value || "day";
-
-    const start =
-  document.getElementById("statsStartDate")?.value;
-
-const end =
-  document.getElementById("statsEndDate")?.value;
-
-let url =
-  `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
-
-function formatDateToApi(value){
-  if(!value) return "";
-
-  if(value.includes("/")){
-    const [day, month, year] = value.split("/");
-    return `${year}-${month}-${day}`;
+  function formatDateToApi(value){
+    if(!value) return "";
+    if(value.includes("/")){ const [d,m,y] = value.split("/"); return `${y}-${m}-${d}`; }
+    return value;
   }
 
-  return value;
-}
-
-if(period === "custom"){
-  url += `&start=${formatDateToApi(start)}&end=${formatDateToApi(end)}`;
-}
-
-window.loadStats = loadStats;
+  let url = `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
+  if(period === "custom") url += `&start=${formatDateToApi(start)}&end=${formatDateToApi(end)}`;
 
   const response = await fetch(url);
-
   const data = await response.json();
-
-  const users =
-    Object.entries(data.by_user || {})
-      .sort((a,b) => b[1] - a[1]);
+  const users = Object.entries(data.by_user || {}).sort((a,b) => b[1]-a[1]);
 
   document.getElementById("statsContent").innerHTML = `
-
-    <div class="stats-card" style="
-      margin-bottom:20px;
-      min-height:auto;
-    ">
-
-      <div class="stats-info">
-
-        <div class="stats-sub">
-          Total de respostas
+    <div class="stats-card" style="margin-bottom:16px;min-height:auto;">
+      <div class="stats-left">
+        <div class="stats-icon">✅</div>
+        <div class="stats-info">
+          <h2>Total de respostas</h2>
+          <div class="stats-number">${data.total}</div>
         </div>
-
-        <div class="stats-number">
-          ${data.total}
-        </div>
-
       </div>
-
     </div>
 
-    <div class="answer-box">
-
-      <div class="answer-title">
-        👥 Ranking de funcionários
-      </div>
-
-      ${
-        users.length === 0
-
-          ? `
-
-            <div class="previous-answer">
-              Nenhuma resposta encontrada.
-            </div>
-
-          `
-
-          : users.map(([name, total], index) => `
-
-              <div style="
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                padding:16px;
-                margin-top:12px;
-                border-radius:18px;
-                background:rgba(255,255,255,.04);
-                border:1px solid rgba(255,255,255,.05);
-              ">
-
-                <div style="
-                  display:flex;
-                  align-items:center;
-                  gap:12px;
-                ">
-
-                  <div style="
-                    width:34px;
-                    height:34px;
-                    border-radius:50%;
-                    background:#7f0000;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-weight:900;
-                  ">
-                    ${index + 1}
-                  </div>
-
-                  <div>
-
-                    <div style="
-                      font-weight:800;
-                      color:white;
-                    ">
-                      ${name}
-                    </div>
-
-                    <div style="
-                      font-size:13px;
-                      color:#9ca3af;
-                    ">
-                      Funcionário
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div style="
-                  background:#22c55e;
-                  color:black;
-                  padding:10px 14px;
-                  border-radius:999px;
-                  font-weight:900;
-                  min-width:55px;
-                  text-align:center;
-                ">
-                  ${total}
-                </div>
-
+    <div style="margin-top:4px;">
+      <div class="answer-title" style="margin-bottom:12px;">👥 Ranking de funcionários</div>
+      ${users.length === 0
+        ? `<div class="empty" style="padding:24px;">Nenhuma resposta no período.</div>`
+        : users.map(([name, total], index) => `
+          <div class="ranking-item ${index === 0 ? 'first' : ''}">
+            <div class="ranking-left">
+              <div class="rank-badge">${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index+1}</div>
+              <div>
+                <div class="rank-name">${name}</div>
+                <div class="rank-role">Funcionário</div>
               </div>
-
-          `).join('')
+            </div>
+            <div class="rank-count">${total}</div>
+          </div>
+        `).join('')
       }
-
     </div>
-
-`;
-
-return;
+  `;
 }
-
-if(tab === 'stats'){
-
-container.innerHTML = `
-
-<div class="question-card">
-
-  <div class="product-title">
-    📊 Estatísticas
-  </div>
-
-  <div class="answer-box" style="
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    margin-bottom:18px;
-  ">
-
-    <select id="statsPeriod" style="
-      padding:14px;
-      border-radius:16px;
-      background:#1f1f1f;
-      color:white;
-      border:1px solid rgba(255,255,255,.08);
-      font-size:16px;
-    ">
-
-      <option value="day">Hoje</option>
-      <option value="7days">Últimos 7 dias</option>
-      <option value="30days">Últimos 30 dias</option>
-      <option value="month">Este mês</option>
-      <option value="year">Este ano</option>
-      <option value="custom">Período personalizado</option>
-
-    </select>
-
-    <button class="send-btn" onclick="openCalendarBox()">
-      📅 Selecionar período
-    </button>
-
-    <div id="selectedPeriodText" style="
-      text-align:center;
-      color:white;
-      font-weight:bold;
-    ">
-      Nenhum período selecionado
-    </div>
-
-    <div id="calendarBox" style="
-      display:none;
-      flex-direction:column;
-      gap:10px;
-    ">
-
-    <button class="send-btn" onclick="openCalendarBox()">
-  📅 Selecionar período
-</button>
-
-<div id="selectedPeriodText" style="text-align:center;font-weight:bold;">
-  Nenhum período selecionado
-</div>
-
-<div id="calendarBox" style="display:none;"></div>
-
-    <button class="send-btn" onclick="window.loadStats()">
-      Atualizar estatísticas
-    </button>
-
-  </div>
-
-  <div id="statsContent"></div>
-
-</div>
-
-`;
-
-await loadStats();
-
-document
-  .getElementById("statsPeriod")
-  ?.addEventListener("change", function(){
-
-    document.getElementById("customDateBox").style.display =
-      this.value === "custom"
-        ? "flex"
-        : "none";
-
-});
-
-return;
-}
-
-if(tab === 'settings'){
-
-container.innerHTML = `
-  <div class="question-card">
-
-    <div class="product-title">
-      ⚙️ Ajustes
-    </div>
-
-<div class="answer-box">
-  <div class="answer-title">
-    👤 Usuário logado
-  </div>
-
-  <div class="previous-answer">
-    ${loggedUser.name}
-  </div>
-
-  <button class="send-btn" onclick="logout()">
-    Sair
-  </button>
-</div>
-
-    <div class="answer-box">
-
-      <div class="answer-title">
-        🔔 Notificações
-      </div>
-
-      <button class="send-btn"
-        onclick="requestNotificationPermission()">
-        Ativar notificações
-      </button>
-
-    </div>
-
-<div class="answer-box">
-
-  <div class="answer-title">
-    👥 Usuários
-  </div>
-
-  <button class="send-btn" onclick="openUsersPanel()">
-    Gerenciar usuários
-  </button>
-
-</div>
-
-    <div class="answer-box">
-
-      <div class="answer-title">
-        🏪 Integrações
-      </div>
-
-<div class="previous-answer" style="
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-">
-
-  <span style="
-    width:12px;
-    height:12px;
-    background:#22c55e;
-    border-radius:50%;
-    display:inline-block;
-  "></span>
-
-  <span>
-    Mercado Livre conectado
-  </span>
-
-</div>
-
-`;
-
-  }
-
-}
+window.loadStats = loadStats;
 
 async function loadUsers(){
-
   const box = document.getElementById("usersList");
-
-  if(!box){
-    return;
-  }
-
-  box.innerHTML = "Carregando usuários...";
-
+  if(!box) return;
+  box.innerHTML = "Carregando...";
   try{
-
-    const response = await fetch(
-      `/api/app?action=users&company_id=${loggedUser.company_id}`
-    );
-
+    const response = await fetch(`/api/app?action=users&company_id=${loggedUser.company_id}`);
     const data = await response.json();
-
     const users = data.users || [];
-
-    if(users.length === 0){
-      box.innerHTML = "Nenhum usuário.";
-      return;
-    }
-
+    if(users.length === 0){ box.innerHTML = `<div class="empty" style="padding:24px;">Nenhum usuário.</div>`; return; }
     box.innerHTML = users.map(user => `
-
-    <div style="
-  background:linear-gradient(180deg,#1f1f1f,#141414);
-  border:1px solid rgba(255,255,255,.08);
-  padding:18px;
-  border-radius:18px;
-  box-shadow:0 8px 25px rgba(0,0,0,.25);
-">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px;
-  ">
-
-    <div>
-
-      <div style="
-        font-size:20px;
-        font-weight:800;
-        color:white;
-        margin-bottom:6px;
-      ">
-        ${user.name}
+      <div class="ranking-item" style="margin-bottom:10px;">
+        <div class="ranking-left">
+          <div class="client-icon">👤</div>
+          <div>
+            <div class="rank-name">${user.name}</div>
+            <div class="rank-role">${user.email}</div>
+            <div style="margin-top:4px;">
+              <span style="
+                display:inline-block;padding:3px 10px;border-radius:999px;
+                background:${user.role==='owner'?'rgba(108,99,255,0.15)':'rgba(255,255,255,0.05)'};
+                color:${user.role==='owner'?'var(--accent2)':'var(--text3)'};
+                font-size:11px;font-weight:700;border:1px solid ${user.role==='owner'?'rgba(108,99,255,0.25)':'var(--border)'};
+              ">${user.role==='owner'?'Administrador':'Funcionário'}</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="deleteUser('${user.id}')" style="
+          background:rgba(239,68,68,0.12);color:var(--red);
+          border:1px solid rgba(239,68,68,0.25);padding:8px 14px;
+          border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:13px;
+          font-family:'Inter',Arial,sans-serif;transition:background .2s;
+        " onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.12)'">
+          Excluir
+        </button>
       </div>
-
-      <div style="
-        color:#cbd5e1;
-        font-size:14px;
-        margin-bottom:6px;
-      ">
-        ${user.email}
-      </div>
-
-      <div style="
-        display:inline-block;
-        padding:6px 10px;
-        border-radius:999px;
-        background:rgba(34,197,94,.15);
-        color:#22c55e;
-        font-size:12px;
-        font-weight:700;
-      ">
-     ${user.role === 'owner'
-  ? 'Administrador'
-  : 'Funcionário'}
-      </div>
-
-    </div>
-
-    <button
-      onclick="deleteUser('${user.id}')"
-      style="
-        background:linear-gradient(135deg,#ff0000,#7f0000);
-        color:white;
-        border:none;
-        padding:10px 14px;
-        border-radius:12px;
-        cursor:pointer;
-        font-weight:700;
-        box-shadow:0 8px 20px rgba(255,0,0,.25);
-      "
-    >
-      Excluir
-    </button>
-
-  </div>
-
-</div>
-
     `).join('');
-
   }catch(error){
-
     box.innerHTML = "Erro ao carregar usuários.";
-
   }
-
 }
 
 async function deleteUser(userId){
-
-  const confirmed = confirm(
-    "Deseja excluir este usuário?"
-  );
-
-  if(!confirmed){
-    return;
-  }
-
-  const response = await fetch(
-    `/api/app?action=delete-user&company_id=${loggedUser.company_id}`,
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        user_id:userId
-      })
-    }
-  );
-
+  if(!confirm("Deseja excluir este usuário?")) return;
+  const response = await fetch(`/api/app?action=delete-user&company_id=${loggedUser.company_id}`,{
+    method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ user_id:userId })
+  });
   const data = await response.json();
-
-  if(!data.success){
-    alert("Erro ao excluir usuário.");
-    return;
-  }
-
-loadUsers();
-
+  if(!data.success){ alert("Erro ao excluir usuário."); return; }
+  loadUsers();
 }
-    
-function openUsersPanel()
 
-{
-
+function openUsersPanel(){
   const container = document.getElementById('questions');
-
   container.innerHTML = `
     <div class="question-card">
-
-      <div class="product-title">
-        👥 Gerenciar usuários
+      <div class="section-title">👥 Gerenciar usuários</div>
+      <div style="margin-bottom:16px;">
+        <button class="send-btn" onclick="openCreateUserPanel()">+ Criar usuário</button>
       </div>
-
-      <div class="answer-box">
-
-  <button class="send-btn" onclick="openCreateUserPanel()">
-    Criar usuário
-  </button>
-
-</div>
-
+      <div class="settings-label">Usuários cadastrados</div>
+      <div id="usersList">Carregando...</div>
+      <div style="margin-top:16px;">
+        <button class="send-btn" onclick="showTab('settings', document.querySelector('.footer-item:nth-child(4)'))">← Voltar</button>
       </div>
-
-      <div class="answer-box">
-
-        <div class="answer-title">
-          Usuários cadastrados
-        </div>
-
-        <div id="usersList">
-          Carregando usuários...
-        </div>
-
-      </div>
-
-      <button class="send-btn" onclick="showTab('settings', document.querySelector('.footer-item:nth-child(4)'))">
-        Voltar
-      </button>
-
     </div>
   `;
-
   loadUsers();
 }
 
 function openCreateUserPanel(){
-
   const container = document.getElementById('questions');
-
   container.innerHTML = `
     <div class="question-card">
-
-      <div class="product-title">
-        👤 Criar novo usuário
-      </div>
-
+      <div class="section-title">👤 Novo usuário</div>
       <div class="answer-box">
-
-        <div class="answer-title">
-          Dados do usuário
-        </div>
-
-        <input id="newUserName" placeholder="Nome do funcionário">
-        <input id="newUserEmail" placeholder="E-mail do funcionário">
-        <input id="newUserPassword" placeholder="Senha">
-
-        <button class="send-btn" onclick="createUser()">
-          Salvar usuário
-        </button>
-
+        <div class="answer-title">Dados do funcionário</div>
+        <input id="newUserName" placeholder="Nome completo">
+        <input id="newUserEmail" type="email" placeholder="E-mail">
+        <input id="newUserPassword" type="password" placeholder="Senha">
+        <button class="send-btn send-btn-full" onclick="createUser()">Salvar usuário</button>
       </div>
-
-      <button class="send-btn" onclick="openUsersPanel()">
-        Voltar
-      </button>
-
+      <div style="margin-top:12px;">
+        <button class="send-btn" onclick="openUsersPanel()">← Voltar</button>
+      </div>
     </div>
   `;
 }
@@ -1752,111 +1361,45 @@ async function createUser(){
   const name = document.getElementById("newUserName").value.trim();
   const email = document.getElementById("newUserEmail").value.trim();
   const password = document.getElementById("newUserPassword").value.trim();
-
-  if(!name || !email || !password){
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  const response = await fetch(
-    `/api/app?action=create-user&company_id=${loggedUser.company_id}`,
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        name,
-        email,
-        password,
-        role:"employee"
-      })
-    }
-  );
-
+  if(!name || !email || !password){ alert("Preencha todos os campos."); return; }
+  const response = await fetch(`/api/app?action=create-user&company_id=${loggedUser.company_id}`,{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ name, email, password, role:"employee" })
+  });
   const data = await response.json();
-
-if(!data.success){
-  alert(JSON.stringify(data));
-  return;
-}
+  if(!data.success){ alert(JSON.stringify(data)); return; }
   alert("Usuário criado com sucesso!");
   openUsersPanel();
 }
 
 window.createUser = createUser;
-
 window.openCreateUserPanel = openCreateUserPanel;
-
 window.openUsersPanel = openUsersPanel;
-window.createUser = createUser;
 
 async function loadMonthlyRanking(){
   const box = document.getElementById("monthlyRanking");
-
   if(!box) return;
-
-  const response = await fetch(
-    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
-  );
-
+  const response = await fetch(`/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`);
   const data = await response.json();
-
-  const ranking = Object.entries(data.by_user || {})
-    .sort((a,b) => b[1] - a[1])
-    .slice(0,3);
-
-  if(ranking.length === 0){
-    box.innerHTML = "";
-    return;
-  }
-
+  const ranking = Object.entries(data.by_user || {}).sort((a,b) => b[1]-a[1]).slice(0,3);
+  if(ranking.length === 0){ box.innerHTML = ""; return; }
   box.innerHTML = `
-    <div class="question-card">
-      <div class="product-title">
-        🏆 Top funcionários do mês
-      </div>
-
+    <div class="question-card" style="margin-top:0;">
+      <div class="section-title">🏆 Top do mês</div>
       ${ranking.map(([name,total], index) => `
-        <div style="
-          margin-top:14px;
-          padding:18px;
-          border-radius:22px;
-          background:${index === 0 ? 'linear-gradient(135deg,#7f0000,#ff0000)' : 'rgba(255,255,255,.05)'};
-          border:${index === 0 ? '1px solid #facc15' : '1px solid rgba(255,255,255,.08)'};
-          box-shadow:${index === 0 ? '0 0 25px rgba(255,0,0,.45)' : 'none'};
-        ">
-          <div style="font-size:18px;font-weight:900;">
-            ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} ${name}
-          </div>
-
-          <div style="margin-top:8px;font-size:14px;">
-            ${total} resposta(s) neste mês
+        <div class="ranking-item ${index===0?'first':''}" style="margin-bottom:10px;">
+          <div class="ranking-left">
+            <div class="rank-badge">${index===0?'🥇':index===1?'🥈':'🥉'}</div>
+            <div>
+              <div class="rank-name">${name}</div>
+              <div class="rank-role">${total} resposta(s)</div>
+            </div>
           </div>
         </div>
       `).join('')}
     </div>
   `;
 }
-
-function openCalendarBox(){
-  const box = document.getElementById("calendarBox");
-  box.style.display = box.style.display === "none" ? "flex" : "none";
-}
-
-function applyCalendarPeriod(){
-  const start = document.getElementById("statsStartDate").value;
-  const end = document.getElementById("statsEndDate").value;
-
-  document.getElementById("statsPeriod").value = "custom";
-  document.getElementById("selectedPeriodText").innerText =
-    `${start} até ${end}`;
-
-  document.getElementById("calendarBox").style.display = "none";
-
-  loadStats();
-}
-
 
 let calendarStart = null;
 let calendarEnd = null;
@@ -1865,129 +1408,65 @@ let calendarMonth = new Date();
 function openCalendarBox(){
   const box = document.getElementById("calendarBox");
   box.style.display = box.style.display === "none" ? "block" : "none";
-  renderCalendar();
+  if(box.style.display === "block") renderCalendar();
 }
 
 function renderCalendar(){
   const box = document.getElementById("calendarBox");
   const year = calendarMonth.getFullYear();
   const month = calendarMonth.getMonth();
-
   const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-
-  const monthName = calendarMonth.toLocaleDateString("pt-BR", {
-    month: "long"
-  });
-
+  const lastDate = new Date(year, month+1, 0).getDate();
+  const monthName = calendarMonth.toLocaleDateString("pt-BR",{ month:"long", year:"numeric" });
   let days = "";
-
-  for(let i = 0; i < firstDay; i++){
-    days += `<div></div>`;
-  }
-
-  for(let day = 1; day <= lastDate; day++){
-    const date = `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-
-    const active =
-      date === calendarStart || date === calendarEnd
-        ? "background:#2563eb;color:white;border-radius:50%;"
-        : "";
-
+  for(let i=0;i<firstDay;i++) days += `<div></div>`;
+  for(let day=1;day<=lastDate;day++){
+    const date = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const active = date===calendarStart||date===calendarEnd;
+    const inRange = calendarStart&&calendarEnd&&date>calendarStart&&date<calendarEnd;
     days += `
       <div onclick="selectCalendarDate('${date}')" style="
-        padding:10px;
-        text-align:center;
-        cursor:pointer;
-        font-weight:bold;
-        ${active}
-      ">
+        padding:8px 4px;text-align:center;cursor:pointer;font-weight:600;font-size:13px;
+        border-radius:8px;transition:background .15s;
+        background:${active?'var(--accent)':inRange?'rgba(108,99,255,0.15)':'transparent'};
+        color:${active?'white':'var(--text)'};
+      " onmouseover="if(!${active})this.style.background='rgba(108,99,255,0.1)'"
+         onmouseout="if(!${active})this.style.background='${inRange?'rgba(108,99,255,0.15)':'transparent'}'">
         ${day}
       </div>
     `;
   }
-
   box.innerHTML = `
-    <div style="
-      background:white;
-      color:black;
-      border-radius:18px;
-      padding:18px;
-      margin-top:14px;
-    ">
-
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        font-weight:bold;
-        font-size:18px;
-        margin-bottom:18px;
-      ">
-        <button onclick="changeCalendarMonth(-1)">‹</button>
-        <span>${monthName}</span>
-        <button onclick="changeCalendarMonth(1)">›</button>
-      </div>
-
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(7,1fr);
-        gap:8px;
-        text-align:center;
-        margin-bottom:8px;
-      ">
-        <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
-      </div>
-
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(7,1fr);
-        gap:8px;
-      ">
-        ${days}
-      </div>
-
-      <button class="send-btn" onclick="applyCalendarPeriod()">
-        Aplicar período
-      </button>
-
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <button onclick="changeCalendarMonth(-1)" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:'Inter',Arial,sans-serif;">‹</button>
+      <span style="font-weight:700;font-size:14px;color:var(--text);text-transform:capitalize;">${monthName}</span>
+      <button onclick="changeCalendarMonth(1)" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:'Inter',Arial,sans-serif;">›</button>
     </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:8px;">
+      ${['D','S','T','Q','Q','S','S'].map(d=>`<div style="font-size:11px;font-weight:700;color:var(--text3);padding:4px;">${d}</div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${days}</div>
+    <button class="send-btn send-btn-full" style="margin-top:14px;" onclick="applyCalendarPeriod()">Aplicar período</button>
   `;
 }
 
 function selectCalendarDate(date){
-  if(!calendarStart || calendarEnd){
-    calendarStart = date;
-    calendarEnd = null;
-  }else{
-    calendarEnd = date;
-  }
-
+  if(!calendarStart||calendarEnd){ calendarStart=date; calendarEnd=null; }
+  else { calendarEnd=date; if(calendarEnd<calendarStart){const t=calendarStart;calendarStart=calendarEnd;calendarEnd=t;} }
   renderCalendar();
 }
 
 function changeCalendarMonth(value){
-  calendarMonth.setMonth(calendarMonth.getMonth() + value);
+  calendarMonth.setMonth(calendarMonth.getMonth()+value);
   renderCalendar();
 }
 
 function applyCalendarPeriod(){
- if(!calendarStart){
-  alert("Selecione uma data.");
-  return;
-}
-
-if(!calendarEnd){
-  calendarEnd = calendarStart;
-}
-
-  document.getElementById("statsPeriod").value = "custom";
-
-  document.getElementById("selectedPeriodText").innerText =
-    `${calendarStart} até ${calendarEnd}`;
-
-  document.getElementById("calendarBox").style.display = "none";
-
+  if(!calendarStart){ alert("Selecione uma data."); return; }
+  if(!calendarEnd) calendarEnd=calendarStart;
+  document.getElementById("statsPeriod").value="custom";
+  document.getElementById("selectedPeriodText").innerText=`${calendarStart} até ${calendarEnd}`;
+  document.getElementById("calendarBox").style.display="none";
   loadStats();
 }
 
@@ -1997,59 +1476,30 @@ window.changeCalendarMonth = changeCalendarMonth;
 window.applyCalendarPeriod = applyCalendarPeriod;
 
 let audioUnlocked = false;
-
 document.addEventListener("click", () => {
-
-  if(audioUnlocked){
-    return;
-  }
-
-  const audio =
-    document.getElementById("notificationSound");
-
+  if(audioUnlocked) return;
+  const audio = document.getElementById("notificationSound");
   if(audio){
-
-    audio.volume = 0;
-
-    audio.play()
-      .then(() => {
-
-        audio.pause();
-        audio.currentTime = 0;
-        audio.volume = 1;
-
-        audioUnlocked = true;
-
-      })
-      .catch(() => {});
-
+    audio.volume=0;
+    audio.play().then(()=>{audio.pause();audio.currentTime=0;audio.volume=1;audioUnlocked=true;}).catch(()=>{});
   }
-
-}, { once:true });
+},{ once:true });
 
 function playNotificationSound(){
   const audio = document.getElementById("notificationSound");
-
-  if(!audio){
-    return;
-  }
-
-  audio.currentTime = 0;
-
-  audio.play().catch(() => {
-    console.log("Som bloqueado até o usuário interagir com o app.");
-  });
+  if(!audio) return;
+  audio.currentTime=0;
+  audio.play().catch(()=>{});
 }
 
-</script>
+    </script>
 
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
-  });
-}
-</script>
-
+    <script>
+      if("serviceWorker" in navigator){
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js");
+        });
+      }
+    </script>
   </body>
 </html>
