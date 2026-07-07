@@ -1535,151 +1535,144 @@ window.toggleTheme = toggleTheme;
       
 function buildMobileCard(item){
   return `
-    <div class="question-card" style="padding:0;overflow:hidden;">
+    <div style="
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    ">
 
-      <!-- Produto -->
+      <!-- Linha do produto -->
       <div style="
-        display:flex;
-        align-items:center;
-        gap:14px;
-        padding:16px 20px;
-        border-bottom:1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
       ">
         ${item.product_thumbnail ? `
-          <a href="${item.product_link||'#'}" target="_blank">
-            <img src="${item.product_thumbnail}" style="
-              width:52px;height:52px;
-              border-radius:8px;
-              object-fit:cover;
-              border:1px solid var(--border);
-              flex-shrink:0;
-            ">
-          </a>
+          <img src="${item.product_thumbnail}" style="
+            width: 48px; height: 48px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+          ">
         ` : ''}
 
-        <div style="flex:1;min-width:0;">
-          ${item.product_sku ? `
-            <div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:2px;">
-              SKU ${item.product_sku}
-            </div>
-          ` : ''}
+        <div style="flex: 1; min-width: 0;">
+          ${item.product_sku ? `<div style="font-size: 12px; color: var(--text3); margin-bottom: 2px;">SKU ${item.product_sku}</div>` : ''}
           <div style="
-            font-size:14px;font-weight:600;color:var(--text);
-            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-            margin-bottom:2px;
-          ">${item.product_title||item.item_id}</div>
+            font-size: 13px; font-weight: 500; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          ">${item.product_title || item.item_id}</div>
         </div>
 
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);">
-            ${item.product_quantity||0} unidades
+        <div style="display: flex; gap: 24px; align-items: center; flex-shrink: 0;">
+          <div style="text-align: center;">
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">${item.product_quantity || 0} unidades</div>
           </div>
           ${item.product_price ? `
-            <div style="font-size:14px;font-weight:700;color:var(--text);">
-              ${formatPrice(item.product_price)}
+            <div style="text-align: center;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text);">${formatPrice(item.product_price)}</div>
             </div>
           ` : ''}
+          <div style="font-size: 13px; color: var(--text3);">Frete grátis</div>
         </div>
       </div>
 
-      <!-- Pergunta -->
-      <div style="padding:16px 20px;">
+      <!-- Corpo da pergunta -->
+      <div style="padding: 16px;">
 
-        <!-- Cliente -->
+        <!-- Cliente e loja -->
         <div style="
-          display:flex;
-          align-items:center;
-          gap:8px;
-          margin-bottom:10px;
-          font-size:13px;
-          color:var(--text2);
-          font-weight:600;
+          font-size: 12px; color: var(--text3);
+          margin-bottom: 10px;
+          display: flex; align-items: center; gap: 6px;
         ">
-          <span>${clientName(item)}</span>
-          <span style="color:var(--border2);">|</span>
-          <span style="color:var(--text3);font-weight:400;">🏪 ${item.store_name}</span>
+          <span style="font-weight: 600; color: var(--text2);">${clientName(item)}</span>
+          <span>|</span>
+          <span>${item.store_name}</span>
         </div>
 
-        <!-- Texto da pergunta -->
-        <div style="
-          display:flex;
-          align-items:flex-start;
-          gap:10px;
-          margin-bottom:14px;
-        ">
+        <!-- Ponto azul + pergunta + tempo -->
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
           <span style="
-            width:10px;height:10px;
-            border-radius:50%;
-            background:var(--accent);
-            flex-shrink:0;
-            margin-top:5px;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #3483fa;
+            flex-shrink: 0; margin-top: 5px;
           "></span>
           <div>
-            <span style="font-size:16px;font-weight:700;color:var(--text);">
-              ${item.text}
-            </span>
-            <span style="font-size:13px;color:var(--text3);margin-left:8px;">
-              Há ${timeAgo(item.date_created)}
-            </span>
+            <span style="font-size: 15px; font-weight: 700; color: var(--text);">${item.text}</span>
+            <span style="font-size: 12px; color: var(--text3); margin-left: 8px;">Há ${timeAgo(item.date_created)}</span>
           </div>
         </div>
 
         ${renderPreviousQuestions(item)}
 
-        <!-- Contador e textarea -->
-        <div style="position:relative;">
-          <textarea
-            id="answer-${item.id}"
-            placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
-            maxlength="2000"
-            oninput="updateCounter('${item.id}', this.value.length)"
-            style="
-              width:100%;
-              height:80px;
-              border-radius:8px;
-              border:1px solid var(--border2);
-              background:var(--surface);
-              color:var(--text);
-              padding:12px 14px;
-              font-size:14px;
-              font-family:'Inter',Arial,sans-serif;
-              resize:none;
-              outline:none;
-              line-height:1.5;
-            "
-          ></textarea>
-          <div style="
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            margin-top:6px;
-          ">
-            <div style="font-size:12px;color:var(--text3);">
-              ℹ️ Digite # para acessar respostas rápidas.
-            </div>
-            <div style="font-size:12px;color:var(--text3);" id="counter-${item.id}">
-              0 / 2000
-            </div>
-          </div>
+        <!-- Botão respostas rápidas -->
+        <div style="margin-bottom: 10px;">
+          <button style="
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid #3483fa;
+            background: transparent;
+            color: #3483fa;
+            font-size: 13px; font-weight: 600;
+            font-family: 'Inter', Arial, sans-serif;
+            cursor: pointer;
+          " onclick="document.getElementById('answer-${item.id}').value='# '; document.getElementById('answer-${item.id}').focus();">
+            # Respostas rápidas
+          </button>
         </div>
 
-        <!-- Botão responder -->
-        <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+        <!-- Textarea + botão responder lado a lado -->
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="flex: 1;">
+            <textarea
+              id="answer-${item.id}"
+              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+              maxlength="2000"
+              oninput="updateCounter('${item.id}', this.value.length)"
+              style="
+                width: 100%; height: 72px;
+                border: 1px solid var(--border2);
+                border-radius: 4px;
+                background: var(--surface);
+                color: var(--text);
+                padding: 10px 14px;
+                font-size: 14px;
+                font-family: 'Inter', Arial, sans-serif;
+                resize: none; outline: none;
+                line-height: 1.5;
+              "
+            ></textarea>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+              <div style="font-size: 12px; color: var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+              <div style="font-size: 12px; color: var(--text3);" id="counter-${item.id}">0 / 2000</div>
+            </div>
+          </div>
+
           <button
             onclick="sendAnswer('${item.id}','${item.store_id}',this)"
             style="
-              padding:10px 28px;
-              border-radius:8px;
-              border:none;
-              background:linear-gradient(135deg,var(--accent),#8b5cf6);
-              color:white;
-              font-size:14px;
-              font-weight:700;
-              font-family:'Inter',Arial,sans-serif;
-              cursor:pointer;
-              transition:all .2s;
-              box-shadow:0 4px 12px rgba(108,99,255,0.2);
+              padding: 10px 20px;
+              border-radius: 4px;
+              border: 1px solid var(--border2);
+              background: var(--surface2);
+              color: var(--text2);
+              font-size: 14px; font-weight: 600;
+              font-family: 'Inter', Arial, sans-serif;
+              cursor: pointer;
+              white-space: nowrap;
+              flex-shrink: 0;
+              margin-top: 0;
+              transition: all .2s;
             "
+            onmouseover="this.style.background='var(--surface3)'"
+            onmouseout="this.style.background='var(--surface2)'"
           >
             Responder
           </button>
