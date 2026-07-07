@@ -1689,7 +1689,9 @@ function buildDesktopRow(item){
 
       <div class="ml-card-product">
         ${item.product_thumbnail
-          ? `<img src="${item.product_thumbnail}" alt="produto">`
+          ? `<a href="${item.product_link || '#'}" target="_blank" style="flex-shrink:0;">
+               <img src="${item.product_thumbnail}" alt="produto" style="width:52px;height:52px;border-radius:4px;object-fit:cover;border:1px solid var(--border);display:block;">
+             </a>`
           : `<div style="width:52px;height:52px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`
         }
         <div class="ml-card-product-info">
