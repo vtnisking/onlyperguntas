@@ -1775,8 +1775,7 @@ function desktopReload(){
 // ──────────────────────────────────────
 function openDetail(item){
   selectedQuestionId = String(item.id);
-  document.queryS
-  // Marca o item selecionado na lista
+
   document.querySelectorAll('.q-row').forEach(r => {
     r.classList.toggle('selected', r.getAttribute('data-id') === selectedQuestionId);
   });
@@ -1795,7 +1794,6 @@ function openDetail(item){
       <button class="detail-close" onclick="closeDetail()">✕</button>
     </div>
 
-    <!-- Produto -->
     <div style="
       display:flex;align-items:center;gap:12px;
       padding:14px 0;
@@ -1820,14 +1818,12 @@ function openDetail(item){
       </div>
     </div>
 
-    <!-- Cliente e loja -->
     <div style="font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
       <span style="font-weight:600;color:var(--text2);">${clientName(item)}</span>
       <span>|</span>
       <span>${item.store_name}</span>
     </div>
 
-    <!-- Ponto azul + pergunta -->
     <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;">
       <span style="
         width:9px;height:9px;border-radius:50%;
@@ -1854,7 +1850,6 @@ function openDetail(item){
       </div>
     ` : ''}
 
-    <!-- Botão respostas rápidas -->
     <div style="margin-bottom:10px;">
       <button style="
         display:inline-flex;align-items:center;gap:6px;
@@ -1867,7 +1862,6 @@ function openDetail(item){
       </button>
     </div>
 
-    <!-- Textarea + botão lado a lado -->
     <div style="display:flex;gap:10px;align-items:flex-start;">
       <div style="flex:1;">
         <textarea
@@ -1902,6 +1896,7 @@ function openDetail(item){
       </button>
     </div>
   `;
+}
 
 function closeDetail(){
   selectedQuestionId = null;
