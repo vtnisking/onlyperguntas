@@ -1142,6 +1142,263 @@ body.dark select option {
   background: var(--surface2);
 }
   
+@media (min-width: 900px) {
+  .ml-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+
+  .ml-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .ml-card-product {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ml-card-product img {
+    width: 52px; height: 52px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .ml-card-product-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ml-card-product-sku {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 2px;
+  }
+
+  .ml-card-product-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ml-card-product-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .ml-card-product-freight {
+    font-size: 12px;
+    color: #00a650;
+    font-weight: 600;
+  }
+
+  .ml-card-dots {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+
+  .ml-card-dots:hover { background: var(--surface2); }
+
+  .ml-card-question-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  .ml-card-question-row:hover { background: var(--surface2); }
+
+  .ml-card-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #3483fa;
+    flex-shrink: 0;
+  }
+
+  .ml-card-question-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ml-card-time {
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ml-card-urgency {
+    font-size: 12px;
+    color: #f73;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ml-card-arrow {
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    transition: transform .25s;
+  }
+
+  .ml-card-arrow.open { transform: rotate(180deg); }
+
+  .ml-card-expanded {
+    display: none;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    animation: mlFadeIn .18s ease;
+  }
+
+  .ml-card-expanded.open { display: block; }
+
+  @keyframes mlFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ml-card-client {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ml-card-client span:first-child {
+    font-weight: 600;
+    color: var(--text2);
+  }
+
+  .ml-card-q-full {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .ml-card-q-full-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  .ml-card-q-full-time {
+    font-size: 12px;
+    color: var(--text3);
+    margin-left: 8px;
+    font-weight: 400;
+  }
+
+  .ml-quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid #3483fa;
+    background: transparent;
+    color: #3483fa;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background .18s;
+  }
+
+  .ml-quick-btn:hover { background: rgba(52,131,250,0.06); }
+
+  .ml-answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .ml-answer-wrap { flex: 1; }
+
+  .ml-answer-wrap textarea {
+    width: 100%;
+    height: 72px;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Inter', Arial, sans-serif;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color .2s, box-shadow .2s;
+    margin-bottom: 0;
+  }
+
+  .ml-answer-wrap textarea:focus {
+    border-color: #3483fa;
+    box-shadow: 0 0 0 3px rgba(52,131,250,0.1);
+  }
+
+  .ml-counter-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .ml-counter-hint { font-size: 12px; color: var(--text3); }
+  .ml-counter-num  { font-size: 12px; color: var(--text3); }
+
+  .ml-reply-btn {
+    padding: 10px 24px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background .18s;
+  }
+
+  .ml-reply-btn:hover { background: var(--surface3); }
+}
   
 </style>
   </head>
@@ -1415,18 +1672,98 @@ if(loggedUser){
   if(settingsEmail) settingsEmail.innerText = loggedUser.email;
 }
 
-function logout(){
-  localStorage.removeItem("centralizachat_user");
-  window.location.href = "/login.html";
+function buildDesktopRow(item){
+  const cardId   = `ml-card-${item.id}`;
+  const expandId = `ml-expanded-${item.id}`;
+  const arrowId  = `ml-arrow-${item.id}`;
+  const taId     = `ml-ta-${item.id}`;
+  const cntId    = `ml-cnt-${item.id}`;
+
+  return `
+    <div class="ml-card" id="${cardId}">
+
+      <div class="ml-card-product">
+        ${item.product_thumbnail
+          ? `<img src="${item.product_thumbnail}" alt="produto">`
+          : `<div style="width:52px;height:52px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`
+        }
+        <div class="ml-card-product-info">
+          ${item.product_sku ? `<div class="ml-card-product-sku">SKU ${item.product_sku}</div>` : ''}
+          <div class="ml-card-product-title">${item.product_title || item.item_id}</div>
+        </div>
+        <div class="ml-card-product-meta">
+          <div>${item.product_quantity || 0} unidades</div>
+          ${item.product_price ? `<div>${formatPrice(item.product_price)}</div>` : ''}
+          <div class="ml-card-product-freight">Frete grátis</div>
+        </div>
+        <button class="ml-card-dots" title="Opções">•••</button>
+      </div>
+
+      <div class="ml-card-question-row" onclick="toggleMlCard('${item.id}')">
+        <span class="ml-card-dot"></span>
+        <span class="ml-card-question-text">${item.text}</span>
+        <span class="ml-card-time">Há ${timeAgo(item.date_created)}</span>
+        <span class="ml-card-urgency">Responda o quanto antes</span>
+        <span class="ml-card-arrow" id="${arrowId}">▼</span>
+      </div>
+
+      <div class="ml-card-expanded" id="${expandId}">
+
+        <div class="ml-card-client">
+          <span>${clientName(item)}</span>
+          <span>|</span>
+          <span>${item.store_name || ''}</span>
+        </div>
+
+        <div class="ml-card-q-full">
+          <span class="ml-card-dot" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <span class="ml-card-q-full-text">${item.text}</span>
+            <span class="ml-card-q-full-time">Há ${timeAgo(item.date_created)}</span>
+          </div>
+        </div>
+
+        ${(item.previous_questions||[]).length > 0 ? `
+          <button class="previous-toggle" style="margin-bottom:10px;" onclick="togglePrevious('ml-prev-${item.id}')">
+            🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
+          </button>
+          <div id="ml-prev-${item.id}" style="display:none;margin-bottom:12px;">
+            ${item.previous_questions.map(q => `
+              <div class="previous" style="margin-bottom:8px;">
+                <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
+                ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ''}
+                <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status==='ANSWERED'?'Respondida':'Pendente'}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <button class="ml-quick-btn" onclick="document.getElementById('${taId}').value='# ';document.getElementById('${taId}').focus();">
+          # Respostas rápidas
+        </button>
+
+        <div class="ml-answer-row">
+          <div class="ml-answer-wrap">
+            <textarea
+              id="${taId}"
+              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+              maxlength="2000"
+              oninput="document.getElementById('${cntId}').innerText=this.value.length+' / 2000'"
+            ></textarea>
+            <div class="ml-counter-row">
+              <span class="ml-counter-hint">ℹ️ Digite # para acessar suas respostas rápidas.</span>
+              <span class="ml-counter-num" id="${cntId}">0 / 2000</span>
+            </div>
+          </div>
+          <button class="ml-reply-btn" onclick="sendAnswerMl('${item.id}','${item.store_id}','${taId}',this)">
+            Responder
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
 }
-window.logout = logout;
-
-let knownQuestionIds = new Set();
-let firstLoadDone = false;
-let allQuestionsCache = [];
-let selectedQuestionId = null;
-
-const isDesktop = () => window.innerWidth >= 900;
 
 // ──────────────────────────────────────
 // SHARED: Notification
@@ -1731,27 +2068,11 @@ async function loadDesktopQuestions(silent=false){
       return;
     }
 
-    questions.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'q-row' + (String(item.id)===String(selectedQuestionId)?' selected':'');
-      row.setAttribute('data-id', item.id);
-      row.innerHTML = `
-        ${item.product_thumbnail
-          ? `<img class="q-thumb" src="${item.product_thumbnail}" alt="produto">`
-          : `<div class="q-thumb-placeholder">📦</div>`}
-        <div class="q-body">
-          <div class="q-top">
-            <span class="q-store">🏪 ${item.store_name}</span>
-            <span class="q-time">⏳ ${timeAgo(item.date_created)}</span>
-          </div>
-          <div class="q-product">${item.product_title||item.item_id}</div>
-          <div class="q-text">${item.text}</div>
-          <div class="q-client">👤 ${clientName(item)}</div>
-        </div>
-      `;
-      row.addEventListener('click', () => openDetail(item));
-      listEl.appendChild(row);
-    });
+questions.forEach(item => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = buildDesktopRow(item);
+  listEl.appendChild(wrapper.firstElementChild);
+});
 
   }catch(e){
     const listEl = document.getElementById('desktopQList');
