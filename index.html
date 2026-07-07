@@ -1119,6 +1119,42 @@
 
     <script>
 
+      async function loadDesktopMonthlyRanking(){
+  const box = document.getElementById("desktopMonthlyRanking");
+  if(!box) return;
+
+  const response = await fetch(
+    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
+  );
+  const data = await response.json();
+
+  const ranking = Object.entries(data.by_user || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if(ranking.length === 0){ box.innerHTML = ""; return; }
+
+  box.innerHTML = `
+    <div style="max-width:600px;margin-top:8px;">
+      <div class="detail-label" style="margin-bottom:14px;">🏆 Top funcionários do mês</div>
+      ${ranking.map(([name, total], index) => `
+        <div class="ranking-item ${index === 0 ? 'first' : ''}" style="margin-bottom:10px;">
+          <div class="ranking-left">
+            <div class="rank-badge">
+              ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+            </div>
+            <div>
+              <div class="rank-name">${name}</div>
+              <div class="rank-role">${total} resposta(s) este mês</div>
+            </div>
+          </div>
+          <div class="rank-count">${total}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 const loggedUser = JSON.parse(localStorage.getItem("centralizachat_user"));
 if(!loggedUser){ window.location.href = "/login.html"; }
 
