@@ -2060,6 +2060,14 @@ async function loadDesktopQuestions(silent=false){
     const dStores = document.getElementById('dStatStores');
     if(dStores) dStores.innerText = storeNames.length || '—';
 
+    fetch(`/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`)
+  .then(r => r.json())
+  .then(d => {
+    const todayEl = document.getElementById('dStatToday');
+    if(todayEl) todayEl.innerText = d.total ?? '—';
+  })
+  .catch(() => {});
+
     if(!listEl) return;
     listEl.innerHTML = '';
 
