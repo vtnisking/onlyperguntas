@@ -1657,6 +1657,11 @@ body.dark select option {
   `;
 }
 
+let knownQuestionIds = new Set();
+let firstLoadDone = false;
+let allQuestionsCache = [];
+let selectedQuestionId = null;
+const isDesktop = () => window.innerWidth >= 900;      
 const loggedUser = JSON.parse(localStorage.getItem("centralizachat_user"));
 if(!loggedUser){ window.location.href = "/login.html"; }
 
