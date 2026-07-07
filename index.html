@@ -1296,8 +1296,13 @@ async function loadDesktopQuestions(silent=false){
     listEl.innerHTML = '';
 
     if(questions.length === 0){
-      listEl.innerHTML = `<div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div>`;
-      closeDetail(); return;
+      listEl.innerHTML = `
+        <div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div>
+        <div id="desktopMonthlyRanking"></div>
+      `;
+      closeDetail();
+      loadDesktopMonthlyRanking();
+      return;
     }
 
     questions.forEach(item => {
