@@ -1,0 +1,3051 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#0f0f13">
+    <title>CentralizaChat</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  
+  :root {
+    --bg:        #f5f5f7;
+    --surface:   #ffffff;
+    --surface2:  #f0f0f5;
+    --surface3:  #e8e8ef;
+    --border:    rgba(0,0,0,0.07);
+    --border2:   rgba(0,0,0,0.12);
+    --accent:    #6c63ff;
+    --accent2:   #5a52e0;
+    --green:     #16a34a;
+    --yellow:    #d97706;
+    --red:       #dc2626;
+    --text:      #111118;
+    --text2:     #555566;
+    --text3:     #9999aa;
+    --sidebar-w: 240px;
+    --detail-w:  360px;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+  }
+
+  html, body {
+    width: 100%; min-height: 100%; overflow-x: hidden;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ════════════════════════════════
+     MOBILE LAYOUT
+  ════════════════════════════════ */
+
+  .mobile-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px 130px;
+  }
+
+  header.mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-top: 4px;
+  }
+
+  .logo-full {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    height: 48px;
+  }
+
+  .logo-full img {
+    height: 160px;
+    width: auto;
+    object-fit: contain;
+    margin-top: 20px;
+  }
+
+  .footer-menu {
+    position: fixed;
+    bottom: 14px;
+    left: 12px;
+    right: 12px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+    z-index: 99999;
+  }
+
+  .footer-item {
+    flex: 1;
+    height: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: var(--radius-md);
+    position: relative;
+    transition: all .2s ease;
+    cursor: pointer;
+    margin: 0 4px;
+  }
+
+  .footer-item:hover { color: var(--text2); }
+  .footer-item.active { color: var(--accent); }
+
+  .footer-item.active .footer-icon-wrap {
+    background: rgba(108,99,255,0.10);
+    border-color: rgba(108,99,255,0.18);
+  }
+
+  .footer-icon-wrap {
+    width: 40px; height: 32px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s ease;
+  }
+
+  .footer-icon {
+    font-size: 20px; line-height: 1;
+    transition: transform .2s ease;
+  }
+
+  .footer-item.active .footer-icon { transform: scale(1.1); }
+
+  /* ════════════════════════════════
+     DESKTOP LAYOUT
+  ════════════════════════════════ */
+
+  .desktop-layout { display: none; }
+
+  @media (min-width: 900px) {
+
+    .mobile-container,
+    .mobile-header,
+    .footer-menu {
+      display: none !important;
+    }
+
+    .desktop-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      padding: 28px 16px;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px;
+      margin-bottom: 36px;
+      text-decoration: none;
+    }
+
+    .sidebar-logo img {
+      height: 120px;
+      width: auto;
+      object-fit: contain;
+      margin-top: 12px;
+      filter: brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(600%) hue-rotate(220deg);
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 10px;
+      margin-bottom: 8px;
+      margin-top: 24px;
+    }
+
+    .sidebar-section:first-of-type { margin-top: 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s ease;
+      margin-bottom: 2px;
+      position: relative;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(108,99,255,0.08);
+      border-color: rgba(108,99,255,0.15);
+      color: var(--accent);
+    }
+
+    .nav-icon { font-size: 18px; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .18s;
+    }
+
+    .user-chip:hover { background: var(--surface3); }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white;
+      flex-shrink: 0;
+    }
+
+    .user-chip-info { flex: 1; min-width: 0; }
+
+    .user-chip-name {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .user-chip-role { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+    /* ── Main content ── */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      height: 64px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    }
+
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', Arial, sans-serif;
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .topbar-btn:hover { background: var(--surface3); color: var(--text); }
+
+    .topbar-btn.primary {
+      background: rgba(108,99,255,0.08);
+      border-color: rgba(108,99,255,0.2);
+      color: var(--accent);
+    }
+
+    .topbar-btn.primary:hover { background: rgba(108,99,255,0.15); }
+
+    /* ── Page area ── */
+    .page-area {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Questions list ── */
+    .questions-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+
+    .questions-list::-webkit-scrollbar { width: 6px; }
+    .questions-list::-webkit-scrollbar-track { background: transparent; }
+    .questions-list::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 999px; }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .stat-mini:hover {
+      border-color: rgba(108,99,255,0.25);
+      box-shadow: 0 4px 16px rgba(108,99,255,0.08);
+    }
+
+    .stat-mini::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      opacity: 0.6;
+      border-radius: 2px 2px 0 0;
+    }
+
+    .stat-mini-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .stat-mini-value {
+      font-size: 32px; font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-mini-sub {
+      font-size: 12px; color: var(--text3);
+      margin-top: 4px; font-weight: 500;
+    }
+
+    /* ── Question row ── */
+    .q-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .18s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .q-row:hover {
+      border-color: rgba(108,99,255,0.25);
+      box-shadow: 0 4px 20px rgba(108,99,255,0.08);
+      transform: translateY(-1px);
+    }
+
+    .q-row.selected {
+      border-color: var(--accent);
+      background: rgba(108,99,255,0.03);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+    }
+
+    .q-thumb {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .q-thumb-placeholder {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+
+    .q-body { flex: 1; min-width: 0; }
+
+    .q-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .q-store {
+      font-size: 12px; font-weight: 700;
+      color: var(--accent);
+      background: rgba(108,99,255,0.08);
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(108,99,255,0.15);
+    }
+
+    .q-time {
+      font-size: 12px; color: var(--text3); font-weight: 500;
+      margin-left: auto;
+    }
+
+    .q-product {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      margin-bottom: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .q-text {
+      font-size: 13px; color: var(--text2);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .q-client {
+      font-size: 12px; color: var(--text3);
+      margin-top: 8px; font-weight: 500;
+    }
+
+    /* ── Detail panel ── */
+    .detail-panel {
+      width: var(--detail-w);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      transition: width .25s ease;
+      box-shadow: -2px 0 12px rgba(0,0,0,0.04);
+    }
+
+    .detail-panel::-webkit-scrollbar { width: 6px; }
+    .detail-panel::-webkit-scrollbar-track { background: transparent; }
+    .detail-panel::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 999px; }
+
+    .detail-panel.hidden { width: 0; overflow: hidden; border: none; box-shadow: none; }
+
+    .detail-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 40px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .detail-empty-icon { font-size: 40px; opacity: 0.35; }
+
+    .detail-content { padding: 24px; }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .detail-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .18s;
+    }
+
+    .detail-close:hover { background: var(--surface3); color: var(--text); }
+
+    .detail-product-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      background: var(--surface2);
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .detail-product-img-placeholder {
+      width: 100%; height: 140px;
+      border-radius: var(--radius-md);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 48px; margin-bottom: 16px;
+    }
+
+    .detail-section { margin-bottom: 16px; }
+
+    .detail-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .detail-value {
+      font-size: 14px; color: var(--text); font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .detail-bubble {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .detail-tag {
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .detail-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    .detail-textarea {
+      width: 100%;
+      height: 90px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: 'Inter', Arial, sans-serif;
+      resize: none;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      line-height: 1.5;
+    }
+
+    .detail-textarea::placeholder { color: var(--text3); }
+    .detail-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+    }
+
+    .detail-send-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Inter', Arial, sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 4px 12px rgba(108,99,255,0.25);
+    }
+
+    .detail-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(108,99,255,0.3);
+    }
+
+    .detail-send-btn:active { transform: scale(0.98); }
+    .detail-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Desktop tabs ── */
+    .desktop-tab { display: none; }
+    .desktop-tab.active { display: flex; flex-direction: column; flex: 1; }
+
+    /* ── Settings grid ── */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 24px 28px;
+      align-items: start;
+    }
+
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .settings-card-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+  } /* end @media desktop */
+
+  /* ════════════════════════════════
+     SHARED COMPONENTS
+  ════════════════════════════════ */
+
+  .stats-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    min-height: 110px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), #8b5cf6);
+    opacity: 0.7;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .stats-left { display: flex; align-items: center; gap: 18px; flex: 1; }
+
+  .stats-icon {
+    width: 56px; height: 56px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(108,99,255,0.04));
+    border: 1px solid rgba(108,99,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+
+  .stats-info { display: flex; flex-direction: column; gap: 2px; }
+
+  .stats-info h2 {
+    font-size: 13px; font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.03em; text-transform: uppercase;
+  }
+
+  .stats-number {
+    font-size: 42px; font-weight: 900;
+    color: var(--text);
+    line-height: 1.1; letter-spacing: -0.02em;
+  }
+
+  .stats-sub { font-size: 12px; color: var(--text3); font-weight: 500; }
+
+  .refresh-btn {
+    width: 48px; height: 48px;
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: var(--radius-md);
+    background: rgba(108,99,255,0.08);
+    color: var(--accent);
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s ease; flex-shrink: 0;
+  }
+
+  .refresh-btn:hover { background: rgba(108,99,255,0.15); transform: rotate(20deg); }
+  .refresh-btn:active { transform: scale(0.94); }
+
+  .question-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    padding: 22px;
+    margin-bottom: 16px;
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .question-card:hover {
+    border-color: rgba(108,99,255,0.2);
+    box-shadow: 0 4px 16px rgba(108,99,255,0.07);
+  }
+
+  .top-row {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 18px; gap: 10px;
+  }
+
+  .store {
+    background: rgba(108,99,255,0.08);
+    border: 1px solid rgba(108,99,255,0.15);
+    color: var(--accent);
+    padding: 8px 14px; border-radius: 999px;
+    font-weight: 700; font-size: 13px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%;
+  }
+
+  .status { padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 12px; white-space: nowrap; }
+
+  .status-pending {
+    background: rgba(217,119,6,0.08);
+    border: 1px solid rgba(217,119,6,0.2);
+    color: var(--yellow);
+  }
+
+  .status-answered {
+    background: rgba(22,163,74,0.08);
+    border: 1px solid rgba(22,163,74,0.2);
+    color: var(--green);
+  }
+
+  .product {
+    display: flex; gap: 14px; margin-bottom: 18px;
+    padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  }
+
+  .product img {
+    width: 90px; height: 90px; border-radius: var(--radius-md);
+    object-fit: cover; background: var(--surface2);
+    border: 1px solid var(--border); flex-shrink: 0;
+  }
+
+  .product-info { flex: 1; min-width: 0; }
+
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; margin-bottom: 8px; }
+
+  .sku {
+    color: var(--text3); background: var(--surface2);
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border);
+  }
+
+  .stock {
+    color: var(--green); background: rgba(22,163,74,0.08);
+    padding: 4px 10px; border-radius: 999px; font-weight: 700;
+    border: 1px solid rgba(22,163,74,0.2);
+  }
+
+  .stock-low {
+    color: var(--red); background: rgba(220,38,38,0.08);
+    padding: 4px 10px; border-radius: 999px; font-weight: 700;
+    border: 1px solid rgba(220,38,38,0.2);
+  }
+
+  .product-title {
+    font-size: 15px; font-weight: 700; line-height: 1.35;
+    margin-bottom: 8px; color: var(--text);
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  .price { color: var(--green); font-weight: 800; font-size: 15px; }
+
+  .client {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; font-size: 15px; font-weight: 700; color: var(--text);
+  }
+
+  .client-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+
+  .question {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    line-height: 1.6; margin-bottom: 14px;
+    font-size: 15px; color: var(--text);
+  }
+
+  .meta-bottom {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    color: var(--text3); font-size: 12px;
+    margin-bottom: 14px; font-weight: 500;
+  }
+
+  .previous-toggle {
+    width: 100%; cursor: pointer;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    color: var(--accent);
+    font-weight: 600; font-size: 13px;
+    text-align: left; margin-bottom: 10px;
+    transition: background .2s;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+
+  .previous-toggle:hover { background: rgba(108,99,255,0.06); }
+
+  .previous {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+
+  .answer-box {
+    background: var(--surface2);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    border: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  .answer-title {
+    color: var(--text3); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  textarea {
+    width: 100%; height: 72px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    padding: 14px 16px;
+    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
+    resize: none; outline: none;
+    transition: border-color .2s, box-shadow .2s; line-height: 1.5;
+  }
+
+  textarea::placeholder { color: var(--text3); }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+  }
+
+  .send-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 12px;
+    border-radius: var(--radius-md); border: none;
+    padding: 13px 24px;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: white; font-size: 14px; font-weight: 700;
+    font-family: 'Inter', Arial, sans-serif; cursor: pointer;
+    transition: all .2s ease; letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(108,99,255,0.2);
+  }
+
+  .send-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(108,99,255,0.3);
+  }
+
+  .send-btn:active { transform: scale(0.97); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .send-btn-full { width: 100%; }
+
+  .empty {
+    text-align: center; color: var(--text3);
+    padding: 48px 24px; font-size: 15px; font-weight: 500;
+  }
+
+  .empty-icon { font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.4; }
+
+  .section-title {
+    font-size: 18px; font-weight: 800; color: var(--text);
+    margin-bottom: 18px; letter-spacing: -0.01em;
+  }
+
+  .ranking-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; margin-top: 10px;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .ranking-item:hover {
+    border-color: rgba(108,99,255,0.2);
+    box-shadow: 0 4px 12px rgba(108,99,255,0.07);
+  }
+
+  .ranking-item.first {
+    background: linear-gradient(135deg, rgba(108,99,255,0.06), rgba(139,92,246,0.03));
+    border-color: rgba(108,99,255,0.2);
+  }
+
+  .ranking-left { display: flex; align-items: center; gap: 12px; }
+
+  .rank-badge {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 13px; color: var(--text2); flex-shrink: 0;
+  }
+
+  .rank-name { font-weight: 700; font-size: 15px; color: var(--text); }
+  .rank-role { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  .rank-count {
+    background: rgba(22,163,74,0.08);
+    border: 1px solid rgba(22,163,74,0.2);
+    color: var(--green);
+    padding: 6px 14px; border-radius: 999px;
+    font-weight: 800; font-size: 14px;
+    min-width: 48px; text-align: center;
+  }
+
+  .settings-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .settings-label {
+    font-size: 12px; font-weight: 700; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px;
+  }
+
+  .status-dot {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: var(--green);
+  }
+
+  .status-dot::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(22,163,74,0.5); flex-shrink: 0;
+  }
+
+  .user-info-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+
+  select {
+    width: 100%; padding: 13px 16px;
+    border-radius: var(--radius-md);
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border2);
+    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
+    outline: none; transition: border-color .2s, box-shadow .2s;
+    cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239999aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+  }
+
+  select option { background: var(--surface); color: var(--text); }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%; padding: 13px 16px; margin-bottom: 10px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-md);
+    background: var(--surface); color: var(--text);
+    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500; outline: none;
+    transition: border-color .2s, box-shadow .2s; display: block;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+  }
+
+  input::placeholder { color: var(--text3); }
+
+  #calendarBox {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 16px; margin-top: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  @media (max-width: 480px) {
+    .mobile-container { padding: 16px 12px 120px; }
+    .stats-number { font-size: 36px; }
+    .product img { width: 76px; height: 76px; }
+    .product-title { font-size: 14px; }
+    .question { font-size: 14px; }
+    .footer-menu { height: 74px; border-radius: var(--radius-lg); }
+    .footer-item { font-size: 10px; }
+    .footer-icon { font-size: 18px; }
+  }
+
+body.dark {
+  --bg:       #0f0f13;
+  --surface:  #17171f;
+  --surface2: #1e1e28;
+  --surface3: #25252f;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --accent:   #6c63ff;
+  --green:    #22c55e;
+  --yellow:   #f59e0b;
+  --red:      #ef4444;
+  --text:     #f1f1f5;
+  --text2:    #9999b3;
+  --text3:    #55556a;
+}
+
+body.dark .footer-menu {
+  background: rgba(23,23,31,0.92);
+}
+
+body.dark select option {
+  background: #17171f;
+  color: #f1f1f5;
+}
+
+.theme-toggle-mobile {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+
+.theme-toggle-mobile:hover {
+  background: var(--surface2);
+}
+  
+@media (min-width: 900px) {
+  .ml-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+
+  .ml-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .ml-card-product {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ml-card-product img {
+    width: 52px; height: 52px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .ml-card-product-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ml-card-product-sku {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 2px;
+  }
+
+  .ml-card-product-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ml-card-product-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .ml-card-product-freight {
+    font-size: 12px;
+    color: #00a650;
+    font-weight: 600;
+  }
+
+  .ml-card-dots {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+
+  .ml-card-dots:hover { background: var(--surface2); }
+
+  .ml-card-question-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  .ml-card-question-row:hover { background: var(--surface2); }
+
+  .ml-card-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #3483fa;
+    flex-shrink: 0;
+  }
+
+  .ml-card-question-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ml-card-time {
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ml-card-urgency {
+    font-size: 12px;
+    color: #f73;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ml-card-arrow {
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    transition: transform .25s;
+  }
+
+  .ml-card-arrow.open { transform: rotate(180deg); }
+
+  .ml-card-expanded {
+    display: none;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    animation: mlFadeIn .18s ease;
+  }
+
+  .ml-card-expanded.open { display: block; }
+
+  @keyframes mlFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ml-card-client {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ml-card-client span:first-child {
+    font-weight: 600;
+    color: var(--text2);
+  }
+
+  .ml-card-q-full {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .ml-card-q-full-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  .ml-card-q-full-time {
+    font-size: 12px;
+    color: var(--text3);
+    margin-left: 8px;
+    font-weight: 400;
+  }
+
+  .ml-quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid #3483fa;
+    background: transparent;
+    color: #3483fa;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background .18s;
+  }
+
+  .ml-quick-btn:hover { background: rgba(52,131,250,0.06); }
+
+  .ml-answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .ml-answer-wrap { flex: 1; }
+
+  .ml-answer-wrap textarea {
+    width: 100%;
+    height: 72px;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Inter', Arial, sans-serif;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color .2s, box-shadow .2s;
+    margin-bottom: 0;
+  }
+
+  .ml-answer-wrap textarea:focus {
+    border-color: #3483fa;
+    box-shadow: 0 0 0 3px rgba(52,131,250,0.1);
+  }
+
+  .ml-counter-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .ml-counter-hint { font-size: 12px; color: var(--text3); }
+  .ml-counter-num  { font-size: 12px; color: var(--text3); }
+
+  .ml-reply-btn {
+    padding: 10px 24px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background .18s;
+  }
+
+  .ml-reply-btn:hover { background: var(--surface3); }
+}
+  
+</style>
+  </head>
+
+  <body>
+    <audio id="notificationSound" src="./notification.mp3" preload="auto"></audio>
+
+    <!-- ══════════════ MOBILE ══════════════ -->
+    <div class="mobile-container">
+<header class="mobile-header">
+  <a href="/" class="logo-full">
+    <img src="logo.png" alt="CentralizaChat">
+  </a>
+  <button class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile">🌙</button>
+</header>
+
+      <div class="stats-card">
+        <div class="stats-left">
+          <div class="stats-icon">📥</div>
+          <div class="stats-info">
+            <h2>Pendentes</h2>
+            <div class="stats-number" id="totalQuestions">0</div>
+            <div class="stats-sub">Aguardando resposta</div>
+          </div>
+        </div>
+        <button class="refresh-btn" onclick="location.reload()">↻</button>
+      </div>
+
+      <div id="questions">
+        <div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>
+      </div>
+    </div>
+
+    <nav class="footer-menu">
+      <div class="footer-item active" onclick="showTab('pending', this)">
+        <div class="footer-icon-wrap"><div class="footer-icon">📥</div></div>
+        <div>Pendentes</div>
+      </div>
+      <div class="footer-item" onclick="showTab('answered', this)">
+        <div class="footer-icon-wrap"><div class="footer-icon">✅</div></div>
+        <div>Respondidas</div>
+      </div>
+      <div class="footer-item" onclick="showTab('stats', this)">
+        <div class="footer-icon-wrap"><div class="footer-icon">📊</div></div>
+        <div>Estatísticas</div>
+      </div>
+      <div class="footer-item" onclick="showTab('settings', this)">
+        <div class="footer-icon-wrap"><div class="footer-icon">⚙️</div></div>
+        <div>Ajustes</div>
+      </div>
+    </nav>
+
+    <!-- ══════════════ DESKTOP ══════════════ -->
+    <div class="desktop-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="/" class="sidebar-logo">
+          <img src="logo.png" alt="CentralizaChat">
+        </a>
+
+        <div class="sidebar-section">Menu</div>
+
+        <div class="nav-item active" onclick="showDesktopTab('pending', this)">
+          <span class="nav-icon">📥</span>
+          Pendentes
+          <span class="nav-badge" id="desktopBadge">0</span>
+        </div>
+
+        <div class="nav-item" onclick="showDesktopTab('answered', this)">
+          <span class="nav-icon">✅</span>
+          Respondidas
+        </div>
+
+        <div class="nav-item" onclick="showDesktopTab('stats', this)">
+          <span class="nav-icon">📊</span>
+          Estatísticas
+        </div>
+
+        <div class="sidebar-section">Sistema</div>
+
+        <div class="nav-item" onclick="showDesktopTab('settings', this)">
+          <span class="nav-icon">⚙️</span>
+          Ajustes
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="user-chip" onclick="showDesktopTab('settings', document.querySelector('.nav-item:nth-child(7)'))">
+            <div class="user-avatar" id="desktopUserAvatar">?</div>
+            <div class="user-chip-info">
+              <div class="user-chip-name" id="desktopUserName">Carregando...</div>
+              <div class="user-chip-role">Usuário</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="main-content">
+
+        <!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-title" id="desktopTopbarTitle">Perguntas Pendentes</div>
+  <div class="topbar-right">
+    <button class="topbar-btn" onclick="toggleTheme()" id="themeBtn">🌙 Escuro</button>
+    <button class="topbar-btn primary" onclick="desktopReload()">↻ Atualizar</button>
+  </div>
+</div>
+
+        <!-- Page area -->
+        <div class="page-area">
+
+          <!-- Tab: Pendentes -->
+          <div class="desktop-tab active" id="dt-pending">
+            <div class="questions-list" id="desktopQuestions">
+              <!-- Stats mini row -->
+              <div class="stats-row">
+                <div class="stat-mini">
+                  <div class="stat-mini-label">Pendentes</div>
+                  <div class="stat-mini-value" id="dStatPending">0</div>
+                  <div class="stat-mini-sub">Aguardando resposta</div>
+                </div>
+                <div class="stat-mini">
+                  <div class="stat-mini-label">Respondidas hoje</div>
+                  <div class="stat-mini-value" id="dStatToday">—</div>
+                  <div class="stat-mini-sub">Pelo time</div>
+                </div>
+                <div class="stat-mini">
+                  <div class="stat-mini-label">Lojas ativas</div>
+                  <div class="stat-mini-value" id="dStatStores">—</div>
+                  <div class="stat-mini-sub">Conectadas</div>
+                </div>
+              </div>
+              <div id="desktopQList">
+                <div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>
+              </div>
+            </div>
+
+            <!-- Detail panel -->
+            <div class="detail-panel hidden" id="detailPanel">
+              <div class="detail-empty" id="detailEmpty">
+                <span class="detail-empty-icon">👈</span>
+                Selecione uma pergunta para responder
+              </div>
+              <div class="detail-content" id="detailContent" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Respondidas -->
+          <div class="desktop-tab" id="dt-answered">
+            <div class="questions-list" id="desktopAnswered">
+              <div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>
+            </div>
+          </div>
+
+          <!-- Tab: Estatísticas -->
+          <div class="desktop-tab" id="dt-stats">
+            <div class="questions-list">
+              <div style="max-width:700px;">
+                <div class="section-title" style="margin-bottom:20px;">📊 Estatísticas</div>
+                <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                  <select id="dStatsPeriod" style="flex:1;min-width:180px;">
+                    <option value="day">Hoje</option>
+                    <option value="7days">Últimos 7 dias</option>
+                    <option value="30days">Últimos 30 dias</option>
+                    <option value="month">Este mês</option>
+                    <option value="year">Este ano</option>
+                    <option value="custom">Período personalizado</option>
+                  </select>
+                  <button class="send-btn" onclick="openCalendarBox()">📅 Período</button>
+                  <button class="send-btn" onclick="loadDesktopStats()">Atualizar</button>
+                </div>
+                <div id="selectedPeriodText" style="color:var(--text2);font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+                <div id="calendarBox" style="display:none;margin-bottom:16px;"></div>
+                <div id="dStatsContent"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Ajustes -->
+          <div class="desktop-tab" id="dt-settings">
+            <div class="questions-list">
+              <div class="section-title" style="margin-bottom:20px;">⚙️ Ajustes</div>
+              <div class="settings-grid">
+
+                <div class="settings-card">
+                  <div class="settings-card-title">Usuário logado</div>
+                  <div class="user-info-name" id="dSettingsName">—</div>
+                  <div style="color:var(--text3);font-size:13px;margin-bottom:16px;" id="dSettingsEmail">—</div>
+                  <button class="send-btn" onclick="logout()">Sair da conta</button>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-title">Notificações</div>
+                  <p style="color:var(--text2);font-size:13px;margin-bottom:16px;line-height:1.5;">Receba alertas em tempo real quando novas perguntas chegarem.</p>
+                  <button class="send-btn" onclick="requestNotificationPermission()">🔔 Ativar notificações</button>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-title">Equipe</div>
+                  <p style="color:var(--text2);font-size:13px;margin-bottom:16px;line-height:1.5;">Gerencie os usuários que têm acesso ao painel.</p>
+                  <button class="send-btn" onclick="openDesktopUsersPanel()">👥 Gerenciar usuários</button>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-title">Integrações</div>
+                  <div class="status-dot" style="margin-bottom:8px;">Mercado Livre conectado</div>
+                  <div style="color:var(--text3);font-size:12px;">Todas as lojas sincronizando normalmente.</div>
+                </div>
+
+              </div>
+
+              <div class="questions-list" style="padding-top:0;" id="dUsersPanel" style="display:none;"></div>
+            </div>
+          </div>
+
+        </div><!-- /page-area -->
+      </div><!-- /main-content -->
+    </div><!-- /desktop-layout -->
+
+    <script>
+
+      async function loadDesktopMonthlyRanking(){
+  const box = document.getElementById("desktopMonthlyRanking");
+  if(!box) return;
+
+  const response = await fetch(
+    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
+  );
+  const data = await response.json();
+
+  const ranking = Object.entries(data.by_user || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if(ranking.length === 0){ box.innerHTML = ""; return; }
+
+  box.innerHTML = `
+    <div style="max-width:600px;margin-top:8px;">
+      <div class="detail-label" style="margin-bottom:14px;">🏆 Top funcionários do mês</div>
+      ${ranking.map(([name, total], index) => `
+        <div class="ranking-item ${index === 0 ? 'first' : ''}" style="margin-bottom:10px;">
+          <div class="ranking-left">
+            <div class="rank-badge">
+              ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+            </div>
+            <div>
+              <div class="rank-name">${name}</div>
+              <div class="rank-role">${total} resposta(s) este mês</div>
+            </div>
+          </div>
+          <div class="rank-count">${total}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+let knownQuestionIds = new Set();
+let firstLoadDone = false;
+let allQuestionsCache = [];
+let selectedQuestionId = null;
+const isDesktop = () => window.innerWidth >= 900;      
+const loggedUser = JSON.parse(localStorage.getItem("centralizachat_user"));
+if(!loggedUser){ window.location.href = "/login.html"; }
+
+// Preenche info do usuário no desktop
+if(loggedUser){
+  const nameEl = document.getElementById("desktopUserName");
+  const avatarEl = document.getElementById("desktopUserAvatar");
+  const settingsName = document.getElementById("dSettingsName");
+  const settingsEmail = document.getElementById("dSettingsEmail");
+  if(nameEl) nameEl.innerText = loggedUser.name || loggedUser.email;
+  if(avatarEl) avatarEl.innerText = (loggedUser.name || loggedUser.email || "?")[0].toUpperCase();
+  if(settingsName) settingsName.innerText = loggedUser.name;
+  if(settingsEmail) settingsEmail.innerText = loggedUser.email;
+}
+
+function buildDesktopRow(item){
+  const cardId   = `ml-card-${item.id}`;
+  const expandId = `ml-expanded-${item.id}`;
+  const arrowId  = `ml-arrow-${item.id}`;
+  const taId     = `ml-ta-${item.id}`;
+  const cntId    = `ml-cnt-${item.id}`;
+
+  return `
+    <div class="ml-card" id="${cardId}">
+
+      <div class="ml-card-product">
+        ${item.product_thumbnail
+          ? `<a href="${item.product_link || '#'}" target="_blank" style="flex-shrink:0;">
+               <img src="${item.product_thumbnail}" alt="produto" style="width:52px;height:52px;border-radius:4px;object-fit:cover;border:1px solid var(--border);display:block;">
+             </a>`
+          : `<div style="width:52px;height:52px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`
+        }
+        <div class="ml-card-product-info">
+          ${item.product_sku ? `<div class="ml-card-product-sku">SKU ${item.product_sku}</div>` : ''}
+          <div class="ml-card-product-title">${item.product_title || item.item_id}</div>
+        </div>
+        <div class="ml-card-product-meta">
+          <div>${item.product_quantity || 0} unidades</div>
+          ${item.product_price ? `<div>${formatPrice(item.product_price)}</div>` : ''}
+          <div class="ml-card-product-freight">Frete grátis</div>
+        </div>
+        <button class="ml-card-dots" title="Opções">•••</button>
+      </div>
+
+      <div class="ml-card-question-row" onclick="toggleMlCard('${item.id}')">
+        <span class="ml-card-dot"></span>
+        <span class="ml-card-question-text">${item.text}</span>
+        <span class="ml-card-time">Há ${timeAgo(item.date_created)}</span>
+        <span class="ml-card-urgency">Responda o quanto antes</span>
+        <span class="ml-card-arrow" id="${arrowId}">▼</span>
+      </div>
+
+      <div class="ml-card-expanded" id="${expandId}">
+
+        <div class="ml-card-client">
+          <span>${clientName(item)}</span>
+          <span>|</span>
+          <span>${item.store_name || ''}</span>
+        </div>
+
+        <div class="ml-card-q-full">
+          <span class="ml-card-dot" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <span class="ml-card-q-full-text">${item.text}</span>
+            <span class="ml-card-q-full-time">Há ${timeAgo(item.date_created)}</span>
+          </div>
+        </div>
+
+        ${(item.previous_questions||[]).length > 0 ? `
+          <button class="previous-toggle" style="margin-bottom:10px;" onclick="togglePrevious('ml-prev-${item.id}')">
+            🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
+          </button>
+          <div id="ml-prev-${item.id}" style="display:none;margin-bottom:12px;">
+            ${item.previous_questions.map(q => `
+              <div class="previous" style="margin-bottom:8px;">
+                <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
+                ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ''}
+                <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status==='ANSWERED'?'Respondida':'Pendente'}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <button class="ml-quick-btn" onclick="document.getElementById('${taId}').value='# ';document.getElementById('${taId}').focus();">
+          # Respostas rápidas
+        </button>
+
+        <div class="ml-answer-row">
+          <div class="ml-answer-wrap">
+            <textarea
+              id="${taId}"
+              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+              maxlength="2000"
+              oninput="document.getElementById('${cntId}').innerText=this.value.length+' / 2000'"
+            ></textarea>
+            <div class="ml-counter-row">
+              <span class="ml-counter-hint">ℹ️ Digite # para acessar suas respostas rápidas.</span>
+              <span class="ml-counter-num" id="${cntId}">0 / 2000</span>
+            </div>
+          </div>
+          <button class="ml-reply-btn" onclick="sendAnswerMl('${item.id}','${item.store_id}','${taId}',this)">
+            Responder
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// ──────────────────────────────────────
+// SHARED: Notification
+// ──────────────────────────────────────
+async function requestNotificationPermission(){
+  try{
+    if(!("Notification" in window)){ alert("Este navegador não suporta notificações."); return; }
+    if(!("serviceWorker" in navigator)){ alert("Service Worker não suportado."); return; }
+    const permission = await Notification.requestPermission();
+    if(permission !== "granted"){ alert("Notificações não permitidas."); return; }
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array("BC_KYGVTkWCoFjiLrG9ID7MoXoXt8Y05cmFkbPIacOYeQ95tsU3sGsM50tNALd2KMyRjHHdJnCP5IqjMU13eoXA")
+    });
+    const result = await fetch("/api/save-subscription",{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ subscription, user_email:"admin@centralizachat.com" })
+    });
+    const saved = await result.json();
+    alert(JSON.stringify(saved));
+  }catch(error){ alert("Erro ao ativar notificações: " + error.message); }
+}
+
+function urlBase64ToUint8Array(base64String){
+  const padding = "=".repeat((4-(base64String.length%4))%4);
+  const base64 = (base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
+window.requestNotificationPermission = requestNotificationPermission;
+
+// ──────────────────────────────────────
+// SHARED: Load questions
+// ──────────────────────────────────────
+async function loadQuestions(silent=false){
+  if(isDesktop()){ loadDesktopQuestions(silent); return; }
+
+  const container = document.getElementById('questions');
+  if(!container) return;
+  if(!silent) container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>`;
+
+  try{
+    const response = await fetch(`/api/questions?company_id=${loggedUser.company_id}`);
+    const data = await response.json();
+    const questions = data.questions
+      .filter(i => i.status==="UNANSWERED")
+      .filter(i => i.hold===false)
+      .filter(i => i.deleted_from_listing===false);
+
+    const currentIds = questions.map(i => String(i.id));
+    if(firstLoadDone){
+      if(currentIds.some(id => !knownQuestionIds.has(id))){ playNotificationSound(); }
+    }
+    knownQuestionIds = new Set(currentIds);
+    firstLoadDone = true;
+
+    document.getElementById('totalQuestions').innerText = questions.length;
+    container.innerHTML = '';
+
+    if(questions.length === 0){
+      container.innerHTML = `<div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div><div id="monthlyRanking"></div>`;
+      loadMonthlyRanking(); return;
+    }
+
+    questions.forEach(item => {
+      container.innerHTML += buildMobileCard(item);
+    });
+  }catch(e){
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar perguntas.</div>`;
+  }
+}
+
+function toggleTheme(){
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+  const btnDesktop = document.getElementById('themeBtn');
+  const btnMobile = document.getElementById('themeBtnMobile');
+
+  if(isDark){
+    if(btnDesktop) btnDesktop.innerHTML = '☀️ Claro';
+    if(btnMobile) btnMobile.innerHTML = '☀️';
+  } else {
+    if(btnDesktop) btnDesktop.innerHTML = '🌙 Escuro';
+    if(btnMobile) btnMobile.innerHTML = '🌙';
+  }
+}
+
+window.toggleTheme = toggleTheme;
+
+// Aplica o tema salvo ao carregar
+(function(){
+  const saved = localStorage.getItem('theme');
+  if(saved === 'dark'){
+    document.body.classList.add('dark');
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnDesktop = document.getElementById('themeBtn');
+      const btnMobile = document.getElementById('themeBtnMobile');
+      if(btnDesktop) btnDesktop.innerHTML = '☀️ Claro';
+      if(btnMobile) btnMobile.innerHTML = '☀️';
+    });
+  }
+})();
+      
+function buildMobileCard(item){
+  return `
+    <div style="
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    ">
+
+      <!-- Linha do produto -->
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+      ">
+        ${item.product_thumbnail ? `
+          <img src="${item.product_thumbnail}" style="
+            width: 48px; height: 48px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+          ">
+        ` : ''}
+
+        <div style="flex: 1; min-width: 0;">
+          ${item.product_sku ? `<div style="font-size: 12px; color: var(--text3); margin-bottom: 2px;">SKU ${item.product_sku}</div>` : ''}
+          <div style="
+            font-size: 13px; font-weight: 500; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          ">${item.product_title || item.item_id}</div>
+        </div>
+
+        <div style="display: flex; gap: 24px; align-items: center; flex-shrink: 0;">
+          <div style="text-align: center;">
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">${item.product_quantity || 0} unidades</div>
+          </div>
+          ${item.product_price ? `
+            <div style="text-align: center;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text);">${formatPrice(item.product_price)}</div>
+            </div>
+          ` : ''}
+          <div style="font-size: 13px; color: var(--text3);">Frete grátis</div>
+        </div>
+      </div>
+
+      <!-- Corpo da pergunta -->
+      <div style="padding: 16px;">
+
+        <!-- Cliente e loja -->
+        <div style="
+          font-size: 12px; color: var(--text3);
+          margin-bottom: 10px;
+          display: flex; align-items: center; gap: 6px;
+        ">
+          <span style="font-weight: 600; color: var(--text2);">${clientName(item)}</span>
+          <span>|</span>
+          <span>${item.store_name}</span>
+        </div>
+
+        <!-- Ponto azul + pergunta + tempo -->
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
+          <span style="
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #3483fa;
+            flex-shrink: 0; margin-top: 5px;
+          "></span>
+          <div>
+            <span style="font-size: 15px; font-weight: 700; color: var(--text);">${item.text}</span>
+            <span style="font-size: 12px; color: var(--text3); margin-left: 8px;">Há ${timeAgo(item.date_created)}</span>
+          </div>
+        </div>
+
+        ${renderPreviousQuestions(item)}
+
+        <!-- Botão respostas rápidas -->
+        <div style="margin-bottom: 10px;">
+          <button style="
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid #3483fa;
+            background: transparent;
+            color: #3483fa;
+            font-size: 13px; font-weight: 600;
+            font-family: 'Inter', Arial, sans-serif;
+            cursor: pointer;
+          " onclick="document.getElementById('answer-${item.id}').value='# '; document.getElementById('answer-${item.id}').focus();">
+            # Respostas rápidas
+          </button>
+        </div>
+
+        <!-- Textarea + botão responder lado a lado -->
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="flex: 1;">
+            <textarea
+              id="answer-${item.id}"
+              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+              maxlength="2000"
+              oninput="updateCounter('${item.id}', this.value.length)"
+              style="
+                width: 100%; height: 72px;
+                border: 1px solid var(--border2);
+                border-radius: 4px;
+                background: var(--surface);
+                color: var(--text);
+                padding: 10px 14px;
+                font-size: 14px;
+                font-family: 'Inter', Arial, sans-serif;
+                resize: none; outline: none;
+                line-height: 1.5;
+              "
+            ></textarea>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+              <div style="font-size: 12px; color: var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+              <div style="font-size: 12px; color: var(--text3);" id="counter-${item.id}">0 / 2000</div>
+            </div>
+          </div>
+
+          <button
+            onclick="sendAnswer('${item.id}','${item.store_id}',this)"
+            style="
+              padding: 10px 20px;
+              border-radius: 4px;
+              border: 1px solid var(--border2);
+              background: var(--surface2);
+              color: var(--text2);
+              font-size: 14px; font-weight: 600;
+              font-family: 'Inter', Arial, sans-serif;
+              cursor: pointer;
+              white-space: nowrap;
+              flex-shrink: 0;
+              margin-top: 0;
+              transition: all .2s;
+            "
+            onmouseover="this.style.background='var(--surface3)'"
+            onmouseout="this.style.background='var(--surface2)'"
+          >
+            Responder
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// ──────────────────────────────────────
+// DESKTOP: Load questions
+// ──────────────────────────────────────
+async function loadDesktopQuestions(silent=false){
+  const listEl = document.getElementById('desktopQList');
+  if(!silent && listEl) listEl.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
+
+  try{
+    const response = await fetch(`/api/questions?company_id=${loggedUser.company_id}`);
+    const data = await response.json();
+    const questions = data.questions
+      .filter(i => i.status==="UNANSWERED")
+      .filter(i => i.hold===false)
+      .filter(i => i.deleted_from_listing===false);
+
+    const currentIds = questions.map(i => String(i.id));
+    if(firstLoadDone){
+      if(currentIds.some(id => !knownQuestionIds.has(id))){ playNotificationSound(); }
+    }
+    knownQuestionIds = new Set(currentIds);
+    firstLoadDone = true;
+    allQuestionsCache = questions;
+
+    // Update counters
+    const badge = document.getElementById('desktopBadge');
+    const dStat = document.getElementById('dStatPending');
+    if(badge) badge.innerText = questions.length;
+    if(dStat) dStat.innerText = questions.length;
+    document.getElementById('totalQuestions').innerText = questions.length;
+
+    // Stores count
+    const storeNames = [...new Set(questions.map(q => q.store_name))];
+    const dStores = document.getElementById('dStatStores');
+    if(dStores) dStores.innerText = storeNames.length || '—';
+
+    fetch(`/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`)
+  .then(r => r.json())
+  .then(d => {
+    const todayEl = document.getElementById('dStatToday');
+    if(todayEl) todayEl.innerText = d.total ?? '—';
+  })
+  .catch(() => {});
+
+    if(!listEl) return;
+    listEl.innerHTML = '';
+
+    if(questions.length === 0){
+      listEl.innerHTML = `
+        <div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div>
+        <div id="desktopMonthlyRanking"></div>
+      `;
+      closeDetail();
+      loadDesktopMonthlyRanking();
+      return;
+    }
+
+questions.forEach(item => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = buildDesktopRow(item);
+  listEl.appendChild(wrapper.firstElementChild);
+});
+
+  }catch(e){
+    const listEl = document.getElementById('desktopQList');
+    if(listEl) listEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
+  }
+}
+
+function updateCounter(id, length){
+  const el = document.getElementById(`counter-${id}`);
+  if(el) el.innerText = `${length} / 2000`;
+}
+window.updateCounter = updateCounter;
+      
+function desktopReload(){
+  if(isDesktop()) loadDesktopQuestions();
+  else location.reload();
+}
+
+// ──────────────────────────────────────
+// DESKTOP: Detail panel
+// ──────────────────────────────────────
+function openDetail(item){
+  selectedQuestionId = String(item.id);
+
+  document.querySelectorAll('.q-row').forEach(r => {
+    r.classList.toggle('selected', r.getAttribute('data-id') === selectedQuestionId);
+  });
+
+  const panel = document.getElementById('detailPanel');
+  const empty = document.getElementById('detailEmpty');
+  const content = document.getElementById('detailContent');
+
+  panel.classList.remove('hidden');
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  content.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+      <div style="font-size:12px;color:var(--text3);font-weight:500;">Pergunta pendente</div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+
+    <div style="
+      display:flex;align-items:center;gap:12px;
+      padding:14px 0;
+      border-bottom:1px solid var(--border);
+      margin-bottom:14px;
+    ">
+      ${item.product_thumbnail ? `
+        <img src="${item.product_thumbnail}" style="
+          width:48px;height:48px;border-radius:4px;
+          object-fit:cover;border:1px solid var(--border);flex-shrink:0;
+        ">
+      ` : ''}
+      <div style="flex:1;min-width:0;">
+        ${item.product_sku ? `<div style="font-size:12px;color:var(--text3);margin-bottom:2px;">SKU ${item.product_sku}</div>` : ''}
+        <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          ${item.product_title||item.item_id}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);">${item.product_quantity||0} unidades</div>
+        ${item.product_price ? `<div style="font-size:13px;font-weight:600;color:var(--text);">${formatPrice(item.product_price)}</div>` : ''}
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+      <span style="font-weight:600;color:var(--text2);">${clientName(item)}</span>
+      <span>|</span>
+      <span>${item.store_name}</span>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;">
+      <span style="
+        width:9px;height:9px;border-radius:50%;
+        background:#3483fa;flex-shrink:0;margin-top:5px;
+      "></span>
+      <div>
+        <span style="font-size:15px;font-weight:700;color:var(--text);">${item.text}</span>
+        <span style="font-size:12px;color:var(--text3);margin-left:8px;">Há ${timeAgo(item.date_created)}</span>
+      </div>
+    </div>
+
+    ${(item.previous_questions||[]).length > 0 ? `
+      <button class="previous-toggle" onclick="togglePrevious('detail-prev-${item.id}')">
+        🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
+      </button>
+      <div id="detail-prev-${item.id}" style="display:none;margin-bottom:12px;">
+        ${item.previous_questions.map(q => `
+          <div class="previous" style="margin-bottom:8px;">
+            <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
+            ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ''}
+            <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status==='ANSWERED'?'Respondida':'Pendente'}</div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <div style="margin-bottom:10px;">
+      <button style="
+        display:inline-flex;align-items:center;gap:6px;
+        padding:6px 14px;border-radius:4px;
+        border:1px solid #3483fa;background:transparent;
+        color:#3483fa;font-size:13px;font-weight:600;
+        font-family:'Inter',Arial,sans-serif;cursor:pointer;
+      " onclick="document.getElementById('detail-answer-${item.id}').value='# ';document.getElementById('detail-answer-${item.id}').focus();">
+        # Respostas rápidas
+      </button>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <div style="flex:1;">
+        <textarea
+          class="detail-textarea"
+          id="detail-answer-${item.id}"
+          placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
+          maxlength="2000"
+          oninput="updateCounter('detail-${item.id}', this.value.length)"
+          style="border-radius:4px;"
+        ></textarea>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <div style="font-size:12px;color:var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+          <div style="font-size:12px;color:var(--text3);" id="counter-detail-${item.id}">0 / 2000</div>
+        </div>
+      </div>
+
+      <button
+        onclick="sendAnswer('${item.id}','${item.store_id}',this)"
+        style="
+          padding:10px 20px;border-radius:4px;
+          border:1px solid var(--border2);
+          background:var(--surface2);color:var(--text2);
+          font-size:14px;font-weight:600;
+          font-family:'Inter',Arial,sans-serif;
+          cursor:pointer;white-space:nowrap;flex-shrink:0;
+          transition:all .2s;
+        "
+        onmouseover="this.style.background='var(--surface3)'"
+        onmouseout="this.style.background='var(--surface2)'"
+      >
+        Responder
+      </button>
+    </div>
+  `;
+}
+
+function closeDetail(){
+  selectedQuestionId = null;
+  const panel = document.getElementById('detailPanel');
+  const empty = document.getElementById('detailEmpty');
+  const content = document.getElementById('detailContent');
+  if(panel) panel.classList.add('hidden');
+  if(empty) empty.style.display = 'flex';
+  if(content){ content.style.display = 'none'; content.innerHTML = ''; }
+  document.querySelectorAll('.q-row').forEach(r => r.classList.remove('selected'));
+}
+
+// ──────────────────────────────────────
+// SHARED: Send answer
+// ──────────────────────────────────────
+async function sendAnswer(questionId, storeId, button){
+  // Tenta pegar o textarea do detalhe (desktop) ou do card (mobile)
+  const textarea =
+    document.getElementById(`detail-answer-${questionId}`) ||
+    document.getElementById(`answer-${questionId}`);
+
+  const text = textarea?.value.trim();
+  if(!text){ alert('Digite uma resposta.'); return; }
+
+  button.disabled = true;
+  button.innerText = 'Enviando...';
+
+  try{
+    const response = await fetch('/api/answer',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        question_id: questionId, store_id: storeId, text,
+        user_id: loggedUser.id, user_name: loggedUser.name, user_email: loggedUser.email
+      })
+    });
+    const data = await response.json();
+    if(data.success){
+      button.innerText = '✓ Respondido!';
+      setTimeout(() => {
+        closeDetail();
+        loadQuestions();
+      }, 800);
+    }else{
+      alert('Erro ao responder.');
+      button.disabled = false;
+      button.innerText = 'Enviar resposta ✓';
+    }
+  }catch(e){
+    alert('Erro no sistema.');
+    button.disabled = false;
+    button.innerText = 'Enviar resposta ✓';
+  }
+}
+
+// ──────────────────────────────────────
+// DESKTOP: Tabs
+// ──────────────────────────────────────
+function showDesktopTab(tab, element){
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.desktop-tab').forEach(t => t.classList.remove('active'));
+  element.classList.add('active');
+  document.getElementById(`dt-${tab}`)?.classList.add('active');
+
+  const titles = {
+    pending: 'Perguntas Pendentes',
+    answered: 'Perguntas Respondidas',
+    stats: 'Estatísticas',
+    settings: 'Ajustes'
+  };
+  const titleEl = document.getElementById('desktopTopbarTitle');
+  if(titleEl) titleEl.innerText = titles[tab] || '';
+
+  if(tab === 'pending') loadDesktopQuestions();
+  if(tab === 'answered') loadDesktopAnswered();
+  if(tab === 'stats') loadDesktopStats();
+}
+
+// ──────────────────────────────────────
+// DESKTOP: Answered
+// ──────────────────────────────────────
+async function loadDesktopAnswered(){
+  const container = document.getElementById('desktopAnswered');
+  if(!container) return;
+  container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
+
+  try{
+    const response = await fetch('/api/answered');
+    const data = await response.json();
+    const questions = data.questions || [];
+    container.innerHTML = '';
+
+    if(questions.length === 0){
+      container.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Nenhuma pergunta respondida.</div>`;
+      return;
+    }
+
+    questions.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'q-row';
+      row.style.cursor = 'default';
+      row.innerHTML = `
+        ${item.product_thumbnail
+          ? `<img class="q-thumb" src="${item.product_thumbnail}" alt="produto">`
+          : `<div class="q-thumb-placeholder">📦</div>`}
+        <div class="q-body">
+          <div class="q-top">
+            <span class="q-store">🏪 ${item.store_name}</span>
+            <span class="status status-answered" style="margin-left:auto;font-size:11px;padding:4px 10px;">✓ Respondida</span>
+          </div>
+          <div class="q-product">${item.product_title||item.item_id}</div>
+          <div class="q-text" style="-webkit-line-clamp:1;">${item.text}</div>
+          <div style="margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--text2);">
+            ↳ ${item.answer?.text || 'Sem resposta'}
+          </div>
+          <div class="q-client" style="margin-top:8px;">
+            👤 ${clientName(item)} &nbsp;·&nbsp; 🕒 ${formatDate(item.answer?.date_created)}
+            &nbsp;·&nbsp; por ${item.answer?.user_name||item.answer?.user_email||'Usuário'}
+          </div>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  }catch(e){
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
+  }
+}
+
+// ──────────────────────────────────────
+// DESKTOP: Stats
+// ──────────────────────────────────────
+async function loadDesktopStats(){
+  const period = document.getElementById("dStatsPeriod")?.value || "day";
+
+  function formatDateToApi(v){
+    if(!v) return "";
+    if(v.includes("/")){ const [d,m,y]=v.split("/"); return `${y}-${m}-${d}`; }
+    return v;
+  }
+
+  let url = `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
+  if(period==="custom"){
+    url += `&start=${formatDateToApi(calendarStart)}&end=${formatDateToApi(calendarEnd)}`;
+  }
+
+  const response = await fetch(url);
+  const data = await response.json();
+  const users = Object.entries(data.by_user||{}).sort((a,b)=>b[1]-a[1]);
+
+  // Atualiza o card "Respondidas hoje"
+  if(period==="day"){
+    const todayEl = document.getElementById('dStatToday');
+    if(todayEl) todayEl.innerText = data.total;
+  }
+
+  const content = document.getElementById('dStatsContent');
+  if(!content) return;
+
+  content.innerHTML = `
+    <div class="stat-mini" style="margin-bottom:16px;">
+      <div class="stat-mini-label">Total no período</div>
+      <div class="stat-mini-value">${data.total}</div>
+      <div class="stat-mini-sub">respostas enviadas</div>
+    </div>
+
+    <div class="detail-label" style="margin-bottom:12px;">👥 Ranking de funcionários</div>
+
+    ${users.length === 0
+      ? `<div class="empty" style="padding:24px;">Nenhuma resposta no período.</div>`
+      : users.map(([name,total],index) => `
+          <div class="ranking-item ${index===0?'first':''}" style="margin-bottom:10px;">
+            <div class="ranking-left">
+              <div class="rank-badge">${index===0?'🥇':index===1?'🥈':index===2?'🥉':index+1}</div>
+              <div>
+                <div class="rank-name">${name}</div>
+                <div class="rank-role">Funcionário</div>
+              </div>
+            </div>
+            <div class="rank-count">${total}</div>
+          </div>
+        `).join('')
+    }
+  `;
+}
+window.loadDesktopStats = loadDesktopStats;
+
+// ──────────────────────────────────────
+// DESKTOP: Users panel
+// ──────────────────────────────────────
+function openDesktopUsersPanel(){
+  const panel = document.getElementById('dUsersPanel');
+  if(!panel) return;
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="section-title">👥 Gerenciar usuários</div>
+    <div style="margin-bottom:16px;">
+      <button class="send-btn" onclick="openDesktopCreateUser()">+ Criar usuário</button>
+    </div>
+    <div class="detail-label" style="margin-bottom:12px;">Usuários cadastrados</div>
+    <div id="dUsersList">Carregando...</div>
+  `;
+  loadDesktopUsers();
+}
+
+async function loadDesktopUsers(){
+  const box = document.getElementById('dUsersList');
+  if(!box) return;
+  try{
+    const response = await fetch(`/api/app?action=users&company_id=${loggedUser.company_id}`);
+    const data = await response.json();
+    const users = data.users||[];
+    if(users.length===0){ box.innerHTML=`<div class="empty" style="padding:24px;">Nenhum usuário.</div>`; return; }
+    box.innerHTML = users.map(user => `
+      <div class="ranking-item" style="margin-bottom:10px;">
+        <div class="ranking-left">
+          <div class="client-icon">👤</div>
+          <div>
+            <div class="rank-name">${user.name}</div>
+            <div class="rank-role">${user.email}</div>
+            <div style="margin-top:4px;">
+              <span style="display:inline-block;padding:3px 10px;border-radius:999px;
+                background:${user.role==='owner'?'rgba(108,99,255,0.15)':'rgba(255,255,255,0.05)'};
+                color:${user.role==='owner'?'var(--accent2)':'var(--text3)'};
+                font-size:11px;font-weight:700;
+                border:1px solid ${user.role==='owner'?'rgba(108,99,255,0.25)':'var(--border)'};">
+                ${user.role==='owner'?'Administrador':'Funcionário'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <button onclick="deleteUser('${user.id}')" style="
+          background:rgba(239,68,68,0.12);color:var(--red);
+          border:1px solid rgba(239,68,68,0.25);padding:8px 14px;
+          border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:13px;
+          font-family:'Inter',Arial,sans-serif;">Excluir</button>
+      </div>
+    `).join('');
+  }catch(e){ box.innerHTML="Erro ao carregar."; }
+}
+
+function openDesktopCreateUser(){
+  const panel = document.getElementById('dUsersPanel');
+  panel.innerHTML = `
+    <div class="section-title">👤 Novo usuário</div>
+    <div class="settings-card" style="max-width:400px;">
+      <div class="settings-card-title">Dados do funcionário</div>
+      <input id="newUserName" type="text" placeholder="Nome completo">
+      <input id="newUserEmail" type="email" placeholder="E-mail">
+      <input id="newUserPassword" type="password" placeholder="Senha">
+      <button class="send-btn send-btn-full" onclick="createUser()">Salvar usuário</button>
+    </div>
+    <div style="margin-top:12px;">
+      <button class="send-btn" onclick="openDesktopUsersPanel()">← Voltar</button>
+    </div>
+  `;
+}
+
+async function createUser(){
+  const name = document.getElementById("newUserName").value.trim();
+  const email = document.getElementById("newUserEmail").value.trim();
+  const password = document.getElementById("newUserPassword").value.trim();
+  if(!name||!email||!password){ alert("Preencha todos os campos."); return; }
+  const response = await fetch(`/api/app?action=create-user&company_id=${loggedUser.company_id}`,{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ name, email, password, role:"employee" })
+  });
+  const data = await response.json();
+  if(!data.success){ alert(JSON.stringify(data)); return; }
+  alert("Usuário criado com sucesso!");
+  openDesktopUsersPanel();
+}
+
+async function deleteUser(userId){
+  if(!confirm("Deseja excluir este usuário?")) return;
+  const response = await fetch(`/api/app?action=delete-user&company_id=${loggedUser.company_id}`,{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ user_id:userId })
+  });
+  const data = await response.json();
+  if(!data.success){ alert("Erro ao excluir usuário."); return; }
+  loadDesktopUsers();
+}
+
+window.createUser = createUser;
+window.openDesktopCreateUser = openDesktopCreateUser;
+window.openDesktopUsersPanel = openDesktopUsersPanel;
+
+// ──────────────────────────────────────
+// MOBILE: Tabs
+// ──────────────────────────────────────
+async function showTab(tab, element){
+  document.querySelectorAll('.footer-item').forEach(i => i.classList.remove('active'));
+  element.classList.add('active');
+  const container = document.getElementById('questions');
+
+  if(tab==='pending'){ loadQuestions(); return; }
+
+  if(tab==='answered'){
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando respondidas...</div>`;
+    try{
+      const response = await fetch('/api/answered');
+      const data = await response.json();
+      const questions = data.questions||[];
+      container.innerHTML = '';
+      if(questions.length===0){
+        container.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Nenhuma pergunta respondida.</div>`;
+        return;
+      }
+      questions.forEach(item => {
+        container.innerHTML += `
+          <div class="question-card">
+            <div class="top-row">
+              <div class="store">🏪 ${item.store_name}</div>
+              <div class="status status-answered">✓ Respondida</div>
+            </div>
+            <div class="product">
+              ${item.product_thumbnail?`<a href="${item.product_link||'#'}" target="_blank"><img src="${item.product_thumbnail}" alt="produto"></a>`:''}
+              <div class="product-info">
+                <div class="meta">
+                  ${item.product_sku?`<span class="sku">SKU ${item.product_sku}</span>`:''}
+                  <span class="${item.product_quantity>5?'stock':'stock-low'}">${item.product_quantity||0} un.</span>
+                </div>
+                <div class="product-title">${item.product_title||item.item_id}</div>
+                ${item.product_price?`<div class="price">${formatPrice(item.product_price)}</div>`:''}
+              </div>
+            </div>
+            <div class="client"><div class="client-icon">👤</div><span>${clientName(item)}</span></div>
+            <div class="question">${item.text}</div>
+            <div class="answer-box">
+              <div class="answer-title">Resposta enviada</div>
+              <div class="question" style="border-left-color:var(--green);margin-bottom:0;">${item.answer?.text||'Sem resposta'}</div>
+            </div>
+            <div class="meta-bottom" style="margin-top:12px;margin-bottom:0;">
+              <span>🕒 ${formatDate(item.answer?.date_created)}</span>
+              <span>👤 ${item.answer?.user_name||item.answer?.user_email||'Usuário'}</span>
+            </div>
+          </div>
+        `;
+      });
+    }catch(e){
+      container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
+    }
+    return;
+  }
+
+  if(tab==='stats'){
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="section-title">📊 Estatísticas</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <select id="statsPeriod">
+            <option value="day">Hoje</option>
+            <option value="7days">Últimos 7 dias</option>
+            <option value="30days">Últimos 30 dias</option>
+            <option value="month">Este mês</option>
+            <option value="year">Este ano</option>
+            <option value="custom">Período personalizado</option>
+          </select>
+          <button class="send-btn" onclick="openCalendarBox()">📅 Selecionar período</button>
+          <div id="selectedPeriodText" style="text-align:center;color:var(--text2);font-weight:600;font-size:14px;">Nenhum período selecionado</div>
+          <div id="calendarBox" style="display:none;"></div>
+          <button class="send-btn send-btn-full" onclick="loadStats()">Atualizar</button>
+        </div>
+        <div id="statsContent"></div>
+      </div>
+    `;
+    await loadStats();
+    return;
+  }
+
+  if(tab==='settings'){
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="section-title">⚙️ Ajustes</div>
+        <div class="settings-item">
+          <div class="settings-label">Usuário logado</div>
+          <div class="user-info-name">${loggedUser.name}</div>
+          <div style="color:var(--text3);font-size:13px;margin-bottom:14px;">${loggedUser.email}</div>
+          <button class="send-btn" onclick="logout()">Sair da conta</button>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">Notificações</div>
+          <button class="send-btn" onclick="requestNotificationPermission()">🔔 Ativar notificações</button>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">Equipe</div>
+          <button class="send-btn" onclick="openUsersPanel()">👥 Gerenciar usuários</button>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">Integrações</div>
+          <div class="status-dot">Mercado Livre conectado</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ──────────────────────────────────────
+// MOBILE: Stats
+// ──────────────────────────────────────
+async function loadStats(){
+  const period = document.getElementById("statsPeriod")?.value || "day";
+  function formatDateToApi(v){
+    if(!v) return "";
+    if(v.includes("/")){ const [d,m,y]=v.split("/"); return `${y}-${m}-${d}`; }
+    return v;
+  }
+  let url = `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
+  if(period==="custom") url += `&start=${formatDateToApi(calendarStart)}&end=${formatDateToApi(calendarEnd)}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  const users = Object.entries(data.by_user||{}).sort((a,b)=>b[1]-a[1]);
+  document.getElementById("statsContent").innerHTML = `
+    <div class="stats-card" style="margin-bottom:16px;min-height:auto;">
+      <div class="stats-left">
+        <div class="stats-icon">✅</div>
+        <div class="stats-info">
+          <h2>Total de respostas</h2>
+          <div class="stats-number">${data.total}</div>
+        </div>
+      </div>
+    </div>
+    <div class="answer-title" style="margin-bottom:12px;">👥 Ranking de funcionários</div>
+    ${users.length===0
+      ? `<div class="empty" style="padding:24px;">Nenhuma resposta no período.</div>`
+      : users.map(([name,total],index) => `
+          <div class="ranking-item ${index===0?'first':''}">
+            <div class="ranking-left">
+              <div class="rank-badge">${index===0?'🥇':index===1?'🥈':index===2?'🥉':index+1}</div>
+              <div><div class="rank-name">${name}</div><div class="rank-role">Funcionário</div></div>
+            </div>
+            <div class="rank-count">${total}</div>
+          </div>
+        `).join('')
+    }
+  `;
+}
+window.loadStats = loadStats;
+
+// ──────────────────────────────────────
+// MOBILE: Users
+// ──────────────────────────────────────
+function openUsersPanel(){
+  const container = document.getElementById('questions');
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="section-title">👥 Gerenciar usuários</div>
+      <div style="margin-bottom:16px;"><button class="send-btn" onclick="openCreateUserPanel()">+ Criar usuário</button></div>
+      <div class="settings-label">Usuários cadastrados</div>
+      <div id="usersList">Carregando...</div>
+      <div style="margin-top:16px;"><button class="send-btn" onclick="showTab('settings', document.querySelector('.footer-item:nth-child(4)'))">← Voltar</button></div>
+    </div>
+  `;
+  loadUsers();
+}
+
+async function loadUsers(){
+  const box = document.getElementById("usersList");
+  if(!box) return;
+  try{
+    const response = await fetch(`/api/app?action=users&company_id=${loggedUser.company_id}`);
+    const data = await response.json();
+    const users = data.users||[];
+    if(users.length===0){ box.innerHTML=`<div class="empty" style="padding:24px;">Nenhum usuário.</div>`; return; }
+    box.innerHTML = users.map(user => `
+      <div class="ranking-item" style="margin-bottom:10px;">
+        <div class="ranking-left">
+          <div class="client-icon">👤</div>
+          <div>
+            <div class="rank-name">${user.name}</div>
+            <div class="rank-role">${user.email}</div>
+          </div>
+        </div>
+        <button onclick="deleteUser('${user.id}')" style="background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:13px;font-family:'Inter',Arial,sans-serif;">Excluir</button>
+      </div>
+    `).join('');
+  }catch(e){ box.innerHTML="Erro ao carregar."; }
+}
+
+function openCreateUserPanel(){
+  const container = document.getElementById('questions');
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="section-title">👤 Novo usuário</div>
+      <div class="answer-box">
+        <div class="answer-title">Dados do funcionário</div>
+        <input id="newUserName" type="text" placeholder="Nome completo">
+        <input id="newUserEmail" type="email" placeholder="E-mail">
+        <input id="newUserPassword" type="password" placeholder="Senha">
+        <button class="send-btn send-btn-full" onclick="createUser()">Salvar usuário</button>
+      </div>
+      <div style="margin-top:12px;"><button class="send-btn" onclick="openUsersPanel()">← Voltar</button></div>
+    </div>
+  `;
+}
+
+window.openUsersPanel = openUsersPanel;
+window.openCreateUserPanel = openCreateUserPanel;
+
+// ──────────────────────────────────────
+// SHARED: Helpers
+// ──────────────────────────────────────
+function renderPreviousQuestions(item){
+  const previous = item.previous_questions||[];
+  if(previous.length===0) return '';
+  const html = previous.map(q => `
+    <div class="previous">
+      <div style="color:var(--text);margin-bottom:6px;font-size:14px;">${q.text}</div>
+      ${q.answer?`<div style="color:var(--green);font-size:13px;margin-bottom:4px;">↳ ${q.answer}</div>`:''}
+      <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status==='ANSWERED'?'Respondida':'Pendente'}</div>
+    </div>
+  `).join('');
+  return `
+    <button class="previous-toggle" onclick="togglePrevious('${item.id}')">🕐 Ver ${previous.length} pergunta(s) anterior(es)</button>
+    <div id="previous-${item.id}" style="display:none;">${html}</div>
+  `;
+}
+
+function togglePrevious(id){
+  const box = document.getElementById(`previous-${id}`);
+  if(box) box.style.display = box.style.display==='block'?'none':'block';
+}
+
+function clientName(item){
+  return item.client_name && item.client_name!=='Cliente'
+    ? `${item.client_name}${item.client_nickname?` (${item.client_nickname})`:''}`
+    : (item.client_nickname||'Cliente');
+}
+
+function formatDate(dateString){
+  if(!dateString) return '--:--';
+  return new Date(dateString).toLocaleTimeString('pt-BR',{ hour:'2-digit', minute:'2-digit' });
+}
+
+function timeAgo(dateString){
+  const minutes = Math.floor((new Date()-new Date(dateString))/60000);
+  if(minutes<1) return 'agora';
+  if(minutes<60) return `${minutes}min`;
+  const hours = Math.floor(minutes/60);
+  if(hours<24) return `${hours}h`;
+  return `${Math.floor(hours/24)}d`;
+}
+
+function formatPrice(value){
+  return Number(value).toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
+}
+
+async function loadDesktopMonthlyRanking(){
+  const box = document.getElementById("desktopMonthlyRanking");
+  if(!box) return;
+
+  const response = await fetch(
+    `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`
+  );
+  const data = await response.json();
+
+  const ranking = Object.entries(data.by_user || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if(ranking.length === 0){ box.innerHTML = ""; return; }
+
+  const medals = ['🥇', '🥈', '🥉'];
+
+  box.innerHTML = `
+    <div style="
+      max-width: 100%;
+      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    ">
+      <div style="
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 20px;
+      ">🏆 Top funcionários do mês</div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        ${ranking.map(([name, total], index) => `
+          <div style="
+            background: ${index === 0
+              ? 'linear-gradient(135deg, rgba(108,99,255,0.08), rgba(139,92,246,0.04))'
+              : 'var(--surface2)'};
+            border: 1px solid ${index === 0
+              ? 'rgba(108,99,255,0.2)'
+              : 'var(--border)'};
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: ${index === 0
+              ? '0 4px 20px rgba(108,99,255,0.1)'
+              : '0 1px 4px rgba(0,0,0,0.04)'};
+          ">
+            ${index === 0 ? `
+              <div style="
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 2px;
+                background: linear-gradient(90deg, var(--accent), #8b5cf6);
+                border-radius: 2px 2px 0 0;
+              "></div>
+            ` : ''}
+
+            <div style="font-size: 36px; margin-bottom: 12px; line-height: 1;">
+              ${medals[index]}
+            </div>
+
+            <div style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--text);
+              margin-bottom: 6px;
+              letter-spacing: -0.01em;
+            ">${name}</div>
+
+            <div style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              background: rgba(22,163,74,0.08);
+              border: 1px solid rgba(22,163,74,0.2);
+              color: var(--green);
+              font-size: 22px;
+              font-weight: 900;
+              border-radius: 999px;
+              padding: 6px 18px;
+              margin-top: 8px;
+              letter-spacing: -0.01em;
+            ">${total}</div>
+
+            <div style="
+              font-size: 12px;
+              color: var(--text3);
+              font-weight: 500;
+              margin-top: 6px;
+            ">respostas este mês</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ──────────────────────────────────────
+// SHARED: Calendar
+// ──────────────────────────────────────
+let calendarStart = null;
+let calendarEnd = null;
+let calendarMonth = new Date();
+
+function openCalendarBox(){
+  const box = document.getElementById("calendarBox");
+  if(!box) return;
+  box.style.display = box.style.display==="none" ? "block" : "none";
+  if(box.style.display==="block") renderCalendar();
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarBox");
+  if(!box) return;
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  const firstDay = new Date(year,month,1).getDay();
+  const lastDate = new Date(year,month+1,0).getDate();
+  const monthName = calendarMonth.toLocaleDateString("pt-BR",{ month:"long", year:"numeric" });
+  let days = "";
+  for(let i=0;i<firstDay;i++) days+=`<div></div>`;
+  for(let day=1;day<=lastDate;day++){
+    const date = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const active = date===calendarStart||date===calendarEnd;
+    days += `
+      <div onclick="selectCalendarDate('${date}')" style="
+        padding:8px 4px;text-align:center;cursor:pointer;font-weight:600;font-size:13px;
+        border-radius:8px;transition:background .15s;
+        background:${active?'var(--accent)':'transparent'};
+        color:${active?'white':'var(--text)'};
+      ">
+        ${day}
+      </div>
+    `;
+  }
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <button onclick="changeCalendarMonth(-1)" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:'Inter',Arial,sans-serif;">‹</button>
+      <span style="font-weight:700;font-size:14px;color:var(--text);text-transform:capitalize;">${monthName}</span>
+      <button onclick="changeCalendarMonth(1)" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:'Inter',Arial,sans-serif;">›</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:8px;">
+      ${['D','S','T','Q','Q','S','S'].map(d=>`<div style="font-size:11px;font-weight:700;color:var(--text3);padding:4px;">${d}</div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${days}</div>
+    <button class="send-btn send-btn-full" style="margin-top:14px;" onclick="applyCalendarPeriod()">Aplicar período</button>
+  `;
+}
+
+function selectCalendarDate(date){
+  if(!calendarStart||calendarEnd){ calendarStart=date; calendarEnd=null; }
+  else{ calendarEnd=date; if(calendarEnd<calendarStart){const t=calendarStart;calendarStart=calendarEnd;calendarEnd=t;} }
+  renderCalendar();
+}
+
+function changeCalendarMonth(value){
+  calendarMonth.setMonth(calendarMonth.getMonth()+value);
+  renderCalendar();
+}
+
+function applyCalendarPeriod(){
+  if(!calendarStart){ alert("Selecione uma data."); return; }
+  if(!calendarEnd) calendarEnd=calendarStart;
+  const periodEl = document.getElementById("statsPeriod")||document.getElementById("dStatsPeriod");
+  if(periodEl) periodEl.value="custom";
+  const textEl = document.getElementById("selectedPeriodText");
+  if(textEl) textEl.innerText=`${calendarStart} até ${calendarEnd}`;
+  document.getElementById("calendarBox").style.display="none";
+  if(isDesktop()) loadDesktopStats(); else loadStats();
+}
+
+window.openCalendarBox = openCalendarBox;
+window.selectCalendarDate = selectCalendarDate;
+window.changeCalendarMonth = changeCalendarMonth;
+window.applyCalendarPeriod = applyCalendarPeriod;
+window.togglePrevious = togglePrevious;
+
+// ──────────────────────────────────────
+// SHARED: Audio
+// ──────────────────────────────────────
+let audioUnlocked = false;
+document.addEventListener("click", () => {
+  if(audioUnlocked) return;
+  const audio = document.getElementById("notificationSound");
+  if(audio){
+    audio.volume=0;
+    audio.play().then(()=>{ audio.pause(); audio.currentTime=0; audio.volume=1; audioUnlocked=true; }).catch(()=>{});
+  }
+},{ once:true });
+
+function playNotificationSound(){
+  const audio = document.getElementById("notificationSound");
+  if(!audio) return;
+  audio.currentTime=0;
+  audio.play().catch(()=>{});
+}
+
+function toggleMlCard(id){
+  const expanded = document.getElementById(`ml-expanded-${id}`);
+  const arrow    = document.getElementById(`ml-arrow-${id}`);
+  if(!expanded) return;
+  const isOpen = expanded.classList.contains('open');
+  expanded.classList.toggle('open', !isOpen);
+  if(arrow) arrow.classList.toggle('open', !isOpen);
+}
+
+async function sendAnswerMl(questionId, storeId, taId, button){
+  const textarea = document.getElementById(taId);
+  const text = textarea?.value.trim();
+  if(!text){ alert('Digite uma resposta.'); return; }
+  const originalText = button.innerText;
+  button.disabled = true;
+  button.innerText = 'Enviando...';
+  try{
+    const response = await fetch('/api/answer',{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question_id: questionId, store_id: storeId, text,
+        user_id: loggedUser.id, user_name: loggedUser.name, user_email: loggedUser.email
+      })
+    });
+    const data = await response.json();
+    if(data.success){
+      button.innerText = '✓ Respondido!';
+      setTimeout(() => { loadQuestions(); }, 800);
+    } else {
+      alert('Erro ao responder: ' + JSON.stringify(data));
+      button.disabled = false;
+      button.innerText = originalText;
+    }
+  } catch(e){
+    alert('Erro: ' + e.message);
+    button.disabled = false;
+    button.innerText = originalText;
+  }
+}
+
+window.toggleMlCard = toggleMlCard;
+window.sendAnswerMl = sendAnswerMl;
+      
+// ──────────────────────────────────────
+// INIT
+// ──────────────────────────────────────
+loadQuestions();
+
+setInterval(() => {
+  const typing = document.activeElement && document.activeElement.tagName==="TEXTAREA";
+  if(!typing) loadQuestions(true);
+}, 60000);
+
+    </script>
+
+    <script>
+      if("serviceWorker" in navigator){
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js");
+        });
+      }
+    </script>
+  </body>
+</html>
