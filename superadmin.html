@@ -171,13 +171,14 @@
     transition: border-color .2s, box-shadow .2s;
   }
 
-  .details-section {
-    background: var(--surface2);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-  }
+.details-section {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
 
   .details-section h3 {
     font-size: 15px;
@@ -204,7 +205,7 @@
 
   .users-table th {
     background: var(--surface3);
-    padding: 10px 15px;
+    padding: 10px 8px;
     text-align: left;
     font-size: 10px;
     font-weight: 700;
@@ -215,7 +216,7 @@
   }
 
   .users-table td {
-    padding: 10px 15px;
+    padding: 10px 8px;
     font-size: 13px;
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
@@ -286,10 +287,10 @@
   .badge-red    { background: rgba(220,38,38,0.1);  color: var(--red); }
   .badge-gray   { background: var(--surface3);      color: var(--text3); }
 
-  .actions { display: flex; gap: 8px; }
+  .actions { display: flex; gap: 6px; }
 
   .btn-sm {
-    padding: 5px 12px;
+    padding: 5px 8px;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
@@ -601,6 +602,38 @@
 <!-- FIM DA MODAL DE EDIÇÃO DE USUÁRIO -->
 
 
+<!-- TELA DE CONFIRMAÇÃO RESET SENHA-->
+
+<!-- Modal de confirmação para resetar senha -->
+<div class="modal-overlay" id="reset-password-modal">
+  <div class="modal" style="max-width: 420px;">
+    
+    <div class="modal-title">Resetar senha</div>
+
+    <p style="font-size: 14px; color: var(--text2); line-height: 1.6;">
+      Tem certeza que deseja resetar a senha do usuário
+      <strong id="reset-password-email" style="color: var(--text);"></strong>?
+    </p>
+
+    <p style="font-size: 13px; color: var(--text3); margin-top: 10px;">
+      Um e-mail de recuperação será enviado para o usuário.
+    </p>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeResetPasswordModal()">
+        Cancelar
+      </button>
+
+      <button class="btn btn-primary" onclick="confirmResetPassword()">
+        Resetar senha
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- fim TELA DE CONFIRMAÇÃO RESET SENHA-->
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -780,12 +813,51 @@ window.toggleUserStatus = async function(userId, currentStatus) {
   }
 };
 
-window.resetUserPassword = async function(userId, userEmail) {
-  if (confirm(`Tem certeza que deseja resetar a senha do usuário ${userEmail}? Um e-mail de recuperação será enviado.`)) {
-    showToast("Funcionalidade de reset de senha em desenvolvimento. Um e-mail de recuperação seria enviado para " + userEmail);
-  }
+let resetPasswordUserId = null;
+let resetPasswordUserEmail = null;
+
+window.resetUserPassword = function(userId, userEmail) {
+  resetPasswordUserId = userId;
+  resetPasswordUserEmail = userEmail;
+
+  document.getElementById("reset-password-email").textContent = userEmail;
+  document.getElementById("reset-password-modal").classList.add("open");
 };
 
+window.closeResetPasswordModal = function() {
+  document.getElementById("reset-password-modal").classList.remove("open");
+
+  resetPasswordUserId = null;
+  resetPasswordUserEmail = null;
+};
+
+window.confirmResetPassword = async function() {
+  const email = resetPasswordUserEmail;
+  const btn = document.querySelector("#reset-password-modal .btn-primary");
+
+  if (!email) {
+    showToast("Erro: e-mail do usuário não encontrado");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + "/redefinir-senha.html"
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Resetar senha";
+
+  if (error) {
+    showToast("Erro ao enviar e-mail: " + error.message);
+    return;
+  }
+
+  closeResetPasswordModal();
+  showToast("✅ E-mail de recuperação enviado para " + email);
+};
 
 function renderStats(companies) {
   const total    = companies.length;
@@ -864,6 +936,11 @@ async function renderTable(companies) {
   }).join("");
 }
 
+window.closeModal = function() {
+  document.getElementById("modal").classList.remove("open");
+  editingId = null;
+};
+
 window.openModal = function() {
   editingId = null;
   document.getElementById("modal-title").textContent      = "Nova empresa";
@@ -922,6 +999,7 @@ window.saveCompany = async function() {
 
   if (error) { showToast("Erro ao salvar: " + error.message); return; }
 
+  const wasEditing = !!editingId;
   closeModal();
   showToast(editingId ? "✅ Empresa atualizada" : "✅ Empresa criada");
   load();
@@ -958,6 +1036,10 @@ document.getElementById("details-modal").addEventListener("click", function(e) {
 
 document.getElementById("user-modal").addEventListener("click", function(e) {
   if (e.target === this) closeUserModal();
+});
+
+document.getElementById("reset-password-modal").addEventListener("click", function(e) {
+  if (e.target === this) closeResetPasswordModal();
 });
 
 
