@@ -1675,6 +1675,12 @@ if(loggedUser){
   if(settingsEmail) settingsEmail.innerText = loggedUser.email;
 }
 
+function logout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = 'login.html';
+}
+
 function buildDesktopRow(item){
   const cardId   = `ml-card-${item.id}`;
   const expandId = `ml-expanded-${item.id}`;
@@ -2348,7 +2354,7 @@ async function loadDesktopAnswered(){
           </div>
           <div class="q-client" style="margin-top:8px;">
             👤 ${clientName(item)} &nbsp;·&nbsp; 🕒 ${formatDate(item.answer?.date_created)}
-            &nbsp;·&nbsp; por ${item.answer?.user_name||item.answer?.user_email||'Usuário'}
+            &nbsp;·&nbsp; Respondido por ${item.answer?.user_name||item.answer?.user_email||'Usuário'}
           </div>
         </div>
       `;
