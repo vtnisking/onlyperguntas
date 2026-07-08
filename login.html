@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - CentralizeChat </title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#000000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+.card{
+  background:rgb(255, 255, 255);
+  width:100%;
+  max-width:380px;
+  padding:32px;
+  border-radius:22px;
+  box-shadow:0 20px 40px rgba(0, 183, 255, 0.25);
+}
+
+h1{
+  margin:0 0 8px;
+  color:#07142d;
+}
+
+p{
+  color:#000000;
+  margin-bottom:24px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border:1px solid #e1cbd7;
+  border-radius:12px;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:15px;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.error{
+  color:#dc2626;
+  margin-top:14px;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>CentralizeChat</h1>
+  <p>Faça o login para acessar o painel de perguntas.</p>
+
+  <input id="email" type="email" placeholder="E-mail">
+  <input id="password" type="password" placeholder="Senha">
+
+  <button onclick="login()">Entrar</button>
+
+  <div class="error" id="error"></div>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://vspcitxnssbsztqnfhmj.supabase.co",
+  "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS"
+);
+
+async function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error){
+    document.getElementById("error").innerText = "E-mail ou senha inválidos.";
+    return;
+  }
+
+  window.location.href = "/";
+}
+
+window.login = login;
+</script>
+
+</body>
+</html>
