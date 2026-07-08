@@ -182,7 +182,17 @@
     </div>
   </div>
 
-  <button class="btn-login" onclick="login()">Entrar na conta</button>
+ <button class="btn-login" onclick="login()">Entrar na conta</button>
+
+<!-- ADICIONA ISSO AQUI -->
+<div style="text-align: center; margin-top: 14px;">
+  <a href="#" onclick="forgotPassword()" style="font-size: 13px; color: var(--accent); font-weight: 600; text-decoration: none;">
+    Esqueci minha senha
+  </a>
+</div>
+
+<div class="error" id="error"></div>
+  
 
   <div class="error" id="error"></div>
 
@@ -247,6 +257,30 @@ async function login(){
 
   window.location.href = "/";
 }
+
+async function forgotPassword() {
+  const email = document.getElementById("email").value.trim();
+  const errorBox = document.getElementById("error");
+
+  if (!email) {
+    errorBox.innerText = "⚠️ Digite seu e-mail antes de continuar.";
+    return;
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + "/reset-password.html"
+  });
+
+  if (error) {
+    errorBox.style.color = "var(--red)";
+    errorBox.innerText = "⚠️ Erro ao enviar o e-mail. Tente novamente.";
+  } else {
+    errorBox.style.color = "var(--accent)";
+    errorBox.innerText = "✅ E-mail de redefinição enviado! Verifique sua caixa de entrada.";
+  }
+}
+
+window.forgotPassword = forgotPassword;
 
 window.login = login;
 
