@@ -3,32 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Superadmin · CentralizaChat</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg:Perfeito, tenho tudo que preciso. Vou montar o painel superadmin completo.
-
-Primeiro, roda esse SQL no Supabase para adicionar alguns campos úteis na tabela `companies`:
-
-```sql
-alter table companies 
-add column if not exists owner_email text,
-add column if not exists expires_at timestamp with time zone,
-add column if not exists max_users integer default 5;
-```
-
-Agora o painel superadmin, salva como `superadmin.html`:
-
-```html
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Superadmin · CentralizaChat</title>
+<title>ADM · Centralize</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,7 +32,6 @@ Agora o painel superadmin, salva como `superadmin.html`:
     min-height: 100vh;
   }
 
-  /* TOPBAR */
   .topbar {
     background: var(--surface);
     border-bottom: 1px solid var(--border2);
@@ -133,14 +107,12 @@ Agora o painel superadmin, salva como `superadmin.html`:
 
   .btn-ghost:hover { background: var(--surface2); }
 
-  /* MAIN */
   .main {
     max-width: 1100px;
     margin: 0 auto;
     padding: 32px 24px;
   }
 
-  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -174,7 +146,6 @@ Agora o painel superadmin, salva como `superadmin.html`:
   .stat-value.yellow { color: var(--yellow); }
   .stat-value.red { color: var(--red); }
 
-  /* SECTION */
   .section-header {
     display: flex;
     align-items: center;
@@ -182,12 +153,89 @@ Agora o painel superadmin, salva como `superadmin.html`:
     margin-bottom: 16px;
   }
 
+    .search-bar {
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .details-section {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .details-section h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text);
+  }
+
+  .details-section p {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--text2);
+  }
+
+  .details-section p strong {
+    color: var(--text);
+  }
+
+  .users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .users-table th {
+    background: var(--surface3);
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .users-table td {
+    padding: 10px 15px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .users-table tr:last-child td { border-bottom: none; }
+  .users-table tr:hover td { background: var(--surface3); }
+
+
+
+.search-bar input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+  }
+
   .section-title {
     font-size: 16px;
     font-weight: 700;
   }
 
-  /* TABLE */
   .table-wrap {
     background: var(--surface);
     border: 1px solid var(--border2);
@@ -233,10 +281,10 @@ Agora o painel superadmin, salva como `superadmin.html`:
     font-weight: 600;
   }
 
-  .badge-green { background: rgba(22,163,74,0.1); color: var(--green); }
-  .badge-yellow { background: rgba(217,119,6,0.1); color: var(--yellow); }
-  .badge-red { background: rgba(220,38,38,0.1); color: var(--red); }
-  .badge-gray { background: var(--surface3); color: var(--text3); }
+  .badge-green  { background: rgba(22,163,74,0.1);  color: var(--green); }
+  .badge-yellow { background: rgba(217,119,6,0.1);  color: var(--yellow); }
+  .badge-red    { background: rgba(220,38,38,0.1);  color: var(--red); }
+  .badge-gray   { background: var(--surface3);      color: var(--text3); }
 
   .actions { display: flex; gap: 8px; }
 
@@ -256,13 +304,12 @@ Agora o painel superadmin, salva como `superadmin.html`:
   .btn-sm:hover { background: var(--surface2); }
   .btn-sm.green { color: var(--green); border-color: rgba(22,163,74,0.3); }
   .btn-sm.green:hover { background: rgba(22,163,74,0.08); }
-  .btn-sm.red { color: var(--red); border-color: rgba(220,38,38,0.3); }
-  .btn-sm.red:hover { background: rgba(220,38,38,0.08); }
+  .btn-sm.red   { color: var(--red);   border-color: rgba(220,38,38,0.3); }
+  .btn-sm.red:hover   { background: rgba(220,38,38,0.08); }
 
-  .company-name { font-weight: 600; }
+  .company-name  { font-weight: 600; }
   .company-email { font-size: 12px; color: var(--text3); margin-top: 2px; }
 
-  /* MODAL */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -330,7 +377,6 @@ Agora o painel superadmin, salva como `superadmin.html`:
     margin-top: 24px;
   }
 
-  /* EMPTY */
   .empty {
     text-align: center;
     padding: 48px;
@@ -338,7 +384,6 @@ Agora o painel superadmin, salva como `superadmin.html`:
     font-size: 14px;
   }
 
-  /* TOAST */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -374,8 +419,8 @@ Agora o painel superadmin, salva como `superadmin.html`:
 <div class="topbar">
   <div class="topbar-left">
     <div class="topbar-icon">💬</div>
-    <div class="topbar-title">CentralizaChat</div>
-    <span class="topbar-badge">SUPERADMIN</span>
+    <div class="topbar-title">Centralize</div>
+    <span class="topbar-badge">PAINEL SUPERADMIN</span>
   </div>
   <div class="topbar-right">
     <button class="btn btn-ghost" onclick="logout()">Sair</button>
@@ -384,8 +429,7 @@ Agora o painel superadmin, salva como `superadmin.html`:
 
 <div class="main">
 
-  <!-- STATS -->
-  <div class="stats" id="stats">
+  <div class="stats">
     <div class="stat-card">
       <div class="stat-label">Total de empresas</div>
       <div class="stat-value" id="stat-total">—</div>
@@ -404,10 +448,13 @@ Agora o painel superadmin, salva como `superadmin.html`:
     </div>
   </div>
 
-  <!-- EMPRESAS -->
   <div class="section-header">
     <div class="section-title">Empresas</div>
     <button class="btn btn-primary" onclick="openModal()">+ Nova empresa</button>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Buscar por nome, e-mail ou status..." onkeyup="load()">
   </div>
 
   <div class="table-wrap">
@@ -430,7 +477,7 @@ Agora o painel superadmin, salva como `superadmin.html`:
 
 </div>
 
-<!-- MODAL NOVA EMPRESA -->
+<!-- Modal de Criação/Edição de Empresa -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-title" id="modal-title">Nova empresa</div>
@@ -446,9 +493,9 @@ Agora o painel superadmin, salva como `superadmin.html`:
     <div class="field">
       <label>Plano</label>
       <select id="m-plan">
-        <option value="starter">Starter</option>
-        <option value="pro">Pro</option>
-        <option value="enterprise">Enterprise</option>
+        <option value="bronze">Bronze</option>
+        <option value="prata">Prata</option>
+        <option value="ouro">Ouro</option>
       </select>
     </div>
     <div class="field">
@@ -473,8 +520,87 @@ Agora o painel superadmin, salva como `superadmin.html`:
     </div>
   </div>
 </div>
+<!-- FIM DA MODAL DE CRIAÇÃO/EDIÇÃO DE EMPRESA -->
 
-<!-- TOAST -->
+<!-- Modal de Detalhes da Empresa -->
+<div class="modal-overlay" id="details-modal">
+  <div class="modal" style="max-width: 700px;">
+    <div class="modal-title">Detalhes da Empresa: <span id="details-company-name"></span></div>
+
+    <div class="details-section">
+      <h3>Informações Gerais</h3>
+      <p><strong>ID:</strong> <span id="details-id"></span></p>
+      <p><strong>E-mail do Admin:</strong> <span id="details-email"></span></p>
+      <p><strong>Plano:</strong> <span id="details-plan"></span></p>
+      <p><strong>Status:</strong> <span id="details-status"></span></p>
+      <p><strong>Expira em:</strong> <span id="details-expires"></span></p>
+      <p><strong>Máx. Usuários:</strong> <span id="details-maxusers"></span></p>
+      <p><strong>Usuários Atuais:</strong> <span id="details-currentusers"></span></p>
+    </div>
+
+    <div class="details-section">
+      <h3>Usuários da Empresa</h3>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Permissão</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="details-users-tbody">
+          <tr><td colspan="5" class="empty">Nenhum usuário encontrado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDetailsModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+<!-- FIM DA MODAL DE DETALHES DA EMPRESA -->
+
+<!-- Modal de Edição de Usuário -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-title" id="user-modal-title">Editar Usuário</div>
+
+    <div class="field">
+      <label>Nome</label>
+      <input id="u-name" type="text" placeholder="Nome do usuário">
+    </div>
+    <div class="field">
+      <label>E-mail</label>
+      <input id="u-email" type="email" placeholder="email@empresa.com" disabled> <!-- E-mail desabilitado para edição -->
+    </div>
+    <div class="field">
+      <label>Permissão (Role)</label>
+      <select id="u-role">
+        <option value="owner">Owner</option>
+        <option value="admin">Admin</option>
+        <option value="member">Member</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="u-status">
+        <option value="active">Ativo</option>
+        <option value="inactive">Inativo</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn btn-primary" id="user-modal-save-btn" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+<!-- FIM DA MODAL DE EDIÇÃO DE USUÁRIO -->
+
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -485,40 +611,194 @@ const supabase = createClient(
   "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS"
 );
 
-// GUARD: só superadmin entra
-const me = JSON.parse(localStorage.getItem("centralizachat_user") || "{}");
+let me = {};
+try {
+  me = JSON.parse(localStorage.getItem("centralizachat_user") || "{}");
+} catch(e) {
+  me = {};
+}
+
 if (!me.id || me.role !== "superadmin") {
   window.location.href = "/login.html";
 }
 
-let editingId = null;
+// Variáveis globais para controlar o estado das modais
+let editingId = null; // Para a modal de empresa
+let editingUserId = null; // Para a modal de usuário
+let currentCompanyIdForUsers = null; // Para a modal de detalhes da empresa e seus usuários
 
-// ── LOAD ──────────────────────────────────────────────
 async function load() {
-  const { data: companies, error } = await supabase
+  const search = document.getElementById("search-input").value.toLowerCase();
+
+  let query = supabase
     .from("companies")
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) { showToast("Erro ao carregar empresas"); return; }
+  if (search) {
+    query = query.or(`name.ilike.%${search}%,owner_email.ilike.%${search}%,status.ilike.%${search}%`);
+  }
+
+  const { data: companies, error } = await query;
+
+  if (error) { showToast("Erro ao carregar empresas: " + error.message); return; }
 
   renderStats(companies);
   renderTable(companies);
 }
 
-function renderStats(companies) {
-  const total = companies.length;
-  const active = companies.filter(c => c.status === "active").length;
-  const inactive = companies.filter(c => c.status === "inactive").length;
+window.viewCompanyDetails = async function(companyId) {
+  console.log("Função viewCompanyDetails foi chamada para o ID:", companyId); // Linha de depuração
+  currentCompanyIdForUsers = companyId;
 
-  const in7days = companies.filter(c => {
+  const { data: company, error: companyError } = await supabase
+    .from("companies")
+    .select("*")
+    .eq("id", companyId)
+    .single();
+
+  if (companyError) { showToast("Erro ao carregar detalhes da empresa: " + companyError.message); return; }
+
+  document.getElementById("details-company-name").textContent = company.name;
+  document.getElementById("details-id").textContent           = company.id;
+  document.getElementById("details-email").textContent        = company.owner_email || "N/A";
+  document.getElementById("details-plan").textContent         = company.plan;
+  document.getElementById("details-status").textContent       = company.status === "active" ? "Ativo" : "Inativo";
+  document.getElementById("details-expires").textContent      = company.expires_at ? new Date(company.expires_at).toLocaleDateString("pt-br") : "Nunca";
+  document.getElementById("details-maxusers").textContent     = company.max_users;
+
+  // Carregar usuários
+  const { data: users, error: usersError } = await supabase
+    .from("users_app")
+    .select("*")
+    .eq("company_id", companyId);
+
+  if (usersError) { showToast("Erro ao carregar usuários: " + usersError.message); return; }
+
+  document.getElementById("details-currentusers").textContent = users.length;
+  renderUsersTable(users);
+
+  document.getElementById("details-modal").classList.add("open");
+};
+
+window.closeDetailsModal = function() {
+  document.getElementById("details-modal").classList.remove("open");
+  currentCompanyIdForUsers = null;
+};
+
+window.closeUserModal = function() {
+  document.getElementById("user-modal").classList.remove("open");
+  editingUserId = null;
+};
+
+function renderUsersTable(users) {
+  const tbody = document.getElementById("details-users-tbody");
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">Nenhum usuário encontrado.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = users.map(user => {
+    const statusBadge = user.status === "active"
+      ? `<span class="badge badge-green">● Ativo</span>`
+      : `<span class="badge badge-red">● Inativo</span>`;
+
+    const toggleLabel = user.status === "active" ? "Desativar" : "Ativar";
+    const toggleClass = user.status === "active" ? "red" : "green";
+
+    return `
+      <tr>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.role}</td>
+        <td>${statusBadge}</td>
+        <td>
+          <div class="actions">
+            <button class="btn-sm" onclick="editUser('${user.id}')">Editar</button>
+            <button class="btn-sm ${toggleClass}" onclick="toggleUserStatus('${user.id}', '${user.status}')">${toggleLabel}</button>
+            <button class="btn-sm" onclick="resetUserPassword('${user.id}', '${user.email}')">Resetar Senha</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+// Funções para edição de usuário (adicionadas ou corrigidas)
+window.editUser = async function(userId) {
+  const { data: user, error } = await supabase
+    .from("users_app")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  if (error) { showToast("Erro ao carregar usuário: " + error.message); return; }
+
+  editingUserId = userId;
+  document.getElementById("user-modal-title").textContent = "Editar Usuário";
+  document.getElementById("user-modal-save-btn").textContent = "Salvar";
+  document.getElementById("u-name").value = user.name || "";
+  document.getElementById("u-email").value = user.email || "";
+  document.getElementById("u-role").value = user.role || "member";
+  document.getElementById("u-status").value = user.status || "active";
+
+  document.getElementById("user-modal").classList.add("open");
+};
+
+window.saveUser = async function() {
+  const name   = document.getElementById("u-name").value.trim();
+  const role   = document.getElementById("u-role").value;
+  const status = document.getElementById("u-status").value;
+
+  if (!name) { showToast("⚠️ Nome do usuário obrigatório"); return; }
+
+  const payload = {
+    name,
+    role,
+    status,
+  };
+
+  const { error } = await supabase.from("users_app").update(payload).eq("id", editingUserId);
+
+  if (error) { showToast("Erro ao salvar usuário: " + error.message); return; }
+
+  closeUserModal();
+  showToast("✅ Usuário atualizado");
+  // Recarregar os detalhes da empresa para atualizar a lista de usuários
+  if (currentCompanyIdForUsers) {
+    viewCompanyDetails(currentCompanyIdForUsers);
+  }
+};
+
+window.toggleUserStatus = async function(userId, currentStatus) {
+  const newStatus = currentStatus === "active" ? "inactive" : "active";
+  const { error } = await supabase.from("users_app").update({ status: newStatus }).eq("id", userId);
+  if (error) { showToast("Erro ao atualizar status do usuário: " + error.message); return; }
+  showToast(newStatus === "active" ? "✅ Usuário ativado" : "⚠️ Usuário desativado");
+  if (currentCompanyIdForUsers) {
+    viewCompanyDetails(currentCompanyIdForUsers); // Recarrega a lista de usuários
+  }
+};
+
+window.resetUserPassword = async function(userId, userEmail) {
+  if (confirm(`Tem certeza que deseja resetar a senha do usuário ${userEmail}? Um e-mail de recuperação será enviado.`)) {
+    showToast("Funcionalidade de reset de senha em desenvolvimento. Um e-mail de recuperação seria enviado para " + userEmail);
+  }
+};
+
+
+function renderStats(companies) {
+  const total    = companies.length;
+  const active   = companies.filter(c => c.status === "active").length;
+  const inactive = companies.filter(c => c.status === "inactive").length;
+  const in7days  = companies.filter(c => {
     if (!c.expires_at) return false;
     const diff = (new Date(c.expires_at) - new Date()) / (1000 * 60 * 60 * 24);
     return diff >= 0 && diff <= 7;
   }).length;
 
-  document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-active").textContent = active;
+  document.getElementById("stat-total").textContent    = total;
+  document.getElementById("stat-active").textContent   = active;
   document.getElementById("stat-inactive").textContent = inactive;
   document.getElementById("stat-expiring").textContent = in7days;
 }
@@ -531,7 +811,6 @@ async function renderTable(companies) {
     return;
   }
 
-  // busca contagem de usuários por empresa
   const { data: users } = await supabase
     .from("users_app")
     .select("company_id");
@@ -548,9 +827,9 @@ async function renderTable(companies) {
     }[c.status] || `<span class="badge badge-gray">${c.status}</span>`;
 
     const planBadge = {
-      starter:    `<span class="badge badge-gray">Starter</span>`,
-      pro:        `<span class="badge badge-yellow">Pro</span>`,
-      enterprise: `<span class="badge badge-green">Enterprise</span>`,
+      bronze:    `<span class="badge badge-gray">Bronze</span>`,
+      prata:        `<span class="badge badge-yellow">Prata</span>`,
+      ouro: `<span class="badge badge-green">Ouro</span>`,
     }[c.plan] || `<span class="badge badge-gray">${c.plan || "—"}</span>`;
 
     const expires = c.expires_at
@@ -558,7 +837,7 @@ async function renderTable(companies) {
       : "—";
 
     const count = userCount[c.id] || 0;
-    const max = c.max_users || "—";
+    const max   = c.max_users || "—";
 
     const toggleLabel = c.status === "active" ? "Desativar" : "Ativar";
     const toggleClass = c.status === "active" ? "red" : "green";
@@ -575,6 +854,7 @@ async function renderTable(companies) {
         <td>${count} / ${max}</td>
         <td>
           <div class="actions">
+            <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
           </div>
@@ -584,22 +864,17 @@ async function renderTable(companies) {
   }).join("");
 }
 
-// ── MODAL ─────────────────────────────────────────────
-window.openModal = function(id) {
+window.openModal = function() {
   editingId = null;
-  document.getElementById("modal-title").textContent = "Nova empresa";
-  document.getElementById("modal-save-btn").textContent = "Criar empresa";
-  document.getElementById("m-name").value = "";
-  document.getElementById("m-email").value = "";
-  document.getElementById("m-plan").value = "starter";
+  document.getElementById("modal-title").textContent      = "Nova empresa";
+  document.getElementById("modal-save-btn").textContent   = "Criar empresa";
+  document.getElementById("m-name").value     = "";
+  document.getElementById("m-email").value    = "";
+  document.getElementById("m-plan").value     = "bronze";
   document.getElementById("m-maxusers").value = "5";
-  document.getElementById("m-expires").value = "";
-  document.getElementById("m-status").value = "active";
+  document.getElementById("m-expires").value  = "";
+  document.getElementById("m-status").value   = "active";
   document.getElementById("modal").classList.add("open");
-};
-
-window.closeModal = function() {
-  document.getElementById("modal").classList.remove("open");
 };
 
 window.editCompany = async function(id) {
@@ -607,14 +882,14 @@ window.editCompany = async function(id) {
   if (!c) return;
 
   editingId = id;
-  document.getElementById("modal-title").textContent = "Editar empresa";
-  document.getElementById("modal-save-btn").textContent = "Salvar";
-  document.getElementById("m-name").value = c.name || "";
-  document.getElementById("m-email").value = c.owner_email || "";
-  document.getElementById("m-plan").value = c.plan || "starter";
+  document.getElementById("modal-title").textContent      = "Editar empresa";
+  document.getElementById("modal-save-btn").textContent   = "Salvar";
+  document.getElementById("m-name").value     = c.name || "";
+  document.getElementById("m-email").value    = c.owner_email || "";
+  document.getElementById("m-plan").value     = c.plan || "bronze";
   document.getElementById("m-maxusers").value = c.max_users || 5;
-  document.getElementById("m-expires").value = c.expires_at ? c.expires_at.split("T")[0] : "";
-  document.getElementById("m-status").value = c.status || "active";
+  document.getElementById("m-expires").value  = c.expires_at ? c.expires_at.split("T")[0] : "";
+  document.getElementById("m-status").value   = c.status || "active";
   document.getElementById("modal").classList.add("open");
 };
 
@@ -632,8 +907,8 @@ window.saveCompany = async function() {
     name,
     owner_email: email || null,
     plan,
-    max_users: maxusers,
-    expires_at: expires ? new Date(expires).toISOString() : null,
+    max_users:   maxusers,
+    expires_at:  expires ? new Date(expires).toISOString() : null,
     status,
   };
 
@@ -660,7 +935,6 @@ window.toggleStatus = async function(id, currentStatus) {
   load();
 };
 
-// ── UTILS ─────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -673,17 +947,21 @@ window.logout = function() {
   window.location.href = "/login.html";
 };
 
-// fecha modal clicando fora
+// Event listeners para fechar as modais clicando fora
 document.getElementById("modal").addEventListener("click", function(e) {
   if (e.target === this) closeModal();
 });
+
+document.getElementById("details-modal").addEventListener("click", function(e) {
+  if (e.target === this) closeDetailsModal();
+});
+
+document.getElementById("user-modal").addEventListener("click", function(e) {
+  if (e.target === this) closeUserModal();
+});
+
 
 load();
 </script>
 </body>
 </html>
-
-Isso já te dá um painel completo com stats de empresas ativas, inativas e expirando, tabela com todas as empresas, modal para criar e editar empresas, botão de ativar/desativar e contagem de usuários por empresa.
-
-O próximo passo seria migrar o auth para o Supabase nativo. Quer que eu monte isso agora?
-
