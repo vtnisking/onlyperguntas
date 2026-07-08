@@ -1899,13 +1899,17 @@ function buildMobileCard(item){
         border-bottom: 1px solid var(--border);
       ">
         ${item.product_thumbnail ? `
-          <img src="${item.product_thumbnail}" style="
-            width: 48px; height: 48px;
-            border-radius: 4px;
-            object-fit: cover;
-            border: 1px solid var(--border);
-            flex-shrink: 0;
-          ">
+      <img src="${item.product_thumbnail}" 
+        onclick="window.open('https://produto.mercadolivre.com.br/MLB-' + '${item.item_id}'.replace('MLB', '') + '-_JM', '_blank')"
+        style="
+          width: 48px; height: 48px;
+          border-radius: 4px;
+          object-fit: cover;
+          border: 1px solid var(--border);
+          flex-shrink: 0;
+          cursor: pointer;
+        "
+      >
         ` : ''}
 
         <div style="flex: 1; min-width: 90px;">
