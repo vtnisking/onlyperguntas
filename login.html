@@ -1,294 +1,412 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - CentralizaChat</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - CentralizaChat</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
 
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-  :root {
-    --bg:      #f5f5f7;
-    --surface: #ffffff;
-    --surface2:#f0f0f5;
-    --border:  rgba(0,0,0,0.07);
-    --border2: rgba(0,0,0,0.12);
-    --accent:  #6c63ff;
-    --text:    #111118;
-    --text2:   #555566;
-    --text3:   #9999aa;
-    --red:     #dc2626;
-  }
+      :root {
+        --bg: #f5f5f7;
+        --surface: #ffffff;
+        --surface2: #f0f0f5;
+        --border: rgba(0, 0, 0, 0.07);
+        --border2: rgba(0, 0, 0, 0.12);
+        --accent: #6c63ff;
+        --text: #111118;
+        --text2: #555566;
+        --text3: #9999aa;
+        --red: #dc2626;
+      }
 
-  body {
-    margin: 0;
-    font-family: 'Inter', Arial, sans-serif;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px 16px;
-    position: relative;
-    overflow: hidden;
-  }
+      body {
+        margin: 0;
+        font-family: "Inter", Arial, sans-serif;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px 16px;
+        position: relative;
+        overflow: hidden;
+      }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: -200px; left: 50%;
-    transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(108,99,255,0.07) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
+      body::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(108, 99, 255, 0.07) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
 
-  .card {
-    background: var(--surface);
-    width: 100%; max-width: 400px;
-    padding: 40px 36px;
-    border-radius: 28px;
-    border: 1px solid var(--border2);
-    box-shadow: 0 4px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-    position: relative; z-index: 1;
-  }
+      .card {
+        background: var(--surface);
+        width: 100%;
+        max-width: 400px;
+        padding: 40px 36px;
+        border-radius: 28px;
+        border: 1px solid var(--border2);
+        box-shadow:
+          0 4px 40px rgba(0, 0, 0, 0.08),
+          0 1px 4px rgba(0, 0, 0, 0.04);
+        position: relative;
+        z-index: 1;
+      }
 
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 10%; right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    border-radius: 999px;
-    opacity: 0.6;
-  }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+        border-radius: 999px;
+        opacity: 0.6;
+      }
 
-  .logo-area {
-    display: flex; flex-direction: column;
-    align-items: center; margin-bottom: 36px;
-  }
+      .logo-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 36px;
+      }
 
-  .logo-icon {
-    width: 56px; height: 56px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px; margin-bottom: 16px;
-    box-shadow: 0 8px 24px rgba(108,99,255,0.25);
-  }
+      .logo-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.25);
+      }
 
-  .logo-title {
-    font-size: 22px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.02em; margin-bottom: 6px;
-  }
+      .logo-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+      }
 
-  .logo-subtitle {
-    font-size: 14px; color: var(--text2);
-    font-weight: 500; text-align: center; line-height: 1.5;
-  }
+      .logo-subtitle {
+        font-size: 14px;
+        color: var(--text2);
+        font-weight: 500;
+        text-align: center;
+        line-height: 1.5;
+      }
 
-  .field-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
 
-  .field { display: flex; flex-direction: column; gap: 6px; }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
 
-  label {
-    font-size: 12px; font-weight: 700; color: var(--text2);
-    letter-spacing: 0.04em; text-transform: uppercase;
-  }
+      label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text2);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
 
-  input {
-    width: 100%; padding: 14px 16px;
-    border: 1px solid var(--border2);
-    border-radius: 14px;
-    background: var(--surface2);
-    color: var(--text);
-    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
-    font-weight: 500; outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
+      input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--border2);
+        border-radius: 14px;
+        background: var(--surface2);
+        color: var(--text);
+        font-size: 15px;
+        font-family: "Inter", Arial, sans-serif;
+        font-weight: 500;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
 
-  input::placeholder { color: var(--text3); font-weight: 400; }
+      input::placeholder {
+        color: var(--text3);
+        font-weight: 400;
+      }
 
-  input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
-  }
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+      }
 
-  .btn-login {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: white; border: none;
-    padding: 15px; border-radius: 14px;
-    font-size: 15px; font-weight: 700;
-    font-family: 'Inter', Arial, sans-serif;
-    cursor: pointer; letter-spacing: 0.02em;
-    transition: all .2s ease;
-    box-shadow: 0 4px 16px rgba(108,99,255,0.25);
-  }
+      .btn-login {
+        width: 100%;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: "Inter", Arial, sans-serif;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 16px rgba(108, 99, 255, 0.25);
+      }
 
-  .btn-login:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(108,99,255,0.35);
-  }
+      .btn-login:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.35);
+      }
 
-  .btn-login:active { transform: scale(0.98); }
+      .btn-login:active {
+        transform: scale(0.98);
+      }
 
-  .error {
-    display: flex; align-items: center; gap: 8px;
-    color: var(--red);
-    background: rgba(220,38,38,0.06);
-    border: 1px solid rgba(220,38,38,0.15);
-    border-radius: 12px;
-    padding: 12px 14px; margin-top: 14px;
-    font-size: 13px; font-weight: 500;
-    transition: all .2s;
-  }
+      .error {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--red);
+        background: rgba(220, 38, 38, 0.06);
+        border: 1px solid rgba(220, 38, 38, 0.15);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-top: 14px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
 
-  .error:empty { display: none; }
+      .error:empty {
+        display: none;
+      }
 
-  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 28px 0;
+      }
 
-  .footer-text {
-    text-align: center; font-size: 12px;
-    color: var(--text3); font-weight: 500;
-  }
+      .footer-text {
+        text-align: center;
+        font-size: 12px;
+        color: var(--text3);
+        font-weight: 500;
+      }
 
-  @media (max-width: 440px) {
-    .card { padding: 32px 24px; border-radius: 24px; }
-  }
-</style>
-</head>
+      @media (max-width: 440px) {
+        .card {
+          padding: 32px 24px;
+          border-radius: 24px;
+        }
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <div class="card">
+      <div class="logo-area">
+        <div class="logo-icon">💬</div>
+        <div class="logo-title">CentralizaChat</div>
+        <div class="logo-subtitle">
+          Acesse o painel de perguntas do Mercado Livre
+        </div>
+      </div>
 
-<div class="card">
+      <div class="field-group">
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="seu@email.com"
+            autocomplete="email"
+          />
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+        </div>
+      </div>
 
-  <div class="logo-area">
-    <div class="logo-icon">💬</div>
-    <div class="logo-title">CentralizaChat</div>
-    <div class="logo-subtitle">Acesse o painel de perguntas do Mercado Livre</div>
-  </div>
+      <button class="btn-login" onclick="login()">Entrar na conta</button>
 
-  <div class="field-group">
-    <div class="field">
-      <label for="email">E-mail</label>
-      <input id="email" type="email" placeholder="seu@email.com" autocomplete="email">
+      <!-- ADICIONA ISSO AQUI -->
+      <div style="text-align: center; margin-top: 14px">
+        <a
+          href="#"
+          onclick="forgotPassword()"
+          style="
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+          "
+        >
+          Esqueci minha senha
+        </a>
+      </div>
+
+      <div class="error" id="error"></div>
+
+      <div class="error" id="error"></div>
+
+      <div class="divider"></div>
+
+      <div class="footer-text">CentralizaChat · Gestão de perguntas</div>
     </div>
-    <div class="field">
-      <label for="password">Senha</label>
-      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-  </div>
 
- <button class="btn-login" onclick="login()">Entrar na conta</button>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-<!-- ADICIONA ISSO AQUI -->
-<div style="text-align: center; margin-top: 14px;">
-  <a href="#" onclick="forgotPassword()" style="font-size: 13px; color: var(--accent); font-weight: 600; text-decoration: none;">
-    Esqueci minha senha
-  </a>
-</div>
+      const supabase = createClient(
+        "https://vspcitxnssbsztqnfhmj.supabase.co",
+        "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
+      );
 
-<div class="error" id="error"></div>
-  
+      async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const errorBox = document.getElementById("error");
+        const btn = document.querySelector(".btn-login");
 
-  <div class="error" id="error"></div>
+        errorBox.innerText = "";
 
-  <div class="divider"></div>
+        if (!email || !password) {
+          errorBox.innerText = "⚠️ Preencha e-mail e senha.";
+          return;
+        }
 
-  <div class="footer-text">CentralizaChat · Gestão de perguntas</div>
+        btn.innerText = "Entrando...";
+        btn.disabled = true;
 
-</div>
+        try {
+          // Confere e-mail e senha no Supabase Auth
+          const { data: authData, error: authError } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+          if (authError || !authData.user) {
+            console.error("Erro do Supabase Auth:", authError);
 
-const supabase = createClient(
-  "https://vspcitxnssbsztqnfhmj.supabase.co",
-  "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS"
-);
+            throw new Error(
+              authError?.message || "E-mail ou senha incorretos.",
+            );
+          }
 
-async function login(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("error");
-  const btn = document.querySelector(".btn-login");
+          // Busca os dados do usuário na tabela do sistema
+          const { data: userData, error: userError } = await supabase
+            .from("users_app")
+            .select("id, name, email, role, status, company_id")
+            .eq("email", authData.user.email)
+            .single();
 
-  errorBox.innerText = "";
+          if (userError || !userData) {
+            await supabase.auth.signOut();
+            throw new Error("Usuário não cadastrado no sistema.");
+          }
 
-  if(!email || !password){
-    errorBox.innerText = "⚠️ Preencha e-mail e senha.";
-    return;
-  }
+          if (userData.status !== "active") {
+            await supabase.auth.signOut();
+            throw new Error("Este usuário está desativado.");
+          }
 
-  btn.innerText = "Entrando...";
-  btn.disabled = true;
+          localStorage.setItem(
+            "centralizachat_user",
+            JSON.stringify({
+              id: userData.id,
+              auth_id: authData.user.id,
+              name: userData.name,
+              email: userData.email,
+              role: userData.role,
+              company_id: userData.company_id,
+            }),
+          );
 
-  const { data, error } = await supabase
-    .from("users_app")
-    .select("*")
-    .eq("email", email)
-    .eq("password", password)
-    .single();
+          window.location.href = "/";
+        } catch (error) {
+          errorBox.innerText = "⚠️ " + error.message;
+          btn.innerText = "Entrar na conta";
+          btn.disabled = false;
+        }
+      }
 
-  if(error || !data){
-    errorBox.innerText = "⚠️ E-mail ou senha incorretos.";
-    btn.innerText = "Entrar na conta";
-    btn.disabled = false;
-    return;
-  }
+      async function forgotPassword() {
+        const email = document.getElementById("email").value.trim();
+        const errorBox = document.getElementById("error");
 
-  if(!data.company_id){
-    errorBox.innerText = "⚠️ Empresa não vinculada à conta.";
-    btn.innerText = "Entrar na conta";
-    btn.disabled = false;
-    return;
-  }
+        if (!email) {
+          errorBox.innerText = "⚠️ Digite seu e-mail antes de continuar.";
+          return;
+        }
 
-  localStorage.setItem("centralizachat_user", JSON.stringify({
-    id: data.id,
-    name: data.name,
-    email: data.email,
-    role: data.role,
-    company_id: data.company_id
-  }));
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/redefinir-senha.html",
+        });
 
-  window.location.href = "/";
-}
+        if (error) {
+          errorBox.style.color = "var(--red)";
+          errorBox.innerText = "⚠️ Erro ao enviar o e-mail. Tente novamente.";
+        } else {
+          errorBox.style.color = "var(--accent)";
+          errorBox.innerText =
+            "✅ E-mail de redefinição enviado! Verifique sua caixa de entrada.";
+        }
+      }
 
-async function forgotPassword() {
-  const email = document.getElementById("email").value.trim();
-  const errorBox = document.getElementById("error");
+      window.forgotPassword = forgotPassword;
 
-  if (!email) {
-    errorBox.innerText = "⚠️ Digite seu e-mail antes de continuar.";
-    return;
-  }
+      window.login = login;
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + "/reset-password.html"
-  });
-
-  if (error) {
-    errorBox.style.color = "var(--red)";
-    errorBox.innerText = "⚠️ Erro ao enviar o e-mail. Tente novamente.";
-  } else {
-    errorBox.style.color = "var(--accent)";
-    errorBox.innerText = "✅ E-mail de redefinição enviado! Verifique sua caixa de entrada.";
-  }
-}
-
-window.forgotPassword = forgotPassword;
-
-window.login = login;
-
-// Login ao pressionar Enter
-document.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") login();
-});
-</script>
-
-</body>
+      // Login ao pressionar Enter
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") login();
+      });
+    </script>
+  </body>
 </html>

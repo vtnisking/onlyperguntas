@@ -645,14 +645,54 @@ const supabase = createClient(
 );
 
 let me = {};
-try {
-  me = JSON.parse(localStorage.getItem("centralizachat_user") || "{}");
-} catch(e) {
-  me = {};
-}
 
-if (!me.id || me.role !== "superadmin") {
-  window.location.href = "/login.html";
+async function protectSuperadmin() {
+  // Verifica se existe uma sessão verdadeira no Supabase Auth
+  const {
+    data: { session },
+    error: sessionError
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session?.user) {
+    localStorage.removeItem("centralizachat_user");
+    window.location.replace("/login.html");
+    return false;
+  }
+
+  // Confere a permissão diretamente no banco
+  const { data: userData, error: userError } = await supabase
+    .from("users_app")
+    .select("id, name, email, role, status, company_id")
+    .eq("email", session.user.email)
+    .single();
+
+  if (
+    userError ||
+    !userData ||
+    userData.role !== "superadmin" ||
+    userData.status !== "active"
+  ) {
+    await supabase.auth.signOut();
+    localStorage.removeItem("centralizachat_user");
+    window.location.replace("/login.html");
+    return false;
+  }
+
+  me = userData;
+
+  localStorage.setItem(
+    "centralizachat_user",
+    JSON.stringify({
+      id: userData.id,
+      auth_id: session.user.id,
+      name: userData.name,
+      email: userData.email,
+      role: userData.role,
+      company_id: userData.company_id
+    })
+  );
+
+  return true;
 }
 
 // Variáveis globais para controlar o estado das modais
@@ -1043,7 +1083,15 @@ document.getElementById("reset-password-modal").addEventListener("click", functi
 });
 
 
-load();
+async function initializeSuperadmin() {
+  const authorized = await protectSuperadmin();
+
+  if (!authorized) return;
+
+  await load();
+}
+
+initializeSuperadmin();
 </script>
 </body>
 </html>
