@@ -4,18 +4,32 @@ export default async function handler(req, res) {
   try {
     const supabase = createClient(
       process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      },
     );
 
     const { action, company_id } = req.query;
 
     if (!action) {
-      return res.status(400).json({ error: "action obrigatório" });
+      return res.status(400).json({
+        error: "action obrigatório",
+      });
     }
 
     if (!company_id) {
-      return res.status(400).json({ error: "company_id obrigatório" });
+      return res.status(400).json({
+        error: "company_id obrigatório",
+      });
     }
+
+    // ==========================================
+    // USUÁRIOS
+    // ==========================================
 
     if (action === "users") {
       const { data, error } = await supabase
@@ -34,38 +48,62 @@ export default async function handler(req, res) {
       });
     }
 
+    // ==========================================
+    // ESTATÍSTICAS
+    // ==========================================
+
     if (action === "stats") {
       const period = req.query.period || "day";
       const start = req.query.start;
       const end = req.query.end;
+
       const now = new Date();
-      let startDate = new Date();
+
+      let startDate;
       let endDate = new Date();
 
       if (period === "day") {
+        startDate = new Date(now);
+        startDate.setHours(0, 0, 0, 0);
+      } else if (period === "7days") {
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 7);
+        startDate.setHours(0, 0, 0, 0);
+      } else if (period === "30days") {
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 30);
+        startDate.setHours(0, 0, 0, 0);
+      } else if (period === "month") {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      } else if (period === "year") {
+        startDate = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+      } else if (period === "custom" && start && end) {
+        startDate = new Date(`${start}T00:00:00`);
+        endDate = new Date(`${end}T23:59:59`);
+      } else {
+        startDate = new Date(now);
         startDate.setHours(0, 0, 0, 0);
       }
 
-      if (period === "7days") {
-        startDate.setDate(now.getDate() - 7);
+      // Conta todos os registros da empresa sem filtro de data
+
+      const { count: companyTotal, error: countError } = await supabase
+        .from("answer_logs")
+        .select("id", {
+          count: "exact",
+          head: true,
+        })
+        .eq("company_id", company_id);
+
+      if (countError) {
+        return res.status(500).json({
+          success: false,
+          etapa: "contagem_sem_data",
+          error: countError,
+        });
       }
 
-      if (period === "30days") {
-        startDate.setDate(now.getDate() - 30);
-      }
-
-      if (period === "month") {
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      }
-
-      if (period === "year") {
-        startDate = new Date(now.getFullYear(), 0, 1);
-      }
-
-      if (period === "custom" && start && end) {
-        startDate = new Date(start + "T00:00:00");
-        endDate = new Date(end + "T23:59:59");
-      }
+      // Busca as respostas dentro do período
 
       const { data, error } = await supabase
         .from("answer_logs")
@@ -76,38 +114,69 @@ export default async function handler(req, res) {
         .order("created_at", { ascending: false });
 
       if (error) {
-        return res.status(500).json({ error });
+        return res.status(500).json({
+          success: false,
+          etapa: "consulta_com_data",
+          error,
+        });
       }
 
       const byUser = {};
 
       data.forEach((log) => {
         const user = log.user_name || log.user_email || "Sem usuário";
+
         byUser[user] = (byUser[user] || 0) + 1;
       });
 
-      const { data: allUsers } = await supabase
+      const { data: allUsers, error: usersError } = await supabase
         .from("users_app")
         .select("name, email")
         .eq("company_id", company_id);
 
+      if (usersError) {
+        return res.status(500).json({
+          success: false,
+          etapa: "usuarios",
+          error: usersError,
+        });
+      }
+
       return res.status(200).json({
         success: true,
+
         period,
+
+        server_now: now.toISOString(),
+
+        start_date: startDate.toISOString(),
+
+        end_date: endDate.toISOString(),
+
+        company_total_without_date_filter: companyTotal,
+
         total: data.length,
+
         by_user: Object.fromEntries(
           (allUsers || []).map((user) => [
             user.name || user.email,
             byUser[user.name] || byUser[user.email] || 0,
           ]),
         ),
+
         logs: data,
       });
     }
 
+    // ==========================================
+    // CRIAR USUÁRIO
+    // ==========================================
+
     if (action === "create-user") {
       if (req.method !== "POST") {
-        return res.status(405).json({ error: "Método não permitido" });
+        return res.status(405).json({
+          error: "Método não permitido",
+        });
       }
 
       const { name, email, password, role } = req.body;
@@ -124,7 +193,6 @@ export default async function handler(req, res) {
           company_id,
           name,
           email,
-          password,
           role: role || "employee",
           status: "active",
         })
@@ -141,9 +209,15 @@ export default async function handler(req, res) {
       });
     }
 
+    // ==========================================
+    // DELETAR USUÁRIO
+    // ==========================================
+
     if (action === "delete-user") {
       if (req.method !== "POST") {
-        return res.status(405).json({ error: "Método não permitido" });
+        return res.status(405).json({
+          error: "Método não permitido",
+        });
       }
 
       const { user_id } = req.body;
@@ -168,6 +242,10 @@ export default async function handler(req, res) {
         success: true,
       });
     }
+
+    // ==========================================
+    // AÇÃO NÃO ENCONTRADA
+    // ==========================================
 
     return res.status(404).json({
       error: "Ação não encontrada",
