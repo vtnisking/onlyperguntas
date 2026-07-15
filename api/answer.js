@@ -42,6 +42,24 @@ async function sendMercadoLivreAnswer(store, question_id, text) {
   );
 }
 
+async function saveAnswerLog(supabase, store, body, text) {
+  const { error } = await supabase.from("answer_logs").insert({
+    question_id: body.question_id,
+    store_id: body.store_id,
+    store_name: store.name,
+    company_id: store.company_id,
+    user_id: body.user_id || null,
+    user_name: body.user_name || null,
+    user_email: body.user_email || null,
+    answer_text: text,
+  });
+
+  if (error) {
+    console.error("Erro ao registrar resposta em answer_logs:", error);
+    throw new Error(`Resposta enviada, mas o histórico não foi salvo: ${error.message}`);
+  }
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
@@ -58,10 +76,16 @@ export default async function handler(req, res) {
       });
     }
 
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY
-    );
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 
     const { data: store, error } = await supabase
       .from("stores")
@@ -79,17 +103,7 @@ export default async function handler(req, res) {
 
     try {
       response = await sendMercadoLivreAnswer(store, question_id, text);
-      await supabase.from("answer_logs").insert({
-  question_id,
-  store_id,
-  store_name: store.name,
-  company_id: store.company_id,
-  user_id: req.body.user_id,
-  user_name: req.body.user_name,
-  user_email: req.body.user_email,
-  answer_text: text,
-
-      });
+await saveAnswerLog(supabase, store, req.body, text);
     } catch (tokenError) {
       const errorData = tokenError.response?.data;
 
