@@ -1333,6 +1333,154 @@
         text-align: center;
       }
 
+      .monthly-ranking-box {
+  width: 100%;
+  margin-top: 24px;
+  padding: 28px 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.monthly-ranking-title {
+  margin-bottom: 20px;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.monthly-ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.monthly-ranking-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 20px;
+  text-align: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.monthly-ranking-card.monthly-ranking-first {
+  background: linear-gradient(
+    135deg,
+    rgba(108, 99, 255, 0.08),
+    rgba(139, 92, 246, 0.04)
+  );
+  border-color: rgba(108, 99, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(108, 99, 255, 0.1);
+}
+
+.monthly-ranking-card.monthly-ranking-first::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), #8b5cf6);
+}
+
+.monthly-ranking-medal {
+  margin-bottom: 12px;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.monthly-ranking-name {
+  overflow: hidden;
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monthly-ranking-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 6px 18px;
+  color: var(--green);
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 999px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.monthly-ranking-description {
+  margin-top: 6px;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.monthly-ranking-loading,
+.monthly-ranking-error {
+  padding: 18px;
+  color: var(--text3);
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 899px) {
+  #monthlyRanking {
+    padding: 0 16px 24px;
+  }
+
+  .monthly-ranking-box {
+    margin-top: 8px;
+    padding: 18px 14px;
+  }
+
+  .monthly-ranking-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .monthly-ranking-card {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+
+  .monthly-ranking-medal {
+    margin: 0;
+    font-size: 30px;
+    text-align: center;
+  }
+
+  .monthly-ranking-name {
+    margin: 0;
+  }
+
+  .monthly-ranking-count {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .monthly-ranking-description {
+    grid-column: 2;
+    margin: 2px 0 0;
+  }
+}
+
       .settings-item {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -2156,48 +2304,7 @@
     <!-- /desktop-layout -->
 
     <script>
-      async function loadDesktopMonthlyRanking() {
-        const box = document.getElementById("desktopMonthlyRanking");
-        if (!box) return;
 
-        const response = await fetch(
-          `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`,
-        );
-        const data = await response.json();
-
-        const ranking = Object.entries(data.by_user || {})
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3);
-
-        if (ranking.length === 0) {
-          box.innerHTML = "";
-          return;
-        }
-
-        box.innerHTML = `
-    <div style="max-width:600px;margin-top:8px;">
-      <div class="detail-label" style="margin-bottom:14px;">🏆 Top funcionários do mês</div>
-      ${ranking
-        .map(
-          ([name, total], index) => `
-        <div class="ranking-item ${index === 0 ? "first" : ""}" style="margin-bottom:10px;">
-          <div class="ranking-left">
-            <div class="rank-badge">
-              ${index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-            </div>
-            <div>
-              <div class="rank-name">${name}</div>
-              <div class="rank-role">${total} resposta(s) este mês</div>
-            </div>
-          </div>
-          <div class="rank-count">${total}</div>
-        </div>
-      `,
-        )
-        .join("")}
-    </div>
-  `;
-      }
 
       let knownQuestionIds = new Set();
       let firstLoadDone = false;
@@ -2424,11 +2531,19 @@
             questions.length;
           container.innerHTML = "";
 
-          if (questions.length === 0) {
-            container.innerHTML = `<div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div><div id="monthlyRanking"></div>`;
-            loadMonthlyRanking();
-            return;
-          }
+if (questions.length === 0) {
+  container.innerHTML = `
+    <div class="empty">
+      <span class="empty-icon">🎉</span>
+      Nenhuma pergunta pendente!
+    </div>
+
+    <div id="monthlyRanking"></div>
+  `;
+
+  loadMonthlyRanking("monthlyRanking");
+  return;
+}
 
           questions.forEach((item) => {
             container.innerHTML += buildMobileCard(item);
@@ -2726,7 +2841,7 @@
         <div id="desktopMonthlyRanking"></div>
       `;
             closeDetail();
-            loadDesktopMonthlyRanking();
+            loadMonthlyRanking("desktopMonthlyRanking");
             return;
           }
 
@@ -3538,124 +3653,87 @@
         });
       }
 
-      async function loadDesktopMonthlyRanking() {
-        const box = document.getElementById("desktopMonthlyRanking");
-        if (!box) return;
+async function loadMonthlyRanking(containerId) {
+  const box = document.getElementById(containerId);
 
-        const response = await fetch(
-          `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`,
-        );
-        const data = await response.json();
+  if (!box || !loggedUser?.company_id) {
+    return;
+  }
 
-        const ranking = Object.entries(data.by_user || {})
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3);
-
-        if (ranking.length === 0) {
-          box.innerHTML = "";
-          return;
-        }
-
-        const medals = ["🥇", "🥈", "🥉"];
-
-        box.innerHTML = `
-    <div style="
-      max-width: 100%;
-      margin-top: 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 28px 32px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    ">
-      <div style="
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text3);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 20px;
-      ">🏆 Top funcionários do mês</div>
-
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-        ${ranking
-          .map(
-            ([name, total], index) => `
-          <div style="
-            background: ${
-              index === 0
-                ? "linear-gradient(135deg, rgba(108,99,255,0.08), rgba(139,92,246,0.04))"
-                : "var(--surface2)"
-            };
-            border: 1px solid ${
-              index === 0 ? "rgba(108,99,255,0.2)" : "var(--border)"
-            };
-            border-radius: var(--radius-lg);
-            padding: 24px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: ${
-              index === 0
-                ? "0 4px 20px rgba(108,99,255,0.1)"
-                : "0 1px 4px rgba(0,0,0,0.04)"
-            };
-          ">
-            ${
-              index === 0
-                ? `
-              <div style="
-                position: absolute;
-                top: 0; left: 0; right: 0;
-                height: 2px;
-                background: linear-gradient(90deg, var(--accent), #8b5cf6);
-                border-radius: 2px 2px 0 0;
-              "></div>
-            `
-                : ""
-            }
-
-            <div style="font-size: 36px; margin-bottom: 12px; line-height: 1;">
-              ${medals[index]}
-            </div>
-
-            <div style="
-              font-size: 16px;
-              font-weight: 800;
-              color: var(--text);
-              margin-bottom: 6px;
-              letter-spacing: -0.01em;
-            ">${name}</div>
-
-            <div style="
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              background: rgba(22,163,74,0.08);
-              border: 1px solid rgba(22,163,74,0.2);
-              color: var(--green);
-              font-size: 22px;
-              font-weight: 900;
-              border-radius: 999px;
-              padding: 6px 18px;
-              margin-top: 8px;
-              letter-spacing: -0.01em;
-            ">${total}</div>
-
-            <div style="
-              font-size: 12px;
-              color: var(--text3);
-              font-weight: 500;
-              margin-top: 6px;
-            ">respostas este mês</div>
-          </div>
-        `,
-          )
-          .join("")}
-      </div>
+  box.innerHTML = `
+    <div class="monthly-ranking-loading">
+      Carregando ranking...
     </div>
   `;
-      }
+
+  try {
+    const response = await fetch(
+      `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const ranking = Object.entries(data.by_user || {})
+      .filter(([name, total]) => name && Number(total) > 0)
+      .sort((a, b) => Number(b[1]) - Number(a[1]))
+      .slice(0, 3);
+
+    if (ranking.length === 0) {
+      box.innerHTML = "";
+      return;
+    }
+
+    const medals = ["🥇", "🥈", "🥉"];
+
+    box.innerHTML = `
+      <div class="monthly-ranking-box">
+        <div class="monthly-ranking-title">
+          🏆 Top funcionários do mês
+        </div>
+
+        <div class="monthly-ranking-grid">
+          ${ranking
+            .map(
+              ([name, total], index) => `
+                <div class="monthly-ranking-card ${
+                  index === 0 ? "monthly-ranking-first" : ""
+                }">
+                  <div class="monthly-ranking-medal">
+                    ${medals[index]}
+                  </div>
+
+                  <div class="monthly-ranking-name">
+                    ${escapeHtml(String(name))}
+                  </div>
+
+                  <div class="monthly-ranking-count">
+                    ${Number(total)}
+                  </div>
+
+                  <div class="monthly-ranking-description">
+                    respostas este mês
+                  </div>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error("Erro ao carregar ranking mensal:", error);
+
+    box.innerHTML = `
+      <div class="monthly-ranking-error">
+        Não foi possível carregar o ranking.
+      </div>
+    `;
+  }
+}
 
       // ──────────────────────────────────────
       // SHARED: Calendar
