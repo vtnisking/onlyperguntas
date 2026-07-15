@@ -2532,15 +2532,13 @@
           container.innerHTML = "";
 
 if (questions.length === 0) {
-  container.innerHTML = `
+container.innerHTML = `
     <div class="empty">
-      <span class="empty-icon">🎉</span>
-      Nenhuma pergunta pendente!
+        Nenhuma pergunta pendente!
     </div>
 
     <div id="monthlyRanking"></div>
-  `;
-
+`;
   loadMonthlyRanking("monthlyRanking");
   return;
 }
@@ -2837,7 +2835,7 @@ if (questions.length === 0) {
 
           if (questions.length === 0) {
             listEl.innerHTML = `
-        <div class="empty"><span class="empty-icon">🎉</span>Nenhuma pergunta pendente!</div>
+<div class="empty">Nenhuma pergunta pendente!</div>
         <div id="desktopMonthlyRanking"></div>
       `;
             closeDetail();
