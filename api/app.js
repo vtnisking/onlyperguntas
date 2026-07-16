@@ -52,11 +52,13 @@ export default async function handler(req, res) {
     // ESTATÍSTICAS
     // ==========================================
 
+    if (action === "stats") {
   const period = req.query.period || "day";
 const start = req.query.start;
 const end = req.query.end;
 
 const now = new Date();
+    }
 
 function brazilDateParts(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -71,7 +73,7 @@ function brazilDateParts(date = new Date()) {
     month: Number(parts.find((part) => part.type === "month").value),
     day: Number(parts.find((part) => part.type === "day").value),
   };
-}
+
 
 function startOfBrazilDay(year, month, day) {
   return new Date(
@@ -125,8 +127,7 @@ if (period === "day") {
     brazilToday.month,
     brazilToday.day,
   );
-
-
+}
       // Conta todos os registros da empresa sem filtro de data
 
       const { count: companyTotal, error: countError } = await supabase
