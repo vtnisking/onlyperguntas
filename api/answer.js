@@ -60,6 +60,28 @@ async function saveAnswerLog(supabase, store, body, text) {
   }
 }
 
+async function saveAnswerLog(supabase, store, body, text) {
+  const { error: logError } = await supabase
+    .from("answer_logs")
+    .insert({
+      question_id: String(body.question_id),
+      store_id: body.store_id,
+      store_name: store.name,
+      company_id: store.company_id,
+      user_id: body.user_id || null,
+      user_name: body.user_name || null,
+      user_email: body.user_email || null,
+      answer_text: text,
+    });
+
+  if (logError) {
+    console.error("Erro ao salvar answer_log:", logError);
+    throw new Error(
+      `A resposta foi enviada, mas o histórico não foi salvo: ${logError.message}`,
+    );
+  }
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
