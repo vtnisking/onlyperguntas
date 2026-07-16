@@ -55,7 +55,7 @@ return {
   sku,
   thumbnail: item.thumbnail
   ? item.thumbnail.replace(/^http:\/\//i, "https://")
-  : null,
+: null,
   permalink: item.permalink || null,
   available_quantity: item.available_quantity || 0,
   price: item.price || null
@@ -103,7 +103,11 @@ async function getCustomerData(userId, accessToken) {
   }
 }
 
-async function getPreviousQuestions(store, question) {
+async function getPreviousQuestions(
+  store,
+  question,
+  supabase,
+) {
   try {
     const fromId = question.from?.id;
 
@@ -115,139 +119,97 @@ async function getPreviousQuestions(store, question) {
       `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&item_id=${question.item_id}&limit=50`,
       {
         headers: {
-          Authorization: `Bearer ${store.access_token}`
-        }
-      }
+          Authorization: `Bearer ${store.access_token}`,
+        },
+      },
     );
 
-    const all = response.data.questions || [];
+    const allQuestions = response.data.questions || [];
 
-    return all
-      .filter(q => String(q.id) !== String(question.id))
-      .filter(q => String(q.from?.id) === String(fromId))
-      .sort((a, b) => new Date(b.date_created) - new Date(a.date_created))
-      .map(q => ({
-        id: q.id,
-        text: q.text,
-        status: q.status,
-        date_created: q.date_created,
-        answer: q.answer?.text || null
-      }));
+    const previousQuestions = allQuestions
+      .filter(
+        (previousQuestion) =>
+          String(previousQuestion.id) !==
+          String(question.id),
+      )
+      .filter(
+        (previousQuestion) =>
+          String(previousQuestion.from?.id) ===
+          String(fromId),
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.date_created) -
+          new Date(a.date_created),
+      );
 
+    if (previousQuestions.length === 0) {
+      return [];
+    }
+
+    const previousQuestionIds = previousQuestions.map(
+      (previousQuestion) => String(previousQuestion.id),
+    );
+
+    const {
+      data: previousLogs,
+      error: previousLogsError,
+    } = await supabase
+      .from("answer_logs")
+      .select(
+        "question_id, user_name, user_email, created_at",
+      )
+      .eq("store_id", store.id)
+      .in("question_id", previousQuestionIds)
+      .order("created_at", { ascending: false });
+
+    if (previousLogsError) {
+      console.error(
+        "Erro ao buscar responsáveis pelas perguntas anteriores:",
+        previousLogsError,
+      );
+    }
+
+    const previousLogsMap = {};
+
+    (previousLogs || []).forEach((log) => {
+      const questionId = String(log.question_id);
+
+      if (!previousLogsMap[questionId]) {
+        previousLogsMap[questionId] = log;
+      }
+    });
+
+    return previousQuestions.map((previousQuestion) => {
+      const previousLog =
+        previousLogsMap[String(previousQuestion.id)];
+
+      return {
+        id: previousQuestion.id,
+        text: previousQuestion.text,
+        status: previousQuestion.status,
+        date_created: previousQuestion.date_created,
+        answer:
+          previousQuestion.answer?.text || null,
+
+        answer_date_created:
+          previousLog?.created_at ||
+          previousQuestion.answer?.date_created ||
+          null,
+
+        user_name:
+          previousLog?.user_name || null,
+
+        user_email:
+          previousLog?.user_email || null,
+      };
+    });
   } catch (error) {
+    console.error(
+      "Erro ao carregar perguntas anteriores:",
+      error.response?.data || error.message,
+    );
+
     return [];
-  }
-}
-
-export default async function handler(req, res) {
-  try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY
-    );
-
-const companyId = req.query.company_id;
-
-const { data: stores, error } = await supabase
-  .from("stores")
-  .select("*")
-  .eq("platform", "mercadolivre")
-  .eq("company_id", companyId);
-
-    if (error || !stores || stores.length === 0) {
-      return res.status(400).json({
-        error: "Nenhuma loja encontrada."
-      });
-    }
-
-    let allQuestions = [];
-
-    for (let store of stores) {
-      try {
-        let response;
-
-        try {
-          response = await axios.get(
-            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=UNANSWERED`,
-            {
-              headers: {
-                Authorization: `Bearer ${store.access_token}`
-              }
-            }
-          );
-        } catch (tokenError) {
-          const errorData = tokenError.response?.data;
-
-          if (
-            errorData?.message === "invalid_token" ||
-            errorData?.error === "bad_request" ||
-            tokenError.response?.status === 401
-          ) {
-            store = await refreshStoreToken(store, supabase);
-
-            response = await axios.get(
-              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=UNANSWERED`,
-              {
-                headers: {
-                  Authorization: `Bearer ${store.access_token}`
-                }
-              }
-            );
-          } else {
-            throw tokenError;
-          }
-        }
-
-        const questions = response.data.questions || [];
-
-        for (const question of questions) {
-          const productData = await getProductData(
-            question.item_id,
-            store.access_token
-          );
-
-          const customerData = await getCustomerData(
-            question.from?.id,
-            store.access_token
-          );
-
-          const previousQuestions = await getPreviousQuestions(
-            store,
-            question
-          );
-
-          allQuestions.push({
-            ...question,
-            store_name: store.name,
-            store_id: store.id,
-            product_title: productData.title,
-            product_sku: productData.sku,
-            product_thumbnail: productData.thumbnail,
-            product_link: productData.permalink,
-            product_quantity: productData.available_quantity,
-            product_price: productData.price,
-            client_name: customerData.name,
-            client_nickname: customerData.nickname,
-            previous_questions: previousQuestions
-          });
-        }
-
-      } catch (storeError) {
-        console.log(
-          `Erro na loja ${store.name}`,
-          storeError.response?.data || storeError.message
-        );
-      }
-    }
-
-    return res.status(200).json({
-      total: allQuestions.length,
-      questions: allQuestions
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      error: error.response?.data || error.message
-    });
   }
 }
