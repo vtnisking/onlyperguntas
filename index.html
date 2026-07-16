@@ -3612,11 +3612,22 @@ container.innerHTML = `
   `;
       }
 
-      function togglePrevious(id) {
-        const box = document.getElementById(`previous-${id}`);
-        if (box)
-          box.style.display = box.style.display === "block" ? "none" : "block";
-      }
+function togglePrevious(id) {
+  const box =
+    document.getElementById(id) ||
+    document.getElementById(`previous-${id}`);
+
+  if (!box) {
+    console.error("Bloco de perguntas anteriores não encontrado:", id);
+    return;
+  }
+
+  const isHidden =
+    box.style.display === "none" ||
+    window.getComputedStyle(box).display === "none";
+
+  box.style.display = isHidden ? "block" : "none";
+}
 
       function clientName(item) {
         return item.client_name && item.client_name !== "Cliente"
