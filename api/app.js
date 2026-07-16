@@ -52,38 +52,80 @@ export default async function handler(req, res) {
     // ESTATÍSTICAS
     // ==========================================
 
-    if (action === "stats") {
-      const period = req.query.period || "day";
-      const start = req.query.start;
-      const end = req.query.end;
+  const period = req.query.period || "day";
+const start = req.query.start;
+const end = req.query.end;
 
-      const now = new Date();
+const now = new Date();
 
-      let startDate;
-      let endDate = new Date();
+function brazilDateParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
 
-      if (period === "day") {
-        startDate = new Date(now);
-        startDate.setHours(0, 0, 0, 0);
-      } else if (period === "7days") {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-        startDate.setHours(0, 0, 0, 0);
-      } else if (period === "30days") {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 30);
-        startDate.setHours(0, 0, 0, 0);
-      } else if (period === "month") {
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-      } else if (period === "year") {
-        startDate = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
-      } else if (period === "custom" && start && end) {
-        startDate = new Date(`${start}T00:00:00`);
-        endDate = new Date(`${end}T23:59:59`);
-      } else {
-        startDate = new Date(now);
-        startDate.setHours(0, 0, 0, 0);
-      }
+  return {
+    year: Number(parts.find((part) => part.type === "year").value),
+    month: Number(parts.find((part) => part.type === "month").value),
+    day: Number(parts.find((part) => part.type === "day").value),
+  };
+}
+
+function startOfBrazilDay(year, month, day) {
+  return new Date(
+    `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T00:00:00-03:00`,
+  );
+}
+
+function endOfBrazilDay(year, month, day) {
+  return new Date(
+    `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T23:59:59.999-03:00`,
+  );
+}
+
+const brazilToday = brazilDateParts(now);
+
+let startDate;
+let endDate = endOfBrazilDay(
+  brazilToday.year,
+  brazilToday.month,
+  brazilToday.day,
+);
+
+if (period === "day") {
+  startDate = startOfBrazilDay(
+    brazilToday.year,
+    brazilToday.month,
+    brazilToday.day,
+  );
+} else if (period === "7days") {
+  startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 6);
+  startDate.setHours(3, 0, 0, 0);
+} else if (period === "30days") {
+  startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 29);
+  startDate.setHours(3, 0, 0, 0);
+} else if (period === "month") {
+  startDate = startOfBrazilDay(
+    brazilToday.year,
+    brazilToday.month,
+    1,
+  );
+} else if (period === "year") {
+  startDate = startOfBrazilDay(brazilToday.year, 1, 1);
+} else if (period === "custom" && start && end) {
+  startDate = new Date(`${start}T00:00:00-03:00`);
+  endDate = new Date(`${end}T23:59:59.999-03:00`);
+} else {
+  startDate = startOfBrazilDay(
+    brazilToday.year,
+    brazilToday.month,
+    brazilToday.day,
+  );
+
 
       // Conta todos os registros da empresa sem filtro de data
 

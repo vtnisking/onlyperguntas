@@ -103,11 +103,16 @@ async function getCustomerData(userId, accessToken) {
 
 export default async function handler(req, res) {
   try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY,
-    );
-
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  },
+);
     const { data: stores, error } = await supabase
       .from("stores")
       .select("*")
@@ -161,16 +166,31 @@ export default async function handler(req, res) {
 
         const questionIds = questions.map((q) => String(q.id));
 
-        const { data: logs } = await supabase
-          .from("answer_logs")
-          .select("question_id, user_name, user_email, created_at")
-          .in("question_id", questionIds);
+const { data: logs, error: logsError } = await supabase
+  .from("answer_logs")
+  .select(
+    "question_id, store_id, user_id, user_name, user_email, created_at",
+  )
+  .eq("store_id", store.id)
+  .in("question_id", questionIds)
+  .order("created_at", { ascending: false });
 
-        const logsMap = {};
+if (logsError) {
+  console.error(
+    `Erro ao buscar answer_logs da loja ${store.name}:`,
+    logsError,
+  );
+}
 
-        logs?.forEach((log) => {
-          logsMap[String(log.question_id)] = log;
-        });
+const logsMap = {};
+
+(logs || []).forEach((log) => {
+  const questionId = String(log.question_id);
+
+  if (!logsMap[questionId]) {
+    logsMap[questionId] = log;
+  }
+});
 
 const enrichedQuestions = await Promise.all(
   questions.map(async (question) => {
