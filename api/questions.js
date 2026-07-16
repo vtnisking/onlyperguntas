@@ -53,7 +53,9 @@ async function getProductData(itemId, accessToken) {
 return {
   title: item.title || itemId,
   sku,
-  thumbnail: item.thumbnail || null,
+  thumbnail: item.thumbnail
+  ? item.thumbnail.replace(/^http:\/\//i, "https://")
+  : null,
   permalink: item.permalink || null,
   available_quantity: item.available_quantity || 0,
   price: item.price || null
