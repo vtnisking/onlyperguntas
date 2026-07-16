@@ -2948,7 +2948,15 @@ container.innerHTML = `
           <div class="previous" style="margin-bottom:8px;">
             <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
             ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ""}
-            <div style="color:var(--text3);font-size:11px;">${formatDate(q.date_created)} · ${q.status === "ANSWERED" ? "Respondida" : "Pendente"}</div>
+            <div style="color:var(--text3);font-size:11px;">
+  ${formatDate(q.answer_date_created || q.date_created)}
+  · ${q.status === "ANSWERED" ? "Respondida" : "Pendente"}
+  ${
+    q.status === "ANSWERED"
+      ? ` · Respondido por ${q.user_name || q.user_email || "Usuário"}`
+      : ""
+  }
+</div>
           </div>
         `,
           )
