@@ -2654,15 +2654,6 @@
           </div>
 
           <!-- Tab: Ajustes -->
-          <div class="desktop-tab" id="dt-settings">
-            <div class="questions-list">
-              <div class="section-title" style="margin-bottom: 20px">
-                ⚙️ Ajustes
-              </div>
-
-              <div class="settings-grid">
-               
-             <!-- Tab: Ajustes -->
 <div class="desktop-tab" id="dt-settings">
   <div class="questions-list">
 
@@ -2672,108 +2663,150 @@
 
     <div class="settings-grid">
 
+      <!-- Usuário logado -->
       <div class="settings-card">
         <div class="settings-card-title">Usuário logado</div>
 
-        <div class="user-info-name" id="dSettingsName">—</div>
+        <div
+          class="user-info-name"
+          id="dSettingsName"
+        >
+          —
+        </div>
 
         <div
+          id="dSettingsEmail"
           style="
             color: var(--text3);
             font-size: 13px;
             margin-bottom: 16px;
           "
-          id="dSettingsEmail"
         >
           —
         </div>
 
-        <div class="settings-card">
-  <div class="settings-card-title">Respostas rápidas</div>
-
-  <p
-    style="
-      color: var(--text2);
-      font-size: 13px;
-      margin-bottom: 16px;
-      line-height: 1.5;
-    "
-  >
-    Crie, edite e exclua respostas prontas para agilizar o atendimento.
-  </p>
-
-  <button
-    class="send-btn"
-    onclick="openDesktopQuickRepliesPanel()"
-  >
-    💬 Gerenciar respostas rápidas
-  </button>
-</div>
-
-        <button class="send-btn" onclick="logout()">
+        <button
+          class="send-btn"
+          onclick="logout()"
+        >
           Sair da conta
         </button>
       </div>
 
-                <div class="settings-card">
-                  <div class="settings-card-title">Notificações</div>
-                  <p
-                    style="
-                      color: var(--text2);
-                      font-size: 13px;
-                      margin-bottom: 16px;
-                      line-height: 1.5;
-                    "
-                  >
-                    Receba alertas em tempo real quando novas perguntas
-                    chegarem.
-                  </p>
-                  <button
-                    class="send-btn"
-                    onclick="requestNotificationPermission()"
-                  >
-                    🔔 Ativar notificações
-                  </button>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-title">Equipe</div>
-                  <p
-                    style="
-                      color: var(--text2);
-                      font-size: 13px;
-                      margin-bottom: 16px;
-                      line-height: 1.5;
-                    "
-                  >
-                    Gerencie os usuários que têm acesso ao painel.
-                  </p>
-                  <button class="send-btn" onclick="openDesktopUsersPanel()">
-                    👥 Gerenciar usuários
-                  </button>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-title">Integrações</div>
-                  <div class="status-dot" style="margin-bottom: 8px">
-                    Mercado Livre conectado
-                  </div>
-                  <div style="color: var(--text3); font-size: 12px">
-                    Todas as lojas sincronizando normalmente.
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="questions-list"
-                style="padding-top: 0"
-                id="dUsersPanel"
-                style="display: none"
-              ></div>
-            </div>
-          </div>
+      <!-- Notificações -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          Notificações
         </div>
-        <!-- /page-area -->
+
+        <p
+          style="
+            color: var(--text2);
+            font-size: 13px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+          "
+        >
+          Receba alertas em tempo real quando novas perguntas chegarem.
+        </p>
+
+        <button
+          class="send-btn"
+          onclick="requestNotificationPermission()"
+        >
+          🔔 Ativar notificações
+        </button>
+      </div>
+
+      <!-- Equipe -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          Equipe
+        </div>
+
+        <p
+          style="
+            color: var(--text2);
+            font-size: 13px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+          "
+        >
+          Gerencie os usuários que têm acesso ao painel.
+        </p>
+
+        <button
+          class="send-btn"
+          onclick="openDesktopUsersPanel()"
+        >
+          👥 Gerenciar usuários
+        </button>
+      </div>
+
+      <!-- Respostas rápidas -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          Respostas rápidas
+        </div>
+
+        <p
+          style="
+            color: var(--text2);
+            font-size: 13px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+          "
+        >
+          Crie, edite e exclua respostas prontas para agilizar o atendimento.
+        </p>
+
+        <button
+          class="send-btn"
+          onclick="openDesktopQuickRepliesPanel()"
+        >
+          💬 Gerenciar respostas rápidas
+        </button>
+      </div>
+
+      <!-- Integrações -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          Integrações
+        </div>
+
+        <div
+          class="status-dot"
+          style="margin-bottom: 8px"
+        >
+          Mercado Livre conectado
+        </div>
+
+        <div
+          style="
+            color: var(--text3);
+            font-size: 12px;
+          "
+        >
+          Todas as lojas sincronizando normalmente.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Painel de gerenciamento de usuários -->
+    <div
+      class="questions-list"
+      id="dUsersPanel"
+      style="
+        padding: 20px 0 0;
+        display: none;
+      "
+    ></div>
+
+  </div>
+</div>
+
+<!-- /page-area -->
       </div>
       <!-- /main-content -->
     </div>
