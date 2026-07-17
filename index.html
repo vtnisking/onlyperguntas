@@ -4184,11 +4184,7 @@ container.innerHTML = `
       <div class="question-card">
         <div class="section-title">⚙️ Ajustes</div>
         <div class="settings-item">
-          <div class="settings-label">Usuário logado</div>
-          <div class="user-info-name">${loggedUser.name}</div>
-          <div style="color:var(--text3);font-size:13px;margin-bottom:14px;">${loggedUser.email}</div>
-          <button class="send-btn" onclick="logout()">Sair da conta</button>
-        </div>
+
         <div class="settings-item">
           <div class="settings-label">Notificações</div>
           <button class="send-btn" onclick="requestNotificationPermission()">🔔 Ativar notificações</button>
@@ -4218,6 +4214,13 @@ container.innerHTML = `
     💬 Gerenciar respostas rápidas
   </button>
 </div>
+
+          <div class="settings-label">Usuário logado</div>
+          <div class="user-info-name">${loggedUser.name}</div>
+          <div style="color:var(--text3);font-size:13px;margin-bottom:14px;">${loggedUser.email}</div>
+          <button class="send-btn" onclick="logout()">Sair da conta</button>
+        </div>
+        
         <div class="settings-item">
           <div class="settings-label">Integrações</div>
           <div class="status-dot">Mercado Livre conectado</div>
