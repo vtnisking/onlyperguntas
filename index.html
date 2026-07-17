@@ -2220,6 +2220,27 @@
               <div class="section-title" style="margin-bottom: 20px">
                 ⚙️ Ajustes
               </div>
+              <div class="settings-card">
+  <div class="settings-card-title">Respostas rápidas</div>
+
+  <p
+    style="
+      color: var(--text2);
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    "
+  >
+    Crie, edite e exclua respostas prontas para agilizar o atendimento.
+  </p>
+
+  <button
+    class="send-btn"
+    onclick="openDesktopQuickRepliesPanel()"
+  >
+    💬 Gerenciar respostas rápidas
+  </button>
+</div>
               <div class="settings-grid">
                 <div class="settings-card">
                   <div class="settings-card-title">Usuário logado</div>
@@ -2302,6 +2323,71 @@
       <!-- /main-content -->
     </div>
     <!-- /desktop-layout -->
+
+<div
+  id="quickRepliesModal"
+  style="
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(5px);
+  "
+  onclick="closeQuickRepliesOnBackdrop(event)"
+>
+  <div
+    style="
+      width: min(620px, 100%);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+    "
+  >
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+      "
+    >
+      <div style="font-size: 17px; font-weight: 800">
+        Respostas rápidas
+      </div>
+
+      <button
+        onclick="closeQuickRepliesModal()"
+        style="
+          width: 34px;
+          height: 34px;
+          border: 1px solid var(--border);
+          border-radius: 9px;
+          background: var(--surface2);
+          color: var(--text);
+          cursor: pointer;
+        "
+      >
+        ✕
+      </button>
+    </div>
+
+    <div
+      id="quickRepliesModalBody"
+      style="padding: 18px 20px; overflow-y: auto"
+    ></div>
+  </div>
+</div>
+
 
     <script>
 
@@ -2424,8 +2510,11 @@
             : ""
         }
 
-        <button class="ml-quick-btn" onclick="document.getElementById('${taId}').value='# ';document.getElementById('${taId}').focus();">
-          # Respostas rápidas
+        <button
+        class="ml-quick-btn"
+        onclick="openQuickRepliesPicker('${taId}')"
+        >
+        💬 Respostas rápidas
         </button>
 
         <div class="ml-answer-row">
@@ -2437,7 +2526,7 @@
               oninput="document.getElementById('${cntId}').innerText=this.value.length+' / 2000'"
             ></textarea>
             <div class="ml-counter-row">
-              <span class="ml-counter-hint">ℹ️ Digite # para acessar suas respostas rápidas.</span>
+              <span class="ml-counter-hint">ℹ️ Clique no botão de respostas rápidas.</span>
               <span class="ml-counter-num" id="${cntId}">0 / 2000</span>
             </div>
           </div>
@@ -2714,18 +2803,24 @@ container.innerHTML = `
 
         <!-- Botão respostas rápidas -->
         <div style="margin-bottom: 10px;">
-          <button style="
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px;
-            border-radius: 4px;
-            border: 1px solid #3483fa;
-            background: transparent;
-            color: #3483fa;
-            font-size: 13px; font-weight: 600;
-            font-family: 'Inter', Arial, sans-serif;
-            cursor: pointer;
-          " onclick="document.getElementById('answer-${item.id}').value='# '; document.getElementById('answer-${item.id}').focus();">
-            # Respostas rápidas
+          <button
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              padding: 6px 14px;
+              border-radius: 4px;
+              border: 1px solid #3483fa;
+              background: transparent;
+              color: #3483fa;
+              font-size: 13px;
+              font-weight: 600;
+              font-family: 'Inter', Arial, sans-serif;
+              cursor: pointer;
+            "
+            onclick="openQuickRepliesPicker('answer-${item.id}')"
+          >
+            💬 Respostas rápidas
           </button>
         </div>
 
@@ -2751,7 +2846,7 @@ container.innerHTML = `
               "
             ></textarea>
             <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-              <div style="font-size: 12px; color: var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+              <div style="font-size: 12px; color: var(--text3);">ℹ️ Clique no botão de respostas rápidas.</div>
               <div style="font-size: 12px; color: var(--text3);" id="counter-${item.id}">0 / 2000</div>
             </div>
           </div>
@@ -2975,14 +3070,24 @@ container.innerHTML = `
     }
 
     <div style="margin-bottom:10px;">
-      <button style="
-        display:inline-flex;align-items:center;gap:6px;
-        padding:6px 14px;border-radius:4px;
-        border:1px solid #3483fa;background:transparent;
-        color:#3483fa;font-size:13px;font-weight:600;
-        font-family:'Inter',Arial,sans-serif;cursor:pointer;
-      " onclick="document.getElementById('detail-answer-${item.id}').value='# ';document.getElementById('detail-answer-${item.id}').focus();">
-        # Respostas rápidas
+      <button
+        style="
+          display:inline-flex;
+          align-items:center;
+          gap:6px;
+          padding:6px 14px;
+          border-radius:4px;
+          border:1px solid #3483fa;
+          background:transparent;
+          color:#3483fa;
+          font-size:13px;
+          font-weight:600;
+          font-family:'Inter',Arial,sans-serif;
+          cursor:pointer;
+        "
+        onclick="openQuickRepliesPicker('detail-answer-${item.id}')"
+      >
+        💬 Respostas rápidas
       </button>
     </div>
 
@@ -2997,7 +3102,7 @@ container.innerHTML = `
           style="border-radius:4px;"
         ></textarea>
         <div style="display:flex;justify-content:space-between;margin-top:4px;">
-          <div style="font-size:12px;color:var(--text3);">ℹ️ Digite # para acessar suas respostas rápidas.</div>
+          <div style="font-size:12px;color:var(--text3);">ℹ️ Clique no botão de respostas rápidas.</div>
           <div style="font-size:12px;color:var(--text3);" id="counter-detail-${item.id}">0 / 2000</div>
         </div>
       </div>
@@ -3473,6 +3578,27 @@ container.innerHTML = `
           <button class="send-btn" onclick="openUsersPanel()">👥 Gerenciar usuários</button>
         </div>
         <div class="settings-item">
+  <div class="settings-label">Respostas rápidas</div>
+
+  <div
+    style="
+      color: var(--text2);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    "
+  >
+    Crie, edite e exclua respostas prontas para agilizar o atendimento.
+  </div>
+
+  <button
+    class="send-btn"
+    onclick="openMobileQuickRepliesPanel()"
+  >
+    💬 Gerenciar respostas rápidas
+  </button>
+</div>
+        <div class="settings-item">
           <div class="settings-label">Integrações</div>
           <div class="status-dot">Mercado Livre conectado</div>
         </div>
@@ -3604,6 +3730,542 @@ container.innerHTML = `
 
       window.openUsersPanel = openUsersPanel;
       window.openCreateUserPanel = openCreateUserPanel;
+
+
+let quickRepliesCache = [];
+let quickReplyTargetId = null;
+let editingQuickReplyId = null;
+
+function quickRepliesUrl() {
+  return `/api/app?action=quick-replies&company_id=${encodeURIComponent(
+    loggedUser.company_id,
+  )}`;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function quickRepliesRequest(method = "GET", body = null) {
+  const options = {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  if (body !== null) {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(quickRepliesUrl(), options);
+  const responseText = await response.text();
+
+  let data;
+
+  try {
+    data = responseText ? JSON.parse(responseText) : {};
+  } catch (error) {
+    console.error("Resposta recebida da API:", responseText);
+
+    throw new Error(
+      `A API retornou HTML em vez de JSON. Status: ${response.status}`,
+    );
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : data.error?.message ||
+          `Erro ao carregar respostas rápidas. Status: ${response.status}`,
+    );
+  }
+
+  return data;
+}
+
+async function loadQuickReplies(force = false) {
+  if (!force && quickRepliesCache.length > 0) {
+    return quickRepliesCache;
+  }
+
+  const data = await quickRepliesRequest("GET");
+  quickRepliesCache = data.replies || [];
+
+  return quickRepliesCache;
+}
+
+async function openQuickRepliesPicker(targetId) {
+  quickReplyTargetId = targetId;
+
+  const modal = document.getElementById("quickRepliesModal");
+  const body = document.getElementById("quickRepliesModalBody");
+
+  modal.style.display = "flex";
+
+  body.innerHTML = `
+    <input
+      id="quickRepliesSearch"
+      type="text"
+      placeholder="Pesquisar resposta..."
+      oninput="renderQuickRepliesPicker(this.value)"
+      style="margin-bottom:14px;"
+    >
+
+    <div id="quickRepliesPickerList">
+      <div class="empty" style="padding:24px;">
+        Carregando...
+      </div>
+    </div>
+  `;
+
+  try {
+    await loadQuickReplies(true);
+    renderQuickRepliesPicker("");
+
+    document.getElementById("quickRepliesSearch")?.focus();
+  } catch (error) {
+    body.innerHTML = `
+      <div class="empty" style="padding:24px;">
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+  }
+}
+
+function renderQuickRepliesPicker(search = "") {
+  const list = document.getElementById("quickRepliesPickerList");
+
+  if (!list) return;
+
+  const searchText = search.trim().toLowerCase();
+
+  const replies = quickRepliesCache.filter((reply) =>
+    String(reply.reply_text || "")
+      .toLowerCase()
+      .includes(searchText),
+  );
+
+  if (replies.length === 0) {
+    list.innerHTML = `
+      <div class="empty" style="padding:24px;">
+        Nenhuma resposta encontrada.
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = replies
+    .map(
+      (reply) => `
+        <button
+          onclick="selectQuickReply('${reply.id}')"
+          style="
+            width: 100%;
+            display: block;
+            margin-bottom: 10px;
+            padding: 14px 16px;
+            text-align: left;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+          "
+        >
+          ${escapeHtml(reply.reply_text)}
+        </button>
+      `,
+    )
+    .join("");
+}
+
+function selectQuickReply(replyId) {
+  const reply = quickRepliesCache.find(
+    (item) => String(item.id) === String(replyId),
+  );
+
+  const textarea = document.getElementById(quickReplyTargetId);
+
+  if (!reply || !textarea) {
+    alert("Não foi possível inserir a resposta.");
+    return;
+  }
+
+  const username =
+    loggedUser.name ||
+    loggedUser.email ||
+    "Equipe";
+
+  textarea.value =
+    `${reply.reply_text.trim()}\n\n` +
+    `Atenciosamente,\n${username}`;
+
+  textarea.dispatchEvent(
+    new Event("input", {
+      bubbles: true,
+    }),
+  );
+
+  textarea.focus();
+
+  closeQuickRepliesModal();
+}
+
+function closeQuickRepliesModal() {
+  const modal = document.getElementById("quickRepliesModal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+
+  quickReplyTargetId = null;
+}
+
+function closeQuickRepliesOnBackdrop(event) {
+  if (event.target.id === "quickRepliesModal") {
+    closeQuickRepliesModal();
+  }
+}
+
+async function openDesktopQuickRepliesPanel() {
+  editingQuickReplyId = null;
+
+  const modal = document.getElementById("quickRepliesModal");
+  const body = document.getElementById("quickRepliesModalBody");
+
+  if (!modal || !body) {
+    alert("Modal de respostas rápidas não encontrado.");
+    return;
+  }
+
+  modal.style.display = "flex";
+
+  body.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <button
+        class="send-btn"
+        onclick="openQuickReplyEditor('modal')"
+      >
+        + Nova resposta
+      </button>
+    </div>
+
+    <div id="modalQuickReplyEditor"></div>
+
+    <div
+      class="detail-label"
+      style="margin-bottom:12px;"
+    >
+      Respostas cadastradas
+    </div>
+
+    <div id="modalQuickRepliesList">
+      <div class="empty" style="padding:24px;">
+        Carregando...
+      </div>
+    </div>
+  `;
+
+  await loadManagedQuickReplies("modal");
+}
+
+async function openMobileQuickRepliesPanel() {
+  const container = document.getElementById("questions");
+
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="section-title">
+        💬 Respostas rápidas
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <button
+          class="send-btn"
+          onclick="openQuickReplyEditor('mobile')"
+        >
+          + Nova resposta
+        </button>
+      </div>
+
+      <div id="mobileQuickReplyEditor"></div>
+
+      <div class="settings-label">
+        Respostas cadastradas
+      </div>
+
+      <div id="mobileQuickRepliesList">
+        Carregando...
+      </div>
+
+      <div style="margin-top:16px;">
+        <button
+          class="send-btn"
+          onclick="showTab(
+            'settings',
+            document.querySelector('.footer-item:nth-child(4)')
+          )"
+        >
+          ← Voltar
+        </button>
+      </div>
+    </div>
+  `;
+
+  loadManagedQuickReplies("mobile");
+}
+
+async function loadManagedQuickReplies(mode) {
+const listId =
+  mode === "desktop"
+    ? "desktopQuickRepliesList"
+    : mode === "mobile"
+      ? "mobileQuickRepliesList"
+      : "modalQuickRepliesList";
+
+const list = document.getElementById(listId);
+
+  if (!list) return;
+
+  list.innerHTML = "Carregando...";
+
+  try {
+    await loadQuickReplies(true);
+
+    if (quickRepliesCache.length === 0) {
+      list.innerHTML = `
+        <div class="empty" style="padding:24px;">
+          Nenhuma resposta cadastrada.
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = quickRepliesCache
+      .map(
+        (reply) => `
+          <div
+            style="
+              display:flex;
+              align-items:flex-start;
+              justify-content:space-between;
+              gap:14px;
+              padding:14px 16px;
+              margin-bottom:10px;
+              border:1px solid var(--border);
+              border-radius:var(--radius-md);
+              background:var(--surface2);
+            "
+          >
+            <div
+              style="
+                flex:1;
+                white-space:pre-wrap;
+                line-height:1.5;
+                font-size:14px;
+              "
+            >
+              ${escapeHtml(reply.reply_text)}
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <button
+                onclick="openQuickReplyEditor('${mode}','${reply.id}')"
+                style="
+                  padding:7px 10px;
+                  border:1px solid var(--border2);
+                  border-radius:8px;
+                  background:var(--surface);
+                  color:var(--text);
+                  cursor:pointer;
+                "
+              >
+                Editar
+              </button>
+
+              <button
+                onclick="deleteQuickReply('${reply.id}','${mode}')"
+                style="
+                  padding:7px 10px;
+                  border:1px solid rgba(129,0,0,.25);
+                  border-radius:8px;
+                  background:var(--surface);
+                  color:var(--red);
+                  cursor:pointer;
+                "
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        `,
+      )
+      .join("");
+  } catch (error) {
+    list.innerHTML = `
+      <div class="empty" style="padding:24px;">
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+  }
+}
+
+function openQuickReplyEditor(mode, replyId = null) {
+  editingQuickReplyId = replyId;
+
+const editorId =
+  mode === "desktop"
+    ? "desktopQuickReplyEditor"
+    : mode === "mobile"
+      ? "mobileQuickReplyEditor"
+      : "modalQuickReplyEditor";
+
+const editor = document.getElementById(editorId);
+
+  if (!editor) return;
+
+  const reply = quickRepliesCache.find(
+    (item) => String(item.id) === String(replyId),
+  );
+
+  editor.innerHTML = `
+    <div class="answer-box" style="margin-bottom:16px;">
+      <div class="answer-title">
+        ${reply ? "Editar resposta" : "Nova resposta"}
+      </div>
+
+      <textarea
+        id="${mode}QuickReplyText"
+        maxlength="2000"
+        placeholder="Digite a resposta completa..."
+        style="height:110px;"
+      >${escapeHtml(reply?.reply_text || "")}</textarea>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button
+          onclick="closeQuickReplyEditor('${mode}')"
+          style="
+            margin-top:12px;
+            padding:10px 14px;
+            border:1px solid var(--border2);
+            border-radius:var(--radius-md);
+            background:var(--surface);
+            color:var(--text);
+            cursor:pointer;
+          "
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="send-btn"
+          onclick="saveQuickReply('${mode}')"
+        >
+          Salvar
+        </button>
+      </div>
+    </div>
+  `;
+
+  document
+    .getElementById(`${mode}QuickReplyText`)
+    ?.focus();
+}
+
+function closeQuickReplyEditor(mode) {
+const editorId =
+  mode === "desktop"
+    ? "desktopQuickReplyEditor"
+    : mode === "mobile"
+      ? "mobileQuickReplyEditor"
+      : "modalQuickReplyEditor";
+
+const editor = document.getElementById(editorId);
+
+  if (editor) {
+    editor.innerHTML = "";
+  }
+
+  editingQuickReplyId = null;
+}
+
+async function saveQuickReply(mode) {
+const textarea = document.getElementById(
+  `${mode}QuickReplyText`,
+);
+
+  const replyText = textarea?.value.trim();
+
+  if (!replyText) {
+    alert("Digite a resposta.");
+    return;
+  }
+
+  try {
+    if (editingQuickReplyId) {
+      await quickRepliesRequest("PUT", {
+        id: editingQuickReplyId,
+        reply_text: replyText,
+      });
+    } else {
+      await quickRepliesRequest("POST", {
+        reply_text: replyText,
+      });
+    }
+
+    quickRepliesCache = [];
+    editingQuickReplyId = null;
+
+    closeQuickReplyEditor(mode);
+    loadManagedQuickReplies(mode);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function deleteQuickReply(replyId, mode) {
+  if (!confirm("Deseja excluir esta resposta rápida?")) {
+    return;
+  }
+
+  try {
+    await quickRepliesRequest("DELETE", {
+      id: replyId,
+    });
+
+    quickRepliesCache = [];
+    loadManagedQuickReplies(mode);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+window.openQuickRepliesPicker = openQuickRepliesPicker;
+window.renderQuickRepliesPicker = renderQuickRepliesPicker;
+window.selectQuickReply = selectQuickReply;
+window.closeQuickRepliesModal = closeQuickRepliesModal;
+window.closeQuickRepliesOnBackdrop = closeQuickRepliesOnBackdrop;
+
+window.openDesktopQuickRepliesPanel =
+  openDesktopQuickRepliesPanel;
+
+window.openMobileQuickRepliesPanel =
+  openMobileQuickRepliesPanel;
+
+window.openQuickReplyEditor = openQuickReplyEditor;
+window.closeQuickReplyEditor = closeQuickReplyEditor;
+window.saveQuickReply = saveQuickReply;
+window.deleteQuickReply = deleteQuickReply;
 
       // ──────────────────────────────────────
       // SHARED: Helpers

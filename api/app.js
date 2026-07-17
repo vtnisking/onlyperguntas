@@ -232,6 +232,121 @@ export default async function handler(req, res) {
       });
     }
 
+
+// ==========================================
+// RESPOSTAS RÁPIDAS
+// ==========================================
+
+if (action === "quick-replies") {
+
+  if (req.method === "GET") {
+
+    const { data, error } = await supabase
+      .from("quick_replies")
+      .select("*")
+      .eq("company_id", company_id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      replies: data || [],
+    });
+  }
+
+  if (req.method === "POST") {
+
+    const { reply_text } = req.body;
+
+    if (!reply_text?.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "reply_text obrigatório",
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("quick_replies")
+      .insert({
+        company_id,
+        reply_text: reply_text.trim(),
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      reply: data,
+    });
+  }
+
+  if (req.method === "PUT") {
+
+    const { id, reply_text } = req.body;
+
+    const { error } = await supabase
+      .from("quick_replies")
+      .update({
+        reply_text,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("company_id", company_id);
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error,
+      });
+    }
+
+    return res.json({
+      success: true,
+    });
+  }
+
+  if (req.method === "DELETE") {
+
+    const { id } = req.body;
+
+    const { error } = await supabase
+      .from("quick_replies")
+      .delete()
+      .eq("id", id)
+      .eq("company_id", company_id);
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error,
+      });
+    }
+
+    return res.json({
+      success: true,
+    });
+  }
+
+  return res.status(405).json({
+    success: false,
+    error: "Método não permitido",
+  });
+}
+
+
     // ==========================================
     // CRIAR USUÁRIO
     // ==========================================
