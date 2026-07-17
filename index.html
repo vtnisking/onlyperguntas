@@ -4539,9 +4539,14 @@ function closeQuickRepliesOnBackdrop(event) {
 }
 
 async function openDesktopQuickRepliesPanel() {
-  const modal = document.getElementById(
-    "quickRepliesManagerModal",
-  );
+
+  // Bloqueia celulares e tablets
+  if (window.innerWidth <= 768) {
+    alert("Alterações de respostas rápidas permitidas apenas via computador.");
+    return;
+  }
+
+  const modal = document.getElementById("quickRepliesManagerModal");
 
   if (!modal) {
     alert("Gerenciador de respostas rápidas não encontrado.");
@@ -4553,13 +4558,9 @@ async function openDesktopQuickRepliesPanel() {
 
   editingQuickReplyId = null;
 
-  document.getElementById(
-    "quickRepliesManagerEditor",
-  ).innerHTML = "";
+  document.getElementById("quickRepliesManagerEditor").innerHTML = "";
 
-  document.getElementById(
-    "quickRepliesManagerList",
-  ).innerHTML = `
+  document.getElementById("quickRepliesManagerList").innerHTML = `
     <div class="qr-manager-empty">
       Carregando respostas...
     </div>
@@ -4569,9 +4570,7 @@ async function openDesktopQuickRepliesPanel() {
     await loadQuickReplies(true);
     renderQuickRepliesManager();
   } catch (error) {
-    document.getElementById(
-      "quickRepliesManagerList",
-    ).innerHTML = `
+    document.getElementById("quickRepliesManagerList").innerHTML = `
       <div class="qr-manager-empty">
         ${escapeHtml(error.message)}
       </div>
