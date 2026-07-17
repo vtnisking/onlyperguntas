@@ -2659,7 +2659,36 @@
               <div class="section-title" style="margin-bottom: 20px">
                 ⚙️ Ajustes
               </div>
-              <div class="settings-card">
+
+              <div class="settings-grid">
+               
+             <!-- Tab: Ajustes -->
+<div class="desktop-tab" id="dt-settings">
+  <div class="questions-list">
+
+    <div class="section-title" style="margin-bottom: 20px">
+      ⚙️ Ajustes
+    </div>
+
+    <div class="settings-grid">
+
+      <div class="settings-card">
+        <div class="settings-card-title">Usuário logado</div>
+
+        <div class="user-info-name" id="dSettingsName">—</div>
+
+        <div
+          style="
+            color: var(--text3);
+            font-size: 13px;
+            margin-bottom: 16px;
+          "
+          id="dSettingsEmail"
+        >
+          —
+        </div>
+
+        <div class="settings-card">
   <div class="settings-card-title">Respostas rápidas</div>
 
   <p
@@ -2680,24 +2709,11 @@
     💬 Gerenciar respostas rápidas
   </button>
 </div>
-              <div class="settings-grid">
-                <div class="settings-card">
-                  <div class="settings-card-title">Usuário logado</div>
-                  <div class="user-info-name" id="dSettingsName">—</div>
-                  <div
-                    style="
-                      color: var(--text3);
-                      font-size: 13px;
-                      margin-bottom: 16px;
-                    "
-                    id="dSettingsEmail"
-                  >
-                    —
-                  </div>
-                  <button class="send-btn" onclick="logout()">
-                    Sair da conta
-                  </button>
-                </div>
+
+        <button class="send-btn" onclick="logout()">
+          Sair da conta
+        </button>
+      </div>
 
                 <div class="settings-card">
                   <div class="settings-card-title">Notificações</div>
@@ -4162,7 +4178,7 @@ container.innerHTML = `
 
   <button
     class="send-btn"
-    onclick="openMobileQuickRepliesPanel()"
+    onclick="openDesktopQuickRepliesPanel()"
   >
     💬 Gerenciar respostas rápidas
   </button>
@@ -4546,313 +4562,6 @@ async function openDesktopQuickRepliesPanel() {
     `;
   }
 }
-
-async function openMobileQuickRepliesPanel() {
-  const container = document.getElementById("questions");
-
-  container.innerHTML = `
-    <div class="question-card">
-      <div class="section-title">
-        💬 Respostas rápidas
-      </div>
-
-      <div style="margin-bottom:16px;">
-        <button
-          class="send-btn"
-          onclick="openQuickReplyEditor('mobile')"
-        >
-          + Nova resposta
-        </button>
-      </div>
-
-      <div id="mobileQuickReplyEditor"></div>
-
-      <div class="settings-label">
-        Respostas cadastradas
-      </div>
-
-      <div id="mobileQuickRepliesList">
-        Carregando...
-      </div>
-
-      <div style="margin-top:16px;">
-        <button
-          class="send-btn"
-          onclick="showTab(
-            'settings',
-            document.querySelector('.footer-item:nth-child(4)')
-          )"
-        >
-          ← Voltar
-        </button>
-      </div>
-    </div>
-  `;
-
-  loadManagedQuickReplies("mobile");
-}
-
-async function loadManagedQuickReplies(mode) {
-const listId =
-  mode === "desktop"
-    ? "desktopQuickRepliesList"
-    : mode === "mobile"
-      ? "mobileQuickRepliesList"
-      : "modalQuickRepliesList";
-
-const list = document.getElementById(listId);
-
-  if (!list) return;
-
-  list.innerHTML = "Carregando...";
-
-  try {
-    await loadQuickReplies(true);
-
-    if (quickRepliesCache.length === 0) {
-      list.innerHTML = `
-        <div class="empty" style="padding:24px;">
-          Nenhuma resposta cadastrada.
-        </div>
-      `;
-      return;
-    }
-
-    list.innerHTML = quickRepliesCache
-      .map(
-        (reply) => `
-<div
-  style="
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 12px;
-    margin-bottom:8px;
-    border:1px solid var(--border);
-    border-radius:12px;
-    background:var(--surface2);
-    min-height:48px;
-  "
->
-  <div
-    title="${escapeHtml(reply.reply_text)}"
-    style="
-      flex:1;
-      min-width:0;
-      overflow:hidden;
-      white-space:nowrap;
-      text-overflow:ellipsis;
-      text-align:left;
-      font-size:13px;
-      line-height:1.3;
-      color:var(--text);
-    "
-  >
-    ${escapeHtml(reply.reply_text)}
-  </div>
-
-  <div
-    style="
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-shrink:0;
-    "
-  >
-    <button
-      onclick="openQuickReplyEditor('${mode}','${reply.id}')"
-      style="
-        height:32px;
-        padding:0 10px;
-        border:1px solid var(--border2);
-        border-radius:8px;
-        background:var(--surface);
-        color:var(--text);
-        font-size:12px;
-        font-family:'Inter',Arial,sans-serif;
-        cursor:pointer;
-      "
-    >
-      Editar
-    </button>
-
-    <button
-      onclick="deleteQuickReply('${reply.id}','${mode}')"
-      style="
-        height:32px;
-        padding:0 10px;
-        border:1px solid rgba(129,0,0,.25);
-        border-radius:8px;
-        background:var(--surface);
-        color:var(--red);
-        font-size:12px;
-        font-family:'Inter',Arial,sans-serif;
-        cursor:pointer;
-      "
-    >
-      Excluir
-    </button>
-  </div>
-</div>
-        `,
-      )
-      .join("");
-  } catch (error) {
-    list.innerHTML = `
-      <div class="empty" style="padding:24px;">
-        ${escapeHtml(error.message)}
-      </div>
-    `;
-  }
-}
-
-function openQuickReplyEditor(mode, replyId = null) {
-  editingQuickReplyId = replyId;
-
-const editorId =
-  mode === "desktop"
-    ? "desktopQuickReplyEditor"
-    : mode === "mobile"
-      ? "mobileQuickReplyEditor"
-      : "modalQuickReplyEditor";
-
-const editor = document.getElementById(editorId);
-
-  if (!editor) return;
-
-  const reply = quickRepliesCache.find(
-    (item) => String(item.id) === String(replyId),
-  );
-
-  editor.innerHTML = `
-    <div class="answer-box" style="margin-bottom:16px;">
-      <div class="answer-title">
-        ${reply ? "Editar resposta" : "Nova resposta"}
-      </div>
-
-      <textarea
-        id="${mode}QuickReplyText"
-        maxlength="2000"
-        placeholder="Digite a resposta completa..."
-        style="height:110px;"
-      >${escapeHtml(reply?.reply_text || "")}</textarea>
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;">
-        <button
-          onclick="closeQuickReplyEditor('${mode}')"
-          style="
-            margin-top:12px;
-            padding:10px 14px;
-            border:1px solid var(--border2);
-            border-radius:var(--radius-md);
-            background:var(--surface);
-            color:var(--text);
-            cursor:pointer;
-          "
-        >
-          Cancelar
-        </button>
-
-        <button
-          class="send-btn"
-          onclick="saveQuickReply('${mode}')"
-        >
-          Salvar
-        </button>
-      </div>
-    </div>
-  `;
-
-  document
-    .getElementById(`${mode}QuickReplyText`)
-    ?.focus();
-}
-
-function closeQuickReplyEditor(mode) {
-const editorId =
-  mode === "desktop"
-    ? "desktopQuickReplyEditor"
-    : mode === "mobile"
-      ? "mobileQuickReplyEditor"
-      : "modalQuickReplyEditor";
-
-const editor = document.getElementById(editorId);
-
-  if (editor) {
-    editor.innerHTML = "";
-  }
-
-  editingQuickReplyId = null;
-}
-
-async function saveQuickReply(mode) {
-const textarea = document.getElementById(
-  `${mode}QuickReplyText`,
-);
-
-  const replyText = textarea?.value.trim();
-
-  if (!replyText) {
-    alert("Digite a resposta.");
-    return;
-  }
-
-  try {
-    if (editingQuickReplyId) {
-      await quickRepliesRequest("PUT", {
-        id: editingQuickReplyId,
-        reply_text: replyText,
-      });
-    } else {
-      await quickRepliesRequest("POST", {
-        reply_text: replyText,
-      });
-    }
-
-    quickRepliesCache = [];
-    editingQuickReplyId = null;
-
-    closeQuickReplyEditor(mode);
-    loadManagedQuickReplies(mode);
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-async function deleteQuickReply(replyId, mode) {
-  if (!confirm("Deseja excluir esta resposta rápida?")) {
-    return;
-  }
-
-  try {
-    await quickRepliesRequest("DELETE", {
-      id: replyId,
-    });
-
-    quickRepliesCache = [];
-    loadManagedQuickReplies(mode);
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-window.openQuickRepliesPicker = openQuickRepliesPicker;
-window.renderQuickRepliesPicker = renderQuickRepliesPicker;
-window.selectQuickReply = selectQuickReply;
-window.closeQuickRepliesModal = closeQuickRepliesModal;
-window.closeQuickRepliesOnBackdrop = closeQuickRepliesOnBackdrop;
-
-window.openDesktopQuickRepliesPanel =
-  openDesktopQuickRepliesPanel;
-
-window.openMobileQuickRepliesPanel =
-  openMobileQuickRepliesPanel;
-
-window.openQuickReplyEditor = openQuickReplyEditor;
-window.closeQuickReplyEditor = closeQuickReplyEditor;
-window.saveQuickReply = saveQuickReply;
-window.deleteQuickReply = deleteQuickReply;
 
 function closeQuickRepliesManager() {
   const modal = document.getElementById(
