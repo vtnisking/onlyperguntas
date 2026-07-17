@@ -3907,9 +3907,8 @@ function selectQuickReply(replyId) {
     loggedUser.email ||
     "Equipe";
 
-  textarea.value =
-    `${reply.reply_text.trim()}\n\n` +
-    `Atenciosamente,\n${username}`;
+textarea.value =
+  `${reply.reply_text.trim()} Atenciosamente, ${username}`;
 
   textarea.dispatchEvent(
     new Event("input", {
@@ -4054,60 +4053,80 @@ const list = document.getElementById(listId);
     list.innerHTML = quickRepliesCache
       .map(
         (reply) => `
-          <div
-            style="
-              display:flex;
-              align-items:flex-start;
-              justify-content:space-between;
-              gap:14px;
-              padding:14px 16px;
-              margin-bottom:10px;
-              border:1px solid var(--border);
-              border-radius:var(--radius-md);
-              background:var(--surface2);
-            "
-          >
-            <div
-              style="
-                flex:1;
-                white-space:pre-wrap;
-                line-height:1.5;
-                font-size:14px;
-              "
-            >
-              ${escapeHtml(reply.reply_text)}
-            </div>
+<div
+  style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 12px;
+    margin-bottom:8px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--surface2);
+    min-height:48px;
+  "
+>
+  <div
+    title="${escapeHtml(reply.reply_text)}"
+    style="
+      flex:1;
+      min-width:0;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      text-align:left;
+      font-size:13px;
+      line-height:1.3;
+      color:var(--text);
+    "
+  >
+    ${escapeHtml(reply.reply_text)}
+  </div>
 
-            <div style="display:flex;gap:8px;">
-              <button
-                onclick="openQuickReplyEditor('${mode}','${reply.id}')"
-                style="
-                  padding:7px 10px;
-                  border:1px solid var(--border2);
-                  border-radius:8px;
-                  background:var(--surface);
-                  color:var(--text);
-                  cursor:pointer;
-                "
-              >
-                Editar
-              </button>
+  <div
+    style="
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-shrink:0;
+    "
+  >
+    <button
+      onclick="openQuickReplyEditor('${mode}','${reply.id}')"
+      style="
+        height:32px;
+        padding:0 10px;
+        border:1px solid var(--border2);
+        border-radius:8px;
+        background:var(--surface);
+        color:var(--text);
+        font-size:12px;
+        font-family:'Inter',Arial,sans-serif;
+        cursor:pointer;
+      "
+    >
+      Editar
+    </button>
 
-              <button
-                onclick="deleteQuickReply('${reply.id}','${mode}')"
-                style="
-                  padding:7px 10px;
-                  border:1px solid rgba(129,0,0,.25);
-                  border-radius:8px;
-                  background:var(--surface);
-                  color:var(--red);
-                  cursor:pointer;
-                "
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
+    <button
+      onclick="deleteQuickReply('${reply.id}','${mode}')"
+      style="
+        height:32px;
+        padding:0 10px;
+        border:1px solid rgba(129,0,0,.25);
+        border-radius:8px;
+        background:var(--surface);
+        color:var(--red);
+        font-size:12px;
+        font-family:'Inter',Arial,sans-serif;
+        cursor:pointer;
+      "
+    >
+      Excluir
+    </button>
+  </div>
+</div>
         `,
       )
       .join("");
