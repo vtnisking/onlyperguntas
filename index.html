@@ -635,67 +635,6 @@
           border-radius: 999px;
         }
 
-        /* ── Stats row ── */
-        .stats-row {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 14px;
-          margin-bottom: 24px;
-        }
-
-        .stat-mini {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-lg);
-          padding: 18px 20px;
-          position: relative;
-          overflow: hidden;
-          transition:
-            border-color 0.2s,
-            box-shadow 0.2s;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-        }
-
-        .stat-mini:hover {
-          border-color: rgba(108, 99, 255, 0.25);
-          box-shadow: 0 4px 16px rgba(108, 99, 255, 0.08);
-        }
-
-        .stat-mini::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, var(--accent), #ff0000);
-          opacity: 0.6;
-          border-radius: 2px 2px 0 0;
-        }
-
-        .stat-mini-label {
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--text3);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 8px;
-        }
-
-        .stat-mini-value {
-          font-size: 32px;
-          font-weight: 900;
-          color: var(--text);
-          letter-spacing: -0.02em;
-          line-height: 1;
-        }
-
-        .stat-mini-sub {
-          font-size: 12px;
-          color: var(--text3);
-          margin-top: 4px;
-          font-weight: 500;
-        }
 
         /* ── Question row ── */
         .q-row {
@@ -2954,6 +2893,452 @@
   }
 }
 
+/* =====================================================
+   TOPO MODERNO — ABA PENDENTES
+===================================================== */
+
+.dashboard-topbar {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 0.85fr)
+    minmax(300px, 1.25fr)
+    auto;
+  align-items: center;
+  gap: 28px;
+
+  padding: 20px 28px;
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid var(--border);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 3px 18px rgba(0, 0, 0, 0.035);
+}
+
+.dashboard-page-identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-page-icon {
+  width: 62px;
+  height: 62px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(196, 0, 0, 0.13),
+    rgba(196, 0, 0, 0.04)
+  );
+
+  border: 1px solid rgba(196, 0, 0, 0.1);
+
+  font-size: 28px;
+}
+
+.dashboard-page-title {
+  color: var(--text);
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.dashboard-page-description {
+  margin-top: 6px;
+
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dashboard-greeting {
+  min-width: 0;
+
+  padding-left: 28px;
+
+  border-left: 1px solid var(--border2);
+}
+
+.dashboard-greeting-title {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.dashboard-greeting-description {
+  margin-top: 7px;
+
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dashboard-greeting-description strong {
+  color: var(--accent);
+  font-weight: 850;
+}
+
+.dashboard-topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dashboard-action-button {
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 0 16px;
+
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+
+  background: var(--surface);
+  color: var(--text2);
+
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+
+  transition:
+    background 0.18s,
+    color 0.18s,
+    transform 0.18s,
+    box-shadow 0.18s;
+}
+
+.dashboard-action-button:hover {
+  background: var(--surface2);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard-notification-button {
+  position: relative;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+}
+
+.dashboard-notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -5px;
+
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  border: 2px solid var(--surface);
+  border-radius: 999px;
+
+  background: #c40000;
+  color: white;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.dashboard-user-avatar {
+  position: relative;
+
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: 6px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #770000
+  );
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 850;
+
+  box-shadow: 0 6px 15px rgba(172, 4, 1, 0.18);
+}
+
+.dashboard-online-dot {
+  position: absolute;
+  right: -1px;
+  bottom: 1px;
+
+  width: 11px;
+  height: 11px;
+
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+
+  background: #16a34a;
+}
+
+/* Cards de métricas */
+
+.dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+
+  margin-bottom: 24px;
+}
+
+.dashboard-metric-card {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 145px;
+
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  padding: 24px 26px;
+
+  border: 1px solid var(--border);
+  border-radius: 20px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+.dashboard-metric-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.075),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.dashboard-metric-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 4px;
+}
+
+.metric-pending {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 239, 239, 0.84),
+    var(--surface)
+  );
+
+  border-color: rgba(196, 0, 0, 0.12);
+}
+
+.metric-pending::before {
+  background: #d40000;
+}
+
+.metric-answered {
+  background: linear-gradient(
+    135deg,
+    rgba(235, 252, 243, 0.85),
+    var(--surface)
+  );
+
+  border-color: rgba(16, 166, 74, 0.13);
+}
+
+.metric-answered::before {
+  background: #10a64a;
+}
+
+.metric-stores {
+  background: linear-gradient(
+    135deg,
+    rgba(240, 239, 255, 0.87),
+    var(--surface)
+  );
+
+  border-color: rgba(86, 74, 214, 0.13);
+}
+
+.metric-stores::before {
+  background: #564ad6;
+}
+
+.dashboard-metric-icon {
+  width: 68px;
+  height: 68px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 19px;
+
+  font-size: 29px;
+  font-weight: 850;
+}
+
+.metric-icon-red {
+  background: rgba(196, 0, 0, 0.1);
+  color: #c40000;
+}
+
+.metric-icon-green {
+  background: rgba(16, 166, 74, 0.11);
+  color: #07883d;
+}
+
+.metric-icon-blue {
+  background: rgba(86, 74, 214, 0.11);
+  color: #564ad6;
+}
+
+.dashboard-metric-content {
+  min-width: 0;
+}
+
+.dashboard-metric-label {
+  margin-bottom: 7px;
+
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dashboard-metric-number-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-metric-number {
+  color: var(--text);
+  font-size: 40px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.dashboard-metric-change {
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  background: rgba(196, 0, 0, 0.09);
+  color: #c40000;
+
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.dashboard-metric-description {
+  margin-top: 8px;
+
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Tela intermediária */
+
+@media (max-width: 1250px) {
+  .dashboard-topbar {
+    grid-template-columns: minmax(230px, 1fr) auto;
+  }
+
+  .dashboard-greeting {
+    display: none;
+  }
+
+  .dashboard-metrics {
+    gap: 13px;
+  }
+
+  .dashboard-metric-card {
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .dashboard-metric-icon {
+    width: 58px;
+    height: 58px;
+    font-size: 24px;
+  }
+
+  .dashboard-metric-number {
+    font-size: 34px;
+  }
+}
+
     </style>
   </head>
 
@@ -3164,20 +3549,31 @@
 
       <!-- Main -->
       <div class="main-content">
-        <!-- Topbar -->
-        <div class="topbar">
-          <div class="topbar-title" id="desktopTopbarTitle">
-            Perguntas Pendentes
-          </div>
-          <div class="topbar-right">
-            <button class="topbar-btn" onclick="toggleTheme()" id="themeBtn">
-              🌙 Escuro
-            </button>
-            <button class="topbar-btn primary" onclick="desktopReload()">
-              ↻ Atualizar
-            </button>
-          </div>
-        </div>
+       
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-title" id="desktopTopbarTitle">
+    Perguntas Pendentes
+  </div>
+
+  <div class="topbar-right">
+    <button
+      class="topbar-btn"
+      onclick="toggleTheme()"
+      id="themeBtn"
+    >
+      🌙 Escuro
+    </button>
+
+    <button
+      class="topbar-btn primary"
+      onclick="desktopReload()"
+    >
+      ↻ Atualizar
+    </button>
+  </div>
+</div>
 
         <!-- Page area -->
         <div class="page-area">
@@ -3185,23 +3581,96 @@
           <div class="desktop-tab active" id="dt-pending">
             <div class="questions-list" id="desktopQuestions">
               <!-- Stats mini row -->
-              <div class="stats-row">
-                <div class="stat-mini">
-                  <div class="stat-mini-label">Pendentes</div>
-                  <div class="stat-mini-value" id="dStatPending">0</div>
-                  <div class="stat-mini-sub">Aguardando resposta</div>
-                </div>
-                <div class="stat-mini">
-                  <div class="stat-mini-label">Respondidas hoje</div>
-                  <div class="stat-mini-value" id="dStatToday">—</div>
-                  <div class="stat-mini-sub">Pelo time</div>
-                </div>
-                <div class="stat-mini">
-                  <div class="stat-mini-label">Lojas ativas</div>
-                  <div class="stat-mini-value" id="dStatStores">—</div>
-                  <div class="stat-mini-sub">Conectadas</div>
-                </div>
-              </div>
+
+
+<div class="dashboard-metrics">
+
+  <div class="dashboard-metric-card metric-pending">
+    <div class="dashboard-metric-icon metric-icon-red">
+      📥
+    </div>
+
+    <div class="dashboard-metric-content">
+      <div class="dashboard-metric-label">
+        Pendentes
+      </div>
+
+      <div class="dashboard-metric-number-row">
+        <div
+          class="dashboard-metric-number"
+          id="dStatPending"
+        >
+          0
+        </div>
+
+        <div
+          class="dashboard-metric-change"
+          id="pendingVariation"
+          style="display: none"
+        >
+          ↑ +0
+        </div>
+      </div>
+
+      <div class="dashboard-metric-description">
+        Aguardando resposta
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-metric-card metric-answered">
+    <div class="dashboard-metric-icon metric-icon-green">
+      ✓
+    </div>
+
+    <div class="dashboard-metric-content">
+      <div class="dashboard-metric-label">
+        Respondidas hoje
+      </div>
+
+      <div class="dashboard-metric-number-row">
+        <div
+          class="dashboard-metric-number"
+          id="dStatToday"
+        >
+          0
+        </div>
+      </div>
+
+      <div class="dashboard-metric-description">
+        Total enviado pelo time
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-metric-card metric-stores">
+    <div class="dashboard-metric-icon metric-icon-blue">
+      🏪
+    </div>
+
+    <div class="dashboard-metric-content">
+      <div class="dashboard-metric-label">
+        Lojas ativas
+      </div>
+
+      <div class="dashboard-metric-number-row">
+        <div
+          class="dashboard-metric-number"
+          id="dStatStores"
+        >
+          0
+        </div>
+      </div>
+
+      <div class="dashboard-metric-description">
+        Mercado Livre conectadas
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
               <div id="desktopQList">
                 <div class="empty">
                   <span class="empty-icon">⏳</span>Carregando...
@@ -3769,6 +4238,84 @@
             "?")[0].toUpperCase();
         if (settingsName) settingsName.innerText = loggedUser.name;
         if (settingsEmail) settingsEmail.innerText = loggedUser.email;
+
+        
+function getDashboardInitials(name, email) {
+  const source = String(
+    name || email || "Usuário",
+  ).trim();
+
+  const parts = source
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length === 1) {
+    return parts[0]
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  return (
+    parts[0][0] +
+    parts[parts.length - 1][0]
+  ).toUpperCase();
+}
+
+function getDashboardGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) {
+    return "Bom dia";
+  }
+
+  if (hour < 18) {
+    return "Boa tarde";
+  }
+
+  return "Boa noite";
+}
+
+function updateDashboardHeader() {
+  if (!loggedUser) return;
+
+  const firstName =
+    String(
+      loggedUser.name ||
+      loggedUser.email ||
+      "Usuário",
+    )
+      .trim()
+      .split(/\s+/)[0];
+
+  const greeting =
+    document.getElementById("desktopGreeting");
+
+  const avatar =
+    document.getElementById("dashboardUserAvatar");
+
+  if (greeting) {
+    greeting.textContent =
+      `${getDashboardGreeting()}, ${firstName}! 👋`;
+  }
+
+  if (avatar) {
+    avatar.innerHTML = `
+      ${getDashboardInitials(
+        loggedUser.name,
+        loggedUser.email,
+      )}
+
+      <span class="dashboard-online-dot"></span>
+    `;
+  }
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateDashboardHeader,
+);
+
+
       }
 
       function logout() {
@@ -4266,6 +4813,33 @@ container.innerHTML = `
           if (dStat) dStat.innerText = questions.length;
           document.getElementById("totalQuestions").innerText =
             questions.length;
+
+            const greetingPending =
+  document.getElementById(
+    "desktopGreetingPending",
+  );
+
+const notificationBadge =
+  document.getElementById(
+    "desktopNotificationBadge",
+  );
+
+if (greetingPending) {
+  greetingPending.textContent =
+    questions.length === 1
+      ? "1 pergunta"
+      : `${questions.length} perguntas`;
+}
+
+if (notificationBadge) {
+  notificationBadge.textContent =
+    questions.length;
+
+  notificationBadge.style.display =
+    questions.length > 0
+      ? "flex"
+      : "none";
+}
 
           // Stores count
           const storeNames = [...new Set(questions.map((q) => q.store_name))];
