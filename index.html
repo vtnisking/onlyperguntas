@@ -4524,10 +4524,9 @@ function renderQuickRepliesManager() {
     "quickRepliesManagerFooter",
   );
 
-
   if (!list) return;
 
-const filteredReplies = quickRepliesCache;
+  const filteredReplies = quickRepliesCache;
 
   if (filteredReplies.length === 0) {
     list.innerHTML = `
@@ -4546,45 +4545,44 @@ const filteredReplies = quickRepliesCache;
   list.innerHTML = filteredReplies
     .map((reply) => {
       const safeText = escapeHtml(reply.reply_text);
-      const safeTitle = escapeHtml(
-        makeQuickReplyTitle(reply.reply_text),
-      );
 
-     return `
-  <div class="qr-manager-row">
-    <div
-      class="qr-manager-answer"
-      title="${safeText}"
-    >
-      <div class="qr-manager-answer-title">
-        ${safeTitle}
-      </div>
+      return `
+        <div class="qr-manager-row">
 
-      <div class="qr-manager-answer-text">
-        ${safeText}
-      </div>
-    </div>
+          <div class="qr-manager-answer">
+            <div
+              style="
+                white-space: pre-wrap;
+                word-break: break-word;
+                line-height: 1.5;
+                font-size: 13px;
+                color: #444;
+              "
+            >
+              ${safeText}
+            </div>
+          </div>
 
-    <div class="qr-manager-actions">
-      <button
-        class="qr-manager-action-btn"
-        onclick="openQuickReplyManagerEditor('${reply.id}')"
-        title="Editar"
-      >
-        ✎
-      </button>
+          <div class="qr-manager-actions">
+            <button
+              class="qr-manager-action-btn"
+              onclick="openQuickReplyManagerEditor('${reply.id}')"
+              title="Editar"
+            >
+              ✏️
+            </button>
 
-      <button
-        class="qr-manager-action-btn delete"
-        onclick="deleteQuickReplyFromManager('${reply.id}')"
-        title="Excluir"
-      >
-        🗑
-      </button>
-    </div>
-  </div>
-`;
+            <button
+              class="qr-manager-action-btn delete"
+              onclick="deleteQuickReplyFromManager('${reply.id}')"
+              title="Excluir"
+            >
+              🗑️
+            </button>
+          </div>
 
+        </div>
+      `;
     })
     .join("");
 
