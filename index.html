@@ -188,111 +188,337 @@
         }
 
         /* ── Sidebar ── */
-        .sidebar {
-          width: var(--sidebar-w);
-          min-height: 100vh;
-          background: var(--surface);
-          border-right: 1px solid var(--border);
-          display: flex;
-          flex-direction: column;
-          position: fixed;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          z-index: 100;
-          padding: 28px 16px;
-          box-shadow: 2px 0 12px rgba(0, 255, 34, 0.04);
-        }
+        /* ─────────────────────────────────────
+   NOVA SIDEBAR
+───────────────────────────────────── */
 
-        .sidebar-logo {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-        }
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 100;
 
-        .sidebar-logo img {
-          height: 120px;
-          width: auto;
-          object-fit: contain;
-          margin-top: 12px;
-        }
+  display: flex;
+  flex-direction: column;
 
-        .sidebar-section {
-          font-size: 10px;
-          font-weight: 700;
-          color: var(--text3);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          padding: 0 10px;
-          margin-bottom: 8px;
-          margin-top: 24px;
-        }
+  padding: 18px 14px;
+
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.04);
+
+  transition:
+    width 0.25s ease,
+    padding 0.25s ease;
+}
+
+.sidebar-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 62px;
+  margin-bottom: 22px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.sidebar-brand-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #780000
+  );
+}
+
+.sidebar-brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sidebar-brand-text {
+  min-width: 0;
+}
+
+.sidebar-brand-name {
+  overflow: hidden;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-brand-subtitle {
+  margin-top: 2px;
+
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sidebar-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -27px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
+
+  border: 3px solid var(--bg);
+  border-radius: 50%;
+
+  background: var(--accent);
+  color: white;
+
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(129, 0, 0, 0.25);
+
+  transition:
+    transform 0.25s ease,
+    background 0.2s;
+}
+
+.sidebar-collapse-btn:hover {
+  background: #8e0000;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.nav-item {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 0 14px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+  color: var(--text2);
+
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+  transform: translateX(2px);
+}
+
+.nav-item.active {
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #c30000
+  );
+
+  border-color: rgba(129, 0, 0, 0.25);
+
+  color: white;
+
+  box-shadow: 0 7px 16px rgba(129, 0, 0, 0.2);
+}
+
+.nav-icon {
+  width: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 19px;
+  line-height: 1;
+}
+
+.nav-label {
+  overflow: hidden;
+
+  flex: 1;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-badge {
+  min-width: 22px;
+  padding: 2px 7px;
+
+  border-radius: 999px;
+
+  background: var(--accent);
+  color: white;
+
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.nav-item.active .nav-badge {
+  background: white;
+  color: var(--accent);
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-top: auto;
+  padding-top: 15px;
+
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: var(--surface2);
+}
+
+.sidebar-user-info {
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  overflow: hidden;
+
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-role {
+  margin-top: 2px;
+
+  color: var(--text3);
+  font-size: 10px;
+}
+
+.sidebar-logout {
+  color: var(--red);
+}
+
+.sidebar-logout:hover {
+  background: rgba(129, 0, 0, 0.08);
+  color: var(--red);
+}
+
+/* Sidebar recolhida */
+
+.sidebar.collapsed {
+  width: 78px;
+  padding-right: 11px;
+  padding-left: 11px;
+}
+
+.sidebar.collapsed .sidebar-brand-text,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-badge,
+.sidebar.collapsed .sidebar-user-info {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-brand {
+  justify-content: center;
+  width: 100%;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0;
+}
+
+.sidebar.collapsed .nav-icon {
+  width: auto;
+}
+
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn {
+  transform:
+    translateY(-50%)
+    rotate(180deg);
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: 78px;
+}
 
         .sidebar-section:first-of-type {
           margin-top: 0;
-        }
-
-        .nav-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 12px;
-          border-radius: var(--radius-md);
-          color: var(--text2);
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.18s ease;
-          margin-bottom: 2px;
-          position: relative;
-          border: 1px solid transparent;
-        }
-
-        .nav-item:hover {
-          background: var(--surface2);
-          color: var(--text);
-        }
-
-        .nav-item.active {
-          background: rgba(108, 99, 255, 0.08);
-          border-color: rgba(108, 99, 255, 0.15);
-          color: var(--accent);
-        }
-
-        .nav-icon {
-          font-size: 18px;
-          flex-shrink: 0;
-        }
-
-        .nav-badge {
-          margin-left: auto;
-          background: var(--accent);
-          color: white;
-          font-size: 11px;
-          font-weight: 800;
-          padding: 2px 8px;
-          border-radius: 999px;
-          min-width: 22px;
-          text-align: center;
-        }
-
-        .sidebar-bottom {
-          margin-top: auto;
-          padding-top: 16px;
-          border-top: 1px solid var(--border);
-        }
-
-        .user-chip {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 12px;
-          border-radius: var(--radius-md);
-          background: var(--surface2);
-          border: 1px solid var(--border);
-          cursor: pointer;
-          transition: background 0.18s;
         }
 
         .user-chip:hover {
@@ -311,36 +537,19 @@
           font-weight: 800;
           color: white;
           flex-shrink: 0;
-        }
 
-        .user-chip-info {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .user-chip-name {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--text);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .user-chip-role {
-          font-size: 11px;
-          color: var(--text3);
-          font-weight: 500;
         }
 
         /* ── Main content ── */
-        .main-content {
-          margin-left: var(--sidebar-w);
-          flex: 1;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
+            .main-content {
+            margin-left: 250px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.25s ease;
+            }
+                    
 
         /* ── Top bar ── */
         .topbar {
@@ -2399,66 +2608,135 @@
     <!-- ══════════════ DESKTOP ══════════════ -->
     <div class="desktop-layout">
       <!-- Sidebar -->
-      <aside class="sidebar">
-        <a href="/" class="sidebar-logo">
-          <img src="logo.png" alt="CentralizaChat" />
-        </a>
 
-        <div class="sidebar-section">Menu</div>
+      <!-- Sidebar -->
+<aside class="sidebar" id="desktopSidebar">
 
-        <div class="nav-item active" onclick="showDesktopTab('pending', this)">
-          <span class="nav-icon">📥</span>
-          Pendentes
-          <span class="nav-badge" id="desktopBadge">0</span>
-        </div>
+  <!-- Cabeçalho -->
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <img src="logo.png" alt="CentralizaChat" />
+      </div>
 
-        <div class="nav-item" onclick="showDesktopTab('answered', this)">
-          <span class="nav-icon">✅</span>
-          Respondidas
-        </div>
+      <div class="sidebar-brand-text">
+        <div class="sidebar-brand-name">CentralizaChat</div>
+        <div class="sidebar-brand-subtitle">Atendimento</div>
+      </div>
+    </div>
 
-        <div class="nav-item" onclick="showDesktopTab('stats', this)">
-          <span class="nav-icon">📊</span>
-          Estatísticas
-        </div>
+    <button
+      class="sidebar-collapse-btn"
+      onclick="toggleDesktopSidebar()"
+      title="Recolher menu"
+    >
+      ‹
+    </button>
+  </div>
 
-        <div class="sidebar-section">Sistema</div>
+  <!-- Menu -->
+  <nav class="sidebar-menu">
 
-        <div class="nav-item" onclick="showDesktopTab('settings', this)">
-          <span class="nav-icon">⚙️</span>
-          Ajustes
-        </div>
+    <button
+      class="nav-item active"
+      onclick="showDesktopTab('pending', this)"
+      title="Pendentes"
+    >
+      <span class="nav-icon">▣</span>
+      <span class="nav-label">Pendentes</span>
 
+      <span
+        class="nav-badge"
+        id="desktopBadge"
+      >
+        0
+      </span>
+    </button>
+
+    <button
+      class="nav-item"
+      onclick="showDesktopTab('answered', this)"
+      title="Respondidas"
+    >
+      <span class="nav-icon">✓</span>
+      <span class="nav-label">Respondidas</span>
+    </button>
+
+    <button
+      class="nav-item"
+      onclick="showDesktopTab('post-sales', this)"
+      title="Pós-vendas"
+    >
+      <span class="nav-icon">↻</span>
+      <span class="nav-label">Pós-vendas</span>
+    </button>
+
+    <button
+      class="nav-item"
+      onclick="showDesktopTab('stats', this)"
+      title="Estatísticas"
+    >
+      <span class="nav-icon">▥</span>
+      <span class="nav-label">Estatísticas</span>
+    </button>
+
+  <button
+  class="nav-item"
+  onclick="showDesktopTab('users', this)"
+  title="Usuários"
+>
+  <span class="nav-icon">👥</span>
+  <span class="nav-label">Usuários</span>
+</button>
+
+    <button
+      class="nav-item"
+      onclick="showDesktopTab('settings', this)"
+      title="Ajustes"
+    >
+      <span class="nav-icon">⚙</span>
+      <span class="nav-label">Ajustes</span>
+    </button>
+
+  </nav>
+
+  <!-- Parte inferior -->
+  <div class="sidebar-bottom">
+
+    <div class="sidebar-user">
+      <div
+        class="user-avatar"
+        id="desktopUserAvatar"
+      >
+        ?
+      </div>
+
+      <div class="sidebar-user-info">
         <div
-          class="nav-item"
-          id="superadminDesktopBtn"
-          onclick="openSuperadmin()"
-          style="display: none"
+          class="sidebar-user-name"
+          id="desktopUserName"
         >
-          <span class="nav-icon">🛡️</span>
-          Painel Superadmin
+          Carregando...
         </div>
 
-        <div class="sidebar-bottom">
-          <div
-            class="user-chip"
-            onclick="
-              showDesktopTab(
-                'settings',
-                document.querySelector('.nav-item:nth-child(7)'),
-              )
-            "
-          >
-            <div class="user-avatar" id="desktopUserAvatar">?</div>
-            <div class="user-chip-info">
-              <div class="user-chip-name" id="desktopUserName">
-                Carregando...
-              </div>
-              <div class="user-chip-role">Usuário</div>
-            </div>
-          </div>
+        <div class="sidebar-user-role">
+          Usuário
         </div>
-      </aside>
+      </div>
+    </div>
+
+    <button
+      class="nav-item sidebar-logout"
+      onclick="logout()"
+      title="Sair"
+    >
+      <span class="nav-icon">⇥</span>
+      <span class="nav-label">Logout</span>
+    </button>
+
+  </div>
+
+</aside>
 
       <!-- Main -->
       <div class="main-content">
@@ -2579,6 +2857,35 @@
           </div>
 
           <!-- Tab: Ajustes -->
+
+          <!-- Tab: Usuários -->
+<div class="desktop-tab" id="dt-users">
+  <div class="questions-list">
+    <div class="section-title" style="margin-bottom: 20px">
+      👥 Usuários
+    </div>
+
+    <div style="margin-bottom: 16px">
+      <button
+        class="send-btn"
+        onclick="openDesktopCreateUser()"
+      >
+        + Criar usuário
+      </button>
+    </div>
+
+    <div class="detail-label" style="margin-bottom: 12px">
+      Usuários cadastrados
+    </div>
+
+    <div id="dUsersList">
+      <div class="empty" style="padding: 24px">
+        Carregando usuários...
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="desktop-tab" id="dt-settings">
   <div class="questions-list">
 
@@ -2616,29 +2923,7 @@
       </div>
 
       <!-- Equipe -->
-      <div class="settings-card">
-        <div class="settings-card-title">
-          Equipe
-        </div>
 
-        <p
-          style="
-            color: var(--text2);
-            font-size: 13px;
-            margin-bottom: 16px;
-            line-height: 1.5;
-          "
-        >
-          Gerencie os usuários que têm acesso ao painel.
-        </p>
-
-        <button
-          class="send-btn"
-          onclick="openDesktopUsersPanel()"
-        >
-          👥 Gerenciar usuários
-        </button>
-      </div>
 
       <!-- Respostas rápidas -->
       <div class="settings-card">
@@ -3719,7 +4004,10 @@ container.innerHTML = `
           pending: "Perguntas Pendentes",
           answered: "Perguntas Respondidas",
           stats: "Estatísticas",
+          users: "Usuários",
           settings: "Ajustes",
+
+
         };
         const titleEl = document.getElementById("desktopTopbarTitle");
         if (titleEl) titleEl.innerText = titles[tab] || "";
@@ -3727,6 +4015,8 @@ container.innerHTML = `
         if (tab === "pending") loadDesktopQuestions();
         if (tab === "answered") loadDesktopAnswered();
         if (tab === "stats") loadDesktopStats();
+        if (tab === "users") {loadDesktopUsers();}
+
       }
 
       // ──────────────────────────────────────
@@ -3852,20 +4142,6 @@ container.innerHTML = `
       // ──────────────────────────────────────
       // DESKTOP: Users panel
       // ──────────────────────────────────────
-      function openDesktopUsersPanel() {
-        const panel = document.getElementById("dUsersPanel");
-        if (!panel) return;
-        panel.style.display = "block";
-        panel.innerHTML = `
-    <div class="section-title">👥 Gerenciar usuários</div>
-    <div style="margin-bottom:16px;">
-      <button class="send-btn" onclick="openDesktopCreateUser()">+ Criar usuário</button>
-    </div>
-    <div class="detail-label" style="margin-bottom:12px;">Usuários cadastrados</div>
-    <div id="dUsersList">Carregando...</div>
-  `;
-        loadDesktopUsers();
-      }
 
       async function loadDesktopUsers() {
         const box = document.getElementById("dUsersList");
@@ -3915,48 +4191,131 @@ container.innerHTML = `
       }
 
       function openDesktopCreateUser() {
-        const panel = document.getElementById("dUsersPanel");
-        panel.innerHTML = `
-    <div class="section-title">👤 Novo usuário</div>
-    <div class="settings-card" style="max-width:400px;">
-      <div class="settings-card-title">Dados do funcionário</div>
-      <input id="newUserName" type="text" placeholder="Nome completo">
-      <input id="newUserEmail" type="email" placeholder="E-mail">
-      <input id="newUserPassword" type="password" placeholder="Senha">
-      <button class="send-btn send-btn-full" onclick="createUser()">Salvar usuário</button>
+
+      const panel = document.getElementById("dt-users");
+
+if (!panel) return;
+
+panel.innerHTML = `
+  <div class="questions-list">
+    <div class="section-title">
+      👤 Novo usuário
     </div>
-    <div style="margin-top:12px;">
-      <button class="send-btn" onclick="openDesktopUsersPanel()">← Voltar</button>
+
+    <div class="settings-card" style="max-width: 420px">
+      <div class="settings-card-title">
+        Dados do funcionário
+      </div>
+
+      <input
+        id="newUserName"
+        type="text"
+        placeholder="Nome completo"
+      >
+
+      <input
+        id="newUserEmail"
+        type="email"
+        placeholder="E-mail"
+      >
+
+      <input
+        id="newUserPassword"
+        type="password"
+        placeholder="Senha"
+      >
+
+      <button
+        class="send-btn send-btn-full"
+        onclick="createUser()"
+      >
+        Salvar usuário
+      </button>
     </div>
-  `;
+
+    <div style="margin-top: 12px">
+      <button
+        class="send-btn"
+        onclick="showDesktopUsersPage()"
+      >
+        ← Voltar
+      </button>
+    </div>
+  </div>
+`;
       }
 
-      async function createUser() {
-        const name = document.getElementById("newUserName").value.trim();
-        const email = document.getElementById("newUserEmail").value.trim();
-        const password = document
-          .getElementById("newUserPassword")
-          .value.trim();
-        if (!name || !email || !password) {
-          alert("Preencha todos os campos.");
-          return;
-        }
-        const response = await fetch(
-          `/api/app?action=create-user&company_id=${loggedUser.company_id}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password, role: "employee" }),
-          },
-        );
-        const data = await response.json();
-        if (!data.success) {
-          alert(JSON.stringify(data));
-          return;
-        }
-        alert("Usuário criado com sucesso!");
-        openDesktopUsersPanel();
-      }
+      function showDesktopUsersPage() {
+  const tab = document.getElementById("dt-users");
+
+  if (!tab) return;
+
+  tab.innerHTML = `
+    <div class="questions-list">
+      <div class="section-title" style="margin-bottom: 20px">
+        👥 Usuários
+      </div>
+
+      <div style="margin-bottom: 16px">
+        <button
+          class="send-btn"
+          onclick="openDesktopCreateUser()"
+        >
+          + Criar usuário
+        </button>
+      </div>
+
+      <div class="detail-label" style="margin-bottom: 12px">
+        Usuários cadastrados
+      </div>
+
+      <div id="dUsersList">
+        <div class="empty" style="padding: 24px">
+          Carregando usuários...
+        </div>
+      </div>
+    </div>
+  `;
+
+  loadDesktopUsers();
+}
+
+async function createUser() {
+  const name = document.getElementById("newUserName").value.trim();
+  const email = document.getElementById("newUserEmail").value.trim();
+  const password = document
+    .getElementById("newUserPassword")
+    .value.trim();
+
+  if (!name || !email || !password) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  const response = await fetch(
+    `/api/app?action=create-user&company_id=${loggedUser.company_id}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role: "employee",
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    alert(JSON.stringify(data));
+    return;
+  }
+
+  alert("Usuário criado com sucesso!");
+  showDesktopUsersPage();
+}
 
       async function deleteUser(userId) {
         if (!confirm("Deseja excluir este usuário?")) return;
@@ -3976,9 +4335,10 @@ container.innerHTML = `
         loadDesktopUsers();
       }
 
-      window.createUser = createUser;
-      window.openDesktopCreateUser = openDesktopCreateUser;
-      window.openDesktopUsersPanel = openDesktopUsersPanel;
+        window.createUser = createUser;
+        window.openDesktopCreateUser = openDesktopCreateUser;
+        window.showDesktopUsersPage = showDesktopUsersPage;
+        window.deleteUser = deleteUser;
 
       // ──────────────────────────────────────
       // MOBILE: Tabs
@@ -4078,10 +4438,7 @@ container.innerHTML = `
           <div class="settings-label">Notificações</div>
           <button class="send-btn" onclick="requestNotificationPermission()">🔔 Ativar notificações</button>
         </div>
-        <div class="settings-item">
-          <div class="settings-label">Equipe</div>
-          <button class="send-btn" onclick="openUsersPanel()">👥 Gerenciar usuários</button>
-        </div>
+       
         <div class="settings-item">
   <div class="settings-label">Respostas rápidas</div>
 
@@ -5085,6 +5442,48 @@ async function loadMonthlyRanking(containerId) {
 
       window.toggleMlCard = toggleMlCard;
       window.sendAnswerMl = sendAnswerMl;
+
+      function toggleDesktopSidebar() {
+  const sidebar = document.getElementById(
+    "desktopSidebar",
+  );
+
+  if (!sidebar) return;
+
+  const collapsed =
+    sidebar.classList.toggle("collapsed");
+
+  localStorage.setItem(
+    "desktop_sidebar_collapsed",
+    collapsed ? "true" : "false",
+  );
+}
+
+function restoreDesktopSidebar() {
+  const sidebar = document.getElementById(
+    "desktopSidebar",
+  );
+
+  if (!sidebar) return;
+
+  const collapsed =
+    localStorage.getItem(
+      "desktop_sidebar_collapsed",
+    ) === "true";
+
+  sidebar.classList.toggle(
+    "collapsed",
+    collapsed,
+  );
+}
+
+window.toggleDesktopSidebar =
+  toggleDesktopSidebar;
+
+document.addEventListener(
+  "DOMContentLoaded",
+  restoreDesktopSidebar,
+);
 
       // ──────────────────────────────────────
       // INIT
