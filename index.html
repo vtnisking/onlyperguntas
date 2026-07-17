@@ -2060,56 +2060,6 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.qr-manager-toolbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.qr-manager-search-wrap {
-  position: relative;
-  flex: 1;
-}
-
-.qr-manager-search-icon {
-  position: absolute;
-  top: 50%;
-  left: 14px;
-  transform: translateY(-50%);
-  color: #9a9aa1;
-  pointer-events: none;
-}
-
-.qr-manager-search {
-  width: 100%;
-  height: 42px;
-  padding: 0 14px 0 40px;
-  border: 1px solid #dedee3;
-  border-radius: 8px;
-  background: white;
-  color: #18181b;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 13px;
-  outline: none;
-}
-
-.qr-manager-search:focus {
-  border-color: #c40000;
-  box-shadow: 0 0 0 3px rgba(196, 0, 0, 0.08);
-}
-
-.qr-manager-filter {
-  min-width: 170px;
-  height: 42px;
-  padding: 0 12px;
-  border: 1px solid #dedee3;
-  border-radius: 8px;
-  background: white;
-  color: #3f3f46;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 13px;
-}
-
 .qr-manager-table {
   overflow: hidden;
   border: 1px solid #e4e4e7;
@@ -2119,7 +2069,7 @@
 .qr-manager-table-header,
 .qr-manager-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 105px 100px;
+  grid-template-columns: minmax(0, 1fr) 100px;
   align-items: center;
   gap: 12px;
 }
@@ -2168,20 +2118,6 @@
   color: #71717a;
   font-size: 11px;
   line-height: 1.4;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.qr-manager-category {
-  width: max-content;
-  max-width: 100%;
-  padding: 5px 8px;
-  overflow: hidden;
-  border-radius: 5px;
-  background: #ffe8e8;
-  color: #d00000;
-  font-size: 10px;
-  font-weight: 650;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2375,14 +2311,6 @@
     display: none;
   }
 
-  .qr-manager-toolbar {
-    flex-direction: column;
-  }
-
-  .qr-manager-filter {
-    width: 100%;
-  }
-
   .qr-manager-table-header {
     display: none;
   }
@@ -2391,9 +2319,6 @@
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .qr-manager-category {
-    display: none;
-  }
 }
 
     </style>
@@ -2900,38 +2825,14 @@
 
     <div class="qr-manager-grid">
       <div class="qr-manager-card">
-        <div class="qr-manager-toolbar">
-          <div class="qr-manager-search-wrap">
-            <span class="qr-manager-search-icon">⌕</span>
-
-            <input
-              id="quickRepliesManagerSearch"
-              class="qr-manager-search"
-              type="text"
-              placeholder="Buscar respostas rápidas..."
-              oninput="renderQuickRepliesManager()"
-            />
-          </div>
-
-          <select
-            id="quickRepliesManagerCategory"
-            class="qr-manager-filter"
-            onchange="renderQuickRepliesManager()"
-          >
-            <option value="">Todas as categorias</option>
-            <option value="Geral">Geral</option>
-          </select>
-        </div>
 
         <div id="quickRepliesManagerEditor"></div>
 
         <div class="qr-manager-table">
-          <div class="qr-manager-table-header">
-            <div>Resposta</div>
-            <div>Categoria</div>
-            <div style="text-align:right;">Ações</div>
-          </div>
-
+<div class="qr-manager-table-header">
+  <div>Resposta</div>
+  <div style="text-align:right;">Ações</div>
+</div>
           <div id="quickRepliesManagerList">
             <div class="qr-manager-empty">
               Carregando respostas...
@@ -4623,19 +4524,10 @@ function renderQuickRepliesManager() {
     "quickRepliesManagerFooter",
   );
 
-  const search =
-    document
-      .getElementById("quickRepliesManagerSearch")
-      ?.value.trim()
-      .toLowerCase() || "";
 
   if (!list) return;
 
-  const filteredReplies = quickRepliesCache.filter((reply) =>
-    String(reply.reply_text || "")
-      .toLowerCase()
-      .includes(search),
-  );
+const filteredReplies = quickRepliesCache;
 
   if (filteredReplies.length === 0) {
     list.innerHTML = `
@@ -4658,46 +4550,41 @@ function renderQuickRepliesManager() {
         makeQuickReplyTitle(reply.reply_text),
       );
 
-      return `
-        <div class="qr-manager-row">
-          <div
-            class="qr-manager-answer"
-            title="${safeText}"
-          >
-            <div class="qr-manager-answer-title">
-              ${safeTitle}
-            </div>
+     return `
+  <div class="qr-manager-row">
+    <div
+      class="qr-manager-answer"
+      title="${safeText}"
+    >
+      <div class="qr-manager-answer-title">
+        ${safeTitle}
+      </div>
 
-            <div class="qr-manager-answer-text">
-              ${safeText}
-            </div>
-          </div>
+      <div class="qr-manager-answer-text">
+        ${safeText}
+      </div>
+    </div>
 
-          <div>
-            <span class="qr-manager-category">
-              Geral
-            </span>
-          </div>
+    <div class="qr-manager-actions">
+      <button
+        class="qr-manager-action-btn"
+        onclick="openQuickReplyManagerEditor('${reply.id}')"
+        title="Editar"
+      >
+        ✎
+      </button>
 
-          <div class="qr-manager-actions">
-            <button
-              class="qr-manager-action-btn"
-              onclick="openQuickReplyManagerEditor('${reply.id}')"
-              title="Editar"
-            >
-              ✎
-            </button>
+      <button
+        class="qr-manager-action-btn delete"
+        onclick="deleteQuickReplyFromManager('${reply.id}')"
+        title="Excluir"
+      >
+        🗑
+      </button>
+    </div>
+  </div>
+`;
 
-            <button
-              class="qr-manager-action-btn delete"
-              onclick="deleteQuickReplyFromManager('${reply.id}')"
-              title="Excluir"
-            >
-              🗑
-            </button>
-          </div>
-        </div>
-      `;
     })
     .join("");
 
