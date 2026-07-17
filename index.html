@@ -2530,6 +2530,430 @@
 
 }
 
+/* =====================================================
+   ABA DE USUÁRIOS
+===================================================== */
+
+.users-page {
+  width: 100%;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.users-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.users-page-title {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+}
+
+.users-page-subtitle {
+  margin-top: 5px;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.users-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.users-summary-card {
+  min-height: 118px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04);
+}
+
+.users-summary-icon {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.users-summary-red {
+  color: #c40000;
+  background: #ffe7e7;
+}
+
+.users-summary-green {
+  color: #07883d;
+  background: #e2f7e9;
+}
+
+.users-summary-gray {
+  color: #64748b;
+  background: #eef0f4;
+}
+
+.users-summary-yellow {
+  color: #d49a00;
+  background: #fff4d5;
+}
+
+.users-summary-number {
+  color: #c40000;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.users-number-green {
+  color: #07883d;
+}
+
+.users-number-gray {
+  color: #475569;
+}
+
+.users-number-yellow {
+  color: #d49a00;
+}
+
+.users-summary-label {
+  margin-top: 7px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.users-summary-description {
+  margin-top: 3px;
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.users-toolbar {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 220px auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.users-search-wrapper {
+  position: relative;
+}
+
+.users-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.users-search-input {
+  height: 46px !important;
+  margin: 0 !important;
+  padding: 0 16px 0 46px !important;
+  border-radius: 10px !important;
+}
+
+.users-sort-select {
+  height: 46px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.users-create-button {
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #c50000);
+  color: white;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(172, 4, 1, 0.18);
+}
+
+.users-create-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(172, 4, 1, 0.24);
+}
+
+.users-table-card {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.04);
+}
+
+.users-table-header,
+.users-table-row {
+  display: grid;
+  grid-template-columns:
+    minmax(280px, 1.7fr)
+    130px
+    160px
+    130px
+    190px;
+  gap: 16px;
+  align-items: center;
+}
+
+.users-table-header {
+  min-height: 46px;
+  padding: 0 22px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.users-table-row {
+  min-height: 94px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.18s;
+}
+
+.users-table-row:last-child {
+  border-bottom: none;
+}
+
+.users-table-row:hover {
+  background: var(--surface2);
+}
+
+.users-person {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.users-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe0e0, #ffd0d0);
+  color: #b40000;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.users-person-info {
+  min-width: 0;
+}
+
+.users-person-name {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-person-email {
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--text3);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-role-badge {
+  width: max-content;
+  margin-top: 7px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.users-role-badge.owner {
+  border-color: rgba(172, 4, 1, 0.18);
+  background: rgba(172, 4, 1, 0.08);
+  color: var(--accent);
+}
+
+.users-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.users-status::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.users-status.active {
+  color: #07883d;
+}
+
+.users-status.active::before {
+  background: #10a64a;
+  box-shadow: 0 0 0 4px rgba(16, 166, 74, 0.09);
+}
+
+.users-status.inactive {
+  color: #64748b;
+}
+
+.users-status.inactive::before {
+  background: #64748b;
+}
+
+.users-activity-main {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.users-activity-sub {
+  margin-top: 4px;
+  color: var(--text3);
+  font-size: 10px;
+}
+
+.users-answer-count {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.users-answer-star {
+  color: #e5a900;
+  font-size: 17px;
+}
+
+.users-answer-number {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.users-answer-label {
+  margin-top: 3px;
+  color: var(--text3);
+  font-size: 10px;
+}
+
+.users-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.users-action-button {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text2);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.users-action-button:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.users-action-button.delete {
+  border-color: rgba(220, 38, 38, 0.23);
+  background: rgba(220, 38, 38, 0.04);
+  color: #c40000;
+}
+
+.users-action-button.delete:hover {
+  background: rgba(220, 38, 38, 0.09);
+}
+
+.users-table-footer {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  border-top: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.users-loading,
+.users-empty {
+  padding: 48px 20px;
+  color: var(--text3);
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 1200px) {
+  .users-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .users-table-header,
+  .users-table-row {
+    grid-template-columns:
+      minmax(240px, 1.5fr)
+      110px
+      130px
+      110px
+      170px;
+  }
+}
+
     </style>
   </head>
 
@@ -2859,11 +3283,177 @@
           <!-- Tab: Ajustes -->
 
           <!-- Tab: Usuários -->
+
+          <!-- Tab: Usuários -->
 <div class="desktop-tab" id="dt-users">
-  <div class="questions-list">
-    <div class="section-title" style="margin-bottom: 20px">
-      👥 Usuários
+  <div class="users-page">
+
+    <div class="users-page-header">
+      <div>
+        <div class="users-page-title">
+          👥 Usuários
+        </div>
+
+        <div class="users-page-subtitle">
+          Gerencie os usuários que têm acesso ao sistema.
+        </div>
+      </div>
     </div>
+
+    <!-- Resumo -->
+    <div class="users-summary-grid">
+      <div class="users-summary-card">
+        <div class="users-summary-icon users-summary-red">
+          👥
+        </div>
+
+        <div>
+          <div
+            class="users-summary-number"
+            id="usersTotalCount"
+          >
+            0
+          </div>
+
+          <div class="users-summary-label">
+            Total de usuários
+          </div>
+
+          <div class="users-summary-description">
+            Cadastrados no sistema
+          </div>
+        </div>
+      </div>
+
+      <div class="users-summary-card">
+        <div class="users-summary-icon users-summary-green">
+          ●
+        </div>
+
+        <div>
+          <div
+            class="users-summary-number users-number-green"
+            id="usersActiveCount"
+          >
+            0
+          </div>
+
+          <div class="users-summary-label">
+            Usuários ativos
+          </div>
+
+          <div class="users-summary-description">
+            Com acesso liberado
+          </div>
+        </div>
+      </div>
+
+      <div class="users-summary-card">
+        <div class="users-summary-icon users-summary-gray">
+          ●
+        </div>
+
+        <div>
+          <div
+            class="users-summary-number users-number-gray"
+            id="usersInactiveCount"
+          >
+            0
+          </div>
+
+          <div class="users-summary-label">
+            Usuários inativos
+          </div>
+
+          <div class="users-summary-description">
+            Sem acesso ao sistema
+          </div>
+        </div>
+      </div>
+
+      <div class="users-summary-card">
+        <div class="users-summary-icon users-summary-yellow">
+          🏆
+        </div>
+
+        <div>
+          <div
+            class="users-summary-number users-number-yellow"
+            id="usersAnswersToday"
+          >
+            0
+          </div>
+
+          <div class="users-summary-label">
+            Respostas hoje
+          </div>
+
+          <div class="users-summary-description">
+            Total enviado pelo time
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ferramentas -->
+    <div class="users-toolbar">
+      <div class="users-search-wrapper">
+        <span class="users-search-icon">⌕</span>
+
+        <input
+          id="usersSearchInput"
+          class="users-search-input"
+          type="text"
+          placeholder="Buscar usuário por nome ou e-mail..."
+          oninput="renderDesktopUsers()"
+        />
+      </div>
+
+      <select
+        id="usersSortSelect"
+        class="users-sort-select"
+        onchange="renderDesktopUsers()"
+      >
+        <option value="name-asc">Nome (A–Z)</option>
+        <option value="name-desc">Nome (Z–A)</option>
+        <option value="answers-desc">Mais respostas</option>
+        <option value="recent">Última atividade</option>
+      </select>
+
+      <button
+        class="users-create-button"
+        onclick="openDesktopCreateUser()"
+      >
+        <span style="font-size: 21px">＋</span>
+        Criar usuário
+      </button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="users-table-card">
+      <div class="users-table-header">
+        <div>Usuário</div>
+        <div>Status</div>
+        <div>Última atividade</div>
+        <div>Respostas hoje</div>
+        <div style="text-align: right">Ações</div>
+      </div>
+
+      <div id="dUsersList">
+        <div class="users-loading">
+          Carregando usuários...
+        </div>
+      </div>
+
+      <div class="users-table-footer">
+        <span id="usersResultCount">
+          Mostrando 0 usuários
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>
 
     <div style="margin-bottom: 16px">
       <button
@@ -4143,52 +4733,389 @@ container.innerHTML = `
       // DESKTOP: Users panel
       // ──────────────────────────────────────
 
-      async function loadDesktopUsers() {
-        const box = document.getElementById("dUsersList");
-        if (!box) return;
-        try {
-          const response = await fetch(
-            `/api/app?action=users&company_id=${loggedUser.company_id}`,
-          );
-          const data = await response.json();
-          const users = data.users || [];
-          if (users.length === 0) {
-            box.innerHTML = `<div class="empty" style="padding:24px;">Nenhum usuário.</div>`;
-            return;
-          }
-          box.innerHTML = users
-            .map(
-              (user) => `
-      <div class="ranking-item" style="margin-bottom:10px;">
-        <div class="ranking-left">
-          <div class="client-icon">👤</div>
-          <div>
-            <div class="rank-name">${user.name}</div>
-            <div class="rank-role">${user.email}</div>
-            <div style="margin-top:4px;">
-              <span style="display:inline-block;padding:3px 10px;border-radius:999px;
-                background:${user.role === "owner" ? "rgba(108,99,255,0.15)" : "rgba(255,255,255,0.05)"};
-                color:${user.role === "owner" ? "var(--accent2)" : "var(--text3)"};
-                font-size:11px;font-weight:700;
-                border:1px solid ${user.role === "owner" ? "rgba(108,99,255,0.25)" : "var(--border)"};">
-                ${user.role === "owner" ? "Administrador" : "Funcionário"}
-              </span>
+    async function loadDesktopUsers() {
+  const list = document.getElementById("dUsersList");
+
+  if (!list) return;
+
+  list.innerHTML = `
+    <div class="users-loading">
+      Carregando usuários...
+    </div>
+  `;
+
+  try {
+    const [usersResponse, statsResponse] = await Promise.all([
+      fetch(
+        `/api/app?action=users&company_id=${loggedUser.company_id}`,
+      ),
+      fetch(
+        `/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`,
+      ),
+    ]);
+
+    const usersData = await usersResponse.json();
+    const statsData = await statsResponse.json();
+
+    if (!usersResponse.ok || usersData.success === false) {
+      throw new Error(
+        usersData.error?.message ||
+        usersData.error ||
+        "Erro ao carregar usuários.",
+      );
+    }
+
+    desktopUsersCache = usersData.users || [];
+
+    desktopUsersStats = {
+      byUser: statsData.by_user || {},
+      logs: statsData.logs || [],
+      totalToday: Number(statsData.total || 0),
+    };
+
+    updateDesktopUsersSummary();
+    renderDesktopUsers();
+  } catch (error) {
+    console.error("Erro ao carregar usuários:", error);
+
+    list.innerHTML = `
+      <div class="users-empty">
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+  }
+}
+
+function getUserInitials(name, email) {
+  const source = String(name || email || "?").trim();
+
+  const parts = source
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return (
+    parts[0][0] +
+    parts[parts.length - 1][0]
+  ).toUpperCase();
+}
+
+function getUserDisplayName(user) {
+  return user.name || user.email || "Usuário";
+}
+
+function getUserAnswerCount(user) {
+  const byUser = desktopUsersStats.byUser || {};
+
+  return Number(
+    byUser[user.name] ||
+    byUser[user.email] ||
+    0,
+  );
+}
+
+function getUserLastActivity(user) {
+  const logs = desktopUsersStats.logs || [];
+
+  const userLog = logs.find((log) => {
+    return (
+      (user.name &&
+        log.user_name === user.name) ||
+      (user.email &&
+        log.user_email === user.email)
+    );
+  });
+
+  return userLog?.created_at || null;
+}
+
+function formatUsersActivity(dateString) {
+  if (!dateString) {
+    return {
+      main: "Sem atividade hoje",
+      sub: "Nenhuma resposta enviada",
+      timestamp: 0,
+    };
+  }
+
+  const date = new Date(dateString);
+  const difference = Date.now() - date.getTime();
+  const minutes = Math.max(
+    0,
+    Math.floor(difference / 60000),
+  );
+
+  let main;
+
+  if (minutes < 1) {
+    main = "Agora";
+  } else if (minutes < 60) {
+    main = `Há ${minutes} minuto${minutes === 1 ? "" : "s"}`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+
+    main = `Há ${hours} hora${hours === 1 ? "" : "s"}`;
+  }
+
+  return {
+    main,
+    sub: "Última resposta",
+    timestamp: date.getTime(),
+  };
+}
+
+function updateDesktopUsersSummary() {
+  const users = desktopUsersCache;
+
+  const activeUsers = users.filter(
+    (user) =>
+      String(user.status || "active")
+        .toLowerCase() === "active",
+  );
+
+  const inactiveUsers =
+    users.length - activeUsers.length;
+
+  const totalElement =
+    document.getElementById("usersTotalCount");
+
+  const activeElement =
+    document.getElementById("usersActiveCount");
+
+  const inactiveElement =
+    document.getElementById("usersInactiveCount");
+
+  const answersElement =
+    document.getElementById("usersAnswersToday");
+
+  if (totalElement) {
+    totalElement.textContent = users.length;
+  }
+
+  if (activeElement) {
+    activeElement.textContent = activeUsers.length;
+  }
+
+  if (inactiveElement) {
+    inactiveElement.textContent = inactiveUsers;
+  }
+
+  if (answersElement) {
+    answersElement.textContent =
+      desktopUsersStats.totalToday;
+  }
+}
+
+function renderDesktopUsers() {
+  const list = document.getElementById("dUsersList");
+  const countElement =
+    document.getElementById("usersResultCount");
+
+  if (!list) return;
+
+  const search =
+    document
+      .getElementById("usersSearchInput")
+      ?.value.trim()
+      .toLowerCase() || "";
+
+  const sort =
+    document.getElementById("usersSortSelect")
+      ?.value || "name-asc";
+
+  let users = desktopUsersCache.filter((user) => {
+    const name = String(user.name || "").toLowerCase();
+    const email = String(user.email || "").toLowerCase();
+
+    return (
+      name.includes(search) ||
+      email.includes(search)
+    );
+  });
+
+  users = [...users].sort((a, b) => {
+    const nameA = getUserDisplayName(a).toLowerCase();
+    const nameB = getUserDisplayName(b).toLowerCase();
+
+    if (sort === "name-desc") {
+      return nameB.localeCompare(nameA, "pt-BR");
+    }
+
+    if (sort === "answers-desc") {
+      return (
+        getUserAnswerCount(b) -
+        getUserAnswerCount(a)
+      );
+    }
+
+    if (sort === "recent") {
+      const activityA =
+        formatUsersActivity(
+          getUserLastActivity(a),
+        ).timestamp;
+
+      const activityB =
+        formatUsersActivity(
+          getUserLastActivity(b),
+        ).timestamp;
+
+      return activityB - activityA;
+    }
+
+    return nameA.localeCompare(nameB, "pt-BR");
+  });
+
+  if (countElement) {
+    countElement.textContent =
+      users.length === 1
+        ? "Mostrando 1 usuário"
+        : `Mostrando ${users.length} usuários`;
+  }
+
+  if (users.length === 0) {
+    list.innerHTML = `
+      <div class="users-empty">
+        Nenhum usuário encontrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML = users
+    .map((user) => {
+      const name = escapeHtml(
+        getUserDisplayName(user),
+      );
+
+      const email = escapeHtml(user.email || "");
+      const initials = escapeHtml(
+        getUserInitials(user.name, user.email),
+      );
+
+      const isActive =
+        String(user.status || "active")
+          .toLowerCase() === "active";
+
+      const answerCount =
+        getUserAnswerCount(user);
+
+      const activity =
+        formatUsersActivity(
+          getUserLastActivity(user),
+        );
+
+      const role =
+        user.role === "owner" ||
+        user.role === "admin" ||
+        user.role === "superadmin"
+          ? "Administrador"
+          : "Funcionário";
+
+      const roleClass =
+        role === "Administrador"
+          ? "owner"
+          : "";
+
+      return `
+        <div class="users-table-row">
+
+          <div class="users-person">
+            <div class="users-avatar">
+              ${initials}
+            </div>
+
+            <div class="users-person-info">
+              <div class="users-person-name">
+                ${name}
+              </div>
+
+              <div class="users-person-email">
+                ${email}
+              </div>
+
+              <div class="users-role-badge ${roleClass}">
+                ${role}
+              </div>
             </div>
           </div>
+
+          <div>
+            <span
+              class="users-status ${
+                isActive ? "active" : "inactive"
+              }"
+            >
+              ${isActive ? "Ativo" : "Inativo"}
+            </span>
+          </div>
+
+          <div>
+            <div class="users-activity-main">
+              ${activity.main}
+            </div>
+
+            <div class="users-activity-sub">
+              ${activity.sub}
+            </div>
+          </div>
+
+          <div>
+            <div class="users-answer-count">
+              <span class="users-answer-star">★</span>
+
+              <span class="users-answer-number">
+                ${answerCount}
+              </span>
+            </div>
+
+            <div class="users-answer-label">
+              respostas hoje
+            </div>
+          </div>
+
+          <div class="users-row-actions">
+            <button
+              class="users-action-button"
+              onclick="editDesktopUser('${user.id}')"
+            >
+              ✎ Editar
+            </button>
+
+            <button
+              class="users-action-button delete"
+              onclick="deleteUser('${user.id}')"
+            >
+              🗑 Excluir
+            </button>
+          </div>
+
         </div>
-        <button onclick="deleteUser('${user.id}')" style="
-          background:rgba(239,68,68,0.12);color:var(--red);
-          border:1px solid rgba(239,68,68,0.25);padding:8px 14px;
-          border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:13px;
-          font-family:'Inter',Arial,sans-serif;">Excluir</button>
-      </div>
-    `,
-            )
-            .join("");
-        } catch (e) {
-          box.innerHTML = "Erro ao carregar.";
-        }
-      }
+      `;
+    })
+    .join("");
+}
+
+function editDesktopUser(userId) {
+  const user = desktopUsersCache.find(
+    (item) => String(item.id) === String(userId),
+  );
+
+  if (!user) {
+    alert("Usuário não encontrado.");
+    return;
+  }
+
+  alert(
+    `A edição de ${user.name || user.email} será adicionada na próxima etapa.`,
+  );
+}
+
+window.renderDesktopUsers = renderDesktopUsers;
+window.editDesktopUser = editDesktopUser;
 
       function openDesktopCreateUser() {
 
@@ -4245,39 +5172,123 @@ panel.innerHTML = `
 `;
       }
 
-      function showDesktopUsersPage() {
-  const tab = document.getElementById("dt-users");
+  function showDesktopUsersPage() {
+  const usersTab = document.getElementById("dt-users");
 
-  if (!tab) return;
+  if (!usersTab) return;
 
-  tab.innerHTML = `
-    <div class="questions-list">
-      <div class="section-title" style="margin-bottom: 20px">
-        👥 Usuários
+  usersTab.innerHTML = `
+    <div class="users-page">
+
+      <div class="users-page-header">
+        <div>
+          <div class="users-page-title">
+            👥 Usuários
+          </div>
+
+          <div class="users-page-subtitle">
+            Gerencie os usuários que têm acesso ao sistema.
+          </div>
+        </div>
       </div>
 
-      <div style="margin-bottom: 16px">
+      <div class="users-summary-grid">
+        <div class="users-summary-card">
+          <div class="users-summary-icon users-summary-red">👥</div>
+          <div>
+            <div class="users-summary-number" id="usersTotalCount">0</div>
+            <div class="users-summary-label">Total de usuários</div>
+            <div class="users-summary-description">Cadastrados no sistema</div>
+          </div>
+        </div>
+
+        <div class="users-summary-card">
+          <div class="users-summary-icon users-summary-green">●</div>
+          <div>
+            <div class="users-summary-number users-number-green" id="usersActiveCount">0</div>
+            <div class="users-summary-label">Usuários ativos</div>
+            <div class="users-summary-description">Com acesso liberado</div>
+          </div>
+        </div>
+
+        <div class="users-summary-card">
+          <div class="users-summary-icon users-summary-gray">●</div>
+          <div>
+            <div class="users-summary-number users-number-gray" id="usersInactiveCount">0</div>
+            <div class="users-summary-label">Usuários inativos</div>
+            <div class="users-summary-description">Sem acesso ao sistema</div>
+          </div>
+        </div>
+
+        <div class="users-summary-card">
+          <div class="users-summary-icon users-summary-yellow">🏆</div>
+          <div>
+            <div class="users-summary-number users-number-yellow" id="usersAnswersToday">0</div>
+            <div class="users-summary-label">Respostas hoje</div>
+            <div class="users-summary-description">Total enviado pelo time</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="users-toolbar">
+        <div class="users-search-wrapper">
+          <span class="users-search-icon">⌕</span>
+          <input
+            id="usersSearchInput"
+            class="users-search-input"
+            type="text"
+            placeholder="Buscar usuário por nome ou e-mail..."
+            oninput="renderDesktopUsers()"
+          />
+        </div>
+
+        <select
+          id="usersSortSelect"
+          class="users-sort-select"
+          onchange="renderDesktopUsers()"
+        >
+          <option value="name-asc">Nome (A–Z)</option>
+          <option value="name-desc">Nome (Z–A)</option>
+          <option value="answers-desc">Mais respostas</option>
+          <option value="recent">Última atividade</option>
+        </select>
+
         <button
-          class="send-btn"
+          class="users-create-button"
           onclick="openDesktopCreateUser()"
         >
-          + Criar usuário
+          <span style="font-size:21px">＋</span>
+          Criar usuário
         </button>
       </div>
 
-      <div class="detail-label" style="margin-bottom: 12px">
-        Usuários cadastrados
-      </div>
+      <div class="users-table-card">
+        <div class="users-table-header">
+          <div>Usuário</div>
+          <div>Status</div>
+          <div>Última atividade</div>
+          <div>Respostas hoje</div>
+          <div style="text-align:right">Ações</div>
+        </div>
 
-      <div id="dUsersList">
-        <div class="empty" style="padding: 24px">
-          Carregando usuários...
+        <div id="dUsersList">
+          <div class="users-loading">
+            Carregando usuários...
+          </div>
+        </div>
+
+        <div class="users-table-footer">
+          <span id="usersResultCount">
+            Mostrando 0 usuários
+          </span>
         </div>
       </div>
+
     </div>
   `;
 
   loadDesktopUsers();
+
 }
 
 async function createUser() {
@@ -4594,6 +5605,12 @@ async function createUser() {
 let quickRepliesCache = [];
 let quickReplyTargetId = null;
 let editingQuickReplyId = null;
+let desktopUsersCache = [];
+let desktopUsersStats = {
+  byUser: {},
+  logs: [],
+  totalToday: 0,
+};
 
 function quickRepliesUrl() {
   return `/api/app?action=quick-replies&company_id=${encodeURIComponent(
