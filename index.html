@@ -5174,11 +5174,15 @@ container.innerHTML = `
 
       <div class="mobile-question-answer">
 
-        <button
-          type="button"
-          class="mobile-question-quick-button"
-          onclick="openQuickRepliesPicker('${answerId}')"
-        >
+<button
+  type="button"
+  class="mobile-question-quick-button"
+  onclick="
+    event.preventDefault();
+    event.stopPropagation();
+    window.openQuickRepliesPicker('${answerId}');
+  "
+>
           <span>💬</span>
           Respostas rápidas
         </button>
@@ -6699,6 +6703,12 @@ async function openQuickRepliesPicker(targetId) {
   }
 }
 
+window.openQuickRepliesPicker = openQuickRepliesPicker;
+window.renderQuickRepliesPicker = renderQuickRepliesPicker;
+window.selectQuickReply = selectQuickReply;
+window.closeQuickRepliesModal = closeQuickRepliesModal;
+window.closeQuickRepliesOnBackdrop = closeQuickRepliesOnBackdrop;
+      
 function renderQuickRepliesPicker(search = "") {
   const list = document.getElementById("quickRepliesPickerList");
 
