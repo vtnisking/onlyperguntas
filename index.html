@@ -25,7 +25,7 @@
         padding: 0;
         box-sizing: border-box;
       }
-      /* TESTE commit vercel */
+  
 
       :root {
         --bg: #f5f5f7;
@@ -3265,6 +3265,90 @@ header.mobile-header {
 
 }
 
+@media (max-width: 768px) {
+  .stats-card {
+    min-height: 104px !important;
+    padding: 16px 18px !important;
+    margin-bottom: 16px !important;
+    border-radius: 22px !important;
+    gap: 14px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .stats-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 14px !important;
+    bottom: 14px !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 4px !important;
+    height: auto !important;
+    background: linear-gradient(
+      180deg,
+      #7f1d1d,
+      #dc2626,
+      #ef4444
+    ) !important;
+    border-radius: 0 4px 4px 0 !important;
+    opacity: 1 !important;
+  }
+
+  .stats-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    min-width: 0 !important;
+  }
+
+  .stats-icon {
+    width: 52px !important;
+    height: 52px !important;
+    flex: 0 0 52px !important;
+    border-radius: 16px !important;
+    background: rgba(220, 38, 38, 0.08) !important;
+    border-color: rgba(220, 38, 38, 0.16) !important;
+  }
+
+  .stats-info {
+    display: grid !important;
+    grid-template-columns: auto auto !important;
+    grid-template-areas:
+      "title number"
+      "subtitle subtitle" !important;
+    align-items: center !important;
+    gap: 4px 10px !important;
+    min-width: 0 !important;
+  }
+
+  .stats-info h2 {
+    grid-area: title !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+  }
+
+  .stats-number {
+    grid-area: number !important;
+    font-size: 34px !important;
+    line-height: 1 !important;
+  }
+
+  .stats-sub {
+    grid-area: subtitle !important;
+    font-size: 12px !important;
+  }
+
+  .refresh-btn {
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    color: #b91c1c !important;
+    background: rgba(220, 38, 38, 0.07) !important;
+    border-color: rgba(220, 38, 38, 0.2) !important;
+  }
+}
+      
     </style>
   </head>
 
