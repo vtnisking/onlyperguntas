@@ -4822,12 +4822,14 @@ document.addEventListener(
             : ""
         }
 
-        <button
-        class="ml-quick-btn"
-        onclick="openQuickRepliesPicker('${taId}')"
-        >
-        💬 Respostas rápidas
-        </button>
+<button
+  type="button"
+  class="mobile-question-quick-button"
+  onclick="window.openQuickRepliesPicker('${answerId}')"
+>
+  <span>💬</span>
+  Respostas rápidas
+</button>
 
         <div class="ml-answer-row">
           <div class="ml-answer-wrap">
@@ -5177,15 +5179,11 @@ container.innerHTML = `
 <button
   type="button"
   class="mobile-question-quick-button"
-  onclick="
-    event.preventDefault();
-    event.stopPropagation();
-    window.openQuickRepliesPicker('${answerId}');
-  "
+  onclick="window.openQuickRepliesPicker('${answerId}')"
 >
-          <span>💬</span>
-          Respostas rápidas
-        </button>
+  <span>💬</span>
+  Respostas rápidas
+</button>
 
         <div class="mobile-question-textarea-wrap">
 
@@ -6704,10 +6702,6 @@ async function openQuickRepliesPicker(targetId) {
 }
 
 window.openQuickRepliesPicker = openQuickRepliesPicker;
-window.renderQuickRepliesPicker = renderQuickRepliesPicker;
-window.selectQuickReply = selectQuickReply;
-window.closeQuickRepliesModal = closeQuickRepliesModal;
-window.closeQuickRepliesOnBackdrop = closeQuickRepliesOnBackdrop;
       
 function renderQuickRepliesPicker(search = "") {
   const list = document.getElementById("quickRepliesPickerList");
