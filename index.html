@@ -5642,27 +5642,33 @@ if (notificationBadge) {
       `;
             container.appendChild(row);
           });
-} catch (e) {
-  console.error("Erro ao renderizar perguntas:", e);
 
-  container.innerHTML = `
-    <div class="empty">
-      <span class="empty-icon">⚠️</span>
+        } catch (e) {
+          console.error("Erro ao renderizar perguntas:", e);
 
-      <div>Erro ao carregar.</div>
+          container.innerHTML = `
+            <div class="empty">
+              <span class="empty-icon">⚠️</span>
 
-      <pre style="
-        margin-top:15px;
-        text-align:left;
-        white-space:pre-wrap;
-        max-width:900px;
-        overflow:auto;
-        color:#c62828;
-        font-size:13px;
-      ">${e.stack || e.message || e}</pre>
-    </div>
-  `;
-}
+              <div>Erro ao carregar.</div>
+
+              <pre style="
+                margin-top:15px;
+                text-align:left;
+                white-space:pre-wrap;
+                max-width:900px;
+                overflow:auto;
+                color:#c62828;
+                font-size:13px;
+              ">${escapeHtml(
+                e?.stack ||
+                e?.message ||
+                String(e)
+              )}</pre>
+            </div>
+          `;
+        }
+      }
 
       // ──────────────────────────────────────
       // DESKTOP: Stats
