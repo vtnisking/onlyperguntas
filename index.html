@@ -5172,7 +5172,7 @@ container.innerHTML = `
 
       </div>
 
-  ${""}
+${renderPreviousQuestions(item)}
 
       <div class="mobile-question-answer">
 
@@ -5642,10 +5642,27 @@ if (notificationBadge) {
       `;
             container.appendChild(row);
           });
-        } catch (e) {
-          container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
-        }
-      }
+} catch (e) {
+  console.error("Erro ao renderizar perguntas:", e);
+
+  container.innerHTML = `
+    <div class="empty">
+      <span class="empty-icon">⚠️</span>
+
+      <div>Erro ao carregar.</div>
+
+      <pre style="
+        margin-top:15px;
+        text-align:left;
+        white-space:pre-wrap;
+        max-width:900px;
+        overflow:auto;
+        color:#c62828;
+        font-size:13px;
+      ">${e.stack || e.message || e}</pre>
+    </div>
+  `;
+}
 
       // ──────────────────────────────────────
       // DESKTOP: Stats
