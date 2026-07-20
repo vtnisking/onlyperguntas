@@ -374,7 +374,7 @@ if (action === "create-user") {
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        error: "A senha deve possuir pelo menos 6 caracteres",
+        error: "A senha deve ter pelo menos 6 caracteres",
       });
     }
 
@@ -387,136 +387,128 @@ if (action === "create-user") {
       ? role
       : "employee";
 
-    // Verifica se o e-mail já está cadastrado na tabela users_app
+    // Verifica se já existe na users_app
     const {
-      data: existingProfile,
-      error: existingProfileError,
+      data: existingUser,
+      error: existingUserError,
     } = await supabase
       .from("users_app")
-      .select("id, email")
+      .select("id, auth_id, email")
       .eq("email", normalizedEmail)
       .maybeSingle();
 
-    if (existingProfileError) {
+    if (existingUserError) {
       console.error(
         "Erro ao verificar usuário existente:",
-        existingProfileError,
+        existingUserError,
       );
 
       return res.status(500).json({
         success: false,
-        error: "Não foi possível verificar o e-mail informado",
+        error: "Erro ao verificar o e-mail informado",
       });
     }
 
-    if (existingProfile) {
+    if (existingUser) {
       return res.status(409).json({
         success: false,
         error: "Este e-mail já está cadastrado",
       });
     }
 
-    // 1. Cria o usuário no Supabase Authentication
+    // 1. Cria no Supabase Authentication
     const {
       data: authData,
-      error: authCreateError,
+      error: authError,
     } = await supabase.auth.admin.createUser({
       email: normalizedEmail,
       password,
       email_confirm: true,
       user_metadata: {
         name: normalizedName,
-        company_id,
-        role: normalizedRole,
       },
     });
 
-    if (authCreateError) {
+    if (authError) {
       console.error(
         "Erro ao criar usuário no Authentication:",
-        authCreateError,
+        authError,
       );
-
-      let errorMessage = authCreateError.message;
-
-      if (
-        authCreateError.message
-          ?.toLowerCase()
-          .includes("already")
-      ) {
-        errorMessage =
-          "Já existe uma conta de autenticação com este e-mail";
-      }
 
       return res.status(400).json({
         success: false,
-        error: errorMessage,
+        error:
+          authError.message ||
+          "Erro ao criar usuário no Authentication",
       });
     }
 
-    if (!authData?.user?.id) {
+    createdAuthUserId = authData?.user?.id;
+
+    if (!createdAuthUserId) {
       return res.status(500).json({
         success: false,
-        error: "O Authentication não retornou o usuário criado",
+        error: "O Authentication não retornou o ID do usuário",
       });
     }
 
-    createdAuthUserId = authData.user.id;
+    console.log(
+      "Usuário criado no Authentication:",
+      createdAuthUserId,
+    );
 
-    // 2. Cria o perfil na tabela pública users_app
+    // 2. Cria o perfil e grava o UUID na coluna auth_id
     const {
       data: profileData,
-      error: profileCreateError,
+      error: profileError,
     } = await supabase
       .from("users_app")
       .insert({
-        id: createdAuthUserId,
         company_id,
+        auth_id: createdAuthUserId,
         name: normalizedName,
         email: normalizedEmail,
         role: normalizedRole,
         status: "active",
       })
       .select(
-        "id, company_id, name, email, role, status, created_at",
+        "id, auth_id, company_id, name, email, role, status, created_at",
       )
       .single();
 
-    if (profileCreateError) {
+    if (profileError) {
       console.error(
         "Erro ao criar perfil em users_app:",
-        profileCreateError,
+        profileError,
       );
 
-      // Remove a conta do Authentication caso o perfil falhe
+      // Evita deixar usuário somente no Authentication
       await supabase.auth.admin.deleteUser(createdAuthUserId);
 
       return res.status(500).json({
         success: false,
         error:
-          profileCreateError.message ||
-          "Erro ao criar o perfil do usuário",
+          profileError.message ||
+          "Erro ao criar perfil do usuário",
       });
     }
+
+    console.log("Perfil criado em users_app:", profileData);
 
     return res.status(201).json({
       success: true,
       message: "Usuário criado com sucesso",
       user: profileData,
     });
-  } catch (createUserError) {
-    console.error(
-      "Erro inesperado ao criar usuário:",
-      createUserError,
-    );
+  } catch (error) {
+    console.error("Erro inesperado no create-user:", error);
 
-    // Evita deixar usuário somente no Authentication
     if (createdAuthUserId) {
       try {
         await supabase.auth.admin.deleteUser(createdAuthUserId);
       } catch (rollbackError) {
         console.error(
-          "Erro ao desfazer criação no Authentication:",
+          "Erro ao remover usuário do Authentication:",
           rollbackError,
         );
       }
@@ -524,9 +516,7 @@ if (action === "create-user") {
 
     return res.status(500).json({
       success: false,
-      error:
-        createUserError.message ||
-        "Erro interno ao criar usuário",
+      error: error.message || "Erro interno ao criar usuário",
     });
   }
 }
