@@ -347,51 +347,189 @@ if (action === "quick-replies") {
 }
 
 
-    // ==========================================
-    // CRIAR USUÁRIO
-    // ==========================================
+// ==========================================
+// CRIAR USUÁRIO
+// ==========================================
 
-    if (action === "create-user") {
-      if (req.method !== "POST") {
-        return res.status(405).json({
-          success: false,
-          error: "Método não permitido",
-        });
-      }
+if (action === "create-user") {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
 
-      const { name, email, password, role } = req.body || {};
+  let createdAuthUserId = null;
 
-      if (!name || !email || !password) {
-        return res.status(400).json({
-          success: false,
-          error: "Nome, e-mail e senha são obrigatórios",
-        });
-      }
+  try {
+    const { name, email, password, role } = req.body || {};
 
-      const { data, error } = await supabase
-        .from("users_app")
-        .insert({
-          company_id,
-          name,
-          email,
-          role: role || "employee",
-          status: "active",
-        })
-        .select("id, name, email, role, status")
-        .single();
-
-      if (error) {
-        return res.status(500).json({
-          success: false,
-          error,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        user: data,
+    if (!name?.trim() || !email?.trim() || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Nome, e-mail e senha são obrigatórios",
       });
     }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "A senha deve possuir pelo menos 6 caracteres",
+      });
+    }
+
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const allowedRoles = ["admin", "employee"];
+
+    const normalizedRole = allowedRoles.includes(role)
+      ? role
+      : "employee";
+
+    // Verifica se o e-mail já está cadastrado na tabela users_app
+    const {
+      data: existingProfile,
+      error: existingProfileError,
+    } = await supabase
+      .from("users_app")
+      .select("id, email")
+      .eq("email", normalizedEmail)
+      .maybeSingle();
+
+    if (existingProfileError) {
+      console.error(
+        "Erro ao verificar usuário existente:",
+        existingProfileError,
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Não foi possível verificar o e-mail informado",
+      });
+    }
+
+    if (existingProfile) {
+      return res.status(409).json({
+        success: false,
+        error: "Este e-mail já está cadastrado",
+      });
+    }
+
+    // 1. Cria o usuário no Supabase Authentication
+    const {
+      data: authData,
+      error: authCreateError,
+    } = await supabase.auth.admin.createUser({
+      email: normalizedEmail,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        name: normalizedName,
+        company_id,
+        role: normalizedRole,
+      },
+    });
+
+    if (authCreateError) {
+      console.error(
+        "Erro ao criar usuário no Authentication:",
+        authCreateError,
+      );
+
+      let errorMessage = authCreateError.message;
+
+      if (
+        authCreateError.message
+          ?.toLowerCase()
+          .includes("already")
+      ) {
+        errorMessage =
+          "Já existe uma conta de autenticação com este e-mail";
+      }
+
+      return res.status(400).json({
+        success: false,
+        error: errorMessage,
+      });
+    }
+
+    if (!authData?.user?.id) {
+      return res.status(500).json({
+        success: false,
+        error: "O Authentication não retornou o usuário criado",
+      });
+    }
+
+    createdAuthUserId = authData.user.id;
+
+    // 2. Cria o perfil na tabela pública users_app
+    const {
+      data: profileData,
+      error: profileCreateError,
+    } = await supabase
+      .from("users_app")
+      .insert({
+        id: createdAuthUserId,
+        company_id,
+        name: normalizedName,
+        email: normalizedEmail,
+        role: normalizedRole,
+        status: "active",
+      })
+      .select(
+        "id, company_id, name, email, role, status, created_at",
+      )
+      .single();
+
+    if (profileCreateError) {
+      console.error(
+        "Erro ao criar perfil em users_app:",
+        profileCreateError,
+      );
+
+      // Remove a conta do Authentication caso o perfil falhe
+      await supabase.auth.admin.deleteUser(createdAuthUserId);
+
+      return res.status(500).json({
+        success: false,
+        error:
+          profileCreateError.message ||
+          "Erro ao criar o perfil do usuário",
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Usuário criado com sucesso",
+      user: profileData,
+    });
+  } catch (createUserError) {
+    console.error(
+      "Erro inesperado ao criar usuário:",
+      createUserError,
+    );
+
+    // Evita deixar usuário somente no Authentication
+    if (createdAuthUserId) {
+      try {
+        await supabase.auth.admin.deleteUser(createdAuthUserId);
+      } catch (rollbackError) {
+        console.error(
+          "Erro ao desfazer criação no Authentication:",
+          rollbackError,
+        );
+      }
+    }
+
+    return res.status(500).json({
+      success: false,
+      error:
+        createUserError.message ||
+        "Erro interno ao criar usuário",
+    });
+  }
+}
 
     // ==========================================
     // DELETAR USUÁRIO
