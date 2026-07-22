@@ -4126,72 +4126,6 @@ body.mobile-menu-open {
     </div>
 
     <div class="mobile-sidemenu-section">
-      <div class="mobile-sidemenu-section-title">
-        Atendimento
-      </div>
-
-      <button
-        type="button"
-        class="mobile-sidemenu-item active"
-        data-mobile-menu-tab="pending"
-        onclick="openMobileMenuTab('pending', this)"
-      >
-        <span class="mobile-sidemenu-icon">📥</span>
-
-        <span class="mobile-sidemenu-label">
-          Pendentes
-        </span>
-
-        <span
-          class="mobile-sidemenu-badge"
-          id="mobileSidemenuPendingBadge"
-        >
-          0
-        </span>
-      </button>
-
-      <button
-        type="button"
-        class="mobile-sidemenu-item"
-        data-mobile-menu-tab="answered"
-        onclick="openMobileMenuTab('answered', this)"
-      >
-        <span class="mobile-sidemenu-icon">✅</span>
-
-        <span class="mobile-sidemenu-label">
-          Respondidas
-        </span>
-      </button>
-
-      <button
-        type="button"
-        class="mobile-sidemenu-item"
-        data-mobile-menu-tab="post-sales"
-        onclick="openMobilePostSales(this)"
-      >
-        <span class="mobile-sidemenu-icon">🤝</span>
-
-        <span class="mobile-sidemenu-label">
-          Pós-vendas
-        </span>
-      </button>
-
-      <button
-        type="button"
-        class="mobile-sidemenu-item"
-        onclick="openMobileShopee()"
-      >
-        <span class="mobile-sidemenu-icon">🛍️</span>
-
-        <span class="mobile-sidemenu-label">
-          Shopee
-        </span>
-
-        <span class="mobile-sidemenu-soon">
-          Em breve
-        </span>
-      </button>
-    </div>
 
     <div class="mobile-sidemenu-section">
       <div class="mobile-sidemenu-section-title">
@@ -4219,7 +4153,7 @@ body.mobile-menu-open {
         <span class="mobile-sidemenu-icon">👥</span>
 
         <span class="mobile-sidemenu-label">
-          Equipe
+          Usuários
         </span>
       </button>
 
@@ -4329,23 +4263,55 @@ body.mobile-menu-open {
     </div>
 
     <nav class="footer-menu">
-      <div class="footer-item active" onclick="showTab('pending', this)">
-        <div class="footer-icon-wrap"><div class="footer-icon">📥</div></div>
-        <div>Pendentes</div>
-      </div>
-      <div class="footer-item" onclick="showTab('answered', this)">
-        <div class="footer-icon-wrap"><div class="footer-icon">✅</div></div>
-        <div>Respondidas</div>
-      </div>
-      <div class="footer-item" onclick="showTab('stats', this)">
-        <div class="footer-icon-wrap"><div class="footer-icon">📊</div></div>
-        <div>Estatísticas</div>
-      </div>
-      <div class="footer-item" onclick="showTab('settings', this)">
-        <div class="footer-icon-wrap"><div class="footer-icon">⚙️</div></div>
-        <div>Ajustes</div>
-      </div>
-    </nav>
+<nav class="footer-menu">
+  <div
+    class="footer-item active"
+    data-footer-tab="pending"
+    onclick="openMobileFooterTab('pending', this)"
+  >
+    <div class="footer-icon-wrap">
+      <div class="footer-icon">📥</div>
+    </div>
+
+    <div>Pendentes</div>
+  </div>
+
+  <div
+    class="footer-item"
+    data-footer-tab="answered"
+    onclick="openMobileFooterTab('answered', this)"
+  >
+    <div class="footer-icon-wrap">
+      <div class="footer-icon">✅</div>
+    </div>
+
+    <div>Respondidas</div>
+  </div>
+
+  <div
+    class="footer-item"
+    data-footer-tab="post-sales"
+    onclick="openMobilePostSales(this)"
+  >
+    <div class="footer-icon-wrap">
+      <div class="footer-icon">🤝</div>
+    </div>
+
+    <div>Pós-vendas</div>
+  </div>
+
+  <div
+    class="footer-item"
+    data-footer-tab="shopee"
+    onclick="openMobileShopee(this)"
+  >
+    <div class="footer-icon-wrap">
+      <div class="footer-icon">🛍️</div>
+    </div>
+
+    <div>Shopee</div>
+  </div>
+</nav>
 
     <!-- ══════════════ DESKTOP ══════════════ -->
     <div class="desktop-layout">
@@ -4886,7 +4852,7 @@ body.mobile-menu-open {
         </button>
       </div>
 
-      <!-- Equipe -->
+      <!-- Usuários -->
 
 
       <!-- Respostas rápidas -->
@@ -5341,23 +5307,9 @@ function setMobileSidemenuActive(tab) {
 }
 
 function getFooterItemByTab(tab) {
-  const footerItems =
-    document.querySelectorAll(".footer-item");
-
-  const positions = {
-    pending: 0,
-    answered: 1,
-    stats: 2,
-    settings: 3,
-  };
-
-  const position = positions[tab];
-
-  if (position === undefined) {
-    return null;
-  }
-
-  return footerItems[position] || null;
+  return document.querySelector(
+    `.footer-item[data-footer-tab="${tab}"]`,
+  );
 }
 
 async function openMobileMenuTab(tab, menuElement) {
@@ -5367,15 +5319,46 @@ async function openMobileMenuTab(tab, menuElement) {
 
   const footerItem = getFooterItemByTab(tab);
 
+  if (footerItem) {
+    setMobileFooterActive(tab);
+  } else {
+    setMobileFooterActive("");
+  }
+
   await showTab(
     tab,
     footerItem || menuElement,
   );
 }
 
+function setMobileFooterActive(tab) {
+  document
+    .querySelectorAll(".footer-item")
+    .forEach((item) => {
+      item.classList.toggle(
+        "active",
+        item.dataset.footerTab === tab,
+      );
+    });
+}
+
+async function openMobileFooterTab(tab, element) {
+  closeMobileSidemenu();
+
+  setMobileFooterActive(tab);
+  setMobileSidemenuActive(tab);
+
+  await showTab(tab, element);
+}
+
+window.openMobileFooterTab =
+  openMobileFooterTab;
+
 function openMobileUsers() {
   closeMobileSidemenu();
+
   setMobileSidemenuActive("");
+  setMobileFooterActive("");
 
   openUsersPanel();
 }
@@ -5383,13 +5366,19 @@ function openMobileUsers() {
 function openMobileQuickReplies() {
   closeMobileSidemenu();
 
+  setMobileSidemenuActive("");
+  setMobileFooterActive("");
+
   alert(
     "O gerenciamento de respostas rápidas está disponível pelo computador.",
   );
 }
 
-function openMobileShopee() {
+function openMobileShopee(element) {
   closeMobileSidemenu();
+  
+  setMobileFooterActive("shopee");
+  setMobileSidemenuActive("");
 
   const container =
     document.getElementById("questions");
@@ -5466,8 +5455,13 @@ function openMobileShopee() {
   `;
 }
 
-function openMobilePostSales(menuElement) {
+function openMobilePostSales(element) {
   closeMobileSidemenu();
+
+  setMobileFooterActive("shopee");
+  setMobileSidemenuActive("");
+
+  setMobileFooterActive("post-sales");
   setMobileSidemenuActive("post-sales");
 
   const container =
@@ -5481,14 +5475,58 @@ function openMobilePostSales(menuElement) {
         🤝 Pós-vendas
       </div>
 
-      <div class="empty" style="padding: 30px 15px">
-        A tela de Pós-vendas mobile será conectada
-        à função existente no desktop na próxima etapa.
+      <div
+        style="
+          padding: 36px 18px;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 22px;
+
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid rgba(220, 38, 38, 0.14);
+
+            font-size: 38px;
+          "
+        >
+          🤝
+        </div>
+
+        <div
+          style="
+            color: var(--text);
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+          "
+        >
+          Pós-vendas
+        </div>
+
+        <p
+          style="
+            color: var(--text2);
+            font-size: 14px;
+            line-height: 1.6;
+          "
+        >
+          A versão mobile será conectada ao módulo
+          de Pós-vendas já existente no sistema.
+        </p>
       </div>
     </div>
   `;
 }
-
 function updateMobilePendingBadge(total) {
   const badge = document.getElementById(
     "mobileSidemenuPendingBadge",
@@ -5729,7 +5767,7 @@ onclick="window.openQuickRepliesPicker('${taId}')"
             questions.length;
 
             updateMobilePendingBadge(questions.length);
-            
+
           container.innerHTML = "";
 
 if (questions.length === 0) {
@@ -7582,7 +7620,7 @@ function selectQuickReply(replyId) {
   const username =
     loggedUser.name ||
     loggedUser.email ||
-    "Equipe";
+    "Usuários";
 
 textarea.value =
   `${reply.reply_text.trim()} Atenciosamente, ${username}`;
