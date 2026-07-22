@@ -452,15 +452,11 @@ body.mobile-menu-open {
   align-items: center;
   justify-content: space-between;
 
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(16, 17, 17, 0.96);
   -webkit-backdrop-filter: blur(20px);
 
-  border: 1px solid var(--border2);
+  border: 2px solid var(--border2);
   border-radius: 22px;
-
-  box-shadow:
-    0 12px 36px rgba(15, 23, 42, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
   z-index: 99999;
 }
@@ -503,12 +499,7 @@ body.mobile-menu-open {
 
 .footer-item.active {
   color: #b91c1c;
-  background: #fff4f4;
-}
-
-.footer-item.active .footer-icon-wrap {
-  background: #ffecec;
-  border-color: #ffd1d1;
+  background: #ffffff;
 }
 
 .footer-icon-wrap {
@@ -535,6 +526,60 @@ body.mobile-menu-open {
 .footer-item.active .footer-icon {
   transform: none;
 }
+
+.footer-svg-icon {
+  width: 25px;
+  height: 25px;
+
+  display: block;
+
+  background-color: currentColor;
+
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.icon-pendentes {
+  mask-image: url("/icons/pendentes.svg");
+  -webkit-mask-image: url("/icons/pendentes.svg");
+}
+
+.icon-respondidas {
+  mask-image: url("/icons/respondidas.svg");
+  -webkit-mask-image: url("/icons/respondidas.svg");
+}
+
+.icon-pos-vendas {
+  mask-image: url("/icons/pos-vendas.svg");
+  -webkit-mask-image: url("/icons/pos-vendas.svg");
+}
+
+.icon-shopee {
+  mask-image: url("/icons/shopee.svg");
+  -webkit-mask-image: url("/icons/shopee.svg");
+}
+
+.footer-item {
+  color: #f5f5f5;
+}
+
+.footer-item.active {
+  color: #f10505;
+}
+
+.footer-item.active .footer-svg-icon {
+  transform: scale(1.08);
+}
+
       /* ════════════════════════════════
      DESKTOP LAYOUT
   ════════════════════════════════ */
@@ -4269,7 +4314,11 @@ body.mobile-menu-open {
     onclick="openMobileFooterTab('pending', this)"
   >
     <div class="footer-icon-wrap">
-      <div class="footer-icon">📥</div>
+        
+<div class="footer-icon-wrap">
+  <span class="footer-svg-icon icon-pendentes"></span>
+</div>
+
     </div>
 
     <div>Pendentes</div>
@@ -4280,9 +4329,9 @@ body.mobile-menu-open {
     data-footer-tab="answered"
     onclick="openMobileFooterTab('answered', this)"
   >
-    <div class="footer-icon-wrap">
-      <div class="footer-icon">✅</div>
-    </div>
+<div class="footer-icon-wrap">
+  <span class="footer-svg-icon icon-respondidas"></span>
+</div>
 
     <div>Respondidas</div>
   </div>
@@ -4292,9 +4341,9 @@ body.mobile-menu-open {
     data-footer-tab="post-sales"
     onclick="openMobilePostSales(this)"
   >
-    <div class="footer-icon-wrap">
-      <div class="footer-icon">🤝</div>
-    </div>
+ <div class="footer-icon-wrap">
+  <span class="footer-svg-icon icon-pos-vendas"></span>
+</div>
 
     <div>Pós-vendas</div>
   </div>
@@ -4304,9 +4353,9 @@ body.mobile-menu-open {
     data-footer-tab="shopee"
     onclick="openMobileShopee(this)"
   >
-    <div class="footer-icon-wrap">
-      <div class="footer-icon">🛍️</div>
-    </div>
+<div class="footer-icon-wrap">
+  <span class="footer-svg-icon icon-shopee"></span>
+</div>
 
     <div>Shopee</div>
   </div>
