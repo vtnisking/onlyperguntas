@@ -440,16 +440,10 @@ body.mobile-menu-open {
 
 .footer-menu {
   position: fixed;
-
   left: 14px;
   right: 14px;
+  bottom: 12px;
 
-  bottom: max(
-    12px,
-    env(safe-area-inset-bottom)
-  );
-
-  width: auto;
   height: 72px;
   padding: 6px;
 
@@ -458,33 +452,17 @@ body.mobile-menu-open {
   justify-content: space-between;
 
   background: #2b2b30;
-  background-clip: padding-box;
 
   border: 2px solid var(--border2);
   border-radius: 22px;
-
-  overflow: hidden;
-  isolation: isolate;
-  contain: paint;
-
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-
-  box-shadow: none;
 
   z-index: 99999;
 }
 
 .footer-item {
-  position: relative;
-
   flex: 1;
   min-width: 0;
   height: 58px;
-
   margin: 0 2px;
 
   display: flex;
@@ -494,15 +472,13 @@ body.mobile-menu-open {
 
   gap: 3px;
 
-  color: #f5f5f5;
-
+  color: var(--text3);
   font-size: 10px;
   font-weight: 600;
   line-height: 1.1;
   text-align: center;
 
   border-radius: 16px;
-
   cursor: pointer;
 
   transition:
@@ -520,7 +496,7 @@ body.mobile-menu-open {
 }
 
 .footer-item.active {
-  color: #f10505;
+  color: #b91c1c;
   background: #ffffff;
 }
 
@@ -531,8 +507,6 @@ body.mobile-menu-open {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  flex-shrink: 0;
 
   border: 1px solid transparent;
   border-radius: 10px;
@@ -556,8 +530,6 @@ body.mobile-menu-open {
   height: 25px;
 
   display: block;
-
-  flex-shrink: 0;
 
   background-color: currentColor;
 
@@ -592,6 +564,14 @@ body.mobile-menu-open {
 .icon-shopee {
   mask-image: url("/icons/shopee.svg");
   -webkit-mask-image: url("/icons/shopee.svg");
+}
+
+.footer-item {
+  color: #f5f5f5;
+}
+
+.footer-item.active {
+  color: #f10505;
 }
 
 .footer-item.active .footer-svg-icon {
@@ -2232,12 +2212,6 @@ body.mobile-menu-open {
         --text2: #9999b3;
         --text3: #55556a;
       }
-
-body.dark .footer-menu {
-  background: #2b2b30;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
 
       body.dark select option {
         background: #17171f;
