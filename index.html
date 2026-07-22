@@ -438,6 +438,35 @@ body.mobile-menu-open {
    MOBILE — MENU INFERIOR
 ================================ */
 
+.footer-svg {
+  width: 25px;
+  height: 25px;
+
+  display: block;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition:
+    transform 0.22s ease,
+    stroke-width 0.22s ease;
+}
+
+.footer-item.active .footer-svg {
+  transform: scale(1.08);
+  stroke-width: 2.2;
+}
+
+.footer-label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
 .footer-menu {
   position: fixed;
   left: 14px;
@@ -525,27 +554,6 @@ body.mobile-menu-open {
   transform: none;
 }
 
-.footer-svg-icon {
-  width: 25px;
-  height: 25px;
-
-  display: block;
-
-  background-color: currentColor;
-
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-
-  transition:
-    transform 0.22s ease,
-    background-color 0.22s ease;
-}
-
 .icon-pendentes {
   mask-image: url("/icons/pendentes.svg");
   -webkit-mask-image: url("/icons/pendentes.svg");
@@ -561,11 +569,6 @@ body.mobile-menu-open {
   -webkit-mask-image: url("/icons/pos-vendas.svg");
 }
 
-.icon-shopee {
-  mask-image: url("/icons/shopee.svg");
-  -webkit-mask-image: url("/icons/shopee.svg");
-}
-
 .footer-item {
   color: #f5f5f5;
 }
@@ -574,9 +577,6 @@ body.mobile-menu-open {
   color: #f10505;
 }
 
-.footer-item.active .footer-svg-icon {
-  transform: scale(1.08);
-}
 
       /* ════════════════════════════════
      DESKTOP LAYOUT
@@ -4110,6 +4110,76 @@ body.mobile-menu-open {
   </head>
 
   <body>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  style="
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  "
+  aria-hidden="true"
+>
+  <symbol id="icon-pendentes" viewBox="0 0 24 24">
+    <path d="M4 13.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4.5"/>
+    <path d="M8 10l4 4 4-4"/>
+    <path d="M12 4v10"/>
+    <path d="M4 13.5h4l2 3h4l2-3h4"/>
+  </symbol>
+
+  <symbol id="icon-respondidas" viewBox="0 0 24 24">
+    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h6"/>
+    <path d="M16 5l2 2 4-4"/>
+    <path d="M8 10h5"/>
+    <path d="M8 14h7"/>
+  </symbol>
+
+  <symbol id="icon-pos-vendas" viewBox="0 0 24 24">
+    <path d="M8 11l3 3a2 2 0 0 0 3 0l2-2"/>
+    <path d="M3 8l4-4 5 2 5-2 4 4"/>
+    <path d="M3 8l4 8 3-2"/>
+    <path d="M21 8l-4 8-3-2"/>
+    <path d="M9 18l2 2 2-2"/>
+  </symbol>
+
+  <symbol id="icon-shopee" viewBox="0 0 24 24">
+    <path d="M6 8h12l1 12H5L6 8z"/>
+    <path d="M9 8V6a3 3 0 0 1 6 0v2"/>
+    <path d="M9.5 13.5c.6-.8 1.4-1.2 2.5-1.2 1.5 0 2.5.8 2.5 2 0 1.2-1 2-2.5 2-1 0-1.8.4-2.5 1.2"/>
+  </symbol>
+
+  <symbol id="icon-estatisticas" viewBox="0 0 24 24">
+    <path d="M4 20V10"/>
+    <path d="M10 20V4"/>
+    <path d="M16 20v-7"/>
+    <path d="M22 20H2"/>
+  </symbol>
+
+  <symbol id="icon-equipe" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <circle cx="17" cy="9" r="2.5"/>
+    <path d="M3 20a6 6 0 0 1 12 0"/>
+    <path d="M14 16a5 5 0 0 1 7 4"/>
+  </symbol>
+
+  <symbol id="icon-respostas-rapidas" viewBox="0 0 24 24">
+    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+    <path d="M13 6l-3 5h3l-2 5 5-7h-3z"/>
+  </symbol>
+
+  <symbol id="icon-ajustes" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 8 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1L3.2 17l.1-.1A1.7 1.7 0 0 0 3.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2V9.6h.1A1.7 1.7 0 0 0 3.6 8a1.7 1.7 0 0 0-.3-1.9L3.2 6 6 3.2l.1.1A1.7 1.7 0 0 0 8 3.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2h4v.1A1.7 1.7 0 0 0 15 3.6a1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 6l-.1.1A1.7 1.7 0 0 0 19.4 8a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1A1.7 1.7 0 0 0 19.4 15z"/>
+  </symbol>
+
+  <symbol id="icon-sair" viewBox="0 0 24 24">
+    <path d="M10 17l5-5-5-5"/>
+    <path d="M15 12H3"/>
+    <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/>
+  </symbol>
+</svg>
+
     <audio
       id="notificationSound"
       src="./notification.mp3"
@@ -4300,7 +4370,6 @@ body.mobile-menu-open {
       </div>
     </div>
 
-    <nav class="footer-menu">
 <nav class="footer-menu">
   <div
     class="footer-item active"
@@ -4308,14 +4377,12 @@ body.mobile-menu-open {
     onclick="openMobileFooterTab('pending', this)"
   >
     <div class="footer-icon-wrap">
-        
-<div class="footer-icon-wrap">
-  <span class="footer-svg-icon icon-pendentes"></span>
-</div>
-
+      <svg class="footer-svg" aria-hidden="true">
+        <use href="#icon-pendentes"></use>
+      </svg>
     </div>
 
-    <div>Pendentes</div>
+    <span class="footer-label">Pendentes</span>
   </div>
 
   <div
@@ -4323,11 +4390,13 @@ body.mobile-menu-open {
     data-footer-tab="answered"
     onclick="openMobileFooterTab('answered', this)"
   >
-<div class="footer-icon-wrap">
-  <span class="footer-svg-icon icon-respondidas"></span>
-</div>
+    <div class="footer-icon-wrap">
+      <svg class="footer-svg" aria-hidden="true">
+        <use href="#icon-respondidas"></use>
+      </svg>
+    </div>
 
-    <div>Respondidas</div>
+    <span class="footer-label">Respondidas</span>
   </div>
 
   <div
@@ -4335,11 +4404,13 @@ body.mobile-menu-open {
     data-footer-tab="post-sales"
     onclick="openMobilePostSales(this)"
   >
- <div class="footer-icon-wrap">
-  <span class="footer-svg-icon icon-pos-vendas"></span>
-</div>
+    <div class="footer-icon-wrap">
+      <svg class="footer-svg" aria-hidden="true">
+        <use href="#icon-pos-vendas"></use>
+      </svg>
+    </div>
 
-    <div>Pós-vendas</div>
+    <span class="footer-label">Pós-vendas</span>
   </div>
 
   <div
@@ -4347,11 +4418,13 @@ body.mobile-menu-open {
     data-footer-tab="shopee"
     onclick="openMobileShopee(this)"
   >
-<div class="footer-icon-wrap">
-  <span class="footer-svg-icon icon-shopee"></span>
-</div>
+    <div class="footer-icon-wrap">
+      <svg class="footer-svg" aria-hidden="true">
+        <use href="#icon-shopee"></use>
+      </svg>
+    </div>
 
-    <div>Shopee</div>
+    <span class="footer-label">Shopee</span>
   </div>
 </nav>
 
