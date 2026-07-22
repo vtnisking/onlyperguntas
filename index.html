@@ -115,6 +115,326 @@ header.mobile-header {
 
   margin: 0;
 }
+
+/* ================================
+   MOBILE — SIDEMENU
+================================ */
+
+.mobile-menu-button {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid var(--border2);
+  border-radius: 13px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 23px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.mobile-menu-button:active {
+  transform: scale(0.95);
+}
+
+.mobile-menu-button:hover {
+  background: var(--surface2);
+}
+
+.mobile-sidemenu-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 999998;
+
+  visibility: hidden;
+  opacity: 0;
+
+  background: rgba(15, 15, 19, 0.54);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.mobile-sidemenu-overlay.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.mobile-sidemenu {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: min(84vw, 340px);
+  min-height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  padding:
+    max(22px, env(safe-area-inset-top))
+    16px
+    max(22px, env(safe-area-inset-bottom));
+
+  overflow-y: auto;
+
+  transform: translateX(-105%);
+
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+
+  box-shadow: 18px 0 55px rgba(15, 23, 42, 0.22);
+
+  transition: transform 0.28s ease;
+}
+
+.mobile-sidemenu-overlay.open .mobile-sidemenu {
+  transform: translateX(0);
+}
+
+.mobile-sidemenu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  padding: 4px 4px 18px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-sidemenu-user {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-sidemenu-avatar {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #760000
+  );
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.mobile-sidemenu-user-info {
+  min-width: 0;
+}
+
+.mobile-sidemenu-name {
+  overflow: hidden;
+
+  color: var(--text);
+
+  font-size: 14px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-sidemenu-email {
+  overflow: hidden;
+
+  margin-top: 3px;
+
+  color: var(--text3);
+
+  font-size: 10px;
+  font-weight: 500;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-sidemenu-close {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: var(--surface2);
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+.mobile-sidemenu-section {
+  margin-top: 20px;
+}
+
+.mobile-sidemenu-section-title {
+  padding: 0 12px 9px;
+
+  color: var(--text3);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-sidemenu-item {
+  width: 100%;
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 13px;
+
+  border: 1px solid transparent;
+  border-radius: 13px;
+
+  background: transparent;
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.mobile-sidemenu-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.mobile-sidemenu-item.active {
+  border-color: rgba(185, 28, 28, 0.13);
+  background: #fff3f3;
+  color: #b91c1c;
+}
+
+.mobile-sidemenu-icon {
+  width: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 19px;
+}
+
+.mobile-sidemenu-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-sidemenu-badge {
+  min-width: 23px;
+
+  padding: 3px 7px;
+
+  border-radius: 999px;
+
+  background: #dc2626;
+  color: white;
+
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.mobile-sidemenu-soon {
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  background: #fff0f0;
+  color: #dc2626;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.mobile-sidemenu-footer {
+  margin-top: auto;
+  padding-top: 18px;
+
+  border-top: 1px solid var(--border);
+}
+
+.mobile-sidemenu-item.logout {
+  color: #c40000;
+}
+
+.mobile-sidemenu-item.logout:hover {
+  background: rgba(196, 0, 0, 0.07);
+}
+
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .mobile-sidemenu-overlay,
+  .mobile-menu-button {
+    display: none !important;
+  }
+}
+
 /* ================================
    MOBILE — MENU INFERIOR
 ================================ */
@@ -3759,11 +4079,215 @@ header.mobile-header {
     ></audio>
 
     <!-- ══════════════ MOBILE ══════════════ -->
+     <div
+  class="mobile-sidemenu-overlay"
+  id="mobileSidemenuOverlay"
+  onclick="closeMobileSidemenuOnBackdrop(event)"
+>
+  <aside
+    class="mobile-sidemenu"
+    id="mobileSidemenu"
+    aria-label="Menu principal"
+  >
+    <div class="mobile-sidemenu-header">
+      <div class="mobile-sidemenu-user">
+        <div
+          class="mobile-sidemenu-avatar"
+          id="mobileSidemenuAvatar"
+        >
+          ?
+        </div>
+
+        <div class="mobile-sidemenu-user-info">
+          <div
+            class="mobile-sidemenu-name"
+            id="mobileSidemenuName"
+          >
+            Carregando...
+          </div>
+
+          <div
+            class="mobile-sidemenu-email"
+            id="mobileSidemenuEmail"
+          >
+            —
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-close"
+        onclick="closeMobileSidemenu()"
+        aria-label="Fechar menu"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="mobile-sidemenu-section">
+      <div class="mobile-sidemenu-section-title">
+        Atendimento
+      </div>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item active"
+        data-mobile-menu-tab="pending"
+        onclick="openMobileMenuTab('pending', this)"
+      >
+        <span class="mobile-sidemenu-icon">📥</span>
+
+        <span class="mobile-sidemenu-label">
+          Pendentes
+        </span>
+
+        <span
+          class="mobile-sidemenu-badge"
+          id="mobileSidemenuPendingBadge"
+        >
+          0
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        data-mobile-menu-tab="answered"
+        onclick="openMobileMenuTab('answered', this)"
+      >
+        <span class="mobile-sidemenu-icon">✅</span>
+
+        <span class="mobile-sidemenu-label">
+          Respondidas
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        data-mobile-menu-tab="post-sales"
+        onclick="openMobilePostSales(this)"
+      >
+        <span class="mobile-sidemenu-icon">🤝</span>
+
+        <span class="mobile-sidemenu-label">
+          Pós-vendas
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        onclick="openMobileShopee()"
+      >
+        <span class="mobile-sidemenu-icon">🛍️</span>
+
+        <span class="mobile-sidemenu-label">
+          Shopee
+        </span>
+
+        <span class="mobile-sidemenu-soon">
+          Em breve
+        </span>
+      </button>
+    </div>
+
+    <div class="mobile-sidemenu-section">
+      <div class="mobile-sidemenu-section-title">
+        Gestão
+      </div>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        data-mobile-menu-tab="stats"
+        onclick="openMobileMenuTab('stats', this)"
+      >
+        <span class="mobile-sidemenu-icon">📊</span>
+
+        <span class="mobile-sidemenu-label">
+          Estatísticas
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        onclick="openMobileUsers()"
+      >
+        <span class="mobile-sidemenu-icon">👥</span>
+
+        <span class="mobile-sidemenu-label">
+          Equipe
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        onclick="openMobileQuickReplies()"
+      >
+        <span class="mobile-sidemenu-icon">⚡</span>
+
+        <span class="mobile-sidemenu-label">
+          Respostas rápidas
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="mobile-sidemenu-item"
+        data-mobile-menu-tab="settings"
+        onclick="openMobileMenuTab('settings', this)"
+      >
+        <span class="mobile-sidemenu-icon">⚙️</span>
+
+        <span class="mobile-sidemenu-label">
+          Ajustes
+        </span>
+      </button>
+    </div>
+
+    <div class="mobile-sidemenu-footer">
+      <button
+        type="button"
+        class="mobile-sidemenu-item logout"
+        onclick="logout()"
+      >
+        <span class="mobile-sidemenu-icon">⇥</span>
+
+        <span class="mobile-sidemenu-label">
+          Sair
+        </span>
+      </button>
+    </div>
+  </aside>
+</div>
     <div class="mobile-container">
-      <header class="mobile-header">
-        <a href="/" class="logo-full">
-          <img src="logo.png" alt="CentralizaChat" />
-        </a>
+<header class="mobile-header">
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    "
+  >
+    <button
+      type="button"
+      class="mobile-menu-button"
+      onclick="openMobileSidemenu()"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      ☰
+    </button>
+
+    <a href="/" class="logo-full">
+      <img src="logo.png" alt="CentralizaChat" />
+    </a>
+  </div>
         <div style="display: flex; align-items: center; gap: 8px">
           <button
             class="theme-toggle-mobile"
@@ -4737,6 +5261,269 @@ document.addEventListener(
         window.location.href = "login.html";
       }
 
+function openMobileSidemenu() {
+  const overlay = document.getElementById(
+    "mobileSidemenuOverlay",
+  );
+
+  if (!overlay) return;
+
+  overlay.classList.add("open");
+  document.body.classList.add("mobile-menu-open");
+}
+
+function closeMobileSidemenu() {
+  const overlay = document.getElementById(
+    "mobileSidemenuOverlay",
+  );
+
+  if (!overlay) return;
+
+  overlay.classList.remove("open");
+  document.body.classList.remove("mobile-menu-open");
+}
+
+function closeMobileSidemenuOnBackdrop(event) {
+  if (event.target.id === "mobileSidemenuOverlay") {
+    closeMobileSidemenu();
+  }
+}
+
+function updateMobileSidemenuUser() {
+  if (!loggedUser) return;
+
+  const nameElement = document.getElementById(
+    "mobileSidemenuName",
+  );
+
+  const emailElement = document.getElementById(
+    "mobileSidemenuEmail",
+  );
+
+  const avatarElement = document.getElementById(
+    "mobileSidemenuAvatar",
+  );
+
+  const displayName =
+    loggedUser.name ||
+    loggedUser.email ||
+    "Usuário";
+
+  if (nameElement) {
+    nameElement.textContent = displayName;
+  }
+
+  if (emailElement) {
+    emailElement.textContent =
+      loggedUser.email || "";
+  }
+
+  if (avatarElement) {
+    avatarElement.textContent =
+      getUserInitials(
+        loggedUser.name,
+        loggedUser.email,
+      );
+  }
+}
+
+function setMobileSidemenuActive(tab) {
+  document
+    .querySelectorAll(
+      ".mobile-sidemenu-item[data-mobile-menu-tab]",
+    )
+    .forEach((item) => {
+      item.classList.toggle(
+        "active",
+        item.dataset.mobileMenuTab === tab,
+      );
+    });
+}
+
+function getFooterItemByTab(tab) {
+  const footerItems =
+    document.querySelectorAll(".footer-item");
+
+  const positions = {
+    pending: 0,
+    answered: 1,
+    stats: 2,
+    settings: 3,
+  };
+
+  const position = positions[tab];
+
+  if (position === undefined) {
+    return null;
+  }
+
+  return footerItems[position] || null;
+}
+
+async function openMobileMenuTab(tab, menuElement) {
+  closeMobileSidemenu();
+
+  setMobileSidemenuActive(tab);
+
+  const footerItem = getFooterItemByTab(tab);
+
+  await showTab(
+    tab,
+    footerItem || menuElement,
+  );
+}
+
+function openMobileUsers() {
+  closeMobileSidemenu();
+  setMobileSidemenuActive("");
+
+  openUsersPanel();
+}
+
+function openMobileQuickReplies() {
+  closeMobileSidemenu();
+
+  alert(
+    "O gerenciamento de respostas rápidas está disponível pelo computador.",
+  );
+}
+
+function openMobileShopee() {
+  closeMobileSidemenu();
+
+  const container =
+    document.getElementById("questions");
+
+  if (!container) return;
+
+  setMobileSidemenuActive("");
+
+  container.innerHTML = `
+    <div class="question-card">
+      <div
+        style="
+          padding: 38px 18px;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 82px;
+            height: 82px;
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 24px;
+
+            background: #fff0eb;
+            color: #ee4d2d;
+
+            font-size: 42px;
+          "
+        >
+          🛍️
+        </div>
+
+        <div class="section-title">
+          Shopee
+        </div>
+
+        <div
+          style="
+            display: inline-flex;
+            margin-bottom: 16px;
+            padding: 6px 13px;
+
+            border-radius: 999px;
+
+            background: #fff0f0;
+            color: #dc2626;
+
+            font-size: 11px;
+            font-weight: 800;
+          "
+        >
+          Em breve
+        </div>
+
+        <p
+          style="
+            color: var(--text2);
+            font-size: 14px;
+            line-height: 1.6;
+          "
+        >
+          A integração com a Shopee está sendo
+          preparada. Em breve você poderá gerenciar
+          as mensagens da sua loja diretamente pelo
+          CentralizeChat.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function openMobilePostSales(menuElement) {
+  closeMobileSidemenu();
+  setMobileSidemenuActive("post-sales");
+
+  const container =
+    document.getElementById("questions");
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="section-title">
+        🤝 Pós-vendas
+      </div>
+
+      <div class="empty" style="padding: 30px 15px">
+        A tela de Pós-vendas mobile será conectada
+        à função existente no desktop na próxima etapa.
+      </div>
+    </div>
+  `;
+}
+
+function updateMobilePendingBadge(total) {
+  const badge = document.getElementById(
+    "mobileSidemenuPendingBadge",
+  );
+
+  if (!badge) return;
+
+  const value = Number(total || 0);
+
+  badge.textContent = value;
+  badge.style.display =
+    value > 0 ? "inline-block" : "none";
+}
+
+window.openMobileSidemenu = openMobileSidemenu;
+window.closeMobileSidemenu = closeMobileSidemenu;
+window.closeMobileSidemenuOnBackdrop =
+  closeMobileSidemenuOnBackdrop;
+window.openMobileMenuTab = openMobileMenuTab;
+window.openMobileUsers = openMobileUsers;
+window.openMobileQuickReplies = openMobileQuickReplies;
+window.openMobileShopee = openMobileShopee;
+window.openMobilePostSales = openMobilePostSales;
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateMobileSidemenuUser,
+);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeMobileSidemenu();
+  }
+});
+
       function buildDesktopRow(item) {
         const cardId = `ml-card-${item.id}`;
         const expandId = `ml-expanded-${item.id}`;
@@ -4940,6 +5727,9 @@ onclick="window.openQuickRepliesPicker('${taId}')"
 
           document.getElementById("totalQuestions").innerText =
             questions.length;
+
+            updateMobilePendingBadge(questions.length);
+            
           container.innerHTML = "";
 
 if (questions.length === 0) {
