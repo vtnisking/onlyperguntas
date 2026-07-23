@@ -6637,6 +6637,56 @@ function openMobileShopee(element) {
   `;
 }
 
+async function loadPostSales() {
+  try {
+    console.log("Iniciando teste do Pós-vendas...");
+
+    const companyId =
+      loggedUser?.company_id ||
+      JSON.parse(
+        localStorage.getItem("centralizachat_user"),
+      )?.company_id;
+
+    if (!companyId) {
+      throw new Error(
+        "Não foi possível identificar o company_id do usuário.",
+      );
+    }
+
+    const response = await fetch(
+      `/api/post-sales?action=test&company_id=${encodeURIComponent(companyId)}`,
+    );
+
+    const data = await response.json();
+
+    console.log("POST SALES:", data);
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error || "Erro ao carregar o Pós-vendas",
+      );
+    }
+
+    updatePostSalesCounters();
+    renderPostSalesCases();
+  } catch (error) {
+    console.error("Erro no teste do Pós-vendas:", error);
+
+    const container =
+      document.getElementById("postSalesList");
+
+    if (container) {
+      container.innerHTML = `
+        <div class="post-sales-empty">
+          Erro ao conectar com a API de Pós-vendas:
+          <br>
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+    }
+  }
+}
+
 function openMobilePostSales(element) {
   closeMobileSidemenu();
 
@@ -6826,7 +6876,7 @@ function loadMobilePostSales() {
 
 window.loadMobilePostSales =
   loadMobilePostSales;
-  
+
 function updateMobilePendingBadge(total) {
   const badge = document.getElementById(
     "mobileSidemenuPendingBadge",
