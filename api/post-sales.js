@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
@@ -29,6 +30,10 @@ export default async function handler(req, res) {
       },
     );
 
+    // ==========================================
+    // TESTE SUPABASE + AXIOS
+    // ==========================================
+
     if (action === "test") {
       const { data: stores, error: storesError } =
         await supabase
@@ -49,9 +54,42 @@ export default async function handler(req, res) {
         });
       }
 
+      let axiosOk = false;
+      let mercadoLivreStatus = null;
+      let mercadoLivreError = null;
+
+      try {
+        const mercadoLivreResponse =
+          await axios.get(
+            "https://api.mercadolibre.com/sites/MLB",
+          );
+
+        mercadoLivreStatus =
+          mercadoLivreResponse.status;
+
+        axiosOk =
+          mercadoLivreResponse.status === 200;
+      } catch (axiosError) {
+        mercadoLivreError =
+          axiosError.response?.data ||
+          axiosError.message;
+
+        console.error(
+          "Erro no teste do Axios:",
+          mercadoLivreError,
+        );
+      }
+
       return res.status(200).json({
         success: true,
-        message: "Supabase conectado com sucesso",
+        message:
+          "Teste do Supabase e Axios concluído",
+        supabase: true,
+        axios: axiosOk,
+        mercado_livre_status:
+          mercadoLivreStatus,
+        mercado_livre_error:
+          mercadoLivreError,
         total: stores?.length || 0,
         stores: stores || [],
       });
@@ -64,13 +102,14 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error(
       "Erro em /api/post-sales:",
-      error,
+      error.response?.data || error,
     );
 
     return res.status(500).json({
       success: false,
       error:
-        error?.message ||
+        error.response?.data?.message ||
+        error.message ||
         "Erro interno na API de pós-vendas",
     });
   }
