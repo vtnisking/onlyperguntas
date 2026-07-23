@@ -1,12 +1,13 @@
 export class AuthError extends Error {
   constructor(message, statusCode = 401) {
     super(message);
+
     this.name = "AuthError";
     this.statusCode = statusCode;
   }
 }
 
-function getBearerToken(req) {
+export function getBearerToken(req) {
   const authorization = req.headers?.authorization;
 
   if (!authorization) {
@@ -16,9 +17,14 @@ function getBearerToken(req) {
     );
   }
 
-  const [type, token] = authorization.trim().split(/\s+/);
+  const [type, token] = authorization
+    .trim()
+    .split(/\s+/);
 
-  if (type?.toLowerCase() !== "bearer" || !token) {
+  if (
+    type?.toLowerCase() !== "bearer" ||
+    !token
+  ) {
     throw new AuthError(
       "Formato de autenticação inválido",
       401,
@@ -28,16 +34,31 @@ function getBearerToken(req) {
   return token;
 }
 
-export async function getAuthenticatedContext(req, supabase) {
+export async function getAuthenticatedContext(
+  req,
+  supabase,
+) {
+  if (!supabase) {
+    throw new AuthError(
+      "Cliente Supabase não informado",
+      500,
+    );
+  }
+
   const accessToken = getBearerToken(req);
 
   const {
-    data: { user },
-    error: userError,
+    data: authData,
+    error: authError,
   } = await supabase.auth.getUser(accessToken);
 
-  if (userError || !user) {
-    console.error("Erro ao validar sessão:", userError);
+  const authUser = authData?.user;
+
+  if (authError || !authUser) {
+    console.error(
+      "Erro ao validar token:",
+      authError,
+    );
 
     throw new AuthError(
       "Sessão inválida ou expirada",
@@ -45,18 +66,20 @@ export async function getAuthenticatedContext(req, supabase) {
     );
   }
 
-  const { data: profile, error: profileError } =
-    await supabase
-      .from("users_app")
-      .select(
-        "id, auth_id, company_id, name, email, role, status",
-      )
-      .eq("auth_id", user.id)
-      .maybeSingle();
+  const {
+    data: profile,
+    error: profileError,
+  } = await supabase
+    .from("users_app")
+    .select(
+      "id, auth_id, company_id, name, email, role, status",
+    )
+    .eq("auth_id", authUser.id)
+    .maybeSingle();
 
   if (profileError) {
     console.error(
-      "Erro ao buscar perfil do usuário:",
+      "Erro ao buscar perfil:",
       profileError,
     );
 
@@ -80,13 +103,18 @@ export async function getAuthenticatedContext(req, supabase) {
     );
   }
 
-  if (profile.status && profile.status !== "active") {
-    throw new AuthError("Usuário inativo", 403);
+  if (
+    profile.status &&
+    profile.status !== "active"
+  ) {
+    throw new AuthError(
+      "Usuário inativo",
+      403,
+    );
   }
 
   return {
-    accessToken,
-    authUser: user,
+    authUser,
     profile,
     companyId: profile.company_id,
   };
