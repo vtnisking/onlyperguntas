@@ -49,11 +49,6 @@ async function getAuthenticatedContext(
   const user = data?.user;
 
   if (userError || !user) {
-    console.error(
-      "Erro ao validar sessão:",
-      userError,
-    );
-
     throw new AuthError(
       "Sessão inválida ou expirada",
       401,
@@ -72,11 +67,6 @@ async function getAuthenticatedContext(
     .maybeSingle();
 
   if (profileError) {
-    console.error(
-      "Erro ao buscar perfil:",
-      profileError,
-    );
-
     throw new AuthError(
       "Erro ao localizar o perfil do usuário",
       500,
@@ -108,7 +98,6 @@ async function getAuthenticatedContext(
   }
 
   return {
-    accessToken,
     authUser: user,
     profile,
     companyId: profile.company_id,
@@ -117,13 +106,25 @@ async function getAuthenticatedContext(
 
 export default async function handler(req, res) {
   try {
+    const { action } = req.query;
+
+    if (!action) {
+      return res.status(400).json({
+        success: false,
+        error: "action obrigatório",
+      });
+    }
+
     const supabaseUrl =
       process.env.SUPABASE_URL;
 
-    const serviceRoleKey =
+    const supabaseServiceRoleKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (
+      !supabaseUrl ||
+      !supabaseServiceRoleKey
+    ) {
       return res.status(500).json({
         success: false,
         error:
@@ -133,7 +134,7 @@ export default async function handler(req, res) {
 
     const supabase = createClient(
       supabaseUrl,
-      serviceRoleKey,
+      supabaseServiceRoleKey,
       {
         auth: {
           persistSession: false,
@@ -141,15 +142,6 @@ export default async function handler(req, res) {
         },
       },
     );
-
-    const { action } = req.query;
-
-    if (!action) {
-      return res.status(400).json({
-        success: false,
-        error: "action obrigatório",
-      });
-    }
 
     const {
       companyId,
@@ -173,11 +165,6 @@ export default async function handler(req, res) {
         .eq("company_id", companyId);
 
       if (storesError) {
-        console.error(
-          "Erro ao buscar lojas:",
-          storesError,
-        );
-
         return res.status(500).json({
           success: false,
           error: storesError.message,
