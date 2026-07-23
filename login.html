@@ -368,6 +368,11 @@
             }),
           );
 
+        localStorage.setItem(
+            "centralizachat_session",
+            JSON.stringify(authData.session),
+        );
+
           window.location.href = "/";
         } catch (error) {
           errorBox.innerText = "⚠️ " + error.message;
