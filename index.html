@@ -4105,6 +4105,589 @@ body.mobile-menu-open {
 .mobile-container {
   padding-bottom: 180px;
 }
+
+/* =====================================================
+   PÓS-VENDAS
+===================================================== */
+
+.post-sales-page {
+  width: 100%;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.post-sales-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.post-sales-title {
+  margin: 0;
+
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+}
+
+.post-sales-subtitle {
+  margin: 6px 0 0;
+
+  color: var(--text3);
+  font-size: 13px;
+}
+
+.post-sales-refresh {
+  min-height: 44px;
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #c80000
+  );
+
+  color: white;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(172, 4, 1, 0.2);
+}
+
+.post-sales-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-bottom: 16px;
+  padding: 6px;
+
+  overflow-x: auto;
+
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+}
+
+.post-sales-tab {
+  min-height: 40px;
+  padding: 0 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  flex-shrink: 0;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.post-sales-tab.active {
+  background: var(--surface);
+  border-color: var(--border2);
+  color: var(--accent);
+
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.07);
+}
+
+.post-sales-tab-count {
+  min-width: 21px;
+  padding: 2px 6px;
+
+  border-radius: 999px;
+
+  background: var(--surface3);
+  color: var(--text2);
+
+  font-size: 9px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.post-sales-tab.active .post-sales-tab-count {
+  background: var(--accent);
+  color: white;
+}
+
+.post-sales-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+
+  margin-bottom: 22px;
+}
+
+.post-sales-summary-card {
+  min-height: 132px;
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  text-align: left;
+  font-family: inherit;
+
+  cursor: pointer;
+
+  box-shadow: 0 3px 13px rgba(15, 23, 42, 0.04);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.post-sales-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.post-sales-summary-card.active {
+  border-color: rgba(196, 0, 0, 0.3);
+  box-shadow:
+    inset 4px 0 0 var(--accent),
+    0 8px 22px rgba(172, 4, 1, 0.08);
+}
+
+.post-sales-summary-top {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.post-sales-summary-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.post-sales-summary-icon.attention {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.post-sales-summary-icon.progress {
+  background: rgba(217, 119, 6, 0.1);
+  color: #d97706;
+}
+
+.post-sales-summary-icon.resolved {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.post-sales-summary-number {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.post-sales-summary-card strong {
+  margin-bottom: 6px;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.post-sales-summary-card > span:last-child {
+  color: var(--text3);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.post-sales-toolbar {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) auto auto auto;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.post-sales-search {
+  position: relative;
+}
+
+.post-sales-search > span {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+
+  transform: translateY(-50%);
+
+  color: var(--text3);
+  font-size: 20px;
+}
+
+.post-sales-search input {
+  height: 44px;
+  margin: 0;
+  padding: 0 15px 0 44px;
+
+  border-radius: 11px;
+}
+
+.post-sales-filter-button {
+  height: 44px;
+  padding: 0 15px;
+
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+
+  background: var(--surface);
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+.post-sales-result-count {
+  padding-left: 8px;
+
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.post-sales-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.post-sales-case {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 190px;
+  align-items: stretch;
+
+  overflow: hidden;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  box-shadow: 0 3px 14px rgba(15, 23, 42, 0.05);
+}
+
+.post-sales-product {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  padding: 18px;
+
+  border-right: 1px solid var(--border);
+}
+
+.post-sales-product-image {
+  width: 68px;
+  height: 68px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: white;
+}
+
+.post-sales-product-info {
+  min-width: 0;
+}
+
+.post-sales-order {
+  margin-bottom: 5px;
+
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.post-sales-product-name {
+  display: -webkit-box;
+  overflow: hidden;
+
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.post-sales-product-meta {
+  margin-top: 8px;
+
+  color: var(--text3);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.post-sales-case-main {
+  min-width: 0;
+  padding: 18px;
+}
+
+.post-sales-case-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 12px;
+
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.post-sales-case-status::before {
+  content: "";
+
+  width: 8px;
+  height: 8px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--accent);
+
+  box-shadow: 0 0 0 4px rgba(172, 4, 1, 0.08);
+}
+
+.post-sales-case-title {
+  margin-bottom: 5px;
+
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.post-sales-case-description {
+  margin-bottom: 14px;
+
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.post-sales-last-message {
+  padding: 11px 13px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background: var(--surface2);
+
+  color: var(--text2);
+  font-size: 11px;
+  line-height: 1.45;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.post-sales-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 18px;
+
+  border-left: 1px solid var(--border);
+}
+
+.post-sales-deadline {
+  color: var(--text3);
+  font-size: 10px;
+  text-align: center;
+}
+
+.post-sales-open-button {
+  min-height: 42px;
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #c90000
+  );
+
+  color: white;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow: 0 7px 16px rgba(172, 4, 1, 0.18);
+}
+
+.post-sales-loading,
+.post-sales-empty {
+  padding: 55px 20px;
+
+  color: var(--text3);
+  text-align: center;
+  font-size: 13px;
+}
+
+/* MOBILE */
+
+@media (max-width: 899px) {
+  .post-sales-page {
+    padding: 0;
+  }
+
+  .post-sales-header {
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .post-sales-title {
+    font-size: 21px;
+  }
+
+  .post-sales-subtitle {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .post-sales-refresh {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0;
+
+    font-size: 0;
+  }
+
+  .post-sales-refresh span {
+    font-size: 20px;
+  }
+
+  .post-sales-tabs {
+    margin-right: -2px;
+    margin-left: -2px;
+  }
+
+  .post-sales-tab {
+    flex: 1;
+    min-width: max-content;
+    padding: 0 10px;
+
+    font-size: 10px;
+  }
+
+  .post-sales-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .post-sales-summary-card {
+    min-height: 92px;
+    padding: 14px 16px;
+  }
+
+  .post-sales-summary-top {
+    width: auto;
+    margin: 0 0 8px;
+  }
+
+  .post-sales-summary-number {
+    margin-left: 12px;
+    font-size: 19px;
+  }
+
+  .post-sales-toolbar {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .post-sales-filter-button,
+  .post-sales-result-count {
+    display: none;
+  }
+
+  .post-sales-case {
+    grid-template-columns: 1fr;
+  }
+
+  .post-sales-product {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-sales-actions {
+    border-top: 1px solid var(--border);
+    border-left: none;
+  }
+
+  .post-sales-open-button {
+    width: 100%;
+    min-height: 46px;
+  }
+}
       
     </style>
   </head>
@@ -4710,6 +5293,207 @@ body.mobile-menu-open {
             </div>
           </div>
 
+<!-- Tab: Pós-vendas -->
+<div class="desktop-tab" id="dt-post-sales">
+  <div class="post-sales-page">
+
+    <div class="post-sales-header">
+      <div>
+        <h1 class="post-sales-title">
+          Pós-vendas
+        </h1>
+
+        <p class="post-sales-subtitle">
+          Acompanhe reclamações, mensagens e devoluções das suas lojas.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="post-sales-refresh"
+        onclick="loadPostSales()"
+      >
+        <span>↻</span>
+        Atualizar
+      </button>
+    </div>
+
+    <div class="post-sales-tabs">
+      <button
+        type="button"
+        class="post-sales-tab active"
+        data-post-sales-tab="claims"
+        onclick="changePostSalesTab('claims', this)"
+      >
+        Reclamações e mediações
+
+        <span
+          class="post-sales-tab-count"
+          id="postSalesClaimsCount"
+        >
+          0
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="post-sales-tab"
+        data-post-sales-tab="messages"
+        onclick="changePostSalesTab('messages', this)"
+      >
+        Mensagens
+
+        <span
+          class="post-sales-tab-count"
+          id="postSalesMessagesCount"
+        >
+          0
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="post-sales-tab"
+        data-post-sales-tab="returns"
+        onclick="changePostSalesTab('returns', this)"
+      >
+        Devoluções
+
+        <span
+          class="post-sales-tab-count"
+          id="postSalesReturnsCount"
+        >
+          0
+        </span>
+      </button>
+    </div>
+
+    <div class="post-sales-summary">
+      <button
+        type="button"
+        class="post-sales-summary-card active"
+        data-post-sales-filter="attention"
+        onclick="changePostSalesFilter('attention', this)"
+      >
+        <div class="post-sales-summary-top">
+          <span class="post-sales-summary-icon attention">
+            !
+          </span>
+
+          <span
+            class="post-sales-summary-number"
+            id="postSalesAttentionCount"
+          >
+            0
+          </span>
+        </div>
+
+        <strong>Para atender hoje</strong>
+
+        <span>
+          Casos que precisam de uma ação
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="post-sales-summary-card"
+        data-post-sales-filter="progress"
+        onclick="changePostSalesFilter('progress', this)"
+      >
+        <div class="post-sales-summary-top">
+          <span class="post-sales-summary-icon progress">
+            ↻
+          </span>
+
+          <span
+            class="post-sales-summary-number"
+            id="postSalesProgressCount"
+          >
+            0
+          </span>
+        </div>
+
+        <strong>Em andamento</strong>
+
+        <span>
+          Aguardando comprador ou análise
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="post-sales-summary-card"
+        data-post-sales-filter="resolved"
+        onclick="changePostSalesFilter('resolved', this)"
+      >
+        <div class="post-sales-summary-top">
+          <span class="post-sales-summary-icon resolved">
+            ✓
+          </span>
+
+          <span
+            class="post-sales-summary-number"
+            id="postSalesResolvedCount"
+          >
+            0
+          </span>
+        </div>
+
+        <strong>Resolvidos</strong>
+
+        <span>
+          Casos encerrados recentemente
+        </span>
+      </button>
+    </div>
+
+    <div class="post-sales-toolbar">
+      <div class="post-sales-search">
+        <span>⌕</span>
+
+        <input
+          id="postSalesSearch"
+          type="text"
+          placeholder="Buscar por produto, pedido ou cliente..."
+          oninput="renderPostSalesCases()"
+        >
+      </div>
+
+      <button
+        type="button"
+        class="post-sales-filter-button"
+      >
+        📅 Filtrar por data
+      </button>
+
+      <button
+        type="button"
+        class="post-sales-filter-button"
+      >
+        ⚙ Filtrar e ordenar
+      </button>
+
+      <div
+        class="post-sales-result-count"
+        id="postSalesResultCount"
+      >
+        0 casos
+      </div>
+    </div>
+
+    <div
+      class="post-sales-list"
+      id="postSalesList"
+    >
+      <div class="post-sales-loading">
+        Carregando casos de pós-vendas...
+      </div>
+    </div>
+
+  </div>
+</div>
+
           <!-- Tab: Respondidas -->
           <div class="desktop-tab" id="dt-answered">
             <div class="questions-list" id="desktopAnswered">
@@ -5230,11 +6014,294 @@ body.mobile-menu-open {
 
     <script>
 
+// Variáveis globais
 
       let knownQuestionIds = new Set();
       let firstLoadDone = false;
       let allQuestionsCache = [];
       let selectedQuestionId = null;
+      let postSalesCurrentTab = "claims";
+      let postSalesCurrentFilter = "attention";
+
+      let postSalesCasesCache = [
+        {
+            id: "claim-001",
+            type: "claims",
+            status: "attention",
+            order_id: "2000017030374536",
+            product_title:
+            "Módulo Injeção Honda CB 250F Twister 2016 a 2022 Original",
+            product_thumbnail:
+            "https://http2.mlstatic.com/D_NQ_NP_2X_825819-MLB00000000000_000000-F.webp",
+            price: 599.9,
+            quantity: 1,
+            store_name: "Mercado Livre",
+            reason: "Produto não compatível com o veículo",
+            title: "Mediação para responder hoje",
+            description:
+            "Precisamos da sua resposta para prosseguir com o caso.",
+            last_message:
+            "Mercado Livre: Olá! Precisamos de mais informações para continuar a análise.",
+            deadline: "Responder hoje",
+        },
+        ];
+
+        function updatePostSalesCounters() {
+  const claims = postSalesCasesCache.filter(
+    (item) => item.type === "claims",
+  ).length;
+
+  const messages = postSalesCasesCache.filter(
+    (item) => item.type === "messages",
+  ).length;
+
+  const returns = postSalesCasesCache.filter(
+    (item) => item.type === "returns",
+  ).length;
+
+  const attention = postSalesCasesCache.filter(
+    (item) => item.status === "attention",
+  ).length;
+
+  const progress = postSalesCasesCache.filter(
+    (item) => item.status === "progress",
+  ).length;
+
+  const resolved = postSalesCasesCache.filter(
+    (item) => item.status === "resolved",
+  ).length;
+
+  const values = {
+    postSalesClaimsCount: claims,
+    postSalesMessagesCount: messages,
+    postSalesReturnsCount: returns,
+    postSalesAttentionCount: attention,
+    postSalesProgressCount: progress,
+    postSalesResolvedCount: resolved,
+  };
+
+  Object.entries(values).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = value;
+    }
+  });
+}
+
+function changePostSalesTab(tab, element) {
+  postSalesCurrentTab = tab;
+
+  document
+    .querySelectorAll(".post-sales-tab")
+    .forEach((button) => {
+      button.classList.remove("active");
+    });
+
+  element?.classList.add("active");
+
+  renderPostSalesCases();
+}
+
+function changePostSalesFilter(filter, element) {
+  postSalesCurrentFilter = filter;
+
+  document
+    .querySelectorAll(".post-sales-summary-card")
+    .forEach((button) => {
+      button.classList.remove("active");
+    });
+
+  element?.classList.add("active");
+
+  renderPostSalesCases();
+}
+
+function formatPostSalesPrice(value) {
+  return Number(value || 0).toLocaleString(
+    "pt-BR",
+    {
+      style: "currency",
+      currency: "BRL",
+    },
+  );
+}
+
+function renderPostSalesCases() {
+  const container =
+    document.getElementById("postSalesList");
+
+  if (!container) return;
+
+  const search =
+    document
+      .getElementById("postSalesSearch")
+      ?.value.trim()
+      .toLowerCase() || "";
+
+  const cases = postSalesCasesCache.filter((item) => {
+    const matchesTab =
+      item.type === postSalesCurrentTab;
+
+    const matchesFilter =
+      item.status === postSalesCurrentFilter;
+
+    const searchableText = [
+      item.order_id,
+      item.product_title,
+      item.reason,
+      item.title,
+      item.store_name,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      matchesTab &&
+      matchesFilter &&
+      searchableText.includes(search)
+    );
+  });
+
+  const resultCount =
+    document.getElementById(
+      "postSalesResultCount",
+    );
+
+  if (resultCount) {
+    resultCount.textContent =
+      cases.length === 1
+        ? "1 caso"
+        : `${cases.length} casos`;
+  }
+
+  if (cases.length === 0) {
+    container.innerHTML = `
+      <div class="post-sales-empty">
+        Nenhum caso encontrado neste filtro.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = cases
+    .map(
+      (item) => `
+        <article class="post-sales-case">
+
+          <div class="post-sales-product">
+            ${
+              item.product_thumbnail
+                ? `
+                  <img
+                    class="post-sales-product-image"
+                    src="${escapeHtml(
+                      item.product_thumbnail,
+                    )}"
+                    alt="Produto"
+                    onerror="this.style.display='none'"
+                  >
+                `
+                : ""
+            }
+
+            <div class="post-sales-product-info">
+              <div class="post-sales-order">
+                Pedido #${escapeHtml(
+                  item.order_id,
+                )}
+              </div>
+
+              <div class="post-sales-product-name">
+                ${escapeHtml(
+                  item.product_title,
+                )}
+              </div>
+
+              <div class="post-sales-product-meta">
+                ${formatPostSalesPrice(
+                  item.price,
+                )}
+                <br>
+                ${Number(item.quantity || 1)}
+                unidade(s)
+              </div>
+            </div>
+          </div>
+
+          <div class="post-sales-case-main">
+            <div class="post-sales-case-status">
+              ${escapeHtml(item.reason)}
+            </div>
+
+            <div class="post-sales-case-title">
+              ${escapeHtml(item.title)}
+            </div>
+
+            <div class="post-sales-case-description">
+              ${escapeHtml(
+                item.description,
+              )}
+            </div>
+
+            <div class="post-sales-last-message">
+              ${escapeHtml(
+                item.last_message,
+              )}
+            </div>
+          </div>
+
+          <div class="post-sales-actions">
+            <div class="post-sales-deadline">
+              ${escapeHtml(item.deadline)}
+            </div>
+
+            <button
+              type="button"
+              class="post-sales-open-button"
+              onclick="openPostSalesCase('${item.id}')"
+            >
+              Abrir atendimento
+            </button>
+          </div>
+
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function loadPostSales() {
+  updatePostSalesCounters();
+  renderPostSalesCases();
+}
+
+function openPostSalesCase(caseId) {
+  const item = postSalesCasesCache.find(
+    (caseItem) =>
+      String(caseItem.id) === String(caseId),
+  );
+
+  if (!item) {
+    alert("Caso não encontrado.");
+    return;
+  }
+
+  alert(
+    `Abriremos o atendimento do pedido ${item.order_id} na próxima etapa.`,
+  );
+}
+
+window.loadPostSales = loadPostSales;
+window.changePostSalesTab = changePostSalesTab;
+window.changePostSalesFilter =
+  changePostSalesFilter;
+window.renderPostSalesCases =
+  renderPostSalesCases;
+window.openPostSalesCase =
+  openPostSalesCase;
+
       const isDesktop = () => window.innerWidth >= 900;
       const loggedUser = JSON.parse(
         localStorage.getItem("centralizachat_user"),
@@ -5573,9 +6640,6 @@ function openMobileShopee(element) {
 function openMobilePostSales(element) {
   closeMobileSidemenu();
 
-  setMobileFooterActive("shopee");
-  setMobileSidemenuActive("");
-
   setMobileFooterActive("post-sales");
   setMobileSidemenuActive("post-sales");
 
@@ -5585,63 +6649,184 @@ function openMobilePostSales(element) {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="question-card">
-      <div class="section-title">
-        🤝 Pós-vendas
+    <div class="post-sales-page">
+
+      <div class="post-sales-header">
+        <div>
+          <h1 class="post-sales-title">
+            Pós-vendas
+          </h1>
+
+          <p class="post-sales-subtitle">
+            Reclamações, mensagens e devoluções.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="post-sales-refresh"
+          onclick="loadMobilePostSales()"
+        >
+          <span>↻</span>
+          Atualizar
+        </button>
+      </div>
+
+      <div class="post-sales-tabs">
+        <button
+          type="button"
+          class="post-sales-tab active"
+          onclick="changePostSalesTab('claims', this)"
+        >
+          Reclamações
+
+          <span
+            class="post-sales-tab-count"
+            id="postSalesClaimsCount"
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="post-sales-tab"
+          onclick="changePostSalesTab('messages', this)"
+        >
+          Mensagens
+
+          <span
+            class="post-sales-tab-count"
+            id="postSalesMessagesCount"
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="post-sales-tab"
+          onclick="changePostSalesTab('returns', this)"
+        >
+          Devoluções
+
+          <span
+            class="post-sales-tab-count"
+            id="postSalesReturnsCount"
+          >
+            0
+          </span>
+        </button>
+      </div>
+
+      <div class="post-sales-summary">
+        <button
+          type="button"
+          class="post-sales-summary-card active"
+          onclick="changePostSalesFilter('attention', this)"
+        >
+          <div class="post-sales-summary-top">
+            <span class="post-sales-summary-icon attention">
+              !
+            </span>
+
+            <span
+              class="post-sales-summary-number"
+              id="postSalesAttentionCount"
+            >
+              0
+            </span>
+          </div>
+
+          <strong>Para atender hoje</strong>
+
+          <span>
+            Casos que precisam de ação
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="post-sales-summary-card"
+          onclick="changePostSalesFilter('progress', this)"
+        >
+          <div class="post-sales-summary-top">
+            <span class="post-sales-summary-icon progress">
+              ↻
+            </span>
+
+            <span
+              class="post-sales-summary-number"
+              id="postSalesProgressCount"
+            >
+              0
+            </span>
+          </div>
+
+          <strong>Em andamento</strong>
+
+          <span>
+            Aguardando resposta ou análise
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="post-sales-summary-card"
+          onclick="changePostSalesFilter('resolved', this)"
+        >
+          <div class="post-sales-summary-top">
+            <span class="post-sales-summary-icon resolved">
+              ✓
+            </span>
+
+            <span
+              class="post-sales-summary-number"
+              id="postSalesResolvedCount"
+            >
+              0
+            </span>
+          </div>
+
+          <strong>Resolvidos</strong>
+
+          <span>
+            Casos encerrados
+          </span>
+        </button>
+      </div>
+
+      <div class="post-sales-toolbar">
+        <div class="post-sales-search">
+          <span>⌕</span>
+
+          <input
+            id="postSalesSearch"
+            type="text"
+            placeholder="Buscar casos..."
+            oninput="renderPostSalesCases()"
+          >
+        </div>
       </div>
 
       <div
-        style="
-          padding: 36px 18px;
-          text-align: center;
-        "
-      >
-        <div
-          style="
-            width: 78px;
-            height: 78px;
-            margin: 0 auto 18px;
+        class="post-sales-list"
+        id="postSalesList"
+      ></div>
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 22px;
-
-            background: rgba(220, 38, 38, 0.08);
-            border: 1px solid rgba(220, 38, 38, 0.14);
-
-            font-size: 38px;
-          "
-        >
-          🤝
-        </div>
-
-        <div
-          style="
-            color: var(--text);
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 8px;
-          "
-        >
-          Pós-vendas
-        </div>
-
-        <p
-          style="
-            color: var(--text2);
-            font-size: 14px;
-            line-height: 1.6;
-          "
-        >
-          A versão mobile será conectada ao módulo
-          de Pós-vendas já existente no sistema.
-        </p>
-      </div>
     </div>
   `;
+
+  loadPostSales();
 }
+
+function loadMobilePostSales() {
+  loadPostSales();
+}
+
+window.loadMobilePostSales =
+  loadMobilePostSales;
+  
 function updateMobilePendingBadge(total) {
   const badge = document.getElementById(
     "mobileSidemenuPendingBadge",
@@ -6522,6 +7707,7 @@ if (notificationBadge) {
         const titles = {
           pending: "Perguntas Pendentes",
           answered: "Perguntas Respondidas",
+          "post-sales": "Pós-vendas",
           stats: "Estatísticas",
           users: "Usuários",
           settings: "Ajustes",
@@ -6535,6 +7721,7 @@ if (notificationBadge) {
         if (tab === "answered") loadDesktopAnswered();
         if (tab === "stats") loadDesktopStats();
         if (tab === "users") {loadDesktopUsers();}
+        if (tab === "post-sales") {loadPostSales();}
 
       }
 
