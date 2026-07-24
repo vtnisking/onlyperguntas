@@ -1398,6 +1398,364 @@ body.mobile-menu-open {
         }
       } /* end @media desktop */
 
+
+      /* =========================================
+   MODAL DESCONECTAR LOJA
+========================================= */
+
+.disconnect-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.disconnect-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.disconnect-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 560px;
+
+  padding: 42px 42px 30px;
+
+  background: #ffffff;
+  border: 1px solid rgba(226, 32, 44, 0.1);
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.28),
+    0 10px 30px rgba(15, 23, 42, 0.12);
+
+  text-align: center;
+
+  transform: translateY(15px) scale(0.97);
+
+  transition: transform 0.22s ease;
+}
+
+.disconnect-modal-overlay.open .disconnect-modal {
+  transform: translateY(0) scale(1);
+}
+
+.disconnect-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 12px;
+
+  background: transparent;
+  color: #e11d2e;
+
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.disconnect-modal-close:hover {
+  background: #fff1f2;
+  transform: rotate(4deg);
+}
+
+.disconnect-modal-icon {
+  position: relative;
+
+  width: 92px;
+  height: 92px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 24px;
+
+  border: 2px solid #fecdd3;
+  border-radius: 50%;
+
+  background: #fff1f2;
+}
+
+.disconnect-modal-icon svg {
+  width: 46px;
+  height: 46px;
+
+  fill: none;
+  stroke: #e11d2e;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.disconnect-icon-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 7px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  background: #e11d2e;
+  color: #ffffff;
+
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.disconnect-modal h2 {
+  margin: 0 0 12px;
+
+  color: #172033;
+
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.disconnect-modal-question {
+  margin: 0;
+
+  color: #334155;
+
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.disconnect-modal-question strong {
+  color: #e11d2e;
+  font-weight: 800;
+  word-break: break-word;
+}
+
+.disconnect-modal-warning {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-top: 26px;
+  padding: 18px 20px;
+
+  border: 1px solid #fecaca;
+  border-radius: 15px;
+
+  background: #fff7f7;
+  color: #475569;
+
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.disconnect-warning-icon {
+  flex-shrink: 0;
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e11d2e;
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 800;
+  font-family: Georgia, serif;
+}
+
+.disconnect-modal-divider {
+  height: 1px;
+
+  margin: 28px 0 24px;
+
+  background: #e5e7eb;
+}
+
+.disconnect-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.disconnect-modal-actions button {
+  min-height: 52px;
+
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.disconnect-modal-actions button:active {
+  transform: scale(0.98);
+}
+
+.disconnect-modal-cancel {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+  color: #334155;
+}
+
+.disconnect-modal-cancel:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.disconnect-modal-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  border: 1px solid #e11d2e;
+
+  background: linear-gradient(
+    135deg,
+    #ef172a,
+    #d90f20
+  );
+
+  color: #ffffff;
+
+  box-shadow: 0 10px 24px rgba(225, 29, 46, 0.22);
+}
+
+.disconnect-modal-confirm:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 14px 28px rgba(225, 29, 46, 0.3);
+}
+
+.disconnect-modal-confirm:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.disconnect-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  margin-top: 22px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .disconnect-modal-overlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .disconnect-modal {
+    max-width: none;
+
+    padding: 34px 20px 24px;
+
+    border-radius: 24px;
+  }
+
+  .disconnect-modal-icon {
+    width: 76px;
+    height: 76px;
+
+    margin-bottom: 18px;
+  }
+
+  .disconnect-modal-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .disconnect-modal h2 {
+    font-size: 24px;
+  }
+
+  .disconnect-modal-question {
+    font-size: 15px;
+  }
+
+  .disconnect-modal-warning {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .disconnect-modal-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .disconnect-modal-confirm {
+    order: 1;
+  }
+
+  .disconnect-modal-cancel {
+    order: 2;
+  }
+}
+
+
       /* ════════════════════════════════
      INTEGRATIONS CSS
   ════════════════════════════════ */
@@ -10320,20 +10678,18 @@ async function loadIntegrationStores() {
               </div>
             </div>
 
-            <div class="integration-store-actions">
-              <button
-                type="button"
-                class="integration-remove-btn"
-                onclick="disconnectIntegrationStore(
-                  '${escapeIntegrationHtml(store.id)}',
-                  '${escapeIntegrationHtml(storeName)}',
-                  this
-                )"
-              >
-                Desconectar
-              </button>
-            </div>
-          </div>
+<div class="integration-store-actions">
+  <button
+    type="button"
+    class="integration-remove-btn"
+    onclick='openDisconnectStoreModal(
+      ${JSON.stringify(store.id)},
+      ${JSON.stringify(storeName)}
+    )'
+  >
+    Desconectar
+  </button>
+</div>
         `;
       })
       .join("");
@@ -10456,14 +10812,6 @@ async function disconnectIntegrationStore(
   storeName,
   button,
 ) {
-  const confirmed = window.confirm(
-    `Deseja realmente desconectar a loja "${storeName}"?\n\nAs perguntas dessa loja deixarão de ser sincronizadas.`,
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
   const session = getCentralizeSession();
 
   if (!session?.access_token) {
@@ -10509,18 +10857,22 @@ async function disconnectIntegrationStore(
 
     await loadIntegrationStores();
 
-    alert("Loja desconectada com sucesso.");
+    if (
+      typeof loadMobileIntegrationStores ===
+      "function"
+    ) {
+      await loadMobileIntegrationStores();
+    }
+
+    return result;
   } catch (error) {
     console.error(
       "Erro ao desconectar loja:",
       error,
     );
 
-    alert(
-      error.message ||
-      "Erro ao desconectar a loja.",
-    );
-
+    throw error;
+  } finally {
     if (button) {
       button.disabled = false;
       button.textContent = originalText;
@@ -10734,6 +11086,208 @@ async function disconnectMobileIntegrationStore(
   await loadMobileIntegrationStores();
 }
 
+
+let pendingDisconnectStoreId = null;
+let pendingDisconnectStoreName = "";
+
+function openDisconnectStoreModal(
+  storeId,
+  storeName
+) {
+  pendingDisconnectStoreId = storeId;
+  pendingDisconnectStoreName =
+    storeName || "Loja";
+
+  const modal = document.getElementById(
+    "disconnectStoreModal"
+  );
+
+  const storeNameElement =
+    document.getElementById(
+      "disconnectStoreName"
+    );
+
+  if (!modal || !storeNameElement) {
+    return;
+  }
+
+  storeNameElement.textContent =
+    `"${pendingDisconnectStoreName}"`;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+
+  document.body.style.overflow = "hidden";
+}
+
+function closeDisconnectStoreModal() {
+  const modal = document.getElementById(
+    "disconnectStoreModal"
+  );
+
+  if (!modal) {
+    return;
+  }
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+
+  document.body.style.overflow = "";
+
+  pendingDisconnectStoreId = null;
+  pendingDisconnectStoreName = "";
+}
+
+async function confirmDisconnectStore() {
+  if (!pendingDisconnectStoreId) {
+    return;
+  }
+
+  const button = document.getElementById(
+    "confirmDisconnectStoreButton",
+  );
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.innerHTML =
+        "<span>⏳</span> Desconectando...";
+    }
+
+    await disconnectIntegrationStore(
+      pendingDisconnectStoreId,
+      pendingDisconnectStoreName,
+      button,
+    );
+
+    closeDisconnectStoreModal();
+
+    alert("Loja desconectada com sucesso.");
+  } catch (error) {
+    alert(
+      error.message ||
+      "Não foi possível desconectar a loja.",
+    );
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML =
+        "<span>🗑</span> Desconectar loja";
+    }
+  }
+}
+
+/* Fecha clicando fora do modal */
+document
+  .getElementById("disconnectStoreModal")
+  ?.addEventListener("click", function (event) {
+    if (event.target === this) {
+      closeDisconnectStoreModal();
+    }
+  });
+
+/* Fecha pressionando ESC */
+document.addEventListener(
+  "keydown",
+  function (event) {
+    if (event.key === "Escape") {
+      closeDisconnectStoreModal();
+    }
+  }
+);
+
+window.openDisconnectStoreModal =
+  openDisconnectStoreModal;
+
+window.closeDisconnectStoreModal =
+  closeDisconnectStoreModal;
+
+window.confirmDisconnectStore =
+  confirmDisconnectStore;
+
+
+
+<!-- Modal de confirmação para desconectar loja -->
+<div
+  id="disconnectStoreModal"
+  class="disconnect-modal-overlay"
+  aria-hidden="true"
+>
+  <div
+    class="disconnect-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="disconnectModalTitle"
+  >
+    <button
+      type="button"
+      class="disconnect-modal-close"
+      onclick="closeDisconnectStoreModal()"
+      aria-label="Fechar"
+    >
+      ×
+    </button>
+
+    <div class="disconnect-modal-icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M4 10h16M5 10v9h14v-9M6 5h12l2 5H4l2-5ZM9 14h2v3H9v-3Zm5 0h2v3h-2v-3Z"
+        />
+      </svg>
+
+      <span class="disconnect-icon-badge">×</span>
+    </div>
+
+    <h2 id="disconnectModalTitle">
+      Desconectar loja
+    </h2>
+
+    <p class="disconnect-modal-question">
+      Deseja realmente desconectar a loja
+      <strong id="disconnectStoreName">
+        Loja
+      </strong>?
+    </p>
+
+    <div class="disconnect-modal-warning">
+      <div class="disconnect-warning-icon">
+        i
+      </div>
+
+      <div>
+        As perguntas e os dados desta loja deixarão de ser
+        sincronizados com o sistema.
+      </div>
+    </div>
+
+    <div class="disconnect-modal-divider"></div>
+
+    <div class="disconnect-modal-actions">
+      <button
+        type="button"
+        class="disconnect-modal-cancel"
+        onclick="closeDisconnectStoreModal()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        id="confirmDisconnectStoreButton"
+        class="disconnect-modal-confirm"
+        onclick="confirmDisconnectStore()"
+      >
+        <span>🗑</span>
+        Desconectar loja
+      </button>
+    </div>
+
+    <div class="disconnect-modal-footer">
+      <span>🔒</span>
+      Esta ação não pode ser desfeita.
+    </div>
+  </div>
+</div>
 
     </script>
   </body>
