@@ -6734,6 +6734,92 @@ body.mobile-menu-open {
   </div>
 </div>
 
+
+
+<!-- Modal de confirmação para desconectar loja -->
+<div
+  id="disconnectStoreModal"
+  class="disconnect-modal-overlay"
+  aria-hidden="true"
+>
+  <div
+    class="disconnect-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="disconnectModalTitle"
+  >
+    <button
+      type="button"
+      class="disconnect-modal-close"
+      onclick="closeDisconnectStoreModal()"
+      aria-label="Fechar"
+    >
+      ×
+    </button>
+
+    <div class="disconnect-modal-icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M4 10h16M5 10v9h14v-9M6 5h12l2 5H4l2-5ZM9 14h2v3H9v-3Zm5 0h2v3h-2v-3Z"
+        />
+      </svg>
+
+      <span class="disconnect-icon-badge">×</span>
+    </div>
+
+    <h2 id="disconnectModalTitle">
+      Desconectar loja
+    </h2>
+
+    <p class="disconnect-modal-question">
+      Deseja realmente desconectar a loja
+      <strong id="disconnectStoreName">
+        Loja
+      </strong>?
+    </p>
+
+    <div class="disconnect-modal-warning">
+      <div class="disconnect-warning-icon">
+        i
+      </div>
+
+      <div>
+        As perguntas e os dados desta loja deixarão de ser
+        sincronizados com o sistema.
+      </div>
+    </div>
+
+    <div class="disconnect-modal-divider"></div>
+
+    <div class="disconnect-modal-actions">
+      <button
+        type="button"
+        class="disconnect-modal-cancel"
+        onclick="closeDisconnectStoreModal()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        id="confirmDisconnectStoreButton"
+        class="disconnect-modal-confirm"
+        onclick="confirmDisconnectStore()"
+      >
+        <span>🗑</span>
+        Desconectar loja
+      </button>
+    </div>
+
+    <div class="disconnect-modal-footer">
+      <span>🔒</span>
+      Esta ação não pode ser desfeita.
+    </div>
+  </div>
+</div>
+
+
+
     <script>
 
 // Variáveis globais
@@ -10682,10 +10768,10 @@ async function loadIntegrationStores() {
   <button
     type="button"
     class="integration-remove-btn"
-    onclick='openDisconnectStoreModal(
-      ${JSON.stringify(store.id)},
-      ${JSON.stringify(storeName)}
-    )'
+    onclick="openDisconnectStoreModal(
+      '${escapeIntegrationHtml(store.id)}',
+      '${escapeIntegrationHtml(storeName)}'
+    )"
   >
     Desconectar
   </button>
@@ -11044,11 +11130,10 @@ async function loadMobileIntegrationStores() {
               <button
                 type="button"
                 class="mobile-integration-remove"
-                onclick="disconnectMobileIntegrationStore(
-                  '${escapeIntegrationHtml(store.id)}',
-                  '${escapeIntegrationHtml(storeName)}',
-                  this
-                )"
+onclick="openDisconnectStoreModal(
+  '${escapeIntegrationHtml(store.id)}',
+  '${escapeIntegrationHtml(storeName)}'
+)"
               >
                 Desconectar
               </button>
@@ -11150,8 +11235,8 @@ async function confirmDisconnectStore() {
   try {
     if (button) {
       button.disabled = true;
-      button.innerHTML =
-        "<span>⏳</span> Desconectando...";
+button.innerHTML =
+  "<span>⏳</span> Desconectando...";
     }
 
     await disconnectIntegrationStore(
@@ -11204,90 +11289,6 @@ window.closeDisconnectStoreModal =
 
 window.confirmDisconnectStore =
   confirmDisconnectStore;
-
-
-
-<!-- Modal de confirmação para desconectar loja -->
-<div
-  id="disconnectStoreModal"
-  class="disconnect-modal-overlay"
-  aria-hidden="true"
->
-  <div
-    class="disconnect-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="disconnectModalTitle"
-  >
-    <button
-      type="button"
-      class="disconnect-modal-close"
-      onclick="closeDisconnectStoreModal()"
-      aria-label="Fechar"
-    >
-      ×
-    </button>
-
-    <div class="disconnect-modal-icon">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M4 10h16M5 10v9h14v-9M6 5h12l2 5H4l2-5ZM9 14h2v3H9v-3Zm5 0h2v3h-2v-3Z"
-        />
-      </svg>
-
-      <span class="disconnect-icon-badge">×</span>
-    </div>
-
-    <h2 id="disconnectModalTitle">
-      Desconectar loja
-    </h2>
-
-    <p class="disconnect-modal-question">
-      Deseja realmente desconectar a loja
-      <strong id="disconnectStoreName">
-        Loja
-      </strong>?
-    </p>
-
-    <div class="disconnect-modal-warning">
-      <div class="disconnect-warning-icon">
-        i
-      </div>
-
-      <div>
-        As perguntas e os dados desta loja deixarão de ser
-        sincronizados com o sistema.
-      </div>
-    </div>
-
-    <div class="disconnect-modal-divider"></div>
-
-    <div class="disconnect-modal-actions">
-      <button
-        type="button"
-        class="disconnect-modal-cancel"
-        onclick="closeDisconnectStoreModal()"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        id="confirmDisconnectStoreButton"
-        class="disconnect-modal-confirm"
-        onclick="confirmDisconnectStore()"
-      >
-        <span>🗑</span>
-        Desconectar loja
-      </button>
-    </div>
-
-    <div class="disconnect-modal-footer">
-      <span>🔒</span>
-      Esta ação não pode ser desfeita.
-    </div>
-  </div>
-</div>
 
     </script>
   </body>
