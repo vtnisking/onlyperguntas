@@ -1,9 +1,10 @@
+import crypto from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
-class AuthError extends Error {
-  constructor(message, statusCode = 401) {
+class ApiError extends Error {
+  constructor(message, statusCode = 400) {
     super(message);
-    this.name = "AuthError";
+    this.name = "ApiError";
     this.statusCode = statusCode;
   }
 }
@@ -12,7 +13,7 @@ function getBearerToken(req) {
   const authorization = req.headers?.authorization;
 
   if (!authorization) {
-    throw new AuthError(
+    throw new ApiError(
       "Token de autenticação não enviado",
       401,
     );
@@ -26,7 +27,7 @@ function getBearerToken(req) {
     type?.toLowerCase() !== "bearer" ||
     !token
   ) {
-    throw new AuthError(
+    throw new ApiError(
       "Formato de autenticação inválido",
       401,
     );
@@ -49,7 +50,12 @@ async function getAuthenticatedContext(
   const authUser = authData?.user;
 
   if (authError || !authUser) {
-    throw new AuthError(
+    console.error(
+      "Erro ao validar sessão:",
+      authError,
+    );
+
+    throw new ApiError(
       "Sessão inválida ou expirada",
       401,
     );
@@ -72,22 +78,32 @@ async function getAuthenticatedContext(
       profileError,
     );
 
-    throw new AuthError(
+    throw new ApiError(
       "Erro ao localizar o perfil do usuário",
       500,
     );
   }
 
   if (!profile) {
-    throw new AuthError(
+    throw new ApiError(
       "Perfil do usuário não encontrado",
       403,
     );
   }
 
   if (!profile.company_id) {
-    throw new AuthError(
+    throw new ApiError(
       "Usuário não vinculado a uma empresa",
+      403,
+    );
+  }
+
+  if (
+    profile.status &&
+    profile.status !== "active"
+  ) {
+    throw new ApiError(
+      "Usuário inativo",
       403,
     );
   }
@@ -99,9 +115,66 @@ async function getAuthenticatedContext(
   };
 }
 
+function createOAuthState({
+  companyId,
+  profileId,
+  authId,
+  redirectPath,
+}) {
+  const secret =
+    process.env.OAUTH_STATE_SECRET;
+
+  if (!secret) {
+    throw new ApiError(
+      "OAUTH_STATE_SECRET não configurado",
+      500,
+    );
+  }
+
+  const now = Date.now();
+
+  const payload = {
+    provider: "mercadolivre",
+    company_id: companyId,
+    profile_id: profileId,
+    auth_id: authId,
+    redirect_path: redirectPath,
+    nonce: crypto
+      .randomBytes(32)
+      .toString("hex"),
+    created_at: now,
+    expires_at: now + 10 * 60 * 1000,
+  };
+
+  const encodedPayload = Buffer.from(
+    JSON.stringify(payload),
+  ).toString("base64url");
+
+  const signature = crypto
+    .createHmac("sha256", secret)
+    .update(encodedPayload)
+    .digest("base64url");
+
+  return `${encodedPayload}.${signature}`;
+}
+
+function getSafeRedirect(value) {
+  if (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//")
+  ) {
+    return value;
+  }
+
+  return "/";
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "GET") {
+      res.setHeader("Allow", "GET");
+
       return res.status(405).json({
         success: false,
         error: "Método não permitido",
@@ -114,12 +187,38 @@ export default async function handler(req, res) {
     const serviceRoleKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !serviceRoleKey) {
-      return res.status(500).json({
-        success: false,
-        error:
-          "Variáveis do Supabase não configuradas",
-      });
+    const meliAppId =
+      process.env.MELI_APP_ID;
+
+    const redirectUri =
+      process.env.MELI_REDIRECT_URI;
+
+    if (!supabaseUrl) {
+      throw new ApiError(
+        "SUPABASE_URL não configurado",
+        500,
+      );
+    }
+
+    if (!serviceRoleKey) {
+      throw new ApiError(
+        "SUPABASE_SERVICE_ROLE_KEY não configurado",
+        500,
+      );
+    }
+
+    if (!meliAppId) {
+      throw new ApiError(
+        "MELI_APP_ID não configurado",
+        500,
+      );
+    }
+
+    if (!redirectUri) {
+      throw new ApiError(
+        "MELI_REDIRECT_URI não configurado",
+        500,
+      );
     }
 
     const supabase = createClient(
@@ -142,17 +241,46 @@ export default async function handler(req, res) {
       supabase,
     );
 
+    const redirectPath = getSafeRedirect(
+      req.query.redirect,
+    );
+
+    const state = createOAuthState({
+      companyId,
+      profileId: profile.id,
+      authId: authUser.id,
+      redirectPath,
+    });
+
+    const authorizationUrl = new URL(
+      "https://auth.mercadolivre.com.br/authorization",
+    );
+
+    authorizationUrl.searchParams.set(
+      "response_type",
+      "code",
+    );
+
+    authorizationUrl.searchParams.set(
+      "client_id",
+      meliAppId,
+    );
+
+    authorizationUrl.searchParams.set(
+      "redirect_uri",
+      redirectUri,
+    );
+
+    authorizationUrl.searchParams.set(
+      "state",
+      state,
+    );
+
     return res.status(200).json({
       success: true,
-      message: "Autenticação funcionando",
-      company_id: companyId,
-      user: {
-        id: profile.id,
-        auth_id: authUser.id,
-        name: profile.name,
-        email: profile.email,
-        role: profile.role,
-      },
+      provider: "mercadolivre",
+      authorization_url:
+        authorizationUrl.toString(),
     });
   } catch (error) {
     console.error(
@@ -160,20 +288,16 @@ export default async function handler(req, res) {
       error,
     );
 
-    if (error instanceof AuthError) {
-      return res
-        .status(error.statusCode)
-        .json({
-          success: false,
-          error: error.message,
-        });
-    }
+    const statusCode =
+      error instanceof ApiError
+        ? error.statusCode
+        : 500;
 
-    return res.status(500).json({
+    return res.status(statusCode).json({
       success: false,
       error:
         error?.message ||
-        "Erro interno no meli-connect",
+        "Erro ao iniciar conexão com o Mercado Livre",
     });
   }
 }
