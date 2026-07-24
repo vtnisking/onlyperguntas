@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/meli-callback",
+      "destination": "/api/app?action=meli_callback"
+    }
+  ]
+}
