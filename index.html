@@ -17,8 +17,6 @@
       rel="stylesheet"
     />
 
-// CSS
-
     <style>
       *,
       *::before,
@@ -1617,6 +1615,113 @@ body.mobile-menu-open {
   .integration-store-actions {
     justify-content: flex-end;
   }
+}
+
+.mobile-integrations-card {
+  width: 100%;
+}
+
+.mobile-integrations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobile-integrations-content {
+  margin-top: 16px;
+}
+
+.mobile-integration-stores-list {
+  display: grid;
+  gap: 10px;
+}
+
+.mobile-integration-store {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.mobile-integration-store-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-integration-store-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #ffe600;
+  color: #2d3277;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mobile-integration-store-info {
+  min-width: 0;
+}
+
+.mobile-integration-store-name {
+  overflow: hidden;
+  color: var(--text1);
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-integration-store-id {
+  margin-top: 3px;
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.mobile-integration-store-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mobile-integration-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mobile-integration-status::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  content: "";
+}
+
+.mobile-integration-remove {
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: transparent;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mobile-connect-meli {
+  width: 100%;
+  margin-top: 14px;
 }
 
 
@@ -8900,27 +9005,55 @@ async function createUser() {
           <button class="send-btn" onclick="logout()">Sair da conta</button>
         </div>
 
-<div class="settings-item integrations-settings-item">
-  <div>
-    <div class="settings-label">
-      Integrações
+<div class="mobile-integrations-card">
+  <div class="mobile-integrations-header">
+    <div>
+      <div class="settings-label">
+        Integrações
+      </div>
+
+      <div
+        id="integrationSummary"
+        class="integration-summary"
+      >
+        Verificando lojas conectadas...
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="settings-action-btn"
+      onclick="toggleMobileIntegrations()"
+    >
+      Gerenciar
+    </button>
+  </div>
+
+  <div
+    id="mobileIntegrationsContent"
+    class="mobile-integrations-content"
+    style="display: none"
+  >
+    <div
+      id="mobileIntegrationLoading"
+      class="integration-loading"
+    >
+      Carregando lojas...
     </div>
 
     <div
-      id="integrationSummary"
-      class="integration-summary"
-    >
-      Verificando lojas conectadas...
-    </div>
-  </div>
+      id="mobileIntegrationStoresList"
+      class="mobile-integration-stores-list"
+    ></div>
 
-  <button
-    type="button"
-    class="settings-action-btn"
-    onclick="openIntegrationsSection()"
-  >
-    Gerenciar
-  </button>
+    <button
+      type="button"
+      class="btn-connect-meli mobile-connect-meli"
+      onclick="connectMercadoLivre()"
+    >
+      + Conectar outra loja
+    </button>
+  </div>
 </div>
     `;
         }
@@ -10384,6 +10517,191 @@ document.addEventListener("DOMContentLoaded", () => {
   loadIntegrationStores();
 });
       
+
+async function toggleMobileIntegrations() {
+  const content = document.getElementById(
+    "mobileIntegrationsContent",
+  );
+
+  if (!content) {
+    console.error(
+      "Área mobile de integrações não encontrada",
+    );
+    return;
+  }
+
+  const isOpen =
+    content.style.display !== "none";
+
+  if (isOpen) {
+    content.style.display = "none";
+    return;
+  }
+
+  content.style.display = "block";
+
+  await loadMobileIntegrationStores();
+
+  setTimeout(() => {
+    content.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 100);
+}
+
+async function loadMobileIntegrationStores() {
+  const loadingElement =
+    document.getElementById(
+      "mobileIntegrationLoading",
+    );
+
+  const listElement =
+    document.getElementById(
+      "mobileIntegrationStoresList",
+    );
+
+  if (!listElement) {
+    return;
+  }
+
+  const session = getCentralizeSession();
+
+  if (!session?.access_token) {
+    if (loadingElement) {
+      loadingElement.textContent =
+        "Sua sessão expirou. Entre novamente.";
+    }
+
+    return;
+  }
+
+  if (loadingElement) {
+    loadingElement.style.display = "block";
+    loadingElement.textContent =
+      "Carregando lojas...";
+  }
+
+  listElement.innerHTML = "";
+
+  try {
+    const response = await fetch(
+      "/api/app?action=list_stores",
+      {
+        method: "GET",
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error ||
+          "Não foi possível carregar as lojas",
+      );
+    }
+
+    const stores = Array.isArray(result.stores)
+      ? result.stores
+      : [];
+
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
+
+    if (!stores.length) {
+      listElement.innerHTML = `
+        <div class="integration-empty">
+          <strong>Nenhuma loja conectada</strong>
+          <span>
+            Conecte uma conta do Mercado Livre.
+          </span>
+        </div>
+      `;
+
+      return;
+    }
+
+    listElement.innerHTML = stores
+      .map((store) => {
+        const storeName = cleanStoreName(
+          store.name,
+        );
+
+        return `
+          <div class="mobile-integration-store">
+            <div class="mobile-integration-store-top">
+              <div class="mobile-integration-store-icon">
+                ML
+              </div>
+
+              <div class="mobile-integration-store-info">
+                <div class="mobile-integration-store-name">
+                  ${escapeIntegrationHtml(storeName)}
+                </div>
+
+                <div class="mobile-integration-store-id">
+                  Seller ID:
+                  ${escapeIntegrationHtml(store.seller_id)}
+                </div>
+              </div>
+            </div>
+
+            <div class="mobile-integration-store-bottom">
+              <span class="mobile-integration-status">
+                Conectado
+              </span>
+
+              <button
+                type="button"
+                class="mobile-integration-remove"
+                onclick="disconnectMobileIntegrationStore(
+                  '${escapeIntegrationHtml(store.id)}',
+                  '${escapeIntegrationHtml(storeName)}',
+                  this
+                )"
+              >
+                Desconectar
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  } catch (error) {
+    console.error(
+      "Erro ao carregar lojas no mobile:",
+      error,
+    );
+
+    if (loadingElement) {
+      loadingElement.style.display = "block";
+      loadingElement.textContent =
+        error.message ||
+        "Erro ao carregar lojas.";
+    }
+  }
+}
+
+async function disconnectMobileIntegrationStore(
+  storeId,
+  storeName,
+  button,
+) {
+  await disconnectIntegrationStore(
+    storeId,
+    storeName,
+    button,
+  );
+
+  await loadMobileIntegrationStores();
+}
+
+
     </script>
   </body>
 </html>
