@@ -41,19 +41,42 @@ async function getAuthenticatedCompany(
   req,
   supabase,
 ) {
-  const accessToken = getBearerToken(req);
+  const authHeader =
+    req.headers?.authorization ||
+    req.headers?.Authorization;
+
+  if (
+    !authHeader ||
+    !authHeader.startsWith("Bearer ")
+  ) {
+    throw new AuthError(
+      "Token de autenticação não enviado",
+      401,
+    );
+  }
+
+  const accessToken = authHeader
+    .slice("Bearer ".length)
+    .trim();
+
+  if (!accessToken) {
+    throw new AuthError(
+      "Token de autenticação não enviado",
+      401,
+    );
+  }
 
   const {
-    data: authData,
-    error: authError,
-  } = await supabase.auth.getUser(accessToken);
+    data: userData,
+    error: userError,
+  } = await supabase.auth.getUser(
+    accessToken,
+  );
 
-  const authUser = authData?.user;
-
-  if (authError || !authUser) {
+  if (userError || !userData?.user) {
     console.error(
-      "Erro ao validar sessão:",
-      authError,
+      "Erro ao validar usuário:",
+      userError,
     );
 
     throw new AuthError(
@@ -62,57 +85,37 @@ async function getAuthenticatedCompany(
     );
   }
 
+  const authUser = userData.user;
+
   const {
-    data: profile,
-    error: profileError,
+    data: appUser,
+    error: appUserError,
   } = await supabase
     .from("users_app")
-    .select(
-      "id, auth_id, company_id, name, email, role, status",
-    )
+    .select("id, company_id, auth_id")
     .eq("auth_id", authUser.id)
-    .maybeSingle();
-
-  if (profileError) {
-    console.error(
-      "Erro ao buscar perfil:",
-      profileError,
-    );
-
-    throw new AuthError(
-      "Erro ao localizar perfil do usuário",
-      500,
-    );
-  }
-
-  if (!profile) {
-    throw new AuthError(
-      "Perfil do usuário não encontrado",
-      403,
-    );
-  }
-
-  if (!profile.company_id) {
-    throw new AuthError(
-      "Usuário não vinculado a uma empresa",
-      403,
-    );
-  }
+    .single();
 
   if (
-    profile.status &&
-    profile.status !== "active"
+    appUserError ||
+    !appUser?.company_id
   ) {
+    console.error(
+      "Usuário não encontrado em users_app:",
+      appUserError,
+    );
+
     throw new AuthError(
-      "Usuário inativo",
+      "Empresa do usuário não encontrada",
       403,
     );
   }
 
   return {
-    authUser,
-    profile,
-    companyId: profile.company_id,
+    user: authUser,
+    appUser,
+    companyId: appUser.company_id,
+    accessToken,
   };
 }
 
