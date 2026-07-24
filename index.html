@@ -17,6 +17,8 @@
       rel="stylesheet"
     />
 
+// CSS
+
     <style>
       *,
       *::before,
@@ -64,9 +66,6 @@
         min-height: 100vh;
       }
 
-      /* ════════════════════════════════
-     MOBILE LAYOUT
-  ════════════════════════════════ */
 
 /* ================================
    MOBILE — ESTRUTURA PRINCIPAL
@@ -1400,6 +1399,226 @@ body.mobile-menu-open {
           margin-bottom: 16px;
         }
       } /* end @media desktop */
+
+      /* ════════════════════════════════
+     INTEGRATIONS CSS
+  ════════════════════════════════ */
+
+  .integrations-card {
+  overflow: hidden;
+}
+
+.integrations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.integrations-description {
+  margin-top: 5px;
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.btn-connect-meli {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 16px;
+  background: #ffe600;
+  color: #2d3277;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btn-connect-meli:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.btn-connect-meli:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.integration-loading {
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+.integration-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 18px;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+.integration-empty strong {
+  color: var(--text1);
+  font-size: 14px;
+}
+
+.integration-empty-icon {
+  margin-bottom: 4px;
+  font-size: 28px;
+}
+
+.integration-stores-list {
+  display: grid;
+  gap: 12px;
+}
+
+.integration-store-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.integration-store-info {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+}
+
+.integration-store-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #ffe600;
+  color: #2d3277;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.integration-store-content {
+  min-width: 0;
+}
+
+.integration-store-name {
+  overflow: hidden;
+  color: var(--text1);
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.integration-store-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 5px;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.integration-connected-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.integration-connected-status::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  content: "";
+}
+
+.integration-store-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.integration-remove-btn {
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 9px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.integration-remove-btn:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.integration-remove-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.integration-summary {
+  margin-top: 4px;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.settings-action-btn {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--text1);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .integrations-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .btn-connect-meli {
+    width: 100%;
+  }
+
+  .integration-store-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .integration-store-actions {
+    justify-content: flex-end;
+  }
+}
+
 
       /* ════════════════════════════════
      SHARED COMPONENTS
@@ -5798,30 +6017,54 @@ body.mobile-menu-open {
         </button>
       </div>
 
-      <!-- Integrações -->
-      <div class="settings-card">
-        <div class="settings-card-title">
-          Integrações
-        </div>
-
-        <div
-          class="status-dot"
-          style="margin-bottom: 8px"
-        >
-          Mercado Livre conectado
-        </div>
-
-        <div
-          style="
-            color: var(--text3);
-            font-size: 12px;
-          "
-        >
-          Todas as lojas sincronizando normalmente.
-        </div>
+   <!-- Integrações -->
+<div class="settings-card integrations-card">
+  <div class="integrations-header">
+    <div>
+      <div class="settings-card-title">
+        Integrações
       </div>
 
+      <div class="integrations-description">
+        Conecte e gerencie suas lojas de marketplaces.
+      </div>
     </div>
+
+    <button
+      type="button"
+      class="btn-connect-meli"
+      onclick="connectMercadoLivre()"
+    >
+      + Conectar Mercado Livre
+    </button>
+  </div>
+
+  <div
+    id="integrationStoresLoading"
+    class="integration-loading"
+  >
+    Carregando lojas conectadas...
+  </div>
+
+  <div
+    id="integrationStoresEmpty"
+    class="integration-empty"
+    style="display: none"
+  >
+    <div class="integration-empty-icon">🔗</div>
+
+    <strong>Nenhuma loja conectada</strong>
+
+    <span>
+      Conecte uma conta do Mercado Livre para começar.
+    </span>
+  </div>
+
+  <div
+    id="integrationStoresList"
+    class="integration-stores-list"
+  ></div>
+</div>
 
     <!-- Painel de gerenciamento de usuários -->
     <div
@@ -8657,11 +8900,28 @@ async function createUser() {
           <button class="send-btn" onclick="logout()">Sair da conta</button>
         </div>
 
-        <div class="settings-item">
-          <div class="settings-label">Integrações</div>
-          <div class="status-dot">Mercado Livre conectado</div>
-        </div>
-      </div>
+<div class="settings-item integrations-settings-item">
+  <div>
+    <div class="settings-label">
+      Integrações
+    </div>
+
+    <div
+      id="integrationSummary"
+      class="integration-summary"
+    >
+      Verificando lojas conectadas...
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="settings-action-btn"
+    onclick="openIntegrationsSection()"
+  >
+    Gerenciar
+  </button>
+</div>
     `;
         }
       }
@@ -9706,6 +9966,423 @@ document.addEventListener(
       }, 60000);
 
 
+      // ──────────────────────────────────────
+      // INTEGRAÇÕES FUNCTIONS
+      // ──────────────────────────────────────
+
+      function getCentralizeSession() {
+  try {
+    return JSON.parse(
+      localStorage.getItem(
+        "centralizachat_session",
+      ),
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao ler sessão:",
+      error,
+    );
+
+    return null;
+  }
+}
+
+function escapeIntegrationHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function cleanStoreName(name) {
+  return String(name || "Mercado Livre")
+    .replace(/^\[Mercado Livre\s*-\s*/i, "")
+    .replace(/\]$/, "")
+    .trim();
+}
+
+function formatIntegrationDate(value) {
+  if (!value) {
+    return "Data não disponível";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Data não disponível";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeZone: "America/Sao_Paulo",
+  }).format(date);
+}
+
+async function loadIntegrationStores() {
+  const loadingElement =
+    document.getElementById(
+      "integrationStoresLoading",
+    );
+
+  const emptyElement =
+    document.getElementById(
+      "integrationStoresEmpty",
+    );
+
+  const listElement =
+    document.getElementById(
+      "integrationStoresList",
+    );
+
+  const summaryElement =
+    document.getElementById(
+      "integrationSummary",
+    );
+
+  const session = getCentralizeSession();
+
+  if (!session?.access_token) {
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
+
+    if (summaryElement) {
+      summaryElement.textContent =
+        "Faça login novamente para carregar as integrações.";
+    }
+
+    return;
+  }
+
+  if (loadingElement) {
+    loadingElement.style.display = "block";
+  }
+
+  if (emptyElement) {
+    emptyElement.style.display = "none";
+  }
+
+  if (listElement) {
+    listElement.innerHTML = "";
+  }
+
+  try {
+    const response = await fetch(
+      "/api/app?action=list_stores",
+      {
+        method: "GET",
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error ||
+          "Não foi possível carregar as lojas",
+      );
+    }
+
+    const stores = Array.isArray(result.stores)
+      ? result.stores
+      : [];
+
+    updateIntegrationSummary(stores.length);
+
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
+
+    if (!stores.length) {
+      if (emptyElement) {
+        emptyElement.style.display = "flex";
+      }
+
+      return;
+    }
+
+    if (!listElement) {
+      return;
+    }
+
+    listElement.innerHTML = stores
+      .map((store) => {
+        const storeName = cleanStoreName(
+          store.name,
+        );
+
+        return `
+          <div
+            class="integration-store-card"
+            data-store-id="${escapeIntegrationHtml(store.id)}"
+          >
+            <div class="integration-store-info">
+              <div class="integration-store-icon">
+                ML
+              </div>
+
+              <div class="integration-store-content">
+                <div class="integration-store-name">
+                  ${escapeIntegrationHtml(storeName)}
+                </div>
+
+                <div class="integration-store-meta">
+                  <span class="integration-connected-status">
+                    Conectado
+                  </span>
+
+                  <span>
+                    Seller ID:
+                    ${escapeIntegrationHtml(store.seller_id)}
+                  </span>
+
+                  <span>
+                    Conectada em:
+                    ${escapeIntegrationHtml(
+                      formatIntegrationDate(
+                        store.created_at,
+                      ),
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="integration-store-actions">
+              <button
+                type="button"
+                class="integration-remove-btn"
+                onclick="disconnectIntegrationStore(
+                  '${escapeIntegrationHtml(store.id)}',
+                  '${escapeIntegrationHtml(storeName)}',
+                  this
+                )"
+              >
+                Desconectar
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  } catch (error) {
+    console.error(
+      "Erro ao carregar integrações:",
+      error,
+    );
+
+    if (loadingElement) {
+      loadingElement.style.display = "block";
+      loadingElement.textContent =
+        error.message ||
+        "Erro ao carregar lojas conectadas.";
+    }
+
+    if (summaryElement) {
+      summaryElement.textContent =
+        "Não foi possível carregar as integrações.";
+    }
+  }
+}
+
+function updateIntegrationSummary(total) {
+  const summaryElement =
+    document.getElementById(
+      "integrationSummary",
+    );
+
+  if (!summaryElement) {
+    return;
+  }
+
+  if (total === 0) {
+    summaryElement.textContent =
+      "Nenhuma loja conectada";
+    return;
+  }
+
+  if (total === 1) {
+    summaryElement.textContent =
+      "1 loja do Mercado Livre conectada";
+    return;
+  }
+
+  summaryElement.textContent =
+    `${total} lojas do Mercado Livre conectadas`;
+}
+
+async function connectMercadoLivre() {
+  const session = getCentralizeSession();
+
+  if (!session?.access_token) {
+    alert(
+      "Sua sessão expirou. Saia e entre novamente.",
+    );
+
+    return;
+  }
+
+  const button = document.querySelector(
+    ".btn-connect-meli",
+  );
+
+  const originalText =
+    button?.textContent || "";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Conectando...";
+    }
+
+    const response = await fetch(
+      "/api/app?action=meli_connect&redirect=/",
+      {
+        method: "GET",
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (
+      !response.ok ||
+      !result.success ||
+      !result.authorization_url
+    ) {
+      throw new Error(
+        result.error ||
+        "Não foi possível iniciar a conexão",
+      );
+    }
+
+    window.location.href =
+      result.authorization_url;
+  } catch (error) {
+    console.error(
+      "Erro ao conectar Mercado Livre:",
+      error,
+    );
+
+    alert(
+      error.message ||
+      "Erro ao conectar Mercado Livre.",
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
+async function disconnectIntegrationStore(
+  storeId,
+  storeName,
+  button,
+) {
+  const confirmed = window.confirm(
+    `Deseja realmente desconectar a loja "${storeName}"?\n\nAs perguntas dessa loja deixarão de ser sincronizadas.`,
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const session = getCentralizeSession();
+
+  if (!session?.access_token) {
+    alert(
+      "Sua sessão expirou. Saia e entre novamente.",
+    );
+
+    return;
+  }
+
+  const originalText =
+    button?.textContent || "Desconectar";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Removendo...";
+    }
+
+    const response = await fetch(
+      "/api/app?action=disconnect_store",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          store_id: storeId,
+        }),
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error ||
+        "Não foi possível desconectar a loja",
+      );
+    }
+
+    await loadIntegrationStores();
+
+    alert("Loja desconectada com sucesso.");
+  } catch (error) {
+    console.error(
+      "Erro ao desconectar loja:",
+      error,
+    );
+
+    alert(
+      error.message ||
+      "Erro ao desconectar a loja.",
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
+function openIntegrationsSection() {
+  const integrationsCard =
+    document.querySelector(
+      ".integrations-card",
+    );
+
+  if (!integrationsCard) {
+    return;
+  }
+
+  integrationsCard.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+
+  loadIntegrationStores();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadIntegrationStores();
+});
 
 
     </script>
