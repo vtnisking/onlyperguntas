@@ -10580,21 +10580,92 @@ document.addEventListener(
       // INTEGRAÇÕES FUNCTIONS
       // ──────────────────────────────────────
 
-      function getCentralizeSession() {
+function getCentralizeSession() {
   try {
-    return JSON.parse(
-      localStorage.getItem(
-        "centralizachat_session",
-      ),
+    const sessionRaw = localStorage.getItem(
+      "centralizachat_session",
     );
+
+    if (sessionRaw) {
+      const parsedSession = JSON.parse(sessionRaw);
+
+      if (parsedSession?.access_token) {
+        return parsedSession;
+      }
+
+      if (parsedSession?.session?.access_token) {
+        return parsedSession.session;
+      }
+
+      if (parsedSession?.data?.session?.access_token) {
+        return parsedSession.data.session;
+      }
+    }
+
+    const supabaseKey = Object.keys(localStorage).find(
+      (key) =>
+        key.startsWith("sb-") &&
+        key.endsWith("-auth-token"),
+    );
+
+    if (supabaseKey) {
+      const supabaseSession = JSON.parse(
+        localStorage.getItem(supabaseKey),
+      );
+
+      if (supabaseSession?.access_token) {
+        return supabaseSession;
+      }
+
+      if (
+        supabaseSession?.currentSession?.access_token
+      ) {
+        return supabaseSession.currentSession;
+      }
+
+      if (
+        supabaseSession?.session?.access_token
+      ) {
+        return supabaseSession.session;
+      }
+    }
+
+    console.error(
+      "Nenhuma sessão com access_token foi encontrada.",
+    );
+
+    return null;
   } catch (error) {
     console.error(
-      "Erro ao ler sessão:",
+      "Erro ao ler a sessão:",
       error,
     );
 
     return null;
   }
+}
+
+
+async function authenticatedIntegrationFetch(
+  url,
+  options = {},
+) {
+  const session = getCentralizeSession();
+  const accessToken = session?.access_token;
+
+  if (!accessToken) {
+    throw new Error(
+      "Sessão inválida ou expirada. Saia e entre novamente.",
+    );
+  }
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 }
 
 function escapeIntegrationHtml(value) {
@@ -10679,17 +10750,13 @@ async function loadIntegrationStores() {
   }
 
   try {
-    const response = await fetch(
-      "/api/app?action=list_stores",
-      {
-        method: "GET",
-        headers: {
-          Authorization:
-            `Bearer ${session.access_token}`,
-        },
-      },
-    );
-
+const response =
+  await authenticatedIntegrationFetch(
+    "/api/app?action=list_stores",
+    {
+      method: "GET",
+    },
+  );
     const result = await response.json();
 
     if (!response.ok || !result.success) {
@@ -10849,17 +10916,12 @@ async function connectMercadoLivre() {
       button.textContent = "Conectando...";
     }
 
-    const response = await fetch(
-      "/api/app?action=meli_connect&redirect=/",
-      {
-        method: "GET",
-        headers: {
-          Authorization:
-            `Bearer ${session.access_token}`,
-        },
-      },
-    );
-
+  const response = await authenticatedIntegrationFetch(
+  "/api/app?action=meli_connect",
+  {
+    method: "GET",
+  },
+);
     const result = await response.json();
 
     if (
@@ -10917,20 +10979,19 @@ async function disconnectIntegrationStore(
       button.textContent = "Removendo...";
     }
 
-    const response = await fetch(
-      "/api/app?action=disconnect_store",
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          store_id: storeId,
-        }),
+const response =
+  await authenticatedIntegrationFetch(
+    "/api/app?action=disconnect_store",
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        store_id: storeId,
+      }),
+    },
+  );
 
     const result = await response.json();
 
