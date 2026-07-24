@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import meliConnectHandler from "../lib/meli-connect.js";
+import meliCallbackHandler from "../lib/meli-callback.js";
 
 export default async function handler(req, res) {
   try {
@@ -13,19 +15,35 @@ export default async function handler(req, res) {
       },
     );
 
-    const { action, company_id } = req.query;
+const { action, company_id } = req.query;
 
-    if (!action) {
-      return res.status(400).json({
-        error: "action obrigatório",
-      });
-    }
+if (!action) {
+  return res.status(400).json({
+    success: false,
+    error: "action obrigatório",
+  });
+}
 
-    if (!company_id) {
-      return res.status(400).json({
-        error: "company_id obrigatório",
-      });
-    }
+// ==========================================
+// INTEGRAÇÃO MERCADO LIVRE
+// ==========================================
+
+if (action === "meli_connect") {
+  return meliConnectHandler(req, res);
+}
+
+if (action === "meli_callback") {
+  return meliCallbackHandler(req, res);
+}
+
+// As ações antigas ainda usam company_id.
+// As ações seguras do Mercado Livre são tratadas antes.
+if (!company_id) {
+  return res.status(400).json({
+    success: false,
+    error: "company_id obrigatório",
+  });
+}
 
     // ==========================================
     // USUÁRIOS
