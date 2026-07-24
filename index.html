@@ -5258,22 +5258,38 @@ body.mobile-menu-open {
         </div>
       </header>
 
-      <div class="stats-card">
-        <div class="stats-left">
-          <div class="stats-icon">📥</div>
-          <div class="stats-info">
-            <h2>Pendentes</h2>
-            <div class="stats-number" id="totalQuestions">0</div>
-            <div class="stats-sub">Aguardando resposta</div>
-          </div>
-        </div>
-        <button class="refresh-btn" onclick="location.reload()">↻</button>
-      </div>
+<div id="mobilePendingSection">
 
-      <div id="questions">
-        <div class="empty">
-          <span class="empty-icon">⏳</span>Carregando perguntas...
+  <div class="stats-card">
+    <div class="stats-left">
+      <div class="stats-icon">📥</div>
+
+      <div class="stats-info">
+        <h2>Pendentes</h2>
+
+        <div class="stats-number" id="totalQuestions">
+          0
         </div>
+
+        <div class="stats-sub">
+          Aguardando resposta
+        </div>
+      </div>
+    </div>
+
+    <button class="refresh-btn" onclick="location.reload()">
+      ↻
+    </button>
+  </div>
+
+  <div id="questions">
+    <div class="empty">
+      <span class="empty-icon">⏳</span>
+      Carregando perguntas...
+    </div>
+  </div>
+
+</div>
       </div>
     </div>
 
@@ -8891,17 +8907,34 @@ async function createUser() {
       // ──────────────────────────────────────
       // MOBILE: Tabs
       // ──────────────────────────────────────
-      async function showTab(tab, element) {
-        document
-          .querySelectorAll(".footer-item")
-          .forEach((i) => i.classList.remove("active"));
-        element.classList.add("active");
-        const container = document.getElementById("questions");
+    async function showTab(tab, element) {
+  document
+    .querySelectorAll(".footer-item")
+    .forEach((i) => i.classList.remove("active"));
 
-        if (tab === "pending") {
-          loadQuestions();
-          return;
-        }
+  if (element) {
+    element.classList.add("active");
+  }
+
+  const container =
+    document.getElementById("questions");
+
+  const pendingCard =
+    document.querySelector(
+      "#mobilePendingSection .stats-card",
+    );
+
+  if (pendingCard) {
+    pendingCard.style.display =
+      tab === "pending"
+        ? "flex"
+        : "none";
+  }
+
+  if (tab === "pending") {
+    loadQuestions();
+    return;
+  }
 
         if (tab === "answered") {
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando respondidas...</div>`;
@@ -9016,7 +9049,7 @@ async function createUser() {
         id="integrationSummary"
         class="integration-summary"
       >
-        Verificando lojas conectadas...
+        Clique para visualizar as lojas integradas..
       </div>
     </div>
 
