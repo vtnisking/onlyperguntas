@@ -2,6 +2,120 @@ import { createClient } from "@supabase/supabase-js";
 import meliConnectHandler from "../lib/meli-connect.js";
 import meliCallbackHandler from "../lib/meli-callback.js";
 
+class AuthError extends Error {
+  constructor(message, statusCode = 401) {
+    super(message);
+    this.name = "AuthError";
+    this.statusCode = statusCode;
+  }
+}
+
+function getBearerToken(req) {
+  const authorization = req.headers?.authorization;
+
+  if (!authorization) {
+    throw new AuthError(
+      "Token de autenticação não enviado",
+      401,
+    );
+  }
+
+  const [type, token] = authorization
+    .trim()
+    .split(/\s+/);
+
+  if (
+    type?.toLowerCase() !== "bearer" ||
+    !token
+  ) {
+    throw new AuthError(
+      "Formato de autenticação inválido",
+      401,
+    );
+  }
+
+  return token;
+}
+
+async function getAuthenticatedCompany(
+  req,
+  supabase,
+) {
+  const accessToken = getBearerToken(req);
+
+  const {
+    data: authData,
+    error: authError,
+  } = await supabase.auth.getUser(accessToken);
+
+  const authUser = authData?.user;
+
+  if (authError || !authUser) {
+    console.error(
+      "Erro ao validar sessão:",
+      authError,
+    );
+
+    throw new AuthError(
+      "Sessão inválida ou expirada",
+      401,
+    );
+  }
+
+  const {
+    data: profile,
+    error: profileError,
+  } = await supabase
+    .from("users_app")
+    .select(
+      "id, auth_id, company_id, name, email, role, status",
+    )
+    .eq("auth_id", authUser.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error(
+      "Erro ao buscar perfil:",
+      profileError,
+    );
+
+    throw new AuthError(
+      "Erro ao localizar perfil do usuário",
+      500,
+    );
+  }
+
+  if (!profile) {
+    throw new AuthError(
+      "Perfil do usuário não encontrado",
+      403,
+    );
+  }
+
+  if (!profile.company_id) {
+    throw new AuthError(
+      "Usuário não vinculado a uma empresa",
+      403,
+    );
+  }
+
+  if (
+    profile.status &&
+    profile.status !== "active"
+  ) {
+    throw new AuthError(
+      "Usuário inativo",
+      403,
+    );
+  }
+
+  return {
+    authUser,
+    profile,
+    companyId: profile.company_id,
+  };
+}
+
 export default async function handler(req, res) {
   try {
     const supabase = createClient(
@@ -34,6 +148,196 @@ if (action === "meli_connect") {
 
 if (action === "meli_callback") {
   return meliCallbackHandler(req, res);
+}
+
+// ==========================================
+// LISTAR LOJAS CONECTADAS
+// ==========================================
+
+if (action === "list_stores") {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
+
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  try {
+    const {
+      companyId,
+    } = await getAuthenticatedCompany(
+      req,
+      supabase,
+    );
+
+    const {
+      data: stores,
+      error: storesError,
+    } = await supabase
+      .from("stores")
+      .select(
+        "id, name, platform, seller_id, company_id, created_at",
+      )
+      .eq("company_id", companyId)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (storesError) {
+      console.error(
+        "Erro ao listar lojas:",
+        storesError,
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Erro ao carregar lojas conectadas",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      stores: stores || [],
+      total: stores?.length || 0,
+    });
+  } catch (error) {
+    const statusCode =
+      error instanceof AuthError
+        ? error.statusCode
+        : 500;
+
+    return res.status(statusCode).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro ao listar lojas",
+    });
+  }
+}
+
+// ==========================================
+// DESCONECTAR LOJA
+// ==========================================
+
+if (action === "disconnect_store") {
+  if (
+    req.method !== "DELETE" &&
+    req.method !== "POST"
+  ) {
+    res.setHeader("Allow", "DELETE, POST");
+
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  try {
+    const {
+      companyId,
+      profile,
+    } = await getAuthenticatedCompany(
+      req,
+      supabase,
+    );
+
+    const storeId =
+      req.body?.store_id ||
+      req.query?.store_id;
+
+    if (!storeId) {
+      return res.status(400).json({
+        success: false,
+        error: "store_id obrigatório",
+      });
+    }
+
+    const {
+      data: store,
+      error: storeError,
+    } = await supabase
+      .from("stores")
+      .select(
+        "id, name, platform, seller_id, company_id",
+      )
+      .eq("id", storeId)
+      .eq("company_id", companyId)
+      .maybeSingle();
+
+    if (storeError) {
+      console.error(
+        "Erro ao localizar loja:",
+        storeError,
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Erro ao localizar a loja",
+      });
+    }
+
+    if (!store) {
+      return res.status(404).json({
+        success: false,
+        error:
+          "Loja não encontrada ou não pertence à sua empresa",
+      });
+    }
+
+    // Opcional: somente administradores podem desconectar.
+    if (profile.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        error:
+          "Somente administradores podem desconectar lojas",
+      });
+    }
+
+    const {
+      error: deleteError,
+    } = await supabase
+      .from("stores")
+      .delete()
+      .eq("id", store.id)
+      .eq("company_id", companyId);
+
+    if (deleteError) {
+      console.error(
+        "Erro ao desconectar loja:",
+        deleteError,
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Erro ao desconectar a loja",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Loja desconectada com sucesso",
+      store: {
+        id: store.id,
+        name: store.name,
+        platform: store.platform,
+        seller_id: store.seller_id,
+      },
+    });
+  } catch (error) {
+    const statusCode =
+      error instanceof AuthError
+        ? error.statusCode
+        : 500;
+
+    return res.status(statusCode).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro ao desconectar loja",
+    });
+  }
 }
 
 // As ações antigas ainda usam company_id.
