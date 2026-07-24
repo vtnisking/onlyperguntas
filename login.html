@@ -368,10 +368,22 @@
             }),
           );
 
-        localStorage.setItem(
-            "centralizachat_session",
-            JSON.stringify(authData.session),
-        );
+if (!authData.session?.access_token) {
+  throw new Error(
+    "O Supabase não retornou uma sessão válida.",
+  );
+}
+
+localStorage.setItem(
+  "centralizachat_session",
+  JSON.stringify({
+    access_token: authData.session.access_token,
+    refresh_token: authData.session.refresh_token,
+    expires_at: authData.session.expires_at,
+    expires_in: authData.session.expires_in,
+    token_type: authData.session.token_type,
+  }),
+);
 
           window.location.href = "/";
         } catch (error) {
