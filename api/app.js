@@ -66,12 +66,18 @@ async function getAuthenticatedCompany(
     );
   }
 
+console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+console.log("Access token recebido:", accessToken.substring(0, 20) + "...");
+
   const {
     data: userData,
     error: userError,
   } = await supabase.auth.getUser(
     accessToken,
   );
+
+  console.log("userError:", userError);
+console.log("userData:", userData);
 
   if (userError || !userData?.user) {
     console.error(
