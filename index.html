@@ -7903,14 +7903,29 @@ onclick="window.openQuickRepliesPicker('${taId}')"
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>`;
 
         try {
-          const response = await fetch(
-            `/api/questions?company_id=${loggedUser.company_id}`,
-          );
-          const data = await response.json();
-          const questions = data.questions
-            .filter((i) => i.status === "UNANSWERED")
-            .filter((i) => i.hold === false)
-            .filter((i) => i.deleted_from_listing === false);
+const response = await authenticatedIntegrationFetch(
+  "/api/questions",
+  {
+    method: "GET",
+  }
+);
+
+const data = await response.json();
+
+if (!response.ok || !data.success) {
+  throw new Error(
+    data.error || "Não foi possível carregar as perguntas."
+  );
+}
+
+const allQuestions = Array.isArray(data.questions)
+  ? data.questions
+  : [];
+
+const questions = allQuestions
+  .filter((i) => i.status === "UNANSWERED")
+  .filter((i) => i.hold === false)
+  .filter((i) => i.deleted_from_listing === false);
 
           const currentIds = questions.map((i) => String(i.id));
           if (firstLoadDone) {
@@ -7940,9 +7955,22 @@ container.innerHTML = `
           questions.forEach((item) => {
             container.innerHTML += buildMobileCard(item);
           });
-        } catch (e) {
-          container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar perguntas.</div>`;
-        }
+} catch (error) {
+  console.error(
+    "Erro ao carregar perguntas no mobile:",
+    error
+  );
+
+  container.innerHTML = `
+    <div class="empty">
+      <span class="empty-icon">⚠️</span>
+      ${escapeHtml(
+        error.message ||
+          "Erro ao carregar perguntas."
+      )}
+    </div>
+  `;
+}
       }
 
       function toggleTheme() {
