@@ -5569,54 +5569,133 @@ overflow: hidden;
    CSS LOJA DESCONECTADA SOM SUCESSO
 ========================================= */
 
-.toast {
+.toast-container {
   position: fixed;
   top: 24px;
   right: 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 340px;
-  max-width: 420px;
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 12px 40px rgba(0,0,0,.15);
-  border-left: 5px solid #22c55e;
-  transform: translateX(120%);
-  opacity: 0;
-  transition: .35s ease;
   z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.toast.show {
-  transform: translateX(0);
+.app-toast {
+  width: 360px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.14),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  overflow: hidden;
+}
+
+.app-toast.show {
   opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
-.toast-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #22c55e;
-  color: #fff;
-  font-size: 22px;
-  font-weight: bold;
+.app-toast-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
 }
 
-.toast-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #222;
+.app-toast.success .app-toast-icon {
+  background: #dcfce7;
+  color: #16a34a;
 }
 
-.toast-message {
-  margin-top: 3px;
-  color: #666;
+.app-toast.error .app-toast-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.app-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-toast-title {
+  margin: 1px 0 4px;
+  color: #111827;
   font-size: 14px;
+  font-weight: 700;
+}
+
+.app-toast-message {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.app-toast-close {
+  border: 0;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.app-toast-close:hover {
+  color: #374151;
+}
+
+.app-toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress 3.5s linear forwards;
+}
+
+.app-toast.success .app-toast-progress {
+  background: #22c55e;
+}
+
+.app-toast.error .app-toast-progress {
+  background: #ef4444;
+}
+
+@keyframes toastProgress {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .toast-container {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .app-toast {
+    width: auto;
+  }
 }
       
     </style>
@@ -11935,19 +12014,19 @@ async function confirmDisconnectStore() {
       await loadMobileIntegrationStores();
     }
 
-    alert(
-      "Loja desconectada com sucesso.",
-    );
+showToast("Loja desconectada com sucesso!", "success");
+
   } catch (error) {
     console.error(
       "Erro ao desconectar loja:",
       error,
     );
 
-    alert(
-      error.message ||
-        "Erro ao desconectar a loja.",
-    );
+showToast(
+  error?.message || "Erro ao desconectar a loja.",
+  "error"
+);
+
   } finally {
     if (button) {
       button.disabled = false;
