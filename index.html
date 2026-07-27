@@ -11251,7 +11251,7 @@ async function loadIntegrationStores() {
         `;
       })
       .join("");
-      
+
   } catch (error) {
     console.error(
       "Erro ao carregar integrações:",
@@ -11745,35 +11745,45 @@ async function disconnectMobileIntegrationStore(
 
 let pendingDisconnectStoreId = null;
 let pendingDisconnectStoreName = "";
+let pendingDisconnectStore = null;
 
 function openDisconnectStoreModal(
   storeId,
-  storeName
+  storeName,
 ) {
-  pendingDisconnectStoreId = storeId;
-  pendingDisconnectStoreName =
-    storeName || "Loja";
+  pendingDisconnectStore = {
+    id: String(storeId),
+    name: storeName || "esta loja",
+  };
 
-  const modal = document.getElementById(
-    "disconnectStoreModal"
-  );
-
-  const storeNameElement =
+  const modal =
     document.getElementById(
-      "disconnectStoreName"
+      "disconnectStoreModal",
     );
 
-  if (!modal || !storeNameElement) {
+  const nameElement =
+    document.getElementById(
+      "disconnectStoreName",
+    );
+
+  if (nameElement) {
+    nameElement.textContent =
+      pendingDisconnectStore.name;
+  }
+
+  if (!modal) {
+    const confirmed = confirm(
+      `Deseja desconectar a loja "${pendingDisconnectStore.name}"?`,
+    );
+
+    if (confirmed) {
+      confirmDisconnectStore();
+    }
+
     return;
   }
 
-  storeNameElement.textContent =
-    `"${pendingDisconnectStoreName}"`;
-
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-
-  document.body.style.overflow = "hidden";
+  modal.style.display = "flex";
 }
 
 function closeDisconnectStoreModal() {
@@ -11795,41 +11805,74 @@ function closeDisconnectStoreModal() {
 }
 
 async function confirmDisconnectStore() {
-  if (!pendingDisconnectStoreId) {
+  if (!pendingDisconnectStore?.id) {
+    alert(
+      "Não foi possível identificar a loja.",
+    );
+
     return;
   }
 
-  const button = document.getElementById(
-    "confirmDisconnectStoreButton",
-  );
+  const session =
+    getCentralizeSession();
+
+  if (!session?.access_token) {
+    alert(
+      "Sua sessão expirou. Entre novamente.",
+    );
+
+    return;
+  }
+
+  const storeId =
+    pendingDisconnectStore.id;
 
   try {
-    if (button) {
-      button.disabled = true;
-button.innerHTML =
-  "<span>⏳</span> Desconectando...";
+    const response =
+      await authenticatedIntegrationFetch(
+        `/api/app?action=disconnect_store&store_id=${encodeURIComponent(
+          storeId,
+        )}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+    const result =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !result.success
+    ) {
+      throw new Error(
+        result.error ||
+          "Não foi possível desconectar a loja.",
+      );
     }
 
-    await disconnectIntegrationStore(
-      pendingDisconnectStoreId,
-      pendingDisconnectStoreName,
-      button,
-    );
+    pendingDisconnectStore = null;
 
     closeDisconnectStoreModal();
 
-    alert("Loja desconectada com sucesso.");
+    await Promise.all([
+      loadIntegrationStores(),
+      loadMobileIntegrationStores(),
+    ]);
+
+    alert(
+      "Loja desconectada com sucesso.",
+    );
   } catch (error) {
+    console.error(
+      "Erro ao desconectar loja:",
+      error,
+    );
+
     alert(
       error.message ||
-      "Não foi possível desconectar a loja.",
+        "Erro ao desconectar a loja.",
     );
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.innerHTML =
-        "<span>🗑</span> Desconectar loja";
-    }
   }
 }
 
