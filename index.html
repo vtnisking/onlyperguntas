@@ -11745,20 +11745,12 @@ async function disconnectMobileIntegrationStore(
   await loadMobileIntegrationStores();
 }
 
-
-let pendingDisconnectStoreId = null;
-let pendingDisconnectStoreName = "";
 let pendingDisconnectStore = null;
 
 function openDisconnectStoreModal(
   storeId,
   storeName,
 ) {
-  pendingDisconnectStore = {
-    id: String(storeId),
-    name: storeName || "esta loja",
-  };
-
   const modal =
     document.getElementById(
       "disconnectStoreModal",
@@ -11769,42 +11761,52 @@ function openDisconnectStoreModal(
       "disconnectStoreName",
     );
 
+  if (!modal) {
+    console.error(
+      "Modal disconnectStoreModal não encontrado.",
+    );
+    return;
+  }
+
+  pendingDisconnectStore = {
+    id: String(storeId),
+    name: storeName || "esta loja",
+  };
+
   if (nameElement) {
     nameElement.textContent =
       pendingDisconnectStore.name;
   }
 
-  if (!modal) {
-    const confirmed = confirm(
-      `Deseja desconectar a loja "${pendingDisconnectStore.name}"?`,
-    );
+  modal.classList.add("open");
+  modal.setAttribute(
+    "aria-hidden",
+    "false",
+  );
 
-    if (confirmed) {
-      confirmDisconnectStore();
-    }
-
-    return;
-  }
-
-  modal.style.display = "flex";
+  document.body.style.overflow =
+    "hidden";
 }
 
 function closeDisconnectStoreModal() {
-  const modal = document.getElementById(
-    "disconnectStoreModal"
-  );
+  const modal =
+    document.getElementById(
+      "disconnectStoreModal",
+    );
 
   if (!modal) {
     return;
   }
 
   modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
+  modal.setAttribute(
+    "aria-hidden",
+    "true",
+  );
 
   document.body.style.overflow = "";
 
-  pendingDisconnectStoreId = null;
-  pendingDisconnectStoreName = "";
+  pendingDisconnectStore = null;
 }
 
 async function confirmDisconnectStore() {
@@ -11812,25 +11814,24 @@ async function confirmDisconnectStore() {
     alert(
       "Não foi possível identificar a loja.",
     );
-
     return;
   }
 
-  const session =
-    getCentralizeSession();
-
-  if (!session?.access_token) {
-    alert(
-      "Sua sessão expirou. Entre novamente.",
+  const button =
+    document.getElementById(
+      "confirmDisconnectStoreButton",
     );
-
-    return;
-  }
 
   const storeId =
     pendingDisconnectStore.id;
 
   try {
+    if (button) {
+      button.disabled = true;
+      button.innerHTML =
+        "<span>⏳</span> Desconectando...";
+    }
+
     const response =
       await authenticatedIntegrationFetch(
         `/api/app?action=disconnect_store&store_id=${encodeURIComponent(
@@ -11854,14 +11855,16 @@ async function confirmDisconnectStore() {
       );
     }
 
-    pendingDisconnectStore = null;
-
     closeDisconnectStoreModal();
 
-    await Promise.all([
-      loadIntegrationStores(),
-      loadMobileIntegrationStores(),
-    ]);
+    await loadIntegrationStores();
+
+    if (
+      typeof loadMobileIntegrationStores ===
+      "function"
+    ) {
+      await loadMobileIntegrationStores();
+    }
 
     alert(
       "Loja desconectada com sucesso.",
@@ -11876,27 +11879,14 @@ async function confirmDisconnectStore() {
       error.message ||
         "Erro ao desconectar a loja.",
     );
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML =
+        "<span>🗑</span> Desconectar loja";
+    }
   }
 }
-
-/* Fecha clicando fora do modal */
-document
-  .getElementById("disconnectStoreModal")
-  ?.addEventListener("click", function (event) {
-    if (event.target === this) {
-      closeDisconnectStoreModal();
-    }
-  });
-
-/* Fecha pressionando ESC */
-document.addEventListener(
-  "keydown",
-  function (event) {
-    if (event.key === "Escape") {
-      closeDisconnectStoreModal();
-    }
-  }
-);
 
 window.openDisconnectStoreModal =
   openDisconnectStoreModal;
@@ -11906,6 +11896,7 @@ window.closeDisconnectStoreModal =
 
 window.confirmDisconnectStore =
   confirmDisconnectStore;
+
 
     </script>
   </body>
