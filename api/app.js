@@ -98,7 +98,7 @@ console.log("userData:", userData);
     error: appUserError,
   } = await supabase
     .from("users_app")
-    .select("id, company_id, auth_id")
+    .select("id, company_id, auth_id, role")
     .eq("auth_id", authUser.id)
     .single();
 
@@ -244,13 +244,20 @@ if (action === "disconnect_store") {
   }
 
   try {
-    const {
-      companyId,
-      profile,
-    } = await getAuthenticatedCompany(
-      req,
-      supabase,
-    );
+    const auth =
+  await getAuthenticatedCompany(
+    req,
+    supabase,
+  );
+
+console.log(
+  "Retorno getAuthenticatedCompany:",
+  auth,
+);
+
+const companyId = auth.companyId;
+const appUser = auth.appUser;
+
 
     const storeId =
       req.body?.store_id ||
@@ -296,13 +303,26 @@ if (action === "disconnect_store") {
     }
 
     // Opcional: somente administradores podem desconectar.
-    if (profile.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        error:
-          "Somente administradores podem desconectar lojas",
-      });
-    }
+   
+if (!appUser) {
+  return res.status(401).json({
+    success: false,
+    error:
+      "Perfil do usuário autenticado não foi encontrado",
+  });
+}
+
+if (
+  appUser.role !== "admin" &&
+  appUser.role !== "owner" &&
+  appUser.role !== "superadmin"
+) {
+  return res.status(403).json({
+    success: false,
+    error:
+      "Você não tem permissão para desconectar lojas",
+  });
+}
 
     const {
       error: deleteError,
