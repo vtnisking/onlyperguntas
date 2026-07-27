@@ -186,9 +186,9 @@ if (action === "list_stores") {
       error: storesError,
     } = await supabase
       .from("stores")
-      .select(
-        "id, name, platform, seller_id, company_id, created_at",
-      )
+.select(
+  "id, name, platform, seller_id, company_id, created_at, connected_at",
+)
       .eq("company_id", companyId)
       .order("created_at", {
         ascending: false,
