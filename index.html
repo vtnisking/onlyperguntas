@@ -11817,6 +11817,15 @@ function closeDisconnectStoreModal() {
   pendingDisconnectStore = null;
 }
 
+window.openDisconnectStoreModal =
+  openDisconnectStoreModal;
+
+window.closeDisconnectStoreModal =
+  closeDisconnectStoreModal;
+
+window.confirmDisconnectStore =
+  confirmDisconnectStore;
+
 async function confirmDisconnectStore() {
   if (!pendingDisconnectStore?.id) {
     alert(
@@ -11895,15 +11904,6 @@ async function confirmDisconnectStore() {
     }
   }
 }
-
-window.openDisconnectStoreModal =
-  openDisconnectStoreModal;
-
-window.closeDisconnectStoreModal =
-  closeDisconnectStoreModal;
-
-window.confirmDisconnectStore =
-  confirmDisconnectStore;
 
 
     </script>
