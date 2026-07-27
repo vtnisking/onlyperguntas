@@ -11747,23 +11747,22 @@ async function disconnectMobileIntegrationStore(
 
 let pendingDisconnectStore = null;
 
-function openDisconnectStoreModal(
-  storeId,
-  storeName,
-) {
+function openDisconnectStoreModal(storeId, storeName) {
   const modal =
-    document.getElementById(
-      "disconnectStoreModal",
-    );
+    document.getElementById("disconnectStoreModal");
 
   const nameElement =
-    document.getElementById(
-      "disconnectStoreName",
-    );
+    document.getElementById("disconnectStoreName");
+
+  console.log("Tentando abrir modal:", {
+    modal,
+    storeId,
+    storeName,
+  });
 
   if (!modal) {
     console.error(
-      "Modal disconnectStoreModal não encontrado.",
+      "Elemento #disconnectStoreModal não encontrado.",
     );
     return;
   }
@@ -11779,13 +11778,22 @@ function openDisconnectStoreModal(
   }
 
   modal.classList.add("open");
-  modal.setAttribute(
-    "aria-hidden",
-    "false",
-  );
+  modal.setAttribute("aria-hidden", "false");
 
-  document.body.style.overflow =
-    "hidden";
+  document.body.style.overflow = "hidden";
+}
+
+function closeDisconnectStoreModal() {
+  const modal =
+    document.getElementById("disconnectStoreModal");
+
+  if (!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+
+  document.body.style.overflow = "";
+  pendingDisconnectStore = null;
 }
 
 function closeDisconnectStoreModal() {
