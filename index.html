@@ -11447,22 +11447,6 @@ const response =
 }
 
 
-function bindIntegrationDisconnectButtons(container) {
-  if (!container) return;
-
-  container
-    .querySelectorAll("[data-disconnect-store]")
-    .forEach((button) => {
-      button.addEventListener("click", () => {
-        openDisconnectStoreModal(
-          button.dataset.storeId,
-          button.dataset.storeName
-        );
-      });
-    });
-}
-
-
 function openIntegrationsSection() {
   const integrationsCard =
     document.querySelector(
@@ -11904,6 +11888,31 @@ async function confirmDisconnectStore() {
     }
   }
 }
+
+
+document.addEventListener("click", function (event) {
+  const button = event.target.closest(
+    "[data-disconnect-store]",
+  );
+
+  if (!button) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const storeId = button.dataset.storeId;
+  const storeName = button.dataset.storeName;
+
+  console.log("Clique em desconectar:", {
+    storeId,
+    storeName,
+  });
+
+  openDisconnectStoreModal(
+    storeId,
+    storeName,
+  );
+});
 
 
     </script>
