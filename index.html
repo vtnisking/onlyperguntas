@@ -11236,24 +11236,22 @@ async function loadIntegrationStores() {
             </div>
 
             <div class="integration-actions">
-              <button
-                type="button"
-                class="integration-action-btn integration-disconnect-btn"
-                data-disconnect-store
-                data-store-id="${storeId}"
-                data-store-name="${safeStoreName}"
-              >
-                Desconectar
-              </button>
+<button
+    type="button"
+    class="integration-action-btn integration-disconnect-btn"
+    onclick="openDisconnectStoreModal(
+        '${storeId}',
+        '${safeStoreName}'
+    )"
+>
+    Desconectar
+</button>
             </div>
           </article>
         `;
       })
       .join("");
-
-    bindIntegrationDisconnectButtons(
-      listElement,
-    );
+      
   } catch (error) {
     console.error(
       "Erro ao carregar integrações:",
@@ -11446,6 +11444,23 @@ const response =
     }
   }
 }
+
+
+function bindIntegrationDisconnectButtons(container) {
+  if (!container) return;
+
+  container
+    .querySelectorAll("[data-disconnect-store]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        openDisconnectStoreModal(
+          button.dataset.storeId,
+          button.dataset.storeName
+        );
+      });
+    });
+}
+
 
 function openIntegrationsSection() {
   const integrationsCard =
