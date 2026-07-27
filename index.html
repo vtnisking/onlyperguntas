@@ -5569,6 +5569,7 @@ overflow: hidden;
    CSS LOJA DESCONECTADA SOM SUCESSO
 ========================================= */
 
+
 .toast-container {
   position: fixed;
   top: 24px;
@@ -5580,6 +5581,7 @@ overflow: hidden;
 }
 
 .app-toast {
+  position: relative;
   width: 360px;
   display: flex;
   align-items: flex-start;
@@ -5592,17 +5594,16 @@ overflow: hidden;
     0 20px 40px rgba(15, 23, 42, 0.14),
     0 4px 12px rgba(15, 23, 42, 0.08);
   opacity: 0;
-  transform: translateY(-12px) scale(0.98);
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+  transform: translateY(-12px);
+  transition: 0.25s ease;
   overflow: hidden;
 }
 
 .app-toast.show {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
+
 
 .app-toast-icon {
   width: 38px;
@@ -7147,19 +7148,8 @@ overflow: hidden;
   </div>
 </div>
 
-<!-- Modal Desconectar Loja -->
-<div id="disconnectStoreModal">
-...
-</div>
-
 <!-- Toast -->
-<div id="toast" class="toast">
-  <div class="toast-icon">✓</div>
-  <div class="toast-content">
-    <div class="toast-title">Sucesso</div>
-    <div class="toast-message"></div>
-  </div>
-</div>
+<div id="toastContainer" class="toast-container"></div>
 
 </body>
 
@@ -12062,31 +12052,70 @@ document.addEventListener("click", function (event) {
 });
 
 function showToast(message, type = "success") {
-  const toast = document.getElementById("toast");
+  const container = document.getElementById("toastContainer");
 
-  toast.querySelector(".toast-title").textContent =
-    type === "success" ? "Sucesso" : "Erro";
+  if (!container) {
+    console.error("toastContainer não encontrado");
+    return;
+  }
 
-  toast.querySelector(".toast-message").textContent = message;
+  const isSuccess = type === "success";
 
-  toast.style.borderLeftColor =
-    type === "success" ? "#22c55e" : "#ef4444";
+  const toast = document.createElement("div");
+  toast.className = `app-toast ${type}`;
 
-  toast.querySelector(".toast-icon").style.background =
-    type === "success" ? "#22c55e" : "#ef4444";
+  toast.innerHTML = `
+    <div class="app-toast-icon">
+      ${isSuccess ? "✓" : "✕"}
+    </div>
 
-  toast.querySelector(".toast-icon").innerHTML =
-    type === "success" ? "✓" : "✕";
+    <div class="app-toast-body">
+      <div class="app-toast-title">
+        ${isSuccess ? "Sucesso" : "Erro"}
+      </div>
 
-  toast.classList.add("show");
+      <div class="app-toast-message"></div>
+    </div>
 
-  clearTimeout(window.toastTimer);
+    <button
+      type="button"
+      class="app-toast-close"
+      aria-label="Fechar"
+    >
+      ×
+    </button>
 
-  window.toastTimer = setTimeout(() => {
+    <div class="app-toast-progress"></div>
+  `;
+
+  toast.querySelector(".app-toast-message").textContent =
+    message;
+
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  const removeToast = () => {
     toast.classList.remove("show");
-  }, 3500);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 250);
+  };
+
+  const timer = setTimeout(removeToast, 3500);
+
+  toast
+    .querySelector(".app-toast-close")
+    .addEventListener("click", () => {
+      clearTimeout(timer);
+      removeToast();
+    });
 }
 
     </script>
+
   </body>
 </html>
