@@ -1,6 +1,7 @@
-# CentralizeChat Icon Pack
+# Chati Icon Pack
 
 Pacote de ícones SVG em estilo outline, com:
+
 - viewBox 0 0 24 24
 - stroke="currentColor"
 - stroke-width="2"
@@ -10,7 +11,7 @@ Pacote de ícones SVG em estilo outline, com:
 ## Uso
 
 ```html
-<img src="/icons/pendentes.svg" alt="Pendentes">
+<img src="/icons/pendentes.svg" alt="Pendentes" />
 ```
 
 Para controlar cor diretamente, prefira inserir o SVG inline:

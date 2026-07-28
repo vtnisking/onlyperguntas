@@ -12,7 +12,7 @@ self.addEventListener("push", (event) => {
   const title = data.title || "Nova pergunta recebida";
 
   const options = {
-    body: data.body || "Você recebeu uma nova pergunta no CentralizaChat.",
+    body: data.body || "Você recebeu uma nova pergunta no Chati.",
     icon: "/icon-192.png",
     badge: "/icon-192.png",
     vibrate: [200, 100, 200],

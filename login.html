@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - CentralizaChat</title>
+    <title>Login - Chati</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -245,7 +245,7 @@
     <div class="card">
       <div class="logo-area">
         <div class="logo-icon">💬</div>
-        <div class="logo-title">CentralizaChat</div>
+        <div class="logo-title">Chati</div>
         <div class="logo-subtitle">
           Acesse o painel de perguntas do Mercado Livre
         </div>
@@ -296,7 +296,7 @@
 
       <div class="divider"></div>
 
-      <div class="footer-text">CentralizaChat · Gestão de perguntas</div>
+      <div class="footer-text">Chati · Gestão de perguntas</div>
     </div>
 
     <script type="module">
@@ -357,7 +357,7 @@
           }
 
           localStorage.setItem(
-            "centralizachat_user",
+            "chati_user",
             JSON.stringify({
               id: userData.id,
               auth_id: authData.user.id,
@@ -375,7 +375,7 @@ if (!authData.session?.access_token) {
 }
 
 localStorage.setItem(
-  "centralizachat_session",
+  "chati_session",
   JSON.stringify({
     access_token: authData.session.access_token,
     refresh_token: authData.session.refresh_token,

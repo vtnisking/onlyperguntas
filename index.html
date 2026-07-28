@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="theme-color" content="#0f0f13" />
-    <title>CentralizaChat</title>
+    <title>Chati</title>
 
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
@@ -5920,7 +5920,7 @@ overflow: hidden;
     </button>
 
     <a href="/" class="logo-full">
-      <img src="logo.png" alt="CentralizaChat" />
+      <img src="logo.png" alt="Chati" />
     </a>
   </div>
         <div style="display: flex; align-items: center; gap: 8px">
@@ -6048,11 +6048,11 @@ overflow: hidden;
   <div class="sidebar-header">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">
-        <img src="logo.png" alt="CentralizaChat" />
+        <img src="logo.png" alt="Chati" />
       </div>
 
       <div class="sidebar-brand-text">
-        <div class="sidebar-brand-name">CentralizaChat</div>
+        <div class="sidebar-brand-name">Chati</div>
         <div class="sidebar-brand-subtitle">Atendimento</div>
       </div>
     </div>
@@ -7155,6 +7155,40 @@ overflow: hidden;
 
     <script>
 
+      function migrateStorageKeys() {
+  const migrations = [
+    {
+      oldKey: "centralizachat_user",
+      newKey: "chati_user",
+    },
+    {
+      oldKey: "centralizachat_session",
+      newKey: "chati_session",
+    },
+  ];
+
+  migrations.forEach(({ oldKey, newKey }) => {
+    const oldValue =
+      localStorage.getItem(oldKey);
+
+    const newValue =
+      localStorage.getItem(newKey);
+
+    if (oldValue && !newValue) {
+      localStorage.setItem(
+        newKey,
+        oldValue,
+      );
+    }
+
+    if (oldValue) {
+      localStorage.removeItem(oldKey);
+    }
+  });
+}
+
+migrateStorageKeys();
+
 // Variáveis globais
 
       let knownQuestionIds = new Set();
@@ -7445,7 +7479,7 @@ window.openPostSalesCase =
 
       const isDesktop = () => window.innerWidth >= 900;
       const loggedUser = JSON.parse(
-        localStorage.getItem("centralizachat_user"),
+        localStorage.getItem("chati_user"),
       );
       if (!loggedUser) {
         window.location.href = "/login.html";
@@ -7771,7 +7805,7 @@ function openMobileShopee(element) {
           A integração com a Shopee está sendo
           preparada. Em breve você poderá gerenciar
           as mensagens da sua loja diretamente pelo
-          CentralizeChat. Faz o L
+          Chati.
         </p>
       </div>
     </div>
@@ -7785,7 +7819,7 @@ async function loadPostSales() {
     const companyId =
       loggedUser?.company_id ||
       JSON.parse(
-        localStorage.getItem("centralizachat_user"),
+        localStorage.getItem("chati_user"),
       )?.company_id;
 
     if (!companyId) {
@@ -8305,7 +8339,7 @@ container.innerHTML = `
 
         try {
           user = JSON.parse(
-            localStorage.getItem("centralizachat_user") || "{}",
+            localStorage.getItem("chati_user") || "{}",
           );
         } catch (error) {
           user = {};
@@ -10913,10 +10947,10 @@ document.addEventListener(
       // INTEGRAÇÕES FUNCTIONS
       // ──────────────────────────────────────
 
-function getCentralizeSession() {
+function getChatiSession() {
   try {
     const sessionRaw = localStorage.getItem(
-      "centralizachat_session",
+      "chati_session",
     );
 
     if (sessionRaw) {
@@ -10983,7 +11017,7 @@ async function authenticatedIntegrationFetch(
   url,
   options = {},
 ) {
-  const session = getCentralizeSession();
+  const session = getChatiSession();
   const accessToken = session?.access_token;
 
   if (!accessToken) {
@@ -11059,7 +11093,7 @@ async function loadMobileIntegrationStores() {
     return;
   }
 
-  const session = getCentralizeSession();
+  const session = getChatiSession();
 
   if (!session?.access_token) {
     if (loadingElement) {
@@ -11203,7 +11237,7 @@ async function loadIntegrationStores() {
     );
 
   const session =
-    getCentralizeSession();
+    getChatiSession();
 
   if (!session?.access_token) {
     if (loadingElement) {
@@ -11449,7 +11483,7 @@ function updateIntegrationSummary(total) {
 }
 
 async function connectMercadoLivre() {
-  const session = getCentralizeSession();
+  const session = getChatiSession();
 
   if (!session?.access_token) {
     alert(
@@ -11516,7 +11550,7 @@ async function disconnectIntegrationStore(
   storeName,
   button,
 ) {
-  const session = getCentralizeSession();
+  const session = getChatiSession();
 
   if (!session?.access_token) {
     alert(
@@ -11655,7 +11689,7 @@ async function loadMobileIntegrationStores() {
   }
 
   const session =
-    getCentralizeSession();
+    getChatiSession();
 
   if (!session?.access_token) {
     listElement.innerHTML = "";
