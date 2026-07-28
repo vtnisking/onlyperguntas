@@ -774,7 +774,7 @@
         } = await supabase.auth.getSession();
 
         if (sessionError || !session?.user) {
-          localStorage.removeItem("centralizachat_user");
+          localStorage.removeItem("chati_user");
           window.location.replace("/login.html");
           return false;
         }
@@ -793,7 +793,7 @@
           userData.status !== "active"
         ) {
           await supabase.auth.signOut();
-          localStorage.removeItem("centralizachat_user");
+          localStorage.removeItem("chati_user");
           window.location.replace("/login.html");
           return false;
         }
@@ -801,7 +801,7 @@
         me = userData;
 
         localStorage.setItem(
-          "centralizachat_user",
+          "chati_user",
           JSON.stringify({
             id: userData.id,
             auth_id: session.user.id,
