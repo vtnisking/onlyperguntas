@@ -3,7 +3,7 @@ import webpush from "web-push";
 import { createClient } from "@supabase/supabase-js";
 
 webpush.setVapidDetails(
-  "mailto:admin@centralizachat.com",
+  "mailto:contato@chatiapp.com.br",
   process.env.VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY,
 );

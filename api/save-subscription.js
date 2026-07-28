@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       {
         endpoint: subscription.endpoint,
         subscription,
-        user_email: user_email || "admin@centralizachat.com",
+        user_email: user_email || "contato@chatiapp.com.br",
       },
       {
         onConflict: "endpoint",

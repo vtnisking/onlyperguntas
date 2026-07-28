@@ -640,23 +640,14 @@ body.mobile-menu-open {
 }
 
 .sidebar-brand-icon {
-  width: 44px;
-  height: 44px;
+  width: 84px;
+  height: 84px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+ 
 
-  flex-shrink: 0;
-
-  overflow: hidden;
-
-  border-radius: 12px;
-  background: linear-gradient(
-    135deg,
-    var(--accent),
-    #780000
-  );
 }
 
 .sidebar-brand-icon img {
@@ -3072,24 +3063,24 @@ overflow: hidden;
       }
 
       body.dark {
-        --bg: #0f0f13;
-        --surface: #17171f;
-        --surface2: #1e1e28;
-        --surface3: #25252f;
+        --bg: #252525;
+        --surface: #161616;
+        --surface2: #6e6e6e;
+        --surface3: #6e6e6e;
         --border: rgba(255, 255, 255, 0.07);
         --border2: rgba(255, 255, 255, 0.12);
         --accent: #6c63ff;
         --green: #22c55e;
         --yellow: #f59e0b;
         --red: #ef4444;
-        --text: #f1f1f5;
-        --text2: #9999b3;
-        --text3: #55556a;
+        --text: #d8d8d8;
+        --text2: #ffffff;
+        --text3: #f6f6f8;
       }
 
       body.dark select option {
-        background: #17171f;
-        color: #f1f1f5;
+        background: #171f17;
+        color: #f1f5f4b7;
       }
 
       .theme-toggle-mobile {
@@ -4231,10 +4222,9 @@ overflow: hidden;
     gap: 32px;
     padding: 18px 28px;
     margin-bottom: 18px;
-    background: #fff;
-    border: 1px solid #ececec;
+    background: #ffffff;
     border-radius: 18px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
+    box-shadow: 0 8px 28px rgba(228, 2, 2, 0.199);
     position:relative;
     overflow:hidden;
 }
@@ -8905,12 +8895,23 @@ if (notificationBadge) {
               loadQuestions();
             }, 800);
           } else {
-            alert("Erro ao responder.");
+            const errorCode =
+        data?.error?.error || data?.error;
+
+        const errorMessage =
+        errorCode === "not_unanswered_question"
+            ? "Essa pergunta já foi respondida ou não está mais pendente."
+            : data?.error?.message ||
+            "Não foi possível responder.";
+
+        showToast(errorMessage, "error");
+
+        loadQuestions();
             button.disabled = false;
             button.innerText = "Enviar resposta ✓";
           }
         } catch (e) {
-          alert("Erro no sistema.");
+          showToast("Erro no sistema.", "error");
           button.disabled = false;
           button.innerText = "Enviar resposta ✓";
         }
@@ -10874,12 +10875,24 @@ async function loadMonthlyRanking(containerId) {
               loadQuestions();
             }, 800);
           } else {
-            alert("Erro ao responder: " + JSON.stringify(data));
-            button.disabled = false;
-            button.innerText = originalText;
+        const errorCode =
+        data?.error?.error || data?.error;
+
+        const errorMessage =
+        errorCode === "not_unanswered_question"
+            ? "Essa pergunta já foi respondida ou não está mais pendente."
+            : data?.error?.message ||
+            "Não foi possível responder.";
+
+        showToast(errorMessage, "error");
+
+        loadQuestions();
+
+        button.disabled = false;
+        button.innerText = originalText;
           }
         } catch (e) {
-          alert("Erro: " + e.message);
+          showToast(e.message || "Erro no sistema.", "error");
           button.disabled = false;
           button.innerText = originalText;
         }
