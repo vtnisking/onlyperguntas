@@ -8123,13 +8123,6 @@ document.addEventListener("keydown", (event) => {
           <span>${item.store_name || ""}</span>
         </div>
 
-        <div class="ml-card-q-full">
-          <span class="ml-card-dot" style="margin-top:5px;flex-shrink:0;"></span>
-          <div>
-            <span class="ml-card-q-full-text">${item.text}</span>
-            <span class="ml-card-q-full-time">Há ${timeAgo(item.date_created)}</span>
-          </div>
-        </div>
 
         ${
           (item.previous_questions || []).length > 0
