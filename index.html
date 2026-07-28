@@ -3103,296 +3103,620 @@ overflow: hidden;
         background: var(--surface2);
       }
 
-      @media (min-width: 900px) {
-        .ml-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 8px;
-          margin-bottom: 10px;
-          overflow: hidden;
-          transition: box-shadow 0.2s;
-        }
+      /* =========================================================
+   PERGUNTAS PENDENTES — NOVO CARD DESKTOP
+========================================================= */
 
-        .ml-card:hover {
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        }
+.ml-card {
+  width: 100%;
+  margin-bottom: 12px;
 
-        .ml-card-product {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 14px 16px;
-          border-bottom: 1px solid var(--border);
-        }
+  overflow: hidden;
 
-        .ml-card-product img {
-          width: 52px;
-          height: 52px;
-          border-radius: 4px;
-          object-fit: cover;
-          border: 1px solid var(--border);
-          flex-shrink: 0;
-        }
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
 
-        .ml-card-product-info {
-          flex: 1;
-          min-width: 0;
-        }
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    0 10px 30px rgba(15, 23, 42, 0.03);
 
-        .ml-card-product-sku {
-          font-size: 11px;
-          color: var(--text3);
-          margin-bottom: 2px;
-        }
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
 
-        .ml-card-product-title {
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--text);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+.ml-card:hover {
+  border-color: rgba(172, 4, 1, 0.16);
 
-        .ml-card-product-meta {
-          display: flex;
-          align-items: center;
-          gap: 24px;
-          flex-shrink: 0;
-          font-size: 13px;
-          color: var(--text);
-          font-weight: 500;
-        }
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.06),
+    0 14px 36px rgba(15, 23, 42, 0.04);
+}
 
-        .ml-card-product-freight {
-          font-size: 12px;
-          color: #00a650;
-          font-weight: 600;
-        }
+/* =========================
+   PRODUTO
+========================= */
 
-        .ml-card-dots {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: none;
-          background: transparent;
-          color: var(--text3);
-          font-size: 18px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.2s;
-          flex-shrink: 0;
-        }
+.ml-card-product {
+  min-height: 94px;
 
-        .ml-card-dots:hover {
-          background: var(--surface2);
-        }
+  display: grid;
+  grid-template-columns:
+    64px
+    minmax(260px, 1fr)
+    135px
+    145px
+    125px
+    44px;
 
-        .ml-card-question-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 12px 16px;
-          cursor: pointer;
-          transition: background 0.15s;
-        }
+  align-items: center;
+  gap: 18px;
 
-        .ml-card-question-row:hover {
-          background: var(--surface2);
-        }
+  padding: 14px 18px;
 
-        .ml-card-dot {
-          width: 9px;
-          height: 9px;
-          border-radius: 50%;
-          background: #3483fa;
-          flex-shrink: 0;
-        }
+  cursor: pointer;
 
-        .ml-card-question-text {
-          flex: 1;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+  border-bottom: 1px solid var(--border);
+}
 
-        .ml-card-time {
-          font-size: 12px;
-          color: var(--text3);
-          flex-shrink: 0;
-          white-space: nowrap;
-        }
+.ml-card-product-image {
+  width: 64px;
+  height: 64px;
 
-        .ml-card-urgency {
-          font-size: 12px;
-          color: #f73;
-          font-weight: 600;
-          flex-shrink: 0;
-          white-space: nowrap;
-        }
+  display: block;
 
-        .ml-card-arrow {
-          font-size: 12px;
-          color: var(--text3);
-          flex-shrink: 0;
-          transition: transform 0.25s;
-        }
+  object-fit: cover;
 
-        .ml-card-arrow.open {
-          transform: rotate(180deg);
-        }
+  border: 1px solid var(--border);
+  border-radius: 12px;
 
-        .ml-card-expanded {
-          display: none;
-          padding: 16px;
-          border-top: 1px solid var(--border);
-          animation: mlFadeIn 0.18s ease;
-        }
+  background: var(--surface2);
+}
 
-        .ml-card-expanded.open {
-          display: block;
-        }
+.ml-card-product-placeholder {
+  width: 64px;
+  height: 64px;
 
-        @keyframes mlFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        .ml-card-client {
-          font-size: 12px;
-          color: var(--text3);
-          margin-bottom: 10px;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
+  border: 1px solid var(--border);
+  border-radius: 12px;
 
-        .ml-card-client span:first-child {
-          font-weight: 600;
-          color: var(--text2);
-        }
+  background: var(--surface2);
 
-        .ml-card-q-full {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          margin-bottom: 14px;
-        }
+  font-size: 24px;
+}
 
-        .ml-card-q-full-text {
-          font-size: 15px;
-          font-weight: 700;
-          color: var(--text);
-          line-height: 1.45;
-        }
+.ml-card-product-info {
+  min-width: 0;
+}
 
-        .ml-card-q-full-time {
-          font-size: 12px;
-          color: var(--text3);
-          margin-left: 8px;
-          font-weight: 400;
-        }
+.ml-card-product-title {
+  overflow: hidden;
 
-        .ml-quick-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 4px;
-          border: 1px solid #3483fa;
-          background: transparent;
-          color: #3483fa;
-          font-size: 13px;
-          font-weight: 600;
-          font-family: "Inter", Arial, sans-serif;
-          cursor: pointer;
-          margin-bottom: 10px;
-          transition: background 0.18s;
-        }
+  margin-bottom: 7px;
 
-        .ml-quick-btn:hover {
-          background: rgba(52, 131, 250, 0.06);
-        }
+  color: var(--text);
 
-        .ml-answer-row {
-          display: flex;
-          gap: 10px;
-          align-items: flex-start;
-        }
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
 
-        .ml-answer-wrap {
-          flex: 1;
-        }
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-        .ml-answer-wrap textarea {
-          width: 100%;
-          height: 72px;
-          border: 1px solid var(--border2);
-          border-radius: 4px;
-          background: var(--surface);
-          color: var(--text);
-          padding: 10px 14px;
-          font-size: 14px;
-          font-family: "Inter", Arial, sans-serif;
-          resize: none;
-          outline: none;
-          line-height: 1.5;
-          transition:
-            border-color 0.2s,
-            box-shadow 0.2s;
-          margin-bottom: 0;
-        }
+.ml-card-product-subtitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 
-        .ml-answer-wrap textarea:focus {
-          border-color: #3483fa;
-          box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
-        }
+  color: var(--text3);
 
-        .ml-counter-row {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 4px;
-        }
+  font-size: 12px;
+  font-weight: 500;
+}
 
-        .ml-counter-hint {
-          font-size: 12px;
-          color: var(--text3);
-        }
-        .ml-counter-num {
-          font-size: 12px;
-          color: var(--text3);
-        }
+.ml-card-product-subtitle-divider {
+  opacity: 0.65;
+}
 
-        .ml-reply-btn {
-          padding: 10px 24px;
-          border-radius: 4px;
-          border: 1px solid var(--border2);
-          background: var(--surface2);
-          color: var(--text2);
-          font-size: 14px;
-          font-weight: 600;
-          font-family: "Inter", Arial, sans-serif;
-          cursor: pointer;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: background 0.18s;
-        }
+.ml-card-product-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
-        .ml-reply-btn:hover {
-          background: var(--surface3);
-        }
-      }
+  color: var(--text2);
+}
+
+.ml-card-meta-box {
+  min-width: 0;
+
+  padding-left: 20px;
+
+  border-left: 1px solid var(--border);
+}
+
+.ml-card-meta-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 6px;
+
+  color: var(--text3);
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ml-card-meta-value {
+  color: var(--text);
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ml-card-meta-value.freight {
+  color: var(--green);
+}
+
+.ml-card-toggle {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+
+  background: var(--surface);
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.25s ease;
+}
+
+.ml-card-toggle:hover {
+  background: var(--surface2);
+  color: var(--accent);
+}
+
+.ml-card-toggle.open {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+/* =========================
+   CONTEÚDO EXPANDIDO
+========================= */
+
+.ml-card-expanded {
+  display: none;
+
+  padding: 14px 18px 18px;
+
+  animation: mlCardOpen 0.2s ease;
+}
+
+.ml-card-expanded.open {
+  display: block;
+}
+
+@keyframes mlCardOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   PERGUNTA + COMPRADOR
+========================= */
+
+.ml-question-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(330px, 1fr);
+
+  overflow: hidden;
+
+  margin-bottom: 14px;
+
+  border: 1px solid rgba(220, 38, 38, 0.11);
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.035),
+      rgba(220, 38, 38, 0.01)
+    );
+}
+
+.ml-question-content {
+  padding: 18px 20px;
+
+  border-right: 1px solid rgba(220, 38, 38, 0.09);
+}
+
+.ml-question-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 10px;
+
+  color: #dc2626;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.ml-question-text {
+  color: var(--text);
+
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ml-question-customer {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px 20px;
+}
+
+.ml-customer-avatar {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+
+  font-size: 22px;
+}
+
+.ml-customer-name {
+  overflow: hidden;
+
+  margin-bottom: 5px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ml-customer-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  color: var(--text3);
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ml-question-urgency {
+  min-width: 150px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding-left: 18px;
+
+  border-left: 1px solid rgba(220, 38, 38, 0.1);
+
+  color: #f04a1d;
+
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+/* =========================
+   PERGUNTAS ANTERIORES
+========================= */
+
+.ml-previous-area {
+  margin-bottom: 14px;
+}
+
+.ml-previous-toggle {
+  width: auto;
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+
+  background: var(--surface);
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.ml-previous-toggle:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* =========================
+   AÇÕES E RESPOSTA
+========================= */
+
+.ml-answer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  margin-bottom: 10px;
+}
+
+.ml-quick-replies-btn {
+  width: auto;
+  min-height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ml-quick-replies-btn:hover {
+  background: var(--surface2);
+  border-color: rgba(172, 4, 1, 0.22);
+}
+
+.ml-quick-replies-btn:active {
+  transform: scale(0.98);
+}
+
+.ml-answer-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.ml-counter-top {
+  color: var(--text3);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ml-reply-btn {
+  min-width: 142px;
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 0 22px;
+
+  border: none;
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    #e50914,
+    var(--accent)
+  );
+
+  color: white;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(172, 4, 1, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.ml-reply-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 11px 25px rgba(172, 4, 1, 0.25);
+}
+
+.ml-reply-btn:active {
+  transform: scale(0.98);
+}
+
+.ml-reply-btn:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ml-answer-wrap {
+  width: 100%;
+}
+
+.ml-answer-wrap textarea {
+  width: 100%;
+  min-height: 96px;
+
+  padding: 14px 16px;
+
+  resize: vertical;
+
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ml-answer-wrap textarea::placeholder {
+  color: var(--text3);
+}
+
+.ml-answer-wrap textarea:focus {
+  border-color: rgba(172, 4, 1, 0.5);
+
+  box-shadow: 0 0 0 3px rgba(172, 4, 1, 0.08);
+}
+
+.ml-answer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-top: 9px;
+
+  color: var(--text3);
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ml-answer-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* =========================
+   MODO ESCURO
+========================= */
+
+body.dark .ml-question-panel {
+  border-color: rgba(239, 68, 68, 0.12);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 0.055),
+      rgba(239, 68, 68, 0.015)
+    );
+}
+
+body.dark .ml-card {
+  box-shadow: none;
+}
+
+body.dark .ml-reply-btn {
+  background: linear-gradient(
+    135deg,
+    #d51620,
+    #8f0502
+  );
+}
+
+/* =========================
+   TELAS MENORES
+========================= */
+
+@media (max-width: 1250px) {
+  .ml-card-product {
+    grid-template-columns:
+      58px
+      minmax(220px, 1fr)
+      110px
+      125px
+      110px
+      40px;
+
+    gap: 12px;
+  }
+
+  .ml-card-meta-box {
+    padding-left: 12px;
+  }
+
+  .ml-question-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-question-content {
+    border-right: none;
+    border-bottom: 1px solid rgba(220, 38, 38, 0.09);
+  }
+}
 
 /* =====================================================
    GERENCIADOR DE RESPOSTAS RÁPIDAS
