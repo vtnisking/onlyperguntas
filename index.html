@@ -751,7 +751,7 @@
       <a href="#faq">Perguntas</a>
     </nav>
     <div class="nav-actions">
-      <a href="/login" class="btn-ghost">Entrar</a>
+      <a href="/login" class="btn-ghost" id="loginButton">Entrar</a>
       <a href="#cta" class="btn btn-primary btn-sm">Testar grátis agora</a>
     </div>
     <button class="nav-toggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
@@ -1172,7 +1172,7 @@
           <div class="sim-field">
             <label for="simMessages">Mensagens por dia</label>
             <input type="range" id="simMessages" min="20" max="500" step="10" value="150">
-            <div class="val"><span id="simMessagesVal">150</span> msgs</div>
+            <div class="val"><span id="simMessagesVal">150</span> mensagens</div>
           </div>
         </div>
 
@@ -1201,7 +1201,7 @@
       </div>
       <div class="compare-grid">
         <div class="compare-card bad reveal">
-          <h3>Sem Chati</h3>
+          <h3>Sem Chati | Chati Inteligente</h3>
           <ul class="compare-list bad">
             <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Cliente esperando enquanto você acha a aba certa</li>
             <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Mensagens que somem entre canais e nunca são respondidas</li>
@@ -1211,7 +1211,7 @@
           </ul>
         </div>
         <div class="compare-card good reveal">
-          <h3>Com Chati</h3>
+          <h3>Com Chati | Chat Inteligente</h3>
           <ul class="compare-list good">
             <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Resposta em segundos, em qualquer canal</li>
             <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Zero mensagem esquecida</li>
@@ -1926,6 +1926,31 @@
     cta.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
   })();
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loginButton = document.getElementById("loginButton");
+
+  if (!loginButton) return;
+
+  const isLoggedIn = Boolean(
+    localStorage.getItem("chati_session") ||
+    localStorage.getItem("chati_user") ||
+    sessionStorage.getItem("chati_session") ||
+    sessionStorage.getItem("chati_user")
+  );
+
+  if (isLoggedIn) {
+    loginButton.href = "/app";
+    loginButton.textContent = "Ir para o painel";
+  } else {
+    loginButton.href = "/login";
+    loginButton.textContent = "Entrar";
+  }
+});
+
+
 
 </script>
 
