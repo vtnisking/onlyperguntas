@@ -8491,11 +8491,25 @@ document.addEventListener("keydown", (event) => {
 <div class="ml-card-product-info">
 
     <div class="ml-card-product-title">
-        ...
+        ${
+            item.product_title ||
+            item.item_id ||
+            "Produto sem título"
+        }
     </div>
 
     <div class="ml-card-product-subtitle">
-        ...
+
+        ${
+            item.product_sku
+                ? `
+                    <span>
+                        SKU ${item.product_sku}
+                    </span>
+                `
+                : ""
+        }
+
     </div>
 
     <div class="question-meta">
