@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="theme-color" content="#0f0f13" />
-    <title>Chati</title>
+    <title>Chati | Chat Inteligente</title>
 
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
@@ -1049,6 +1049,53 @@ body.mobile-menu-open {
           gap: 16px;
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
         }
+
+        .question-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:8px;
+    flex-wrap:wrap;
+}
+
+.meta-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+
+    height:24px;
+    padding:0 10px;
+
+    border-radius:999px;
+
+    background:#F5F5F7;
+    border:1px solid #ECECEC;
+
+    color:#4B5563;
+    font-size:13px;
+    font-weight:500;
+    line-height:1;
+
+    white-space:nowrap;
+}
+
+.meta-chip svg{
+    width:14px;
+    height:14px;
+    opacity:.75;
+}
+
+.meta-chip.time-warning{
+    background:#FFF8E8;
+    border-color:#F6D365;
+    color:#B66A00;
+}
+
+.meta-chip.time-danger{
+    background:#FFF1F1;
+    border-color:#F5A5A5;
+    color:#D32F2F;
+}
 
         .q-row:hover {
           border-color: rgba(108, 99, 255, 0.25);
@@ -4548,7 +4595,6 @@ body.dark .ml-reply-btn {
     margin-bottom: 18px;
     background: #ffffff;
     border-radius: 18px;
-    box-shadow: 0 8px 28px rgba(228, 2, 2, 0.199);
     position:relative;
     overflow:hidden;
 }
@@ -4620,7 +4666,7 @@ body.dark .ml-reply-btn {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, .04);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     position:relative;
     overflow:hidden;
     flex: 0 0 215px;
@@ -8388,115 +8434,401 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-      function buildDesktopRow(item) {
-        const cardId = `ml-card-${item.id}`;
-        const expandId = `ml-expanded-${item.id}`;
-        const arrowId = `ml-arrow-${item.id}`;
-        const taId = `ml-ta-${item.id}`;
-        const cntId = `ml-cnt-${item.id}`;
+    function buildDesktopRow(item) {
+  const cardId = `ml-card-${item.id}`;
+  const expandId = `ml-expanded-${item.id}`;
+  const arrowId = `ml-arrow-${item.id}`;
+  const taId = `ml-ta-${item.id}`;
+  const cntId = `ml-cnt-${item.id}`;
+  const previousId = `ml-prev-${item.id}`;
 
-        return `
-    <div class="ml-card" id="${cardId}">
+  const quantity = Number(
+    item.product_quantity || 0,
+  );
 
-      <div class="ml-card-product">
+  const storeName =
+    item.store_name ||
+    "Mercado Livre";
+
+  const customer =
+    clientName(item) ||
+    "Comprador";
+
+  return `
+    <div
+      class="ml-card"
+      id="${cardId}"
+    >
+
+      <!-- PRODUTO -->
+      <div
+        class="ml-card-product"
+        onclick="toggleMlCard('${item.id}')"
+      >
+
         ${
           item.product_thumbnail
-            ? `<a href="${item.product_link || "#"}" target="_blank" style="flex-shrink:0;">
-               <img src="${item.product_thumbnail}" alt="produto" style="width:52px;height:52px;border-radius:4px;object-fit:cover;border:1px solid var(--border);display:block;">
-             </a>`
-            : `<div style="width:52px;height:52px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`
+            ? `
+              <a
+                href="${item.product_link || "#"}"
+                target="_blank"
+                onclick="event.stopPropagation()"
+              >
+                <img
+                  class="ml-card-product-image"
+                  src="${item.product_thumbnail}"
+                  alt="Imagem do produto"
+                >
+              </a>
+            `
+            : `
+              <div class="ml-card-product-placeholder">
+                📦
+              </div>
+            `
         }
-        <div class="ml-card-product-info">
-          ${item.product_sku ? `<div class="ml-card-product-sku">SKU ${item.product_sku}</div>` : ""}
-          <div class="ml-card-product-title">${item.product_title || item.item_id}</div>
+
+<div class="ml-card-product-info">
+
+    <div class="ml-card-product-title">
+        ${
+            item.product_title ||
+            item.item_id ||
+            "Produto sem título"
+        }
+    </div>
+
+    <div class="ml-card-product-subtitle">
+
+        ${
+            item.product_sku
+                ? `
+                    <span>
+                        SKU ${item.product_sku}
+                    </span>
+                `
+                : ""
+        }
+
+    </div>
+
+    <div class="question-meta">
+
+        <span class="meta-chip">
+            🛍️
+            ${storeName}
+        </span>
+
+        <span class="meta-chip">
+            🕒
+            ${formatQuestionAskedAt(item.date_created)}
+        </span>
+
+        <span class="meta-chip ${getQuestionElapsed(item.date_created).className}">
+            ⏱️
+            ${getQuestionElapsed(item.date_created).text}
+        </span>
+
+    </div>
+
+</div>
+
+        <div class="ml-card-meta-box">
+          <div class="ml-card-meta-label">
+            ◇ Estoque
+          </div>
+
+          <div class="ml-card-meta-value">
+            ${quantity} unid.
+          </div>
         </div>
-        <div class="ml-card-product-meta">
-          <div>${item.product_quantity || 0} unidades</div>
-          ${item.product_price ? `<div>${formatPrice(item.product_price)}</div>` : ""}
-          <div class="ml-card-product-freight">Frete grátis</div>
+
+        <div class="ml-card-meta-box">
+          <div class="ml-card-meta-label">
+            ◇ Preço
+          </div>
+
+          <div class="ml-card-meta-value">
+            ${
+              item.product_price
+                ? formatPrice(item.product_price)
+                : "—"
+            }
+          </div>
         </div>
-        <button class="ml-card-dots" title="Opções">•••</button>
+
+        <div class="ml-card-meta-box">
+          <div class="ml-card-meta-label">
+            🚚 Frete
+          </div>
+
+          <div class="ml-card-meta-value freight">
+            Grátis
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="ml-card-toggle"
+          id="${arrowId}"
+          aria-label="Abrir pergunta"
+          onclick="
+            event.stopPropagation();
+            toggleMlCard('${item.id}');
+          "
+        >
+         ⌄
+        </button>
+
       </div>
 
-      <div class="ml-card-question-row" onclick="toggleMlCard('${item.id}')">
-        <span class="ml-card-dot"></span>
-        <span class="ml-card-question-text">${item.text}</span>
-        <span class="ml-card-time">Há ${timeAgo(item.date_created)}</span>
-        <span class="ml-card-urgency">Responda o quanto antes</span>
-        <span class="ml-card-arrow" id="${arrowId}">▼</span>
-      </div>
+      <!-- CONTEÚDO EXPANDIDO -->
+      <div
+        class="ml-card-expanded"
+        id="${expandId}"
+      >
 
-      <div class="ml-card-expanded" id="${expandId}">
+        <!-- PERGUNTA E COMPRADOR -->
+        <div class="ml-question-panel">
 
-        <div class="ml-card-client">
-          <span>${clientName(item)}</span>
-          <span>|</span>
-          <span>${item.store_name || ""}</span>
+          <div class="ml-question-content">
+
+            <div class="ml-question-label">
+              💬 Pergunta do comprador
+            </div>
+
+            <div class="ml-question-text">
+              ${item.text || ""}
+            </div>
+
+          </div>
+
+          <div class="ml-question-customer">
+
+            <div class="ml-customer-avatar">
+              ♙
+            </div>
+
+            <div>
+
+              <div class="ml-customer-name">
+                ${customer}
+              </div>
+
+              <div class="ml-customer-meta">
+
+                <span>${storeName}</span>
+
+                <span>•</span>
+
+                <span>
+                  há ${timeAgo(item.date_created)}
+                </span>
+
+              </div>
+
+            </div>
+
+            <div class="ml-question-urgency">
+              ⏱
+              <span>
+                Responda o<br>
+                quanto antes
+              </span>
+            </div>
+
+          </div>
+
         </div>
 
-
+        <!-- PERGUNTAS ANTERIORES -->
         ${
           (item.previous_questions || []).length > 0
             ? `
-          <button class="previous-toggle" style="margin-bottom:10px;" onclick="togglePrevious('ml-prev-${item.id}')">
-            🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
-          </button>
-          <div id="ml-prev-${item.id}" style="display:none;margin-bottom:12px;">
-            ${item.previous_questions
-              .map(
-                (q) => `
-              <div class="previous" style="margin-bottom:8px;">
-                <div style="color:var(--text);font-size:13px;margin-bottom:6px;">${q.text}</div>
-                ${q.answer ? `<div style="color:var(--green);font-size:12px;margin-bottom:4px;">↳ ${q.answer}</div>` : ""}
-              <div style="color:var(--text3);font-size:11px;">
-  ${formatDate(q.answer_date_created || q.date_created)}
-  · ${q.status === "ANSWERED" ? "Respondida" : "Pendente"}
-  ${
-    q.status === "ANSWERED"
-      ? ` · Respondido por ${q.user_name || q.user_email || "Usuário"}`
-      : ""
-  }
-</div>
+              <div class="ml-previous-area">
+
+                <button
+                  type="button"
+                  class="ml-previous-toggle"
+                  onclick="
+                    togglePrevious('${previousId}')
+                  "
+                >
+                  🕘 Ver
+                  ${item.previous_questions.length}
+                  pergunta(s) anterior(es)
+                </button>
+
+                <div
+                  id="${previousId}"
+                  style="
+                    display:none;
+                    margin-top:10px;
+                  "
+                >
+                  ${item.previous_questions
+                    .map(
+                      (q) => `
+                        <div
+                          class="previous"
+                          style="margin-bottom:8px;"
+                        >
+
+                          <div
+                            style="
+                              color:var(--text);
+                              font-size:13px;
+                              margin-bottom:6px;
+                            "
+                          >
+                            ${q.text || ""}
+                          </div>
+
+                          ${
+                            q.answer
+                              ? `
+                                <div
+                                  style="
+                                    color:var(--green);
+                                    font-size:12px;
+                                    margin-bottom:5px;
+                                  "
+                                >
+                                  ↳ ${q.answer}
+                                </div>
+                              `
+                              : ""
+                          }
+
+                          <div
+                            style="
+                              color:var(--text3);
+                              font-size:11px;
+                            "
+                          >
+                            ${formatDate(
+                              q.answer_date_created ||
+                              q.date_created,
+                            )}
+
+                            · ${
+                              q.status === "ANSWERED"
+                                ? "Respondida"
+                                : "Pendente"
+                            }
+
+                            ${
+                              q.status === "ANSWERED"
+                                ? `
+                                  · Respondido por
+                                  ${
+                                    q.user_name ||
+                                    q.user_email ||
+                                    "Usuário"
+                                  }
+                                `
+                                : ""
+                            }
+                          </div>
+
+                        </div>
+                      `,
+                    )
+                    .join("")}
+                </div>
+
               </div>
-            `,
-              )
-              .join("")}
-          </div>
-        `
+            `
             : ""
         }
 
-<button
-  type="button"
-  class="mobile-question-quick-button"
-onclick="window.openQuickRepliesPicker('${taId}')"
->
-  <span>💬</span>
-  Respostas rápidas
-</button>
+        <!-- BARRA DE AÇÕES -->
+        <div class="ml-answer-toolbar">
 
-        <div class="ml-answer-row">
-          <div class="ml-answer-wrap">
-            <textarea
-              id="${taId}"
-              placeholder="Você pode enviar apenas 1 resposta. Não inclua dados de contato."
-              maxlength="2000"
-              oninput="document.getElementById('${cntId}').innerText=this.value.length+' / 2000'"
-            ></textarea>
-            <div class="ml-counter-row">
-              <span class="ml-counter-hint">ℹ️ Clique no botão de respostas rápidas.</span>
-              <span class="ml-counter-num" id="${cntId}">0 / 2000</span>
-            </div>
-          </div>
-          <button class="ml-reply-btn" onclick="sendAnswerMl('${item.id}','${item.store_id}','${taId}',this)">
-            Responder
+          <button
+            type="button"
+            class="ml-quick-replies-btn"
+            onclick="
+              window.openQuickRepliesPicker(
+                '${taId}'
+              )
+            "
+          >
+            💬 Respostas rápidas
+            <span>⌄</span>
           </button>
+
+          <div class="ml-answer-toolbar-right">
+
+            <span
+              class="ml-counter-top"
+              id="${cntId}-top"
+            >
+              0 / 2000
+            </span>
+
+            <button
+              type="button"
+              class="ml-reply-btn"
+              onclick="
+                sendAnswerMl(
+                  '${item.id}',
+                  '${item.store_id}',
+                  '${taId}',
+                  this
+                )
+              "
+            >
+              Responder
+              <span>➤</span>
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- CAMPO -->
+        <div class="ml-answer-wrap">
+
+          <textarea
+            id="${taId}"
+            maxlength="2000"
+            placeholder="Digite sua resposta..."
+            oninput="
+              document.getElementById(
+                '${cntId}'
+              ).innerText =
+                this.value.length +
+                ' / 2000';
+
+              document.getElementById(
+                '${cntId}-top'
+              ).innerText =
+                this.value.length +
+                ' / 2000';
+            "
+          ></textarea>
+
+          <div class="ml-answer-footer">
+
+            <span class="ml-answer-warning">
+              ⓘ Você pode enviar apenas 1 resposta.
+              Não inclua dados de contato.
+            </span>
+
+            <span id="${cntId}">
+              0 / 2000
+            </span>
+
+          </div>
+
         </div>
 
       </div>
+
     </div>
   `;
-      }
+}
 
       // ──────────────────────────────────────
       // SHARED: Notification
@@ -10912,6 +11244,111 @@ function togglePrevious(id) {
         });
       }
 
+      function formatQuestionAskedAt(dateString) {
+    if (!dateString) return "Horário não informado";
+
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Horário não informado";
+    }
+
+    const now = new Date();
+
+    const isToday =
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear();
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+
+    const isYesterday =
+        date.getDate() === yesterday.getDate() &&
+        date.getMonth() === yesterday.getMonth() &&
+        date.getFullYear() === yesterday.getFullYear();
+
+    const hour = date.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+    if (isToday) {
+        return `Hoje às ${hour}`;
+    }
+
+    if (isYesterday) {
+        return `Ontem às ${hour}`;
+    }
+
+    const day = date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit"
+    });
+
+    return `${day} às ${hour}`;
+}
+
+function getQuestionElapsed(dateString) {
+    if (!dateString) {
+        return {
+            text: "Tempo não informado",
+            className: ""
+        };
+    }
+
+    const createdAt = new Date(dateString);
+    const now = new Date();
+
+    if (Number.isNaN(createdAt.getTime())) {
+        return {
+            text: "Tempo não informado",
+            className: ""
+        };
+    }
+
+    const diffMilliseconds = Math.max(0, now - createdAt);
+    const totalMinutes = Math.floor(diffMilliseconds / 60000);
+
+    let text = "";
+    let className = "";
+
+    if (totalMinutes < 1) {
+        text = "Agora";
+    } else if (totalMinutes < 60) {
+        text = `Há ${totalMinutes} min`;
+    } else if (totalMinutes < 1440) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        text = minutes > 0
+            ? `Há ${hours}h ${minutes} min`
+            : `Há ${hours}h`;
+    } else {
+        const days = Math.floor(totalMinutes / 1440);
+        const remainingHours = Math.floor((totalMinutes % 1440) / 60);
+
+        text = remainingHours > 0
+            ? `Há ${days}d ${remainingHours}h`
+            : `Há ${days} dia${days > 1 ? "s" : ""}`;
+    }
+
+    // Neutro até 1 hora
+    if (totalMinutes >= 60 && totalMinutes < 180) {
+        className = "time-warning";
+    }
+
+    // Vermelho depois de 3 horas
+    if (totalMinutes >= 180) {
+        className = "time-danger";
+    }
+
+    return {
+        text,
+        className
+    };
+}
+
       function timeAgo(dateString) {
         const minutes = Math.floor((new Date() - new Date(dateString)) / 60000);
         if (minutes < 1) return "agora";
@@ -11140,14 +11577,47 @@ async function loadMonthlyRanking(containerId) {
         audio.play().catch(() => {});
       }
 
-      function toggleMlCard(id) {
-        const expanded = document.getElementById(`ml-expanded-${id}`);
-        const arrow = document.getElementById(`ml-arrow-${id}`);
-        if (!expanded) return;
-        const isOpen = expanded.classList.contains("open");
-        expanded.classList.toggle("open", !isOpen);
-        if (arrow) arrow.classList.toggle("open", !isOpen);
-      }
+  function toggleMlCard(id) {
+  const expanded = document.getElementById(
+    `ml-expanded-${id}`,
+  );
+
+  const toggle = document.getElementById(
+    `ml-arrow-${id}`,
+  );
+
+  if (!expanded) return;
+
+  const isOpen =
+    expanded.classList.contains("open");
+
+  expanded.classList.toggle(
+    "open",
+    !isOpen,
+  );
+
+  if (toggle) {
+    toggle.classList.toggle(
+      "open",
+      !isOpen,
+    );
+
+    toggle.setAttribute(
+      "aria-label",
+      isOpen
+        ? "Abrir pergunta"
+        : "Fechar pergunta",
+    );
+  }
+
+  if (!isOpen) {
+    setTimeout(() => {
+      document
+        .getElementById(`ml-ta-${id}`)
+        ?.focus();
+    }, 150);
+  }
+}
 
       async function sendAnswerMl(questionId, storeId, taId, button) {
         const textarea = document.getElementById(taId);
