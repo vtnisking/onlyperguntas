@@ -302,6 +302,19 @@
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+
+// Se já estiver logado, vai direto para o sistema
+const hasSession = Boolean(
+  localStorage.getItem("chati_session") ||
+  localStorage.getItem("chati_user") ||
+  sessionStorage.getItem("chati_session") ||
+  sessionStorage.getItem("chati_user")
+);
+
+if (hasSession && window.location.pathname !== "/app") {
+    window.location.replace("/app");
+}
+
       const supabase = createClient(
         "https://vspcitxnssbsztqnfhmj.supabase.co",
         "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
@@ -385,7 +398,7 @@ localStorage.setItem(
   }),
 );
 
-          window.location.href = "/app";
+          window.location.replace("/app");
         } catch (error) {
           errorBox.innerText = "⚠️ " + error.message;
           btn.innerText = "Entrar na conta";
