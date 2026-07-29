@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
       "source": "/api/meli-callback",
       "destination": "/api/app?action=meli_callback"
     }
