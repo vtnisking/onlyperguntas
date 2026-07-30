@@ -572,6 +572,49 @@ console.log(req.headers);
       });
     }
 
+if (action === "detail") {
+  const claimId = String(
+    req.query.claim_id || "",
+  ).trim();
+
+  const storeId = String(
+    req.query.store_id || "",
+  ).trim();
+
+  if (!claimId || !storeId) {
+    return res.status(400).json({
+      success: false,
+      error:
+        "claim_id e store_id são obrigatórios",
+    });
+  }
+
+  const store = (stores || []).find(
+    (item) =>
+      String(item.id) === storeId,
+  );
+
+  if (!store) {
+    return res.status(404).json({
+      success: false,
+      error: "Loja não encontrada",
+    });
+  }
+
+  const messages =
+    await safeGetClaimMessages(
+      store,
+      supabase,
+      claimId,
+    );
+
+  return res.status(200).json({
+    success: true,
+    claim_id: claimId,
+    messages,
+  });
+}
+
     if (action !== "overview" && action !== "claims") {
       return res.status(404).json({ success: false, error: "Ação não encontrada" });
     }

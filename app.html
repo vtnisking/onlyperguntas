@@ -6045,6 +6045,557 @@ body.dark .ml-reply-btn {
     width: auto;
   }
 }
+
+.ps-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+
+  display: none;
+
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(4px);
+}
+
+.ps-detail-overlay.open {
+  display: block;
+}
+
+.ps-detail-page {
+  width: 100%;
+  height: 100vh;
+
+  overflow: hidden;
+
+  background: var(--bg);
+}
+
+.ps-detail-header {
+  min-height: 80px;
+
+  display: grid;
+  grid-template-columns: 260px 1fr 220px;
+  align-items: center;
+  gap: 20px;
+
+  padding: 0 28px;
+
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.ps-detail-back {
+  width: max-content;
+
+  border: none;
+
+  background: transparent;
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.ps-detail-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ps-detail-header-title h2 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.ps-detail-status-badge,
+.ps-status-badge {
+  display: inline-flex;
+
+  width: max-content;
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  background: #ffe8e8;
+  color: #c40000;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ps-detail-marketplace {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.ps-detail-marketplace-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffe600;
+}
+
+.ps-detail-loading {
+  height: calc(100vh - 80px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text3);
+
+  font-size: 14px;
+}
+
+.ps-detail-content {
+  height: calc(100vh - 80px);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+}
+
+.ps-detail-main {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 22px;
+
+  overflow: hidden;
+}
+
+.ps-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  margin-bottom: 18px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.ps-detail-summary-item {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 17px;
+
+  border-right: 1px solid var(--border);
+}
+
+.ps-detail-summary-item:last-child {
+  border-right: none;
+}
+
+.ps-detail-summary-item span,
+.ps-sidebar-item > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--text3);
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ps-detail-summary-item strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-detail-avatar,
+.ps-detail-summary-icon {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--surface2);
+  color: var(--text2);
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ps-conversation-card {
+  min-height: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.ps-conversation-header {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.ps-conversation-header strong {
+  margin-right: 8px;
+
+  color: var(--text);
+
+  font-size: 14px;
+}
+
+.ps-message-count {
+  padding: 4px 9px;
+
+  border-radius: 999px;
+
+  background: var(--surface2);
+}
+
+.ps-conversation-messages {
+  flex: 1;
+
+  padding: 22px;
+
+  overflow-y: auto;
+}
+
+.ps-message {
+  display: flex;
+
+  margin-bottom: 16px;
+}
+
+.ps-message.seller {
+  justify-content: flex-end;
+}
+
+.ps-message.system,
+.ps-message.buyer {
+  justify-content: flex-start;
+}
+
+.ps-message-content {
+  max-width: 68%;
+
+  padding: 12px 14px;
+
+  border-radius: 13px;
+
+  background: var(--surface2);
+  color: var(--text);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ps-message.seller .ps-message-content {
+  background: #e4edff;
+}
+
+.ps-message-meta {
+  margin-top: 6px;
+
+  color: var(--text3);
+
+  font-size: 10px;
+}
+
+.ps-composer {
+  margin-top: 14px;
+}
+
+.ps-composer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 9px;
+}
+
+.ps-composer-toolbar button {
+  min-height: 36px;
+  padding: 0 13px;
+
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+
+  background: var(--surface);
+  color: var(--text2);
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.ps-composer-toolbar .ps-ai-button {
+  margin-left: auto;
+
+  background: #f1efff;
+  color: #635bdb;
+}
+
+.ps-composer-box {
+  padding: 12px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+}
+
+.ps-composer-box textarea {
+  min-height: 90px;
+  margin: 0;
+
+  border: none;
+
+  background: transparent;
+  box-shadow: none;
+}
+
+.ps-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.ps-composer-footer span {
+  color: var(--text3);
+
+  font-size: 11px;
+}
+
+.ps-composer-footer button {
+  min-height: 40px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: linear-gradient(135deg, var(--accent), #c80000);
+  color: white;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.ps-composer-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ps-detail-sidebar {
+  padding: 24px;
+
+  overflow-y: auto;
+
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+}
+
+.ps-detail-sidebar h3 {
+  margin: 0 0 24px;
+
+  color: var(--text);
+
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.ps-sidebar-item {
+  margin-bottom: 20px;
+}
+
+.ps-sidebar-item strong,
+.ps-sidebar-item p {
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ps-sidebar-item p {
+  margin: 0;
+
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.ps-sidebar-divider {
+  height: 1px;
+
+  margin: 22px 0;
+
+  background: var(--border);
+}
+
+.ps-product-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.ps-product-card img {
+  width: 76px;
+  height: 76px;
+
+  object-fit: contain;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: white;
+}
+
+.ps-product-card strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ps-product-card span {
+  color: var(--text2);
+
+  font-size: 12px;
+}
+
+.ps-reason-badge {
+  display: inline-flex;
+
+  padding: 7px 11px;
+
+  border-radius: 8px;
+
+  background: #ffe9e9;
+  color: #c40000 !important;
+}
+
+body.ps-detail-open {
+  overflow: hidden;
+}
+
+@media (max-width: 1050px) {
+  .ps-detail-content {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .ps-detail-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ps-detail-summary-item:nth-child(2) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .ps-detail-header {
+    grid-template-columns: 1fr auto;
+    padding: 0 16px;
+  }
+
+  .ps-detail-header-title {
+    justify-content: flex-start;
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .ps-detail-back {
+    grid-row: 2;
+  }
+
+  .ps-detail-marketplace {
+    grid-row: 2;
+  }
+
+  .ps-detail-content {
+    display: block;
+    overflow-y: auto;
+  }
+
+  .ps-detail-main {
+    overflow: visible;
+  }
+
+  .ps-detail-sidebar {
+    border-top: 1px solid var(--border);
+    border-left: none;
+  }
+
+  .ps-detail-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ps-detail-summary-item {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
       
     </style>
   </head>
@@ -6125,6 +6676,237 @@ body.dark .ml-reply-btn {
       src="./notification.mp3"
       preload="auto"
     ></audio>
+
+      <!-- ══════════════ MODAL RECLAMAÇÕES ABERTA ══════════════ -->
+
+      <div
+  id="postSalesDetailOverlay"
+  class="ps-detail-overlay"
+  onclick="closePostSalesDetailOnBackdrop(event)"
+>
+  <section
+    class="ps-detail-page"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="psDetailTitle"
+  >
+    <header class="ps-detail-header">
+      <button
+        type="button"
+        class="ps-detail-back"
+        onclick="closePostSalesDetail()"
+      >
+        ‹ Voltar para reclamações
+      </button>
+
+      <div class="ps-detail-header-title">
+        <h2 id="psDetailTitle">Reclamação</h2>
+
+        <span
+          id="psDetailStatusBadge"
+          class="ps-detail-status-badge"
+        >
+          Aberta
+        </span>
+      </div>
+
+      <div class="ps-detail-marketplace">
+        <span class="ps-detail-marketplace-icon">🤝</span>
+        Mercado Livre
+      </div>
+    </header>
+
+    <div id="psDetailLoading" class="ps-detail-loading">
+      Carregando atendimento...
+    </div>
+
+    <div
+      id="psDetailContent"
+      class="ps-detail-content"
+      style="display:none"
+    >
+      <main class="ps-detail-main">
+        <div class="ps-detail-summary">
+          <div class="ps-detail-summary-item">
+            <div
+              class="ps-detail-avatar"
+              id="psDetailBuyerAvatar"
+            >
+              C
+            </div>
+
+            <div>
+              <span>Comprador</span>
+              <strong id="psDetailBuyerName">—</strong>
+            </div>
+          </div>
+
+          <div class="ps-detail-summary-item">
+            <div class="ps-detail-summary-icon">▢</div>
+
+            <div>
+              <span>Pedido</span>
+              <strong id="psDetailOrderId">—</strong>
+            </div>
+          </div>
+
+          <div class="ps-detail-summary-item">
+            <div class="ps-detail-summary-icon">◇</div>
+
+            <div>
+              <span>Produto</span>
+              <strong id="psDetailProductTitle">—</strong>
+            </div>
+          </div>
+
+          <div class="ps-detail-summary-item">
+            <div class="ps-detail-summary-icon">□</div>
+
+            <div>
+              <span>Prazo</span>
+              <strong id="psDetailDeadline">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <section class="ps-conversation-card">
+          <div class="ps-conversation-header">
+            <div>
+              <strong>Conversa</strong>
+
+              <span
+                id="psDetailMessageCount"
+                class="ps-message-count"
+              >
+                0 mensagens
+              </span>
+            </div>
+
+            <span>Mais antigas primeiro</span>
+          </div>
+
+          <div
+            id="psDetailMessages"
+            class="ps-conversation-messages"
+          ></div>
+        </section>
+
+        <section class="ps-composer">
+          <div class="ps-composer-toolbar">
+            <button
+              type="button"
+              onclick="openPostSalesQuickReplies()"
+            >
+              ⚡ Respostas rápidas
+            </button>
+
+            <button type="button" disabled>
+              📎 Anexos
+            </button>
+
+            <button
+              type="button"
+              class="ps-ai-button"
+              disabled
+            >
+              ✨ IA sugerir resposta
+            </button>
+          </div>
+
+          <div class="ps-composer-box">
+            <textarea
+              id="psDetailReply"
+              maxlength="350"
+              placeholder="Escreva sua resposta para o comprador..."
+              oninput="updatePostSalesReplyCounter()"
+            ></textarea>
+
+            <div class="ps-composer-footer">
+              <span id="psDetailReplyCounter">0/350</span>
+
+              <button
+                type="button"
+                id="psDetailSendButton"
+                onclick="sendPostSalesReply()"
+                disabled
+              >
+                ➤ Responder
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="ps-detail-sidebar">
+        <h3>Informações do caso</h3>
+
+        <div class="ps-sidebar-item">
+          <span>Loja</span>
+          <strong id="psDetailStoreName">—</strong>
+        </div>
+
+        <div class="ps-sidebar-item">
+          <span>Comprador</span>
+          <strong id="psDetailSidebarBuyer">—</strong>
+        </div>
+
+        <div class="ps-sidebar-divider"></div>
+
+        <div class="ps-product-card">
+          <img
+            id="psDetailProductImage"
+            src=""
+            alt="Produto"
+          >
+
+          <div>
+            <strong id="psDetailSidebarProduct">—</strong>
+
+            <span id="psDetailProductPrice">—</span>
+          </div>
+        </div>
+
+        <div class="ps-sidebar-divider"></div>
+
+        <div class="ps-sidebar-item">
+          <span>Motivo da reclamação</span>
+
+          <strong
+            id="psDetailReason"
+            class="ps-reason-badge"
+          >
+            —
+          </strong>
+        </div>
+
+        <div class="ps-sidebar-item">
+          <span>Descrição</span>
+          <p id="psDetailDescription">—</p>
+        </div>
+
+        <div class="ps-sidebar-divider"></div>
+
+        <div class="ps-sidebar-item">
+          <span>Status do atendimento</span>
+
+          <strong
+            id="psDetailSidebarStatus"
+            class="ps-status-badge"
+          >
+            —
+          </strong>
+        </div>
+
+        <div class="ps-sidebar-item">
+          <span>Data de abertura</span>
+          <strong id="psDetailCreatedAt">—</strong>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+
+
 
     <!-- ══════════════ MOBILE ══════════════ -->
      <div
@@ -7823,7 +8605,139 @@ const matchesFilter =
 
 }
 
-function openPostSalesCase(caseId) {
+let selectedPostSalesCaseId = null;
+
+function getPostSalesInitials(name) {
+  const value = String(name || "Cliente").trim();
+
+  const parts = value.split(/\s+/).filter(Boolean);
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return (
+    parts[0][0] +
+    parts[parts.length - 1][0]
+  ).toUpperCase();
+}
+
+function formatPostSalesDate(value) {
+  if (!value || Number.isNaN(Date.parse(value))) {
+    return "—";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function normalizePostSalesMessage(message) {
+  const text =
+    message?.message ||
+    message?.text ||
+    message?.content ||
+    message?.body ||
+    "Mensagem sem conteúdo.";
+
+  const sender =
+    String(
+      message?.sender_role ||
+      message?.sender?.role ||
+      message?.from ||
+      message?.role ||
+      "",
+    ).toLowerCase();
+
+  let type = "system";
+
+  if (
+    sender.includes("seller") ||
+    sender.includes("respondent")
+  ) {
+    type = "seller";
+  } else if (
+    sender.includes("buyer") ||
+    sender.includes("complainant")
+  ) {
+    type = "buyer";
+  }
+
+  return {
+    text,
+    type,
+    date:
+      message?.date_created ||
+      message?.created_at ||
+      message?.date ||
+      null,
+  };
+}
+
+function renderPostSalesMessages(messages) {
+  const container =
+    document.getElementById("psDetailMessages");
+
+  if (!container) return;
+
+  const normalized = Array.isArray(messages)
+    ? messages
+        .map(normalizePostSalesMessage)
+        .sort(
+          (a, b) =>
+            new Date(a.date || 0) -
+            new Date(b.date || 0),
+        )
+    : [];
+
+  document.getElementById(
+    "psDetailMessageCount",
+  ).textContent =
+    normalized.length === 1
+      ? "1 mensagem"
+      : `${normalized.length} mensagens`;
+
+  if (!normalized.length) {
+    container.innerHTML = `
+      <div
+        style="
+          padding:40px;
+          color:var(--text3);
+          text-align:center;
+          font-size:13px;
+        "
+      >
+        Nenhuma mensagem disponível.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = normalized
+    .map(
+      (message) => `
+        <div class="ps-message ${message.type}">
+          <div class="ps-message-content">
+            ${escapeHtml(message.text)}
+
+            <div class="ps-message-meta">
+              ${formatPostSalesDate(message.date)}
+            </div>
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+
+  container.scrollTop = container.scrollHeight;
+}
+
+async function openPostSalesCase(caseId) {
   const item = postSalesCasesCache.find(
     (caseItem) =>
       String(caseItem.id) === String(caseId),
@@ -7834,41 +8748,234 @@ function openPostSalesCase(caseId) {
     return;
   }
 
+  selectedPostSalesCaseId = String(caseId);
+
+  const overlay =
+    document.getElementById(
+      "postSalesDetailOverlay",
+    );
+
+  const loading =
+    document.getElementById(
+      "psDetailLoading",
+    );
+
+  const content =
+    document.getElementById(
+      "psDetailContent",
+    );
+
+  overlay?.classList.add("open");
+  document.body.classList.add("ps-detail-open");
+
+  if (loading) loading.style.display = "flex";
+  if (content) content.style.display = "none";
+
+  document.getElementById(
+    "psDetailTitle",
+  ).textContent =
+    `Reclamação #${item.claim_id || item.id}`;
+
+  document.getElementById(
+    "psDetailStatusBadge",
+  ).textContent =
+    item.raw_status === "closed"
+      ? "Encerrada"
+      : "Aberta";
+
+  document.getElementById(
+    "psDetailBuyerAvatar",
+  ).textContent =
+    getPostSalesInitials(item.buyer_name);
+
+  document.getElementById(
+    "psDetailBuyerName",
+  ).textContent =
+    item.buyer_name || "Cliente";
+
+  document.getElementById(
+    "psDetailSidebarBuyer",
+  ).textContent =
+    item.buyer_name || "Cliente";
+
+  document.getElementById(
+    "psDetailOrderId",
+  ).textContent =
+    `#${item.order_id || "—"}`;
+
+  document.getElementById(
+    "psDetailProductTitle",
+  ).textContent =
+    item.product_title || "Produto";
+
+  document.getElementById(
+    "psDetailSidebarProduct",
+  ).textContent =
+    item.product_title || "Produto";
+
+  document.getElementById(
+    "psDetailDeadline",
+  ).textContent =
+    item.deadline || "—";
+
+  document.getElementById(
+    "psDetailStoreName",
+  ).textContent =
+    item.store_name || "Mercado Livre";
+
+  document.getElementById(
+    "psDetailReason",
+  ).textContent =
+    item.reason || "Reclamação";
+
+  document.getElementById(
+    "psDetailDescription",
+  ).textContent =
+    item.description || "Sem descrição.";
+
+  document.getElementById(
+    "psDetailSidebarStatus",
+  ).textContent =
+    item.title || "Atendimento aberto";
+
+  document.getElementById(
+    "psDetailCreatedAt",
+  ).textContent =
+    formatPostSalesDate(item.date_created);
+
+  document.getElementById(
+    "psDetailProductPrice",
+  ).textContent =
+    `${formatPostSalesPrice(item.price)} • ${
+      Number(item.quantity || 1)
+    } unidade(s)`;
+
+  const image =
+    document.getElementById(
+      "psDetailProductImage",
+    );
+
+  if (image) {
+    image.src = item.product_thumbnail || "";
+    image.style.display =
+      item.product_thumbnail
+        ? "block"
+        : "none";
+  }
+
+  try {
+    const response =
+      await authenticatedIntegrationFetch(
+        `/api/post-sales?action=detail&claim_id=${
+          encodeURIComponent(caseId)
+        }&store_id=${
+          encodeURIComponent(item.store_id)
+        }`,
+        {
+          method: "GET",
+        },
+      );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error ||
+        "Erro ao carregar o atendimento.",
+      );
+    }
+
+    renderPostSalesMessages(
+      data.messages || [],
+    );
+
+    if (loading) loading.style.display = "none";
+    if (content) content.style.display = "grid";
+  } catch (error) {
+    console.error(
+      "Erro ao abrir atendimento:",
+      error,
+    );
+
+    renderPostSalesMessages([]);
+
+    if (loading) {
+      loading.innerHTML = `
+        <div style="text-align:center;">
+          Não foi possível carregar o atendimento.
+          <br>
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+    }
+  }
+}
+
+function closePostSalesDetail() {
+  document
+    .getElementById("postSalesDetailOverlay")
+    ?.classList.remove("open");
+
+  document.body.classList.remove("ps-detail-open");
+
+  selectedPostSalesCaseId = null;
+}
+
+function closePostSalesDetailOnBackdrop(event) {
+  if (event.target.id === "postSalesDetailOverlay") {
+    closePostSalesDetail();
+  }
+}
+
+function updatePostSalesReplyCounter() {
+  const textarea =
+    document.getElementById("psDetailReply");
+
+  const counter =
+    document.getElementById(
+      "psDetailReplyCounter",
+    );
+
+  if (!textarea || !counter) return;
+
+  counter.textContent =
+    `${textarea.value.length}/350`;
+}
+
+function openPostSalesQuickReplies() {
+  const textareaId = "psDetailReply";
+
+  if (
+    typeof window.openQuickRepliesPicker ===
+    "function"
+  ) {
+    window.openQuickRepliesPicker(textareaId);
+  }
+}
+
+function sendPostSalesReply() {
   alert(
-    `Abriremos o atendimento do pedido ${item.order_id} na próxima etapa.`,
+    "O envio real da resposta será conectado na próxima etapa.",
   );
 }
 
-window.loadPostSales = loadPostSales;
-window.changePostSalesTab = changePostSalesTab;
-window.changePostSalesFilter =
-  changePostSalesFilter;
-window.renderPostSalesCases =
-  renderPostSalesCases;
 window.openPostSalesCase =
   openPostSalesCase;
 
-      const isDesktop = () => window.innerWidth >= 900;
-      const loggedUser = JSON.parse(
-        localStorage.getItem("chati_user"),
-      );
-      if (!loggedUser) {
-        window.location.href = "/login.html";
-      }
+window.closePostSalesDetail =
+  closePostSalesDetail;
 
-      // Preenche info do usuário no desktop
-      if (loggedUser) {
-        const nameEl = document.getElementById("desktopUserName");
-        const avatarEl = document.getElementById("desktopUserAvatar");
-        const settingsName = document.getElementById("dSettingsName");
-        const settingsEmail = document.getElementById("dSettingsEmail");
-        if (nameEl) nameEl.innerText = loggedUser.name || loggedUser.email;
-        if (avatarEl)
-          avatarEl.innerText = (loggedUser.name ||
-            loggedUser.email ||
-            "?")[0].toUpperCase();
-        if (settingsName) settingsName.innerText = loggedUser.name;
-        if (settingsEmail) settingsEmail.innerText = loggedUser.email;
+window.closePostSalesDetailOnBackdrop =
+  closePostSalesDetailOnBackdrop;
+
+window.updatePostSalesReplyCounter =
+  updatePostSalesReplyCounter;
+
+window.openPostSalesQuickReplies =
+  openPostSalesQuickReplies;
+
+window.sendPostSalesReply =
+  sendPostSalesReply;
 
         
 function getDashboardInitials(name, email) {
@@ -7947,7 +9054,7 @@ document.addEventListener(
 );
 
 
-      }
+      
 
       function logout() {
         localStorage.clear();
