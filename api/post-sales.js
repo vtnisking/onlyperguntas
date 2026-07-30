@@ -268,6 +268,12 @@ function normalizeMessageText(message) {
 }
 
 async function fetchClaimsForStore(store, supabase) {
+     if (!store.seller_id) {
+    throw new Error(
+      `A loja ${store.name || store.id} não possui seller_id.`,
+    );
+  }
+
   const endpoints = [
     "/post-purchase/v1/claims/search",
     "/claims/search",
@@ -282,10 +288,11 @@ async function fetchClaimsForStore(store, supabase) {
         method: "GET",
         url: endpoint,
         params: {
-          role: "respondent",
-          limit: 50,
-          offset: 0,
-          sort: "last_updated:desc",
+        user_id: store.seller_id,
+        role: "respondent",
+        limit: 50,
+        offset: 0,
+        sort: "last_updated:desc",
         },
       });
       payload = response.data;
