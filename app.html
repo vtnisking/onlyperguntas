@@ -8318,6 +8318,27 @@ body.ps-detail-open {
 
 migrateStorageKeys();
 
+const isDesktop = () => window.innerWidth >= 900;
+
+let loggedUser = null;
+
+try {
+  loggedUser = JSON.parse(
+    localStorage.getItem("chati_user") || "null",
+  );
+} catch (error) {
+  console.error(
+    "Erro ao ler usuário salvo:",
+    error,
+  );
+
+  localStorage.removeItem("chati_user");
+}
+
+if (!loggedUser) {
+  window.location.replace("/login");
+}
+
 // Variáveis globais
 
       let knownQuestionIds = new Set();
