@@ -7548,9 +7548,22 @@ migrateStorageKeys();
       let postSalesCasesCache = [];
 
         function updatePostSalesCounters() {
-  const claims = postSalesCasesCache.filter(
-    (item) => item.type === "claims",
-  ).length;
+
+            const claims = postSalesCasesCache.filter(
+  (item) => {
+    const rawStatus = String(
+      item.raw_status || "",
+    ).toLowerCase();
+
+    return (
+      item.type === "claims" &&
+      (
+        rawStatus === "opened" ||
+        rawStatus === "open"
+      )
+    );
+  },
+).length;
 
     const messages = postSalesCasesCache.filter(
     (item) => Number(item.messages_count || 0) > 0,
@@ -7648,10 +7661,27 @@ function renderPostSalesCases() {
       .toLowerCase() || "";
 
   const cases = postSalesCasesCache.filter((item) => {
-  const matchesTab =
-  postSalesCurrentTab === "messages"
-    ? Number(item.messages_count || 0) > 0
-    : item.type === postSalesCurrentTab;
+  const rawStatus = String(
+  item.raw_status || "",
+).toLowerCase();
+
+const isOpen =
+  rawStatus === "opened" ||
+  rawStatus === "open";
+
+let matchesTab = false;
+
+if (postSalesCurrentTab === "messages") {
+  matchesTab =
+    Number(item.messages_count || 0) > 0;
+} else if (postSalesCurrentTab === "claims") {
+  matchesTab =
+    item.type === "claims" &&
+    isOpen;
+} else if (postSalesCurrentTab === "returns") {
+  matchesTab =
+    item.type === "returns";
+}
 
 const matchesFilter =
   postSalesCurrentFilter === "all" ||
