@@ -7552,9 +7552,9 @@ migrateStorageKeys();
     (item) => item.type === "claims",
   ).length;
 
-  const messages = postSalesCasesCache.filter(
-    (item) => item.type === "messages",
-  ).length;
+    const messages = postSalesCasesCache.filter(
+    (item) => Number(item.messages_count || 0) > 0,
+    ).length;
 
   const returns = postSalesCasesCache.filter(
     (item) => item.type === "returns",
@@ -7641,8 +7641,10 @@ function renderPostSalesCases() {
       .toLowerCase() || "";
 
   const cases = postSalesCasesCache.filter((item) => {
-    const matchesTab =
-      item.type === postSalesCurrentTab;
+  const matchesTab =
+  postSalesCurrentTab === "messages"
+    ? Number(item.messages_count || 0) > 0
+    : item.type === postSalesCurrentTab;
 
     const matchesFilter =
       item.status === postSalesCurrentFilter;
@@ -7747,11 +7749,19 @@ function renderPostSalesCases() {
               )}
             </div>
 
-            <div class="post-sales-last-message">
-              ${escapeHtml(
-                item.last_message,
-              )}
-            </div>
+<div class="post-sales-last-message">
+  ${
+    Number(item.messages_count || 0) > 0
+      ? `
+        <strong>
+          ${Number(item.messages_count)} mensagem(ns)
+        </strong>
+        <br>
+        ${escapeHtml(item.last_message)}
+      `
+      : "Nenhuma mensagem disponível."
+  }
+</div>
           </div>
 
           <div class="post-sales-actions">
@@ -7772,7 +7782,7 @@ function renderPostSalesCases() {
       `,
     )
     .join("");
-    
+
 }
 
 function openPostSalesCase(caseId) {
