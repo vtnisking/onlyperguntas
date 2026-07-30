@@ -7545,28 +7545,7 @@ migrateStorageKeys();
       let postSalesCurrentTab = "claims";
       let postSalesCurrentFilter = "attention";
 
-      let postSalesCasesCache = [
-        {
-            id: "claim-001",
-            type: "claims",
-            status: "attention",
-            order_id: "2000017030374536",
-            product_title:
-            "Módulo Injeção Honda CB 250F Twister 2016 a 2022 Original",
-            product_thumbnail:
-            "https://http2.mlstatic.com/D_NQ_NP_2X_825819-MLB00000000000_000000-F.webp",
-            price: 599.9,
-            quantity: 1,
-            store_name: "Mercado Livre",
-            reason: "Produto não compatível com o veículo",
-            title: "Mediação para responder hoje",
-            description:
-            "Precisamos da sua resposta para prosseguir com o caso.",
-            last_message:
-            "Mercado Livre: Olá! Precisamos de mais informações para continuar a análise.",
-            deadline: "Responder hoje",
-        },
-        ];
+      let postSalesCasesCache = [];
 
         function updatePostSalesCounters() {
   const claims = postSalesCasesCache.filter(
@@ -7674,6 +7653,7 @@ function renderPostSalesCases() {
       item.reason,
       item.title,
       item.store_name,
+      item.buyer_name,
     ]
       .join(" ")
       .toLowerCase();
@@ -7792,11 +7772,7 @@ function renderPostSalesCases() {
       `,
     )
     .join("");
-}
-
-function loadPostSales() {
-  updatePostSalesCounters();
-  renderPostSalesCases();
+    
 }
 
 function openPostSalesCase(caseId) {
@@ -8160,52 +8136,72 @@ function openMobileShopee(element) {
 }
 
 async function loadPostSales() {
+  const container = document.getElementById("postSalesList");
+  const refreshButtons = document.querySelectorAll(".post-sales-refresh");
+
   try {
-    console.log("Iniciando teste do Pós-vendas...");
-
-    const companyId =
-      loggedUser?.company_id ||
-      JSON.parse(
-        localStorage.getItem("chati_user"),
-      )?.company_id;
-
-    if (!companyId) {
-      throw new Error(
-        "Não foi possível identificar o company_id do usuário.",
-      );
+    if (container) {
+      container.innerHTML = `
+        <div class="post-sales-loading">
+          Carregando dados reais do Mercado Livre...
+        </div>
+      `;
     }
 
-    const response = await fetch(
-      `/api/post-sales?action=test&company_id=${encodeURIComponent(companyId)}`,
+    refreshButtons.forEach((button) => {
+      button.disabled = true;
+      button.classList.add("loading");
+    });
+
+    const response = await authenticatedIntegrationFetch(
+      "/api/post-sales?action=overview",
+      { method: "GET" },
     );
 
     const data = await response.json();
 
-    console.log("POST SALES:", data);
-
     if (!response.ok || !data.success) {
-      throw new Error(
-        data.error || "Erro ao carregar o Pós-vendas",
-      );
+      throw new Error(data.error || "Erro ao carregar o Pós-vendas");
     }
+
+    postSalesCasesCache = Array.isArray(data.cases)
+      ? data.cases
+      : [];
 
     updatePostSalesCounters();
     renderPostSalesCases();
-  } catch (error) {
-    console.error("Erro no teste do Pós-vendas:", error);
 
-    const container =
-      document.getElementById("postSalesList");
+    if (Array.isArray(data.warnings) && data.warnings.length) {
+      console.warn("Avisos do Pós-vendas:", data.warnings);
+    }
+  } catch (error) {
+    console.error("Erro ao carregar o Pós-vendas:", error);
+
+    postSalesCasesCache = [];
+    updatePostSalesCounters();
 
     if (container) {
       container.innerHTML = `
         <div class="post-sales-empty">
-          Erro ao conectar com a API de Pós-vendas:
+          <strong>Não foi possível carregar o Pós-vendas.</strong>
           <br>
           ${escapeHtml(error.message)}
+          <br><br>
+          <button
+            type="button"
+            class="post-sales-open-button"
+            onclick="loadPostSales()"
+          >
+            Tentar novamente
+          </button>
         </div>
       `;
     }
+  } finally {
+    refreshButtons.forEach((button) => {
+      button.disabled = false;
+      button.classList.remove("loading");
+    });
   }
 }
 
