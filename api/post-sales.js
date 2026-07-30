@@ -164,8 +164,31 @@ function classifyCaseStatus(claim) {
 }
 
 function getClaimType(claim) {
-  const type = String(claim.type || "").toLowerCase();
-  return type === "return" || type.includes("return") ? "returns" : "claims";
+  const returnSignals = [
+    claim.type,
+    claim.stage,
+    claim.reason_id,
+    claim.reason?.name,
+    claim.reason,
+    claim.motive,
+    claim.resource,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  const hasReturn =
+    Boolean(
+      claim.return_id ||
+      claim.return?.id ||
+      claim.shipping?.return_id,
+    ) ||
+    returnSignals.includes("return") ||
+    returnSignals.includes("devolu");
+
+  return hasReturn
+    ? "returns"
+    : "claims";
 }
 
 function getClaimReason(claim) {
