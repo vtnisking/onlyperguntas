@@ -268,60 +268,121 @@ function normalizeMessageText(message) {
 }
 
 async function fetchClaimsForStore(store, supabase) {
-     if (!store.seller_id) {
-    throw new Error(
-      `A loja ${store.name || store.id} não possui seller_id.`,
-    );
-  }
-
   const endpoints = [
     "/post-purchase/v1/claims/search",
     "/claims/search",
   ];
 
-  let payload = null;
+  const statuses = ["opened", "closed"];
+  const allClaims = [];
   let lastError = null;
 
-  for (const endpoint of endpoints) {
-    try {
-      const response = await meliRequest(store, supabase, {
-        method: "GET",
-        url: endpoint,
-        params: {
-        user_id: store.seller_id,
-        role: "respondent",
-        limit: 50,
-        offset: 0,
-        sort: "last_updated:desc",
-        },
-      });
-      payload = response.data;
-      break;
-    } catch (error) {
-      lastError = error;
-      if (error.response?.status !== 404) break;
+  for (const status of statuses) {
+    let payload = null;
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await meliRequest(
+          store,
+          supabase,
+          {
+            method: "GET",
+            url: endpoint,
+            params: {
+              status,
+              limit: 50,
+              offset: 0,
+            },
+          },
+        );
+
+        payload = response.data;
+        break;
+      } catch (error) {
+        lastError = error;
+
+        // Só tenta o endpoint alternativo se este não existir
+        if (error.response?.status !== 404) {
+          break;
+        }
+      }
+    }
+
+    if (payload) {
+      allClaims.push(
+        ...normalizeArrayPayload(payload),
+      );
     }
   }
 
-  if (!payload) {
-    throw lastError || new Error("Não foi possível consultar as reclamações.");
+  if (
+    allClaims.length === 0 &&
+    lastError
+  ) {
+    throw lastError;
   }
 
-  const claims = normalizeArrayPayload(payload);
+  // Evita duplicações
+  const claims = Array.from(
+    new Map(
+      allClaims.map((claim) => [
+        String(claim.id),
+        claim,
+      ]),
+    ).values(),
+  );
 
   const normalized = await Promise.all(
     claims.map(async (claim) => {
-      const orderId = claim.resource_id || claim.order_id || claim.resource?.id;
-      const order = await safeGetOrder(store, supabase, orderId);
-      const orderItem = order?.order_items?.[0];
-      const itemId = orderItem?.item?.id || claim.item_id;
-      const item = await safeGetItem(store, supabase, itemId);
-      const messages = await safeGetClaimMessages(store, supabase, claim.id);
-      const latestMessage = [...messages].sort((a, b) =>
-        new Date(b.date_created || b.created_at || 0) -
-        new Date(a.date_created || a.created_at || 0),
-      )[0];
-      const status = classifyCaseStatus(claim);
+      const orderId =
+        claim.resource_id ||
+        claim.order_id ||
+        claim.resource?.id;
+
+      const order = await safeGetOrder(
+        store,
+        supabase,
+        orderId,
+      );
+
+      const orderItem =
+        order?.order_items?.[0];
+
+      const itemId =
+        orderItem?.item?.id ||
+        claim.item_id;
+
+      const item = await safeGetItem(
+        store,
+        supabase,
+        itemId,
+      );
+
+      const messages =
+        await safeGetClaimMessages(
+          store,
+          supabase,
+          claim.id,
+        );
+
+      const latestMessage = [...messages]
+        .sort(
+          (a, b) =>
+            new Date(
+              b.date_created ||
+                b.created_at ||
+                0,
+            ) -
+            new Date(
+              a.date_created ||
+                a.created_at ||
+                0,
+            ),
+        )[0];
+
+      const status =
+        classifyCaseStatus(claim);
+
       const buyer = order?.buyer;
 
       return {
@@ -329,33 +390,91 @@ async function fetchClaimsForStore(store, supabase) {
         claim_id: String(claim.id),
         type: getClaimType(claim),
         status,
-        order_id: String(orderId || "Não informado"),
+
+        order_id: String(
+          orderId || "Não informado",
+        ),
+
         product_title:
-          orderItem?.item?.title || item?.title || "Produto não identificado",
-        product_thumbnail: (item?.thumbnail || orderItem?.item?.thumbnail || "").replace(/^http:/i, "https:"),
-        price: orderItem?.unit_price || order?.total_amount || 0,
-        quantity: orderItem?.quantity || 1,
+          orderItem?.item?.title ||
+          item?.title ||
+          "Produto não identificado",
+
+        product_thumbnail: (
+          item?.thumbnail ||
+          orderItem?.item?.thumbnail ||
+          ""
+        ).replace(/^http:/i, "https:"),
+
+        price:
+          orderItem?.unit_price ||
+          order?.total_amount ||
+          0,
+
+        quantity:
+          orderItem?.quantity || 1,
+
         store_id: store.id,
-        store_name: store.name || "Mercado Livre",
+
+        store_name:
+          store.name ||
+          "Mercado Livre",
+
         buyer_name:
-          [buyer?.first_name, buyer?.last_name].filter(Boolean).join(" ") ||
+          [
+            buyer?.first_name,
+            buyer?.last_name,
+          ]
+            .filter(Boolean)
+            .join(" ") ||
           buyer?.nickname ||
           "Cliente",
-        reason: String(getClaimReason(claim)),
-        title: getClaimTitle(claim, status),
+
+        reason: String(
+          getClaimReason(claim),
+        ),
+
+        title: getClaimTitle(
+          claim,
+          status,
+        ),
+
         description:
           claim.description ||
           claim.details ||
-          `Reclamação ${claim.stage || "aberta"} no Mercado Livre.`,
+          `Reclamação ${
+            claim.stage || "aberta"
+          } no Mercado Livre.`,
+
         last_message: latestMessage
-          ? normalizeMessageText(latestMessage)
+          ? normalizeMessageText(
+              latestMessage,
+            )
           : "Nenhuma mensagem disponível.",
-        deadline: getDeadline(claim, status),
-        date_created: claim.date_created || claim.created_at || null,
-        last_updated: claim.last_updated || claim.date_modified || null,
-        stage: claim.stage || null,
-        raw_status: claim.status || null,
-        messages_count: messages.length,
+
+        deadline: getDeadline(
+          claim,
+          status,
+        ),
+
+        date_created:
+          claim.date_created ||
+          claim.created_at ||
+          null,
+
+        last_updated:
+          claim.last_updated ||
+          claim.date_modified ||
+          null,
+
+        stage:
+          claim.stage || null,
+
+        raw_status:
+          claim.status || null,
+
+        messages_count:
+          messages.length,
       };
     }),
   );
