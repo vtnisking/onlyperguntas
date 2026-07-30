@@ -7543,7 +7543,7 @@ migrateStorageKeys();
       let allQuestionsCache = [];
       let selectedQuestionId = null;
       let postSalesCurrentTab = "claims";
-      let postSalesCurrentFilter = "attention";
+      let postSalesCurrentFilter = "all";
 
       let postSalesCasesCache = [];
 
@@ -7592,9 +7592,16 @@ migrateStorageKeys();
 
 function changePostSalesTab(tab, element) {
   postSalesCurrentTab = tab;
+  postSalesCurrentFilter = "all";
 
   document
     .querySelectorAll(".post-sales-tab")
+    .forEach((button) => {
+      button.classList.remove("active");
+    });
+
+  document
+    .querySelectorAll(".post-sales-summary-card")
     .forEach((button) => {
       button.classList.remove("active");
     });
@@ -7646,8 +7653,9 @@ function renderPostSalesCases() {
     ? Number(item.messages_count || 0) > 0
     : item.type === postSalesCurrentTab;
 
-    const matchesFilter =
-      item.status === postSalesCurrentFilter;
+const matchesFilter =
+  postSalesCurrentFilter === "all" ||
+  item.status === postSalesCurrentFilter;
 
     const searchableText = [
       item.order_id,
@@ -8300,7 +8308,7 @@ function openMobilePostSales(element) {
       <div class="post-sales-summary">
         <button
           type="button"
-          class="post-sales-summary-card active"
+          class="post-sales-summary-card"
           onclick="changePostSalesFilter('attention', this)"
         >
           <div class="post-sales-summary-top">
