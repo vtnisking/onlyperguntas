@@ -8521,6 +8521,12 @@ function renderPostSalesCases() {
       .toLowerCase() || "";
 
   const cases = postSalesCasesCache.filter((item) => {
+    // Casos marcados como resolvidos internamente não devem
+    // continuar aparecendo nas abas de atendimentos em aberto.
+    if (item.status === "resolved") {
+      return false;
+    }
+
     const matchesFilter =
       postSalesCurrentFilter === "all" ||
       item.status === postSalesCurrentFilter;
@@ -8570,28 +8576,16 @@ function renderPostSalesCases() {
       const isResolved = item.status === "resolved";
 
       const secondaryButton =
-        caseType === "claim"
-          ? (
-              isResolved
-                ? `
-                  <button
-                    type="button"
-                    class="post-sales-reopen-button"
-                    onclick="reopenPostSalesCase('${escapeHtml(caseKey)}', '${caseType}')"
-                  >
-                    ↩ Reabrir
-                  </button>
-                `
-                : `
-                  <button
-                    type="button"
-                    class="post-sales-resolve-button"
-                    onclick="resolvePostSalesCase('${escapeHtml(caseKey)}', '${caseType}')"
-                  >
-                    ✓ Resolvida
-                  </button>
-                `
-            )
+        caseType === "claim" && !isResolved
+          ? `
+              <button
+                type="button"
+                class="post-sales-resolve-button"
+                onclick="resolvePostSalesCase('${escapeHtml(caseKey)}', '${caseType}')"
+              >
+                ✓ Resolvida
+              </button>
+            `
           : "";
 
       return `
@@ -8736,9 +8730,13 @@ async function resolvePostSalesCase(
     );
 
     if (item) {
-      item.status = "resolved";
-      item.internal_status = "resolved";
-      item.resolved_at = new Date().toISOString();
+      postSalesCasesCache = postSalesCasesCache.filter(
+        (caseItem) =>
+          !(
+            getPostSalesCaseType(caseItem) === caseType &&
+            getPostSalesCaseKey(caseItem) === String(caseId)
+          ),
+      );
     }
 
     updatePostSalesCounters();
