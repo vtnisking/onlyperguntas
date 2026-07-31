@@ -8445,41 +8445,53 @@ function getPostSalesCaseKey(item) {
   return String(item.claim_id || item.id);
 }
 
+function isPostSalesCaseResolved(item) {
+  return (
+    item.status === "resolved" ||
+    item.internal_status === "resolved"
+  );
+}
+
 function updatePostSalesCounters() {
   const openCases = postSalesCasesCache.filter(
-    (item) => item.status !== "resolved",
+    (item) => !isPostSalesCaseResolved(item),
   );
 
   const claims = openCases.filter(
-    (item) => getPostSalesCaseType(item) === "claim",
+    (item) =>
+      getPostSalesCaseType(item) === "claim",
   ).length;
 
   const messages = openCases.filter(
-    (item) => getPostSalesCaseType(item) === "message",
+    (item) =>
+      getPostSalesCaseType(item) === "message",
   ).length;
 
   const returns = openCases.filter(
-    (item) => getPostSalesCaseType(item) === "return",
+    (item) =>
+      getPostSalesCaseType(item) === "return",
   ).length;
 
-  const currentTabCases = postSalesCasesCache.filter(
-    (item) => matchesPostSalesTab(item),
-  );
+  const currentTabCases =
+    postSalesCasesCache.filter(
+      (item) => matchesPostSalesTab(item),
+    );
 
   const attention = currentTabCases.filter(
     (item) =>
-      item.status !== "resolved" &&
+      !isPostSalesCaseResolved(item) &&
       item.status === "attention",
   ).length;
 
   const progress = currentTabCases.filter(
     (item) =>
-      item.status !== "resolved" &&
+      !isPostSalesCaseResolved(item) &&
       item.status === "progress",
   ).length;
 
   const resolved = currentTabCases.filter(
-    (item) => item.status === "resolved",
+    (item) =>
+      isPostSalesCaseResolved(item),
   ).length;
 
   const values = {
@@ -8491,13 +8503,15 @@ function updatePostSalesCounters() {
     postSalesResolvedCount: resolved,
   };
 
-  Object.entries(values).forEach(([id, value]) => {
-    document
-      .querySelectorAll(`#${id}`)
-      .forEach((element) => {
-        element.textContent = value;
-      });
-  });
+  Object.entries(values).forEach(
+    ([id, value]) => {
+      document
+        .querySelectorAll(`#${id}`)
+        .forEach((element) => {
+          element.textContent = value;
+        });
+    },
+  );
 }
 
 function changePostSalesTab(tab, element) {
@@ -8579,9 +8593,9 @@ function renderPostSalesCases() {
   const cases = postSalesCasesCache.filter((item) => {
     // Casos marcados como resolvidos internamente não devem
     // continuar aparecendo nas abas de atendimentos em aberto.
-    if (item.status === "resolved") {
-      return false;
-    }
+    if (isPostSalesCaseResolved(item)) {
+  return false;
+}
 
     const matchesFilter =
       postSalesCurrentFilter === "all" ||
