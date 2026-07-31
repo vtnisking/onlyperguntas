@@ -6630,7 +6630,368 @@ body.ps-detail-open {
   }
 }
       
-    </style>
+    
+/* =====================================================
+   SIDEBAR MODERNA — CHATI
+===================================================== */
+
+@media (min-width: 900px) {
+  .sidebar {
+    width: 228px;
+    padding: 18px 14px 16px;
+    background: #ffffff;
+    border-right: 1px solid #ececf1;
+    box-shadow: 6px 0 24px rgba(15, 23, 42, 0.035);
+  }
+
+  .main-content {
+    margin-left: 228px;
+  }
+
+  .sidebar-header {
+    min-height: 72px;
+    margin-bottom: 20px;
+    padding: 0 8px;
+  }
+
+  .sidebar-brand {
+    gap: 11px;
+  }
+
+  .sidebar-brand-icon {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+  }
+
+  .sidebar-brand-icon img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+  }
+
+  .sidebar-brand-name {
+    color: #15151b;
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+  }
+
+  .sidebar-brand-subtitle {
+    margin-top: 3px;
+    color: #9aa195;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .sidebar-collapse-btn {
+    top: 50%;
+    right: -28px;
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--bg);
+    background: #c90000;
+    box-shadow: 0 5px 14px rgba(172, 4, 1, 0.25);
+  }
+
+  .sidebar-menu {
+    flex: 1;
+    gap: 2px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .sidebar-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar-nav-section {
+    margin-bottom: 14px;
+  }
+
+  .sidebar-nav-section + .sidebar-nav-section {
+    padding-top: 17px;
+    border-top: 1px solid #ececf1;
+  }
+
+  .sidebar-nav-title {
+    padding: 0 12px 9px;
+    color: #7d8492;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .sidebar .nav-item {
+    position: relative;
+    min-height: 46px;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #5c6070;
+    font-size: 13px;
+    font-weight: 700;
+    transform: none;
+  }
+
+  .sidebar .nav-item:hover {
+    background: #f7f7f9;
+    border-color: #eeeeF2;
+    color: #242630;
+    transform: none;
+  }
+
+  .sidebar .nav-item.active {
+    background: linear-gradient(
+      90deg,
+      rgba(204, 0, 0, 0.095),
+      rgba(204, 0, 0, 0.055)
+    );
+    border-color: rgba(196, 0, 0, 0.10);
+    color: #bc0000;
+    box-shadow: none;
+  }
+
+  .sidebar .nav-item.active::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: -15px;
+    width: 4px;
+    border-radius: 0 999px 999px 0;
+    background: #c70000;
+  }
+
+  .sidebar .nav-icon {
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    color: currentColor;
+  }
+
+  .sidebar .nav-icon svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.85;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sidebar .nav-label {
+    font-size: 13px;
+  }
+
+  .sidebar .nav-badge {
+    min-width: 23px;
+    padding: 3px 7px;
+    background: #cf0000;
+    color: #ffffff;
+    font-size: 10px;
+    box-shadow: none;
+  }
+
+  .sidebar .nav-item.active .nav-badge {
+    background: #cf0000;
+    color: #ffffff;
+  }
+
+  .sidebar-soon-badge {
+    margin-left: auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #fff0f0;
+    color: #e23b28;
+    font-size: 9px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .sidebar-shopee .nav-icon {
+    color: #ee4d2d;
+  }
+
+  .sidebar-bottom {
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid #ececf1;
+  }
+
+  .sidebar-user {
+    min-height: 62px;
+    gap: 11px;
+    padding: 8px 9px;
+    border: none;
+    border-radius: 13px;
+    background: transparent;
+  }
+
+  .sidebar-user:hover {
+    background: #f7f7f9;
+  }
+
+  .sidebar .user-avatar {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    background: linear-gradient(135deg, #d90000, #8d0000);
+    font-size: 14px;
+  }
+
+  .sidebar .user-avatar::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: #16a34a;
+  }
+
+  .sidebar-user-name {
+    color: #22232a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .sidebar-user-role {
+    margin-top: 3px;
+    color: #9096a3;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .sidebar-logout {
+    min-height: 42px !important;
+    color: #9c1717 !important;
+  }
+
+  .sidebar-logout:hover {
+    background: rgba(196, 0, 0, 0.06) !important;
+  }
+
+  .sidebar.collapsed {
+    width: 76px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .sidebar.collapsed + .main-content {
+    margin-left: 76px;
+  }
+
+  .sidebar.collapsed .sidebar-header {
+    padding: 0;
+  }
+
+  .sidebar.collapsed .sidebar-brand-icon,
+  .sidebar.collapsed .sidebar-brand-icon img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sidebar.collapsed .sidebar-nav-title,
+  .sidebar.collapsed .sidebar-soon-badge {
+    display: none;
+  }
+
+  .sidebar.collapsed .sidebar-nav-section {
+    margin-bottom: 12px;
+  }
+
+  .sidebar.collapsed .sidebar-nav-section + .sidebar-nav-section {
+    padding-top: 14px;
+  }
+
+  .sidebar.collapsed .nav-item {
+    justify-content: center;
+    width: 52px;
+    min-height: 50px;
+    margin: 0 auto 7px;
+    padding: 0;
+  }
+
+  .sidebar.collapsed .nav-item.active::before {
+    top: 10px;
+    bottom: 10px;
+    left: -11px;
+  }
+
+  .sidebar.collapsed .sidebar-user {
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .sidebar.collapsed .sidebar-logout {
+    justify-content: center;
+    width: 52px;
+    margin: 0 auto;
+    padding: 0;
+  }
+}
+
+/* Placeholder visual da aba Shopee */
+.shopee-placeholder-page {
+  width: 100%;
+  padding: 34px;
+  overflow-y: auto;
+}
+
+.shopee-placeholder-card {
+  max-width: 680px;
+  padding: 34px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
+}
+
+.shopee-placeholder-icon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: rgba(238, 77, 45, 0.10);
+  color: #ee4d2d;
+}
+
+.shopee-placeholder-icon svg {
+  width: 31px;
+  height: 31px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.shopee-placeholder-card h2 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 23px;
+  font-weight: 850;
+}
+
+.shopee-placeholder-card p {
+  margin: 0;
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+</style>
   </head>
 
   <body>
@@ -7206,7 +7567,6 @@ body.ps-detail-open {
       <!-- Sidebar -->
 <aside class="sidebar" id="desktopSidebar">
 
-  <!-- Cabeçalho -->
   <div class="sidebar-header">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">
@@ -7220,81 +7580,148 @@ body.ps-detail-open {
     </div>
 
     <button
+      type="button"
       class="sidebar-collapse-btn"
       onclick="toggleDesktopSidebar()"
       title="Recolher menu"
+      aria-label="Recolher menu"
     >
       ‹
     </button>
   </div>
 
-  <!-- Menu -->
   <nav class="sidebar-menu">
 
-    <button
-      class="nav-item active"
-      onclick="showDesktopTab('pending', this)"
-      title="Pendentes"
-    >
-      <span class="nav-icon">▣</span>
-      <span class="nav-label">Pendentes</span>
+    <section class="sidebar-nav-section">
+      <div class="sidebar-nav-title">
+        Atendimento
+      </div>
 
-      <span
-        class="nav-badge"
-        id="desktopBadge"
+      <button
+        type="button"
+        class="nav-item active"
+        onclick="showDesktopTab('pending', this)"
+        title="Pendentes"
       >
-        0
-      </span>
-    </button>
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-pendentes"></use>
+          </svg>
+        </span>
 
-    <button
-      class="nav-item"
-      onclick="showDesktopTab('answered', this)"
-      title="Respondidas"
-    >
-      <span class="nav-icon">✓</span>
-      <span class="nav-label">Respondidas</span>
-    </button>
+        <span class="nav-label">Pendentes</span>
 
-    <button
-      class="nav-item"
-      onclick="showDesktopTab('post-sales', this)"
-      title="Pós-vendas"
-    >
-      <span class="nav-icon">↻</span>
-      <span class="nav-label">Pós-vendas</span>
-    </button>
+        <span
+          class="nav-badge"
+          id="desktopBadge"
+        >
+          0
+        </span>
+      </button>
 
-    <button
-      class="nav-item"
-      onclick="showDesktopTab('stats', this)"
-      title="Estatísticas"
-    >
-      <span class="nav-icon">▥</span>
-      <span class="nav-label">Estatísticas</span>
-    </button>
+      <button
+        type="button"
+        class="nav-item"
+        onclick="showDesktopTab('answered', this)"
+        title="Respondidas"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-respondidas"></use>
+          </svg>
+        </span>
 
-  <button
-  class="nav-item"
-  onclick="showDesktopTab('users', this)"
-  title="Usuários"
->
-  <span class="nav-icon">👥</span>
-  <span class="nav-label">Usuários</span>
-</button>
+        <span class="nav-label">Respondidas</span>
+      </button>
 
-    <button
-      class="nav-item"
-      onclick="showDesktopTab('settings', this)"
-      title="Ajustes"
-    >
-      <span class="nav-icon">⚙</span>
-      <span class="nav-label">Ajustes</span>
-    </button>
+      <button
+        type="button"
+        class="nav-item"
+        onclick="showDesktopTab('post-sales', this)"
+        title="Pós-vendas"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-pos-vendas"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Pós-vendas</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-item sidebar-shopee"
+        onclick="showDesktopTab('shopee', this)"
+        title="Shopee"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-shopee"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Shopee</span>
+
+        <span class="sidebar-soon-badge">
+          Em breve
+        </span>
+      </button>
+    </section>
+
+    <section class="sidebar-nav-section">
+      <div class="sidebar-nav-title">
+        Gestão
+      </div>
+
+      <button
+        type="button"
+        class="nav-item"
+        onclick="showDesktopTab('stats', this)"
+        title="Estatísticas"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-estatisticas"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Estatísticas</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-item"
+        onclick="showDesktopTab('users', this)"
+        title="Usuários"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-equipe"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Usuários</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-item"
+        onclick="showDesktopTab('settings', this)"
+        title="Ajustes"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-ajustes"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Ajustes</span>
+      </button>
+    </section>
 
   </nav>
 
-  <!-- Parte inferior -->
   <div class="sidebar-bottom">
 
     <div class="sidebar-user">
@@ -7314,18 +7741,24 @@ body.ps-detail-open {
         </div>
 
         <div class="sidebar-user-role">
-          Usuário
+          Administrador
         </div>
       </div>
     </div>
 
     <button
+      type="button"
       class="nav-item sidebar-logout"
       onclick="logout()"
       title="Sair"
     >
-      <span class="nav-icon">⇥</span>
-      <span class="nav-label">Logout</span>
+      <span class="nav-icon">
+        <svg aria-hidden="true">
+          <use href="#icon-sair"></use>
+        </svg>
+      </span>
+
+      <span class="nav-label">Sair</span>
     </button>
 
   </div>
@@ -7682,7 +8115,29 @@ body.ps-detail-open {
   </div>
 </div>
 
-          <!-- Tab: Respondidas -->
+          
+<!-- Tab: Shopee -->
+<div class="desktop-tab" id="dt-shopee">
+  <div class="shopee-placeholder-page">
+    <div class="shopee-placeholder-card">
+      <div class="shopee-placeholder-icon">
+        <svg aria-hidden="true">
+          <use href="#icon-shopee"></use>
+        </svg>
+      </div>
+
+      <h2>Integração Shopee</h2>
+
+      <p>
+        A centralização do atendimento da Shopee será disponibilizada
+        em breve. Esta área já está preparada para receber perguntas,
+        mensagens e atendimentos da plataforma.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Respondidas -->
           <div class="desktop-tab" id="dt-answered">
             <div class="questions-list" id="desktopAnswered">
               <div class="empty">
@@ -8372,49 +8827,6 @@ if (!loggedUser) {
   window.location.replace("/login");
 }
 
-function updateLoggedUserInterface() {
-  if (!loggedUser) return;
-
-  const displayName =
-    loggedUser.name ||
-    loggedUser.email ||
-    "Usuário";
-
-  const initials = displayName
-    .trim()
-    .split(/\s+/)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
-  const elements = {
-    desktopUserName: displayName,
-    desktopUserAvatar: initials,
-    dSettingsName: displayName,
-    dSettingsEmail: loggedUser.email || "—",
-    mobileSidemenuName: displayName,
-    mobileSidemenuEmail: loggedUser.email || "—",
-    mobileSidemenuAvatar: initials,
-  };
-
-  Object.entries(elements).forEach(
-    ([id, value]) => {
-      const element =
-        document.getElementById(id);
-
-      if (element) {
-        element.textContent = value;
-      }
-    },
-  );
-}
-
-document.addEventListener(
-  "DOMContentLoaded",
-  updateLoggedUserInterface,
-);
-
 // Variáveis globais
 
       let knownQuestionIds = new Set();
@@ -8445,53 +8857,29 @@ function getPostSalesCaseKey(item) {
   return String(item.claim_id || item.id);
 }
 
-function isPostSalesCaseResolved(item) {
-  return (
-    item.status === "resolved" ||
-    item.internal_status === "resolved"
-  );
-}
-
 function updatePostSalesCounters() {
-  const openCases = postSalesCasesCache.filter(
-    (item) => !isPostSalesCaseResolved(item),
-  );
-
-  const claims = openCases.filter(
-    (item) =>
-      getPostSalesCaseType(item) === "claim",
+  const claims = postSalesCasesCache.filter(
+    (item) => getPostSalesCaseType(item) === "claim",
   ).length;
 
-  const messages = openCases.filter(
-    (item) =>
-      getPostSalesCaseType(item) === "message",
+  const messages = postSalesCasesCache.filter(
+    (item) => getPostSalesCaseType(item) === "message",
   ).length;
 
-  const returns = openCases.filter(
-    (item) =>
-      getPostSalesCaseType(item) === "return",
+  const returns = postSalesCasesCache.filter(
+    (item) => getPostSalesCaseType(item) === "return",
   ).length;
 
-  const currentTabCases =
-    postSalesCasesCache.filter(
-      (item) => matchesPostSalesTab(item),
-    );
-
-  const attention = currentTabCases.filter(
-    (item) =>
-      !isPostSalesCaseResolved(item) &&
-      item.status === "attention",
+  const attention = postSalesCasesCache.filter(
+    (item) => item.status === "attention",
   ).length;
 
-  const progress = currentTabCases.filter(
-    (item) =>
-      !isPostSalesCaseResolved(item) &&
-      item.status === "progress",
+  const progress = postSalesCasesCache.filter(
+    (item) => item.status === "progress",
   ).length;
 
-  const resolved = currentTabCases.filter(
-    (item) =>
-      isPostSalesCaseResolved(item),
+  const resolved = postSalesCasesCache.filter(
+    (item) => item.status === "resolved",
   ).length;
 
   const values = {
@@ -8503,15 +8891,13 @@ function updatePostSalesCounters() {
     postSalesResolvedCount: resolved,
   };
 
-  Object.entries(values).forEach(
-    ([id, value]) => {
-      document
-        .querySelectorAll(`#${id}`)
-        .forEach((element) => {
-          element.textContent = value;
-        });
-    },
-  );
+  Object.entries(values).forEach(([id, value]) => {
+    document
+      .querySelectorAll(`#${id}`)
+      .forEach((element) => {
+        element.textContent = value;
+      });
+  });
 }
 
 function changePostSalesTab(tab, element) {
@@ -8532,7 +8918,6 @@ function changePostSalesTab(tab, element) {
 
   element?.classList.add("active");
 
-  updatePostSalesCounters();
   renderPostSalesCases();
 }
 
@@ -8593,9 +8978,9 @@ function renderPostSalesCases() {
   const cases = postSalesCasesCache.filter((item) => {
     // Casos marcados como resolvidos internamente não devem
     // continuar aparecendo nas abas de atendimentos em aberto.
-    if (isPostSalesCaseResolved(item)) {
-  return false;
-}
+    if (item.status === "resolved") {
+      return false;
+    }
 
     const matchesFilter =
       postSalesCurrentFilter === "all" ||
@@ -8800,9 +9185,13 @@ async function resolvePostSalesCase(
     );
 
     if (item) {
-      item.status = "resolved";
-      item.internal_status = "resolved";
-      item.resolved_at = new Date().toISOString();
+      postSalesCasesCache = postSalesCasesCache.filter(
+        (caseItem) =>
+          !(
+            getPostSalesCaseType(caseItem) === caseType &&
+            getPostSalesCaseKey(caseItem) === String(caseId)
+          ),
+      );
     }
 
     updatePostSalesCounters();
@@ -10985,6 +11374,7 @@ if (notificationBadge) {
           pending: "Perguntas Pendentes",
           answered: "Perguntas Respondidas",
           "post-sales": "Pós-vendas",
+          shopee: "Shopee",
           stats: "Estatísticas",
           users: "Usuários",
           settings: "Ajustes",
