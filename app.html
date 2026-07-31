@@ -8372,6 +8372,46 @@ if (!loggedUser) {
   window.location.replace("/login");
 }
 
+function updateLoggedUserInterface() {
+  if (!loggedUser) return;
+
+  const displayName =
+    loggedUser.name ||
+    loggedUser.email ||
+    "Usuário";
+
+  const initials = displayName
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const elements = {
+    desktopUserName: displayName,
+    desktopUserAvatar: initials,
+    dSettingsName: displayName,
+    dSettingsEmail: loggedUser.email || "—",
+    mobileSidemenuName: displayName,
+    mobileSidemenuEmail: loggedUser.email || "—",
+    mobileSidemenuAvatar: initials,
+  };
+
+  Object.entries(elements).forEach(
+    ([id, value]) => {
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent = value;
+      }
+    },
+  );
+}
+
+updateLoggedUserInterface();
+
 // Variáveis globais
 
       let knownQuestionIds = new Set();
