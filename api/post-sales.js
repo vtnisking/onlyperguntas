@@ -124,6 +124,7 @@ function normalizeArrayPayload(payload) {
   if (Array.isArray(payload?.data)) return payload.data;
   if (Array.isArray(payload?.results)) return payload.results;
   if (Array.isArray(payload?.claims)) return payload.claims;
+  if (Array.isArray(payload?.messages)) return payload.messages;
   return [];
 }
 
@@ -412,7 +413,12 @@ async function fetchClaimsForStore(store, supabase) {
         id: String(claim.id),
         claim_id: String(claim.id),
         type: getClaimType(claim),
+        case_type:
+          getClaimType(claim) === "returns"
+            ? "return"
+            : "claim",
         status,
+        platform_status: status,
 
         order_id: String(
           orderId || "Não informado",
@@ -505,27 +511,382 @@ async function fetchClaimsForStore(store, supabase) {
   return normalized;
 }
 
+
+function getMessageSenderRole(message, sellerId) {
+  const role = String(
+    message?.sender_role ||
+    message?.sender?.role ||
+    message?.from?.role ||
+    message?.role ||
+    "",
+  ).toLowerCase();
+
+  const senderId = String(
+    message?.from?.user_id ||
+    message?.from?.id ||
+    message?.sender_id ||
+    "",
+  );
+
+  if (
+    role.includes("seller") ||
+    role.includes("respondent") ||
+    (sellerId && senderId === String(sellerId))
+  ) {
+    return "seller";
+  }
+
+  return "buyer";
+}
+
+async function safeGetOrderMessages(
+  store,
+  supabase,
+  packId,
+) {
+  if (!packId || !store.seller_id) {
+    return [];
+  }
+
+  try {
+    const response = await meliRequest(
+      store,
+      supabase,
+      {
+        method: "GET",
+        url:
+          `/messages/packs/${packId}/sellers/${store.seller_id}`,
+        params: {
+          mark_as_read: false,
+        },
+      },
+    );
+
+    return normalizeArrayPayload(response.data);
+  } catch (error) {
+    console.error(
+      `Erro ao buscar mensagens do pack ${packId}:`,
+      error.response?.data || error.message,
+    );
+
+    return [];
+  }
+}
+
+async function fetchMessagesForStore(
+  store,
+  supabase,
+) {
+  if (!store.seller_id) {
+    return [];
+  }
+
+  const response = await meliRequest(
+    store,
+    supabase,
+    {
+      method: "GET",
+      url: "/orders/search",
+      params: {
+        seller: store.seller_id,
+        sort: "date_desc",
+        limit: 50,
+        offset: 0,
+      },
+    },
+  );
+
+  const orders = normalizeArrayPayload(
+    response.data,
+  );
+
+  const threads = [];
+
+  for (const order of orders) {
+    const packId =
+      order.pack_id ||
+      order.id;
+
+    const messages =
+      await safeGetOrderMessages(
+        store,
+        supabase,
+        packId,
+      );
+
+    if (!messages.length) {
+      continue;
+    }
+
+    const buyerMessages = messages.filter(
+      (message) =>
+        getMessageSenderRole(
+          message,
+          store.seller_id,
+        ) === "buyer",
+    );
+
+    if (!buyerMessages.length) {
+      continue;
+    }
+
+    const sortMessages = (a, b) =>
+      new Date(
+        b.message_date?.created ||
+        b.date_created ||
+        b.created_at ||
+        0,
+      ) -
+      new Date(
+        a.message_date?.created ||
+        a.date_created ||
+        a.created_at ||
+        0,
+      );
+
+    const latestMessage =
+      [...messages].sort(sortMessages)[0];
+
+    const latestBuyerMessage =
+      [...buyerMessages].sort(sortMessages)[0];
+
+    const orderItem =
+      order.order_items?.[0];
+
+    const item =
+      await safeGetItem(
+        store,
+        supabase,
+        orderItem?.item?.id,
+      );
+
+    const buyer =
+      order.buyer;
+
+    threads.push({
+      id:
+        `message-${store.id}-${packId}`,
+
+      message_id: String(
+        latestBuyerMessage?.id ||
+        packId,
+      ),
+
+      pack_id: String(packId),
+      case_type: "message",
+      type: "messages",
+      status: "attention",
+      platform_status: "attention",
+      raw_status: "open",
+
+      order_id: String(
+        order.id ||
+        "Não informado",
+      ),
+
+      product_title:
+        orderItem?.item?.title ||
+        item?.title ||
+        "Produto não identificado",
+
+      product_thumbnail: (
+        item?.thumbnail ||
+        orderItem?.item?.thumbnail ||
+        ""
+      ).replace(/^http:/i, "https:"),
+
+      price:
+        orderItem?.unit_price ||
+        order.total_amount ||
+        0,
+
+      quantity:
+        orderItem?.quantity ||
+        1,
+
+      store_id:
+        store.id,
+
+      store_name:
+        store.name ||
+        "Mercado Livre",
+
+      buyer_name:
+        [
+          buyer?.first_name,
+          buyer?.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ") ||
+        buyer?.nickname ||
+        "Cliente",
+
+      reason:
+        "Mensagem do comprador",
+
+      title:
+        "Nova mensagem no chat",
+
+      description:
+        "Mensagem enviada pelo comprador no chat da plataforma.",
+
+      last_message:
+        normalizeMessageText(
+          latestMessage,
+        ),
+
+      deadline:
+        "Responder o quanto antes",
+
+      date_created:
+        latestBuyerMessage?.message_date?.created ||
+        latestBuyerMessage?.date_created ||
+        latestBuyerMessage?.created_at ||
+        order.date_created ||
+        null,
+
+      last_updated:
+        latestMessage?.message_date?.created ||
+        latestMessage?.date_created ||
+        latestMessage?.created_at ||
+        order.last_updated ||
+        null,
+
+      messages_count:
+        messages.length,
+    });
+  }
+
+  return threads;
+}
+
+async function getInternalPostSalesCases(
+  supabase,
+  companyId,
+) {
+  const { data, error } = await supabase
+    .from("post_sales_cases")
+    .select(
+      "case_id, case_type, status, resolved_at, resolved_by",
+    )
+    .eq("company_id", companyId);
+
+  if (error) {
+    if (error.code === "42P01") {
+      throw new Error(
+        "A tabela post_sales_cases ainda não foi criada no Supabase.",
+      );
+    }
+
+    throw new Error(error.message);
+  }
+
+  return data || [];
+}
+
+function applyInternalPostSalesStatus(
+  cases,
+  internalCases,
+) {
+  const statusMap = new Map(
+    internalCases.map((item) => [
+      `${item.case_type}:${item.case_id}`,
+      item,
+    ]),
+  );
+
+  return cases.map((item) => {
+    const caseType =
+      item.case_type ||
+      (
+        item.type === "returns"
+          ? "return"
+          : item.type === "messages"
+            ? "message"
+            : "claim"
+      );
+
+    const caseId =
+      caseType === "message"
+        ? item.pack_id
+        : item.claim_id || item.id;
+
+    const internal =
+      statusMap.get(
+        `${caseType}:${caseId}`,
+      );
+
+    return {
+      ...item,
+      case_type: caseType,
+      platform_status:
+        item.platform_status ||
+        item.status,
+      status:
+        internal?.status === "resolved"
+          ? "resolved"
+          : item.status,
+      internal_status:
+        internal?.status ||
+        null,
+      resolved_at:
+        internal?.resolved_at ||
+        null,
+      resolved_by:
+        internal?.resolved_by ||
+        null,
+    };
+  });
+}
+
 function buildCounts(cases) {
   return {
-    claims: cases.filter((item) => item.type === "claims").length,
-    messages: cases.filter((item) => item.messages_count > 0).length,
-    returns: cases.filter((item) => item.type === "returns").length,
-    attention: cases.filter((item) => item.status === "attention").length,
-    progress: cases.filter((item) => item.status === "progress").length,
-    resolved: cases.filter((item) => item.status === "resolved").length,
+    claims: cases.filter(
+      (item) => item.case_type === "claim",
+    ).length,
+
+    messages: cases.filter(
+      (item) => item.case_type === "message",
+    ).length,
+
+    returns: cases.filter(
+      (item) => item.case_type === "return",
+    ).length,
+
+    attention: cases.filter(
+      (item) => item.status === "attention",
+    ).length,
+
+    progress: cases.filter(
+      (item) => item.status === "progress",
+    ).length,
+
+    resolved: cases.filter(
+      (item) => item.status === "resolved",
+    ).length,
   };
 }
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
-  console.log("HEADERS RECEBIDOS:");
-console.log(req.headers);
-
   try {
-    if (req.method !== "GET") {
-      res.setHeader("Allow", "GET");
-      return res.status(405).json({ success: false, error: "Método não permitido" });
+    const allowedMethods = [
+      "GET",
+      "POST",
+      "DELETE",
+    ];
+
+    if (!allowedMethods.includes(req.method)) {
+      res.setHeader(
+        "Allow",
+        allowedMethods.join(", "),
+      );
+
+      return res.status(405).json({
+        success: false,
+        error: "Método não permitido",
+      });
     }
 
     const { action = "overview" } = req.query;
@@ -544,6 +905,101 @@ console.log(req.headers);
     });
 
     const { companyId, profile, authUser } = await getAuthenticatedContext(req, supabase);
+
+
+    if (
+      action === "resolve" ||
+      action === "reopen"
+    ) {
+      const body =
+        typeof req.body === "string"
+          ? JSON.parse(req.body || "{}")
+          : req.body || {};
+
+      const caseId = String(
+        body.case_id || "",
+      ).trim();
+
+      const caseType = String(
+        body.case_type || "",
+      ).trim();
+
+      if (
+        !caseId ||
+        ![
+          "claim",
+          "message",
+          "return",
+        ].includes(caseType)
+      ) {
+        return res.status(400).json({
+          success: false,
+          error:
+            "case_id e case_type válidos são obrigatórios",
+        });
+      }
+
+      if (action === "resolve") {
+        if (req.method !== "POST") {
+          return res.status(405).json({
+            success: false,
+            error:
+              "Use POST para marcar como resolvido",
+          });
+        }
+
+        const { error } = await supabase
+          .from("post_sales_cases")
+          .upsert(
+            {
+              company_id: companyId,
+              case_id: caseId,
+              case_type: caseType,
+              status: "resolved",
+              resolved_by: profile.id,
+              resolved_at:
+                new Date().toISOString(),
+            },
+            {
+              onConflict:
+                "company_id,case_id,case_type",
+            },
+          );
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        return res.status(200).json({
+          success: true,
+          status: "resolved",
+        });
+      }
+
+      if (req.method !== "DELETE") {
+        return res.status(405).json({
+          success: false,
+          error:
+            "Use DELETE para reabrir",
+        });
+      }
+
+      const { error } = await supabase
+        .from("post_sales_cases")
+        .delete()
+        .eq("company_id", companyId)
+        .eq("case_id", caseId)
+        .eq("case_type", caseType);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return res.status(200).json({
+        success: true,
+        status: "open",
+      });
+    }
 
     const { data: stores, error: storesError } = await supabase
       .from("stores")
@@ -573,19 +1029,26 @@ console.log(req.headers);
     }
 
 if (action === "detail") {
-  const claimId = String(
-    req.query.claim_id || "",
+  const caseId = String(
+    req.query.case_id ||
+    req.query.claim_id ||
+    "",
+  ).trim();
+
+  const caseType = String(
+    req.query.case_type ||
+    "claim",
   ).trim();
 
   const storeId = String(
     req.query.store_id || "",
   ).trim();
 
-  if (!claimId || !storeId) {
+  if (!caseId || !storeId) {
     return res.status(400).json({
       success: false,
       error:
-        "claim_id e store_id são obrigatórios",
+        "case_id e store_id são obrigatórios",
     });
   }
 
@@ -602,15 +1065,22 @@ if (action === "detail") {
   }
 
   const messages =
-    await safeGetClaimMessages(
-      store,
-      supabase,
-      claimId,
-    );
+    caseType === "message"
+      ? await safeGetOrderMessages(
+          store,
+          supabase,
+          caseId,
+        )
+      : await safeGetClaimMessages(
+          store,
+          supabase,
+          caseId,
+        );
 
   return res.status(200).json({
     success: true,
-    claim_id: claimId,
+    case_id: caseId,
+    case_type: caseType,
     messages,
   });
 }
@@ -629,7 +1099,26 @@ if (action === "detail") {
     }
 
     const results = await Promise.allSettled(
-      stores.map((store) => fetchClaimsForStore(store, supabase)),
+      stores.map(async (store) => {
+        const [
+          claims,
+          messages,
+        ] = await Promise.all([
+          fetchClaimsForStore(
+            store,
+            supabase,
+          ),
+          fetchMessagesForStore(
+            store,
+            supabase,
+          ),
+        ]);
+
+        return [
+          ...claims,
+          ...messages,
+        ];
+      }),
     );
 
     const cases = [];
@@ -648,15 +1137,47 @@ if (action === "detail") {
       }
     });
 
-    cases.sort((a, b) =>
-      new Date(b.last_updated || b.date_created || 0) -
-      new Date(a.last_updated || a.date_created || 0),
+    const internalCases =
+      await getInternalPostSalesCases(
+        supabase,
+        companyId,
+      );
+
+    const normalizedCases =
+      applyInternalPostSalesStatus(
+        cases,
+        internalCases,
+      );
+
+    normalizedCases.sort((a, b) =>
+      new Date(
+        b.last_updated ||
+        b.date_created ||
+        0,
+      ) -
+      new Date(
+        a.last_updated ||
+        a.date_created ||
+        0,
+      ),
     );
 
     return res.status(200).json({
       success: true,
-      cases,
-      counts: buildCounts(cases),
+      cases: normalizedCases,
+      claims: normalizedCases.filter(
+        (item) =>
+          item.case_type === "claim",
+      ),
+      messages: normalizedCases.filter(
+        (item) =>
+          item.case_type === "message",
+      ),
+      returns: normalizedCases.filter(
+        (item) =>
+          item.case_type === "return",
+      ),
+      counts: buildCounts(normalizedCases),
       total_stores: stores.length,
       warnings,
     });
