@@ -13149,17 +13149,116 @@ function getChatiSession() {
 }
 
 
+let chatiRefreshPromise = null;
+
+function saveChatiSession(session) {
+  if (!session?.access_token) {
+    throw new Error("A sessão renovada não possui access_token.");
+  }
+
+  localStorage.setItem(
+    "chati_session",
+    JSON.stringify(session),
+  );
+
+  const supabaseKey = Object.keys(localStorage).find(
+    (key) =>
+      key.startsWith("sb-") &&
+      key.endsWith("-auth-token"),
+  );
+
+  if (supabaseKey) {
+    localStorage.setItem(
+      supabaseKey,
+      JSON.stringify(session),
+    );
+  }
+
+  return session;
+}
+
+async function refreshChatiSession() {
+  if (chatiRefreshPromise) {
+    return chatiRefreshPromise;
+  }
+
+  chatiRefreshPromise = (async () => {
+    const currentSession = getChatiSession();
+    const refreshToken = currentSession?.refresh_token;
+
+    if (!refreshToken) {
+      throw new Error(
+        "Sua sessão expirou e não possui refresh token. Entre novamente.",
+      );
+    }
+
+    const response = await fetch(
+      "/api/refresh-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
+      },
+    );
+
+    const data = await response.json().catch(
+      () => ({}),
+    );
+
+    if (
+      !response.ok ||
+      !data.success ||
+      !data.session?.access_token
+    ) {
+      throw new Error(
+        data.error ||
+        "Não foi possível renovar sua sessão.",
+      );
+    }
+
+    return saveChatiSession(data.session);
+  })();
+
+  try {
+    return await chatiRefreshPromise;
+  } finally {
+    chatiRefreshPromise = null;
+  }
+}
+
+function isChatiSessionExpired(session) {
+  if (!session?.expires_at) {
+    return false;
+  }
+
+  const safetyMarginMs = 60 * 1000;
+
+  return (
+    Date.now() >=
+    Number(session.expires_at) * 1000 -
+      safetyMarginMs
+  );
+}
+
 async function authenticatedIntegrationFetch(
   url,
   options = {},
+  allowRetry = true,
 ) {
-  const session = getChatiSession();
-  const accessToken = session?.access_token;
+  let session = getChatiSession();
 
-  if (!accessToken) {
+  if (!session?.access_token) {
     throw new Error(
-      "Token de acesso não encontrado. Saia e entre novamente.",
+      "Token de acesso não encontrado. Entre novamente.",
     );
+  }
+
+  if (isChatiSessionExpired(session)) {
+    session = await refreshChatiSession();
   }
 
   const headers = new Headers(
@@ -13168,13 +13267,27 @@ async function authenticatedIntegrationFetch(
 
   headers.set(
     "Authorization",
-    `Bearer ${accessToken}`,
+    `Bearer ${session.access_token}`,
   );
 
-  const response = await fetch(url, {
+  let response = await fetch(url, {
     ...options,
     headers,
   });
+
+  if (response.status === 401 && allowRetry) {
+    session = await refreshChatiSession();
+
+    headers.set(
+      "Authorization",
+      `Bearer ${session.access_token}`,
+    );
+
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  }
 
   return response;
 }
