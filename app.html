@@ -8410,7 +8410,10 @@ function updateLoggedUserInterface() {
   );
 }
 
-updateLoggedUserInterface();
+document.addEventListener(
+  "DOMContentLoaded",
+  updateLoggedUserInterface,
+);
 
 // Variáveis globais
 
@@ -8443,27 +8446,39 @@ function getPostSalesCaseKey(item) {
 }
 
 function updatePostSalesCounters() {
-  const claims = postSalesCasesCache.filter(
+  const openCases = postSalesCasesCache.filter(
+    (item) => item.status !== "resolved",
+  );
+
+  const claims = openCases.filter(
     (item) => getPostSalesCaseType(item) === "claim",
   ).length;
 
-  const messages = postSalesCasesCache.filter(
+  const messages = openCases.filter(
     (item) => getPostSalesCaseType(item) === "message",
   ).length;
 
-  const returns = postSalesCasesCache.filter(
+  const returns = openCases.filter(
     (item) => getPostSalesCaseType(item) === "return",
   ).length;
 
-  const attention = postSalesCasesCache.filter(
-    (item) => item.status === "attention",
+  const currentTabCases = postSalesCasesCache.filter(
+    (item) => matchesPostSalesTab(item),
+  );
+
+  const attention = currentTabCases.filter(
+    (item) =>
+      item.status !== "resolved" &&
+      item.status === "attention",
   ).length;
 
-  const progress = postSalesCasesCache.filter(
-    (item) => item.status === "progress",
+  const progress = currentTabCases.filter(
+    (item) =>
+      item.status !== "resolved" &&
+      item.status === "progress",
   ).length;
 
-  const resolved = postSalesCasesCache.filter(
+  const resolved = currentTabCases.filter(
     (item) => item.status === "resolved",
   ).length;
 
@@ -8503,6 +8518,7 @@ function changePostSalesTab(tab, element) {
 
   element?.classList.add("active");
 
+  updatePostSalesCounters();
   renderPostSalesCases();
 }
 
@@ -8770,13 +8786,9 @@ async function resolvePostSalesCase(
     );
 
     if (item) {
-      postSalesCasesCache = postSalesCasesCache.filter(
-        (caseItem) =>
-          !(
-            getPostSalesCaseType(caseItem) === caseType &&
-            getPostSalesCaseKey(caseItem) === String(caseId)
-          ),
-      );
+      item.status = "resolved";
+      item.internal_status = "resolved";
+      item.resolved_at = new Date().toISOString();
     }
 
     updatePostSalesCounters();
