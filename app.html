@@ -5782,6 +5782,39 @@ body.dark .ml-reply-btn {
   text-align: center;
 }
 
+
+.post-sales-resolve-button,
+.post-sales-reopen-button {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.post-sales-resolve-button {
+  border: 1px solid rgba(22, 163, 74, 0.28);
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+}
+
+.post-sales-resolve-button:hover {
+  background: rgba(22, 163, 74, 0.14);
+}
+
+.post-sales-reopen-button {
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+}
+
+.post-sales-reopen-button:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
 .post-sales-open-button {
   min-height: 42px;
   padding: 0 14px;
@@ -8350,30 +8383,36 @@ if (!loggedUser) {
 
       let postSalesCasesCache = [];
 
-        function updatePostSalesCounters() {
 
-            const claims = postSalesCasesCache.filter(
-  (item) => {
-    const rawStatus = String(
-      item.raw_status || "",
-    ).toLowerCase();
+function getPostSalesCaseType(item) {
+  if (item.case_type) return item.case_type;
+  if (item.type === "claims") return "claim";
+  if (item.type === "messages") return "message";
+  if (item.type === "returns") return "return";
+  return "";
+}
 
-    return (
-      item.type === "claims" &&
-      (
-        rawStatus === "opened" ||
-        rawStatus === "open"
-      )
-    );
-  },
-).length;
+function getPostSalesCaseKey(item) {
+  const caseType = getPostSalesCaseType(item);
 
-    const messages = postSalesCasesCache.filter(
-    (item) => Number(item.messages_count || 0) > 0,
-    ).length;
+  if (caseType === "message") {
+    return String(item.pack_id || item.order_id || item.id);
+  }
+
+  return String(item.claim_id || item.id);
+}
+
+function updatePostSalesCounters() {
+  const claims = postSalesCasesCache.filter(
+    (item) => getPostSalesCaseType(item) === "claim",
+  ).length;
+
+  const messages = postSalesCasesCache.filter(
+    (item) => getPostSalesCaseType(item) === "message",
+  ).length;
 
   const returns = postSalesCasesCache.filter(
-    (item) => item.type === "returns",
+    (item) => getPostSalesCaseType(item) === "return",
   ).length;
 
   const attention = postSalesCasesCache.filter(
@@ -8398,11 +8437,11 @@ if (!loggedUser) {
   };
 
   Object.entries(values).forEach(([id, value]) => {
-    const element = document.getElementById(id);
-
-    if (element) {
-      element.textContent = value;
-    }
+    document
+      .querySelectorAll(`#${id}`)
+      .forEach((element) => {
+        element.textContent = value;
+      });
   });
 }
 
@@ -8451,6 +8490,24 @@ function formatPostSalesPrice(value) {
   );
 }
 
+function matchesPostSalesTab(item) {
+  const caseType = getPostSalesCaseType(item);
+
+  if (postSalesCurrentTab === "claims") {
+    return caseType === "claim";
+  }
+
+  if (postSalesCurrentTab === "messages") {
+    return caseType === "message";
+  }
+
+  if (postSalesCurrentTab === "returns") {
+    return caseType === "return";
+  }
+
+  return false;
+}
+
 function renderPostSalesCases() {
   const container =
     document.getElementById("postSalesList");
@@ -8464,31 +8521,9 @@ function renderPostSalesCases() {
       .toLowerCase() || "";
 
   const cases = postSalesCasesCache.filter((item) => {
-  const rawStatus = String(
-  item.raw_status || "",
-).toLowerCase();
-
-const isOpen =
-  rawStatus === "opened" ||
-  rawStatus === "open";
-
-let matchesTab = false;
-
-if (postSalesCurrentTab === "messages") {
-  matchesTab =
-    Number(item.messages_count || 0) > 0;
-} else if (postSalesCurrentTab === "claims") {
-  matchesTab =
-    item.type === "claims" &&
-    isOpen;
-} else if (postSalesCurrentTab === "returns") {
-  matchesTab =
-    item.type === "returns";
-}
-
-const matchesFilter =
-  postSalesCurrentFilter === "all" ||
-  item.status === postSalesCurrentFilter;
+    const matchesFilter =
+      postSalesCurrentFilter === "all" ||
+      item.status === postSalesCurrentFilter;
 
     const searchableText = [
       item.order_id,
@@ -8497,21 +8532,20 @@ const matchesFilter =
       item.title,
       item.store_name,
       item.buyer_name,
+      item.last_message,
     ]
       .join(" ")
       .toLowerCase();
 
     return (
-      matchesTab &&
+      matchesPostSalesTab(item) &&
       matchesFilter &&
       searchableText.includes(search)
     );
   });
 
   const resultCount =
-    document.getElementById(
-      "postSalesResultCount",
-    );
+    document.getElementById("postSalesResultCount");
 
   if (resultCount) {
     resultCount.textContent =
@@ -8520,30 +8554,55 @@ const matchesFilter =
         : `${cases.length} casos`;
   }
 
-  if (cases.length === 0) {
+  if (!cases.length) {
     container.innerHTML = `
       <div class="post-sales-empty">
         Nenhum caso encontrado neste filtro.
       </div>
     `;
-
     return;
   }
 
   container.innerHTML = cases
-    .map(
-      (item) => `
-        <article class="post-sales-case">
+    .map((item) => {
+      const caseType = getPostSalesCaseType(item);
+      const caseKey = getPostSalesCaseKey(item);
+      const isResolved = item.status === "resolved";
 
+      const secondaryButton =
+        caseType === "claim"
+          ? (
+              isResolved
+                ? `
+                  <button
+                    type="button"
+                    class="post-sales-reopen-button"
+                    onclick="reopenPostSalesCase('${escapeHtml(caseKey)}', '${caseType}')"
+                  >
+                    ↩ Reabrir
+                  </button>
+                `
+                : `
+                  <button
+                    type="button"
+                    class="post-sales-resolve-button"
+                    onclick="resolvePostSalesCase('${escapeHtml(caseKey)}', '${caseType}')"
+                  >
+                    ✓ Resolvida
+                  </button>
+                `
+            )
+          : "";
+
+      return `
+        <article class="post-sales-case">
           <div class="post-sales-product">
             ${
               item.product_thumbnail
                 ? `
                   <img
                     class="post-sales-product-image"
-                    src="${escapeHtml(
-                      item.product_thumbnail,
-                    )}"
+                    src="${escapeHtml(item.product_thumbnail)}"
                     alt="Produto"
                     onerror="this.style.display='none'"
                   >
@@ -8553,24 +8612,17 @@ const matchesFilter =
 
             <div class="post-sales-product-info">
               <div class="post-sales-order">
-                Pedido #${escapeHtml(
-                  item.order_id,
-                )}
+                Pedido #${escapeHtml(item.order_id)}
               </div>
 
               <div class="post-sales-product-name">
-                ${escapeHtml(
-                  item.product_title,
-                )}
+                ${escapeHtml(item.product_title)}
               </div>
 
               <div class="post-sales-product-meta">
-                ${formatPostSalesPrice(
-                  item.price,
-                )}
+                ${formatPostSalesPrice(item.price)}
                 <br>
-                ${Number(item.quantity || 1)}
-                unidade(s)
+                ${Number(item.quantity || 1)} unidade(s)
               </div>
             </div>
           </div>
@@ -8585,46 +8637,167 @@ const matchesFilter =
             </div>
 
             <div class="post-sales-case-description">
-              ${escapeHtml(
-                item.description,
-              )}
+              ${escapeHtml(item.description)}
             </div>
 
-<div class="post-sales-last-message">
-  ${
-    Number(item.messages_count || 0) > 0
-      ? `
-        <strong>
-          ${Number(item.messages_count)} mensagem(ns)
-        </strong>
-        <br>
-        ${escapeHtml(item.last_message)}
-      `
-      : "Nenhuma mensagem disponível."
-  }
-</div>
+            <div class="post-sales-last-message">
+              ${
+                item.last_message
+                  ? escapeHtml(item.last_message)
+                  : "Nenhuma mensagem disponível."
+              }
+            </div>
           </div>
 
           <div class="post-sales-actions">
             <div class="post-sales-deadline">
-              ${escapeHtml(item.deadline)}
+              ${escapeHtml(
+                isResolved && item.resolved_at
+                  ? `Resolvida em ${formatPostSalesDate(item.resolved_at)}`
+                  : item.deadline,
+              )}
             </div>
 
             <button
               type="button"
               class="post-sales-open-button"
-              onclick="openPostSalesCase('${item.id}')"
+              onclick="openPostSalesCase('${escapeHtml(item.id)}')"
             >
               Abrir atendimento
             </button>
+
+            ${secondaryButton}
           </div>
-
         </article>
-      `,
-    )
+      `;
+    })
     .join("");
-
 }
+
+async function setPostSalesInternalStatus(
+  caseId,
+  caseType,
+  action,
+) {
+  const method =
+    action === "resolve"
+      ? "POST"
+      : "DELETE";
+
+  const response =
+    await authenticatedIntegrationFetch(
+      `/api/post-sales?action=${action}`,
+      {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          case_id: caseId,
+          case_type: caseType,
+        }),
+      },
+    );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(
+      data.error ||
+      "Não foi possível atualizar o atendimento.",
+    );
+  }
+
+  return data;
+}
+
+async function resolvePostSalesCase(
+  caseId,
+  caseType = "claim",
+) {
+  const confirmed = window.confirm(
+    "Marcar esta reclamação como resolvida?\n\n" +
+    "Ela será removida dos casos em aberto e continuará disponível em Resolvidos.",
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await setPostSalesInternalStatus(
+      caseId,
+      caseType,
+      "resolve",
+    );
+
+    const item = postSalesCasesCache.find(
+      (caseItem) =>
+        getPostSalesCaseType(caseItem) === caseType &&
+        getPostSalesCaseKey(caseItem) === String(caseId),
+    );
+
+    if (item) {
+      item.status = "resolved";
+      item.internal_status = "resolved";
+      item.resolved_at = new Date().toISOString();
+    }
+
+    updatePostSalesCounters();
+    renderPostSalesCases();
+
+    showToast(
+      "Reclamação marcada como resolvida.",
+      "success",
+    );
+  } catch (error) {
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Não foi possível resolver a reclamação.",
+      "error",
+    );
+  }
+}
+
+async function reopenPostSalesCase(
+  caseId,
+  caseType = "claim",
+) {
+  const confirmed = window.confirm(
+    "Reabrir esta reclamação no Chati?",
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await setPostSalesInternalStatus(
+      caseId,
+      caseType,
+      "reopen",
+    );
+
+    await loadPostSales();
+
+    showToast(
+      "Reclamação reaberta.",
+      "success",
+    );
+  } catch (error) {
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Não foi possível reabrir a reclamação.",
+      "error",
+    );
+  }
+}
+
+window.resolvePostSalesCase =
+  resolvePostSalesCase;
+
+window.reopenPostSalesCase =
+  reopenPostSalesCase;
 
 let selectedPostSalesCaseId = null;
 
@@ -8795,13 +8968,13 @@ async function openPostSalesCase(caseId) {
   document.getElementById(
     "psDetailTitle",
   ).textContent =
-    `Reclamação #${item.claim_id || item.id}`;
+    getPostSalesCaseType(item) === "message" ? `Mensagem do pedido #${item.order_id}` : `Reclamação #${item.claim_id || item.id}`;
 
   document.getElementById(
     "psDetailStatusBadge",
   ).textContent =
-    item.raw_status === "closed"
-      ? "Encerrada"
+    item.status === "resolved"
+      ? "Resolvida"
       : "Aberta";
 
   document.getElementById(
@@ -8887,8 +9060,14 @@ async function openPostSalesCase(caseId) {
   try {
     const response =
       await authenticatedIntegrationFetch(
-        `/api/post-sales?action=detail&claim_id=${
-          encodeURIComponent(caseId)
+        `/api/post-sales?action=detail&case_type=${
+          encodeURIComponent(getPostSalesCaseType(item))
+        }&case_id=${
+          encodeURIComponent(
+            getPostSalesCaseType(item) === "message"
+              ? item.pack_id
+              : item.claim_id || caseId
+          )
         }&store_id=${
           encodeURIComponent(item.store_id)
         }`,
