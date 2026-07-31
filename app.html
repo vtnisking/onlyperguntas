@@ -13691,8 +13691,8 @@ async function refreshChatiSession() {
       );
     }
 
-    const response = await fetch(
-      "/api/refresh-session",
+const response = await fetch(
+  "/api/refresh-token",
       {
         method: "POST",
         headers: {
