@@ -745,21 +745,67 @@
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-      const hasSession = Boolean(
-        localStorage.getItem("chati_session") ||
-          localStorage.getItem("chati_user") ||
-          sessionStorage.getItem("chati_session") ||
-          sessionStorage.getItem("chati_user"),
-      );
-
-      if (hasSession && window.location.pathname !== "/app") {
-        window.location.replace("/app");
-      }
-
       const supabase = createClient(
         "https://vspcitxnssbsztqnfhmj.supabase.co",
         "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
       );
+
+async function redirectIfAuthenticated() {
+  const sessionRaw =
+    localStorage.getItem("chati_session") ||
+    sessionStorage.getItem("chati_session");
+
+  if (!sessionRaw) {
+    return;
+  }
+
+  try {
+    const savedSession = JSON.parse(sessionRaw);
+    const accessToken = savedSession?.access_token;
+
+    if (!accessToken) {
+      throw new Error("Sessão sem access token");
+    }
+
+    const {
+      data: userData,
+      error: userError,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (userError || !userData?.user) {
+      throw new Error("Sessão expirada");
+    }
+
+    const userRaw =
+      localStorage.getItem("chati_user") ||
+      sessionStorage.getItem("chati_user");
+
+    const loggedUser = userRaw
+      ? JSON.parse(userRaw)
+      : null;
+
+    if (loggedUser?.role === "superadmin") {
+      window.location.replace("/superadmin.html");
+      return;
+    }
+
+    window.location.replace("/app");
+  } catch (error) {
+    console.warn(
+      "Sessão local inválida. Limpando dados:",
+      error,
+    );
+
+    localStorage.removeItem("chati_session");
+    localStorage.removeItem("chati_user");
+    sessionStorage.removeItem("chati_session");
+    sessionStorage.removeItem("chati_user");
+
+    await supabase.auth.signOut().catch(() => {});
+  }
+}
+
+redirectIfAuthenticated();
 
       const loginForm = document.getElementById("loginForm");
       const emailInput = document.getElementById("email");
@@ -852,7 +898,11 @@
             }),
           );
 
-          window.location.replace("/app");
+          if (userData.role === "superadmin") {
+  window.location.replace("/superadmin.html");
+} else {
+  window.location.replace("/app");
+}
         } catch (error) {
           showFeedback(error.message || "Não foi possível entrar. Tente novamente.");
           setLoading(false);
