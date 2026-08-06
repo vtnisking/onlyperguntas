@@ -14255,7 +14255,7 @@ async function connectMercadoLivre() {
     }
 
   const response = await authenticatedIntegrationFetch(
-  "/api/app?action=meli_connect",
+  "/api/app?action=meli_connect&redirect=/app",
   {
     method: "GET",
   },
