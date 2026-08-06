@@ -766,59 +766,119 @@
 
       let me = {};
 
-      async function protectSuperadmin() {
-        // Verifica se existe uma sessão verdadeira no Supabase Auth
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+      function clearSuperadminSession() {
+  localStorage.removeItem("chati_session");
+  localStorage.removeItem("chati_user");
 
-        if (sessionError || !session?.user) {
-          localStorage.removeItem("chati_user");
-          window.location.replace("/login.html");
-          return false;
-        }
+  sessionStorage.removeItem("chati_session");
+  sessionStorage.removeItem("chati_user");
 
-        // Confere a permissão diretamente no banco
-        const { data: userData, error: userError } = await supabase
-          .from("users_app")
-          .select("id, name, email, role, status, company_id")
-          .eq("email", session.user.email)
-          .single();
+  window.location.replace("/login.html");
+}
 
-        if (
-          userError ||
-          !userData ||
-          userData.role !== "superadmin" ||
-          userData.status !== "active"
-        ) {
-          await supabase.auth.signOut();
-          localStorage.removeItem("chati_user");
-          window.location.replace("/login.html");
-          return false;
-        }
+  async function protectSuperadmin() {
+  const sessionRaw =
+    localStorage.getItem("chati_session") ||
+    sessionStorage.getItem("chati_session");
 
-        me = userData;
+  if (!sessionRaw) {
+    clearSuperadminSession();
+    return false;
+  }
 
-        localStorage.setItem(
-          "chati_user",
-          JSON.stringify({
-            id: userData.id,
-            auth_id: session.user.id,
-            name: userData.name,
-            email: userData.email,
-            role: userData.role,
-            company_id: userData.company_id,
-          }),
-        );
+  let savedSession;
 
-        return true;
-      }
+  try {
+    savedSession = JSON.parse(sessionRaw);
+  } catch (error) {
+    console.error(
+      "Não foi possível interpretar a sessão:",
+      error,
+    );
 
-      // Variáveis globais para controlar o estado das modais
-      let editingId = null; // Para a modal de empresa
-      let editingUserId = null; // Para a modal de usuário
-      let currentCompanyIdForUsers = null; // Para a modal de detalhes da empresa e seus usuários
+    clearSuperadminSession();
+    return false;
+  }
+
+  const accessToken = savedSession?.access_token;
+
+  if (!accessToken) {
+    clearSuperadminSession();
+    return false;
+  }
+
+  // Valida diretamente o token salvo pelo login
+  const {
+    data: authData,
+    error: authError,
+  } = await supabase.auth.getUser(accessToken);
+
+  if (authError || !authData?.user) {
+    console.error(
+      "Sessão inválida ou expirada:",
+      authError,
+    );
+
+    clearSuperadminSession();
+    return false;
+  }
+
+  // Busca o usuário pelo auth_id, que é mais seguro que o e-mail
+  const {
+    data: userData,
+    error: userError,
+  } = await supabase
+    .from("users_app")
+    .select(
+      "id, auth_id, name, email, role, status, company_id",
+    )
+    .eq("auth_id", authData.user.id)
+    .maybeSingle();
+
+  if (userError || !userData) {
+    console.error(
+      "Usuário não encontrado em users_app:",
+      userError,
+    );
+
+    clearSuperadminSession();
+    return false;
+  }
+
+  if (
+    userData.role !== "superadmin" ||
+    userData.status !== "active"
+  ) {
+    console.warn(
+      "Usuário sem permissão de superadmin:",
+      userData.role,
+    );
+
+    // Não fica alternando entre /app e /login
+    if (userData.role === "superadmin") {
+  window.location.replace("/superadmin.html");
+} else {
+  window.location.replace("/app");
+}
+    return false;
+  }
+
+  me = userData;
+
+  localStorage.setItem(
+    "chati_user",
+    JSON.stringify({
+      id: userData.id,
+      auth_id: authData.user.id,
+      name: userData.name,
+      email: userData.email,
+      role: userData.role,
+      company_id: userData.company_id,
+    }),
+  );
+
+  return true;
+}
 
       async function load() {
         const search = document
@@ -1271,10 +1331,24 @@
         setTimeout(() => t.classList.remove("show"), 3000);
       }
 
-      window.logout = function () {
-        localStorage.clear();
-        window.location.href = "/login.html";
-      };
+window.logout = async function () {
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.warn(
+      "Erro ao encerrar sessão no Supabase:",
+      error,
+    );
+  }
+
+  localStorage.removeItem("chati_session");
+  localStorage.removeItem("chati_user");
+
+  sessionStorage.removeItem("chati_session");
+  sessionStorage.removeItem("chati_user");
+
+  window.location.replace("/login.html");
+};
 
       // Event listeners para fechar as modais clicando fora
       document.getElementById("modal").addEventListener("click", function (e) {
