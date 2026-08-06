@@ -6939,56 +6939,785 @@ body.ps-detail-open {
   }
 }
 
-/* Placeholder visual da aba Shopee */
-.shopee-placeholder-page {
+/* =========================================================
+   SHOPEE CHAT — INTERFACE CHATI
+========================================================= */
+
+#dt-shopee {
+  min-height: calc(100vh - 64px);
+  overflow: hidden;
+  background: #f6f6f8;
+}
+
+.shopee-chat-shell {
+  display: grid;
+  grid-template-columns: 360px minmax(440px, 1fr) 330px;
   width: 100%;
-  padding: 34px;
-  overflow-y: auto;
+  min-height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);
+  overflow: hidden;
+  background: #ffffff;
 }
 
-.shopee-placeholder-card {
-  max-width: 680px;
-  padding: 34px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
+.shopee-chat-sidebar,
+.shopee-chat-main,
+.shopee-chat-details {
+  min-width: 0;
+  min-height: 0;
 }
 
-.shopee-placeholder-icon {
-  width: 58px;
-  height: 58px;
+.shopee-chat-sidebar {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-  border-radius: 16px;
-  background: rgba(238, 77, 45, 0.10);
-  color: #ee4d2d;
+  flex-direction: column;
+  border-right: 1px solid #e7e7eb;
+  background: #ffffff;
 }
 
-.shopee-placeholder-icon svg {
-  width: 31px;
-  height: 31px;
+.shopee-chat-search-wrap {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-bottom: 1px solid #eeeeF2;
+}
+
+.shopee-chat-search {
+  position: relative;
+  flex: 1;
+}
+
+.shopee-chat-search svg {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: #999da7;
+  stroke-width: 2;
+}
+
+.shopee-chat-search input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 41px;
+  border: 1px solid #dddfe5;
+  border-radius: 10px;
+  outline: none;
+  background: #fafafa;
+  color: #202126;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.shopee-chat-search input:focus {
+  border-color: #d90000;
+  box-shadow: 0 0 0 3px rgba(217, 0, 0, 0.08);
+  background: #fff;
+}
+
+.shopee-filter-icon-btn {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  border: 1px solid #dddfe5;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #666b76;
+  cursor: pointer;
+}
+
+.shopee-filter-icon-btn svg {
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
-.shopee-placeholder-card h2 {
-  margin: 0 0 8px;
-  color: var(--text);
-  font-size: 23px;
+.shopee-chat-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 56px;
+  border-bottom: 1px solid #ececf0;
+}
+
+.shopee-chat-tab {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: #34363d;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.shopee-chat-tab.active {
+  color: #c90000;
+}
+
+.shopee-chat-tab.active::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  left: 18px;
+  height: 3px;
+  border-radius: 99px 99px 0 0;
+  background: #d90000;
+}
+
+.shopee-chat-tab-count,
+.shopee-unread-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e32626;
+  color: #fff;
+  font-size: 10px;
   font-weight: 850;
 }
 
-.shopee-placeholder-card p {
-  margin: 0;
-  color: var(--text3);
+.shopee-chat-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 14px;
+  border-bottom: 1px solid #efeff2;
+  color: #45474e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.shopee-list-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid #e2e3e8;
+  border-radius: 8px;
+  background: #f8f8fa;
+  color: #6c707a;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.shopee-conversations {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.shopee-conversation {
+  width: 100%;
+  display: flex;
+  gap: 11px;
+  padding: 14px 15px;
+  border: 0;
+  border-bottom: 1px solid #efeff2;
+  background: #ffffff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.shopee-conversation:hover {
+  background: #fafafa;
+}
+
+.shopee-conversation.active {
+  background: #fff5f5;
+  box-shadow: inset 3px 0 #d90000;
+}
+
+.shopee-conversation-avatar,
+.shopee-customer-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec3030, #a90000);
+  color: #ffffff;
+  font-weight: 850;
+}
+
+.shopee-conversation-avatar {
+  width: 43px;
+  height: 43px;
+  font-size: 15px;
+}
+
+.shopee-conversation-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.shopee-conversation-top,
+.shopee-conversation-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shopee-conversation-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: #26272d;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shopee-conversation-time {
+  flex: 0 0 auto;
+  color: #858995;
+  font-size: 10px;
+}
+
+.shopee-conversation-preview {
+  min-width: 0;
+  flex: 1;
+  margin-top: 5px;
+  overflow: hidden;
+  color: #727680;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shopee-warning-pill {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #fff0f0;
+  color: #df2c2c;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.shopee-chat-main {
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(rgba(255,255,255,.96), rgba(255,255,255,.96)),
+    radial-gradient(circle at 1px 1px, #ececef 1px, transparent 0);
+  background-size: auto, 22px 22px;
+}
+
+.shopee-chat-header {
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e8e8ec;
+  background: rgba(255,255,255,.96);
+}
+
+.shopee-customer-avatar {
+  width: 46px;
+  height: 46px;
+  font-size: 17px;
+}
+
+.shopee-customer-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.shopee-customer-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shopee-customer-name {
+  overflow: hidden;
+  color: #1e2025;
+  font-size: 15px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shopee-new-badge {
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #e02020;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.shopee-customer-subline {
+  display: flex;
+  gap: 15px;
+  margin-top: 5px;
+  color: #898d97;
+  font-size: 10px;
+  font-weight: 550;
+}
+
+.shopee-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.shopee-header-action {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #555a64;
+  cursor: pointer;
+}
+
+.shopee-header-action:hover {
+  background: #f1f1f3;
+}
+
+.shopee-header-action svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.shopee-message-area {
+  flex: 1;
+  min-height: 0;
+  padding: 18px 24px 24px;
+  overflow-y: auto;
+}
+
+.shopee-chat-date {
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 7px 15px;
+  border: 1px solid #e7e7eb;
+  border-radius: 999px;
+  background: #fff;
+  color: #858994;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.shopee-message-row {
+  display: flex;
+  margin: 11px 0;
+}
+
+.shopee-message-row.outgoing {
+  justify-content: flex-end;
+}
+
+.shopee-message-bubble {
+  max-width: min(70%, 560px);
+  padding: 11px 13px 8px;
+  border: 1px solid #e1e2e7;
+  border-radius: 12px 12px 12px 4px;
+  background: #f6f6f7;
+  color: #2a2c32;
+  box-shadow: 0 2px 5px rgba(15,23,42,.03);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.shopee-message-row.outgoing .shopee-message-bubble {
+  border-color: #202126;
+  border-radius: 12px 12px 4px 12px;
+  background: #202126;
+  color: #fff;
+}
+
+.shopee-message-time {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 5px;
+  color: #969aa4;
+  font-size: 9px;
+}
+
+.shopee-message-row.outgoing .shopee-message-time {
+  color: #bfc1c7;
+}
+
+.shopee-message-status {
+  color: #f23232;
+  font-weight: 900;
+}
+
+.shopee-composer {
+  border-top: 1px solid #e5e5e9;
+  background: #ffffff;
+}
+
+.shopee-composer-tabs {
+  display: flex;
+  gap: 28px;
+  padding: 0 22px;
+  border-bottom: 1px solid #ededf0;
+}
+
+.shopee-composer-tab {
+  position: relative;
+  padding: 13px 0;
+  border: 0;
+  background: transparent;
+  color: #747883;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.shopee-composer-tab.active {
+  color: #d50000;
+}
+
+.shopee-composer-tab.active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: #d50000;
+}
+
+.shopee-quick-replies {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 4px;
+  overflow-x: auto;
+}
+
+.shopee-quick-reply {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 1px solid #dfe0e5;
+  border-radius: 9px;
+  background: #fafafa;
+  color: #43464e;
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.shopee-quick-reply:hover {
+  border-color: #e7a2a2;
+  background: #fff5f5;
+  color: #b90000;
+}
+
+.shopee-composer-box {
+  margin: 10px 20px 18px;
+  border: 1px solid #dfe0e5;
+  border-radius: 11px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.shopee-composer-box textarea {
+  width: 100%;
+  min-height: 74px;
+  display: block;
+  padding: 13px 14px;
+  border: 0;
+  resize: none;
+  outline: none;
+  color: #282a30;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.shopee-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px 10px;
+}
+
+.shopee-attachment-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #6d717a;
+  cursor: pointer;
+}
+
+.shopee-attachment-btn:hover {
+  background: #f3f3f5;
+}
+
+.shopee-attachment-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.shopee-send-button {
+  min-width: 178px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #e71919, #b90000);
+  color: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 7px 15px rgba(190,0,0,.18);
+}
+
+.shopee-send-button:hover {
+  transform: translateY(-1px);
+}
+
+.shopee-send-button:disabled,
+.shopee-quick-reply:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.shopee-send-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.shopee-chat-details {
+  overflow-y: auto;
+  padding: 16px;
+  border-left: 1px solid #e7e7eb;
+  background: #fafafa;
+}
+
+.shopee-detail-title {
+  margin: 3px 0 13px;
+  color: #22242a;
   font-size: 13px;
-  line-height: 1.6;
+  font-weight: 850;
+}
+
+.shopee-detail-card {
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid #e1e2e6;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.shopee-product-summary {
+  display: flex;
+  gap: 12px;
+  padding: 13px;
+  border-bottom: 1px solid #eeeeF1;
+}
+
+.shopee-product-image {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 72px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #f4f4f6;
+  color: #ca0000;
+  font-size: 34px;
+}
+
+.shopee-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shopee-product-name {
+  color: #292b31;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.shopee-product-price {
+  margin-top: 10px;
+  color: #d60000;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.shopee-product-qty {
+  float: right;
+  color: #868b95;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.shopee-detail-lines {
+  display: grid;
+  gap: 12px;
+  padding: 13px;
+}
+
+.shopee-detail-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #7d818b;
+  font-size: 10px;
+}
+
+.shopee-detail-line strong {
+  color: #303239;
+  font-weight: 750;
+  text-align: right;
+}
+
+.shopee-order-status {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #fff0f0;
+  color: #d90000 !important;
+}
+
+.shopee-open-order {
+  width: calc(100% - 26px);
+  min-height: 39px;
+  margin: 0 13px 13px;
+  border: 1px solid #df2525;
+  border-radius: 9px;
+  background: #fff;
+  color: #d30000;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.shopee-open-order:hover {
+  background: #fff5f5;
+}
+
+.shopee-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 13px;
+}
+
+.shopee-tag {
+  padding: 6px 9px;
+  border: 1px solid #f0b2b2;
+  border-radius: 7px;
+  background: #fff8f8;
+  color: #bd0000;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.shopee-add-tag {
+  border-style: dashed;
+  background: #fff;
+  cursor: pointer;
+}
+
+.shopee-mobile-back {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .shopee-chat-shell {
+    grid-template-columns: 320px minmax(400px, 1fr) 290px;
+  }
+}
+
+@media (max-width: 1090px) {
+  .shopee-chat-shell {
+    grid-template-columns: 310px minmax(0, 1fr);
+  }
+
+  .shopee-chat-details {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  #dt-shopee {
+    min-height: 100%;
+  }
+
+  .shopee-chat-shell {
+    display: block;
+    min-height: calc(100vh - 90px);
+    max-height: none;
+  }
+
+  .shopee-chat-sidebar {
+    min-height: calc(100vh - 90px);
+  }
+
+  .shopee-chat-main {
+    display: none;
+    min-height: calc(100vh - 90px);
+  }
+
+  .shopee-chat-shell.mobile-chat-open .shopee-chat-sidebar {
+    display: none;
+  }
+
+  .shopee-chat-shell.mobile-chat-open .shopee-chat-main {
+    display: flex;
+  }
+
+  .shopee-mobile-back {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    border: 0;
+    border-radius: 9px;
+    background: #f2f2f4;
+    color: #383b43;
+    font-size: 18px;
+  }
+
+  .shopee-message-bubble {
+    max-width: 86%;
+  }
 }
 
 </style>
@@ -8118,22 +8847,290 @@ body.ps-detail-open {
           
 <!-- Tab: Shopee -->
 <div class="desktop-tab" id="dt-shopee">
-  <div class="shopee-placeholder-page">
-    <div class="shopee-placeholder-card">
-      <div class="shopee-placeholder-icon">
-        <svg aria-hidden="true">
-          <use href="#icon-shopee"></use>
-        </svg>
+  <div class="shopee-chat-shell" id="shopeeChatShell">
+
+    <aside class="shopee-chat-sidebar">
+      <div class="shopee-chat-search-wrap">
+        <label class="shopee-chat-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.6-3.6"></path>
+          </svg>
+          <input
+            id="shopeeConversationSearch"
+            type="search"
+            placeholder="Buscar conversa"
+            oninput="filterShopeeConversations()"
+          />
+        </label>
+
+        <button
+          type="button"
+          class="shopee-filter-icon-btn"
+          title="Filtros"
+          onclick="toggleShopeeUnreadFilter()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16M7 12h10M10 18h4"></path>
+          </svg>
+        </button>
       </div>
 
-      <h2>Integração Shopee</h2>
+<div class="shopee-chat-tabs">
+  <button
+    type="button"
+    class="shopee-chat-tab active"
+    data-shopee-list-tab="today"
+    onclick="changeShopeeListTab('today', this)"
+  >
+    Atendido hoje
+    <span id="shopeeTodayCount" class="shopee-chat-tab-count"></span>
+  </button>
 
-      <p>
-        A centralização do atendimento da Shopee será disponibilizada
-        em breve. Esta área já está preparada para receber perguntas,
-        mensagens e atendimentos da plataforma.
-      </p>
-    </div>
+  <button
+    type="button"
+    class="shopee-chat-tab"
+    data-shopee-list-tab="all"
+    onclick="changeShopeeListTab('all', this)"
+  >
+    Todos os chats
+    <span id="shopeeAllCount" class="shopee-chat-tab-count"></span>
+  </button>
+</div>
+
+<div class="shopee-chat-list-toolbar">
+  <span id="shopeePendingCount"></span>
+
+  <button
+    type="button"
+    class="shopee-list-filter-btn"
+    onclick="toggleShopeeUnreadFilter()"
+  >
+    Filtrar
+  </button>
+</div>
+
+      <div class="shopee-conversations" id="shopeeConversationList"></div>
+    </aside>
+
+    <section class="shopee-chat-main">
+      <header class="shopee-chat-header">
+        <button
+          type="button"
+          class="shopee-mobile-back"
+          onclick="closeShopeeMobileChat()"
+          aria-label="Voltar"
+        >
+          ‹
+        </button>
+
+        <div class="shopee-customer-avatar" id="shopeeCustomerAvatar">?</div>
+
+        <div class="shopee-customer-meta">
+          <div class="shopee-customer-name-row">
+            <div class="shopee-customer-name" id="shopeeCustomerName">
+              Selecione uma conversa
+            </div>
+            <span class="shopee-new-badge" id="shopeeNewBadge" style="display:none">Novo</span>
+          </div>
+
+          <div class="shopee-customer-subline">
+            <span id="shopeeCustomerSince"></span>
+            <span id="shopeeCustomerOrders"></span>
+            <span id="shopeeCustomerLastOrder"></span>
+          </div>
+        </div>
+
+        <div class="shopee-header-actions">
+          <button type="button" class="shopee-header-action" title="Cliente">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 21a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+
+          <button type="button" class="shopee-header-action" title="Mais opções">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="5" r="1"></circle>
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="shopee-message-area" id="shopeeMessageArea"></div>
+
+      <footer class="shopee-composer">
+        <div class="shopee-composer-tabs">
+          <button type="button" class="shopee-composer-tab active">
+            Respostas rápidas
+          </button>
+          <button type="button" class="shopee-composer-tab">
+            Notas internas
+          </button>
+        </div>
+
+        <div class="shopee-quick-replies">
+          <button
+            type="button"
+            class="shopee-quick-reply"
+            onclick="useShopeeQuickReply('Olá! Como posso ajudar?')"
+          >
+            Olá! Como posso ajudar?
+          </button>
+
+          <button
+            type="button"
+            class="shopee-quick-reply"
+            onclick="useShopeeQuickReply('Sim, temos em estoque.')"
+          >
+            Sim, temos em estoque.
+          </button>
+
+          <button
+            type="button"
+            class="shopee-quick-reply"
+            onclick="useShopeeQuickReply('Enviamos em até 24h após a confirmação do pagamento.')"
+          >
+            Enviamos em até 24h.
+          </button>
+
+          <button
+            type="button"
+            class="shopee-quick-reply"
+            onclick="useShopeeQuickReply('Obrigado pela preferência!')"
+          >
+            Obrigado pela preferência!
+          </button>
+        </div>
+
+        <div class="shopee-composer-box">
+          <textarea
+            id="shopeeMessageInput"
+            placeholder="Selecione uma conversa para responder"
+            disabled
+            onkeydown="handleShopeeMessageKeydown(event)"
+          ></textarea>
+
+          <div class="shopee-composer-actions">
+            <button type="button" class="shopee-attachment-btn" title="Anexar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m21.4 11.6-8.9 8.9a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 1 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"></path>
+              </svg>
+            </button>
+
+            <button type="button" class="shopee-attachment-btn" title="Imagem">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="m21 15-5-5L5 21"></path>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              class="shopee-send-button"
+              id="shopeeSendButton"
+              disabled
+              onclick="sendShopeeMessage()"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m22 2-7 20-4-9-9-4Z"></path>
+                <path d="M22 2 11 13"></path>
+              </svg>
+              Enviar mensagem
+            </button>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <aside class="shopee-chat-details">
+      <h3 class="shopee-detail-title">Informações do pedido</h3>
+
+      <div class="shopee-detail-card">
+        <div class="shopee-product-summary">
+          <div class="shopee-product-image" id="shopeeProductImage">—</div>
+
+          <div class="shopee-product-info">
+            <div class="shopee-product-name" id="shopeeProductName">
+              Nenhum pedido selecionado
+            </div>
+
+            <div class="shopee-product-price" id="shopeeProductPrice">
+              —
+              <span class="shopee-product-qty" id="shopeeProductQty"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shopee-detail-lines">
+          <div class="shopee-detail-line">
+            <span>Pedido</span>
+            <strong id="shopeeOrderId">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Status</span>
+            <strong class="shopee-order-status" id="shopeeOrderStatus">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Data do pedido</span>
+            <strong id="shopeeOrderDate">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Total do pedido</span>
+            <strong id="shopeeOrderTotal">—</strong>
+          </div>
+        </div>
+
+        <button type="button" class="shopee-open-order">
+          Abrir pedido na Shopee ↗
+        </button>
+      </div>
+
+      <h3 class="shopee-detail-title">Informações do cliente</h3>
+
+      <div class="shopee-detail-card">
+        <div class="shopee-detail-lines">
+          <div class="shopee-detail-line">
+            <span>Nome</span>
+            <strong id="shopeeClientName">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Usuário</span>
+            <strong id="shopeeClientUsername">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Localização</span>
+            <strong id="shopeeClientLocation">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Compras aprovadas</span>
+            <strong id="shopeeClientPurchases">—</strong>
+          </div>
+
+          <div class="shopee-detail-line">
+            <span>Avaliação</span>
+            <strong id="shopeeClientRating">—</strong>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="shopee-detail-title">Tags</h3>
+
+      <div class="shopee-detail-card">
+        <div class="shopee-tags-wrap" id="shopeeTags">
+          <span style="color:#8b8f99;font-size:10px;">Nenhuma tag disponível.</span>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
 
@@ -11400,6 +12397,1195 @@ if (notificationBadge) {
         }
       }
 
+
+      // ──────────────────────────────────────
+      // SHOPEE: integração com API
+      // ──────────────────────────────────────
+      const SHOPEE_API_ENDPOINT = "/api/shopee";
+
+      const shopeeState = {
+        conversations: [],
+        selectedConversation: null,
+        selectedConversationId: null,
+        messages: [],
+        listTab: "today",
+        unreadOnly: false,
+        loadingConversations: false,
+        loadingMessages: false,
+      };
+
+      function escapeShopeeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function getShopeeApiError(result, fallback) {
+        return (
+          result?.error ||
+          result?.message ||
+          fallback
+        );
+      }
+
+      function normalizeShopeeConversation(raw) {
+        const customer =
+          raw.customer ||
+          raw.buyer ||
+          raw.user ||
+          {};
+
+        const order =
+          raw.order ||
+          raw.last_order ||
+          {};
+
+        const lastMessage =
+          raw.last_message ||
+          raw.latest_message ||
+          {};
+
+        return {
+          id: String(
+            raw.id ||
+            raw.conversation_id ||
+            raw.chat_id ||
+            "",
+          ),
+          name:
+            customer.username ||
+            customer.name ||
+            raw.customer_name ||
+            raw.buyer_name ||
+            "Cliente Shopee",
+          avatar:
+            customer.avatar_url ||
+            raw.avatar_url ||
+            "",
+          preview:
+            lastMessage.text ||
+            lastMessage.content ||
+            raw.last_message_text ||
+            "",
+          lastMessageAt:
+            lastMessage.created_at ||
+            lastMessage.timestamp ||
+            raw.updated_at ||
+            raw.last_message_at ||
+            null,
+          unreadCount: Number(
+            raw.unread_count ??
+            raw.unread ??
+            0,
+          ),
+          status:
+            raw.status ||
+            "open",
+          isToday:
+            raw.is_today ??
+            true,
+          order,
+          customer,
+          raw,
+        };
+      }
+
+      function normalizeShopeeMessage(raw) {
+        const direction =
+          raw.direction ||
+          raw.type ||
+          raw.sender_type ||
+          "";
+
+        const outgoing =
+          raw.is_outgoing === true ||
+          direction === "outgoing" ||
+          direction === "out" ||
+          direction === "seller";
+
+        return {
+          id: String(
+            raw.id ||
+            raw.message_id ||
+            crypto.randomUUID?.() ||
+            Date.now(),
+          ),
+          text:
+            raw.text ||
+            raw.content ||
+            raw.message ||
+            "",
+          createdAt:
+            raw.created_at ||
+            raw.timestamp ||
+            new Date().toISOString(),
+          outgoing,
+          status:
+            raw.status ||
+            "",
+          raw,
+        };
+      }
+
+      function formatShopeeTime(value) {
+        if (!value) return "";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return String(value);
+        }
+
+        const today = new Date();
+
+        if (
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear()
+        ) {
+          return date.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }
+
+        return date.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+        });
+      }
+
+      function formatShopeeDateTime(value) {
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return String(value);
+        }
+
+        return date.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function setShopeeText(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent =
+            value === null ||
+            value === undefined ||
+            value === ""
+              ? "—"
+              : value;
+        }
+      }
+
+      function setShopeeComposerEnabled(enabled) {
+        const input =
+          document.getElementById("shopeeMessageInput");
+        const button =
+          document.getElementById("shopeeSendButton");
+
+        if (input) {
+          input.disabled = !enabled;
+          input.placeholder = enabled
+            ? "Digite sua mensagem..."
+            : "Selecione uma conversa para responder";
+        }
+
+        if (button) {
+          button.disabled = !enabled;
+        }
+
+        document
+          .querySelectorAll(".shopee-quick-reply")
+          .forEach((quickReply) => {
+            quickReply.disabled = !enabled;
+          });
+      }
+
+      function renderShopeeConversationState(
+        message,
+        type = "loading",
+      ) {
+        const list =
+          document.getElementById(
+            "shopeeConversationList",
+          );
+
+        if (!list) return;
+
+        const icon =
+          type === "error"
+            ? "!"
+            : type === "empty"
+              ? "○"
+              : "…";
+
+        list.innerHTML = `
+          <div style="
+            min-height:220px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            padding:28px;
+            color:#858995;
+            text-align:center;
+            font-size:12px;
+            line-height:1.5;
+          ">
+            <div style="
+              width:40px;
+              height:40px;
+              display:grid;
+              place-items:center;
+              border-radius:50%;
+              background:${type === "error" ? "#fff0f0" : "#f3f3f5"};
+              color:${type === "error" ? "#d40000" : "#777b85"};
+              font-size:18px;
+              font-weight:850;
+            ">${icon}</div>
+            <span>${escapeShopeeHtml(message)}</span>
+            ${
+              type === "error"
+                ? `<button
+                    type="button"
+                    class="shopee-list-filter-btn"
+                    onclick="loadShopeeConversations()"
+                  >
+                    Tentar novamente
+                  </button>`
+                : ""
+            }
+          </div>
+        `;
+      }
+
+      async function loadShopeeConversations({
+        preserveSelection = true,
+      } = {}) {
+        if (shopeeState.loadingConversations) {
+          return;
+        }
+
+        shopeeState.loadingConversations = true;
+
+        renderShopeeConversationState(
+          "Carregando conversas da Shopee...",
+        );
+
+        try {
+          const params = new URLSearchParams({
+            action: "conversations",
+          });
+
+          if (shopeeState.listTab === "today") {
+            params.set("period", "today");
+          }
+
+          if (shopeeState.unreadOnly) {
+            params.set("unread_only", "true");
+          }
+
+          const search =
+            document
+              .getElementById(
+                "shopeeConversationSearch",
+              )
+              ?.value.trim();
+
+          if (search) {
+            params.set("search", search);
+          }
+
+          const response =
+            await authenticatedIntegrationFetch(
+              `${SHOPEE_API_ENDPOINT}?${params.toString()}`,
+              {
+                method: "GET",
+                headers: {
+                  Accept: "application/json",
+                },
+              },
+            );
+
+          const result =
+            await response.json().catch(() => ({}));
+
+          if (!response.ok || result.success === false) {
+            throw new Error(
+              getShopeeApiError(
+                result,
+                "Não foi possível carregar as conversas da Shopee.",
+              ),
+            );
+          }
+
+          const source =
+            result.conversations ||
+            result.data?.conversations ||
+            result.data ||
+            [];
+
+          if (!Array.isArray(source)) {
+            throw new Error(
+              "A API da Shopee retornou as conversas em um formato inválido.",
+            );
+          }
+
+          shopeeState.conversations =
+            source
+              .map(normalizeShopeeConversation)
+              .filter(
+                (conversation) =>
+                  conversation.id,
+              );
+
+          renderShopeeConversationList();
+
+          if (!shopeeState.conversations.length) {
+            clearShopeeSelectedConversation();
+            return;
+          }
+
+          const previousId =
+            preserveSelection
+              ? shopeeState.selectedConversationId
+              : null;
+
+          const nextConversation =
+            shopeeState.conversations.find(
+              (conversation) =>
+                conversation.id === previousId,
+            ) ||
+            shopeeState.conversations[0];
+
+          await selectShopeeConversation(
+            nextConversation.id,
+            {
+              openMobile: false,
+              reloadList: false,
+            },
+          );
+        } catch (error) {
+          console.error(
+            "Erro ao carregar conversas da Shopee:",
+            error,
+          );
+
+          shopeeState.conversations = [];
+          clearShopeeSelectedConversation();
+
+          renderShopeeConversationState(
+            error.message ||
+              "Erro ao carregar as conversas da Shopee.",
+            "error",
+          );
+        } finally {
+          shopeeState.loadingConversations = false;
+        }
+      }
+
+      function renderShopeeConversationList() {
+        const list =
+          document.getElementById(
+            "shopeeConversationList",
+          );
+
+        if (!list) return;
+
+        if (!shopeeState.conversations.length) {
+          renderShopeeConversationState(
+            "Nenhuma conversa encontrada para os filtros selecionados.",
+            "empty",
+          );
+          return;
+        }
+
+        list.innerHTML =
+          shopeeState.conversations
+            .map((conversation) => {
+              const avatar = conversation.avatar
+                ? `<img
+                    src="${escapeShopeeHtml(conversation.avatar)}"
+                    alt=""
+                    style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                  />`
+                : escapeShopeeHtml(
+                    conversation.name
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase() || "?",
+                  );
+
+              return `
+                <button
+                  type="button"
+                  class="shopee-conversation ${
+                    conversation.id ===
+                    shopeeState.selectedConversationId
+                      ? "active"
+                      : ""
+                  }"
+                  onclick="selectShopeeConversation(
+                    '${escapeShopeeHtml(conversation.id)}'
+                  )"
+                >
+                  <span class="shopee-conversation-avatar">
+                    ${avatar}
+                  </span>
+
+                  <span class="shopee-conversation-content">
+                    <span class="shopee-conversation-top">
+                      <span class="shopee-conversation-name">
+                        ${escapeShopeeHtml(conversation.name)}
+                      </span>
+
+                      <span class="shopee-conversation-time">
+                        ${escapeShopeeHtml(
+                          formatShopeeTime(
+                            conversation.lastMessageAt,
+                          ),
+                        )}
+                      </span>
+                    </span>
+
+                    <span class="shopee-conversation-bottom">
+                      <span class="shopee-conversation-preview">
+                        ${escapeShopeeHtml(
+                          conversation.preview ||
+                          "Sem mensagem recente",
+                        )}
+                      </span>
+
+                      ${
+                        conversation.unreadCount > 0
+                          ? `<span class="shopee-unread-count">
+                              ${conversation.unreadCount}
+                            </span>`
+                          : ""
+                      }
+                    </span>
+                  </span>
+                </button>
+              `;
+            })
+            .join("");
+      }
+
+      async function selectShopeeConversation(
+        conversationId,
+        {
+          openMobile = true,
+          reloadList = true,
+        } = {},
+      ) {
+        const conversation =
+          shopeeState.conversations.find(
+            (item) =>
+              item.id ===
+              String(conversationId),
+          );
+
+        if (!conversation) return;
+
+        shopeeState.selectedConversationId =
+          conversation.id;
+        shopeeState.selectedConversation =
+          conversation;
+
+        if (reloadList) {
+          renderShopeeConversationList();
+        }
+
+        renderShopeeConversationHeader(
+          conversation,
+        );
+        renderShopeeConversationDetails(
+          conversation,
+        );
+        setShopeeComposerEnabled(true);
+
+        if (openMobile) {
+          document
+            .getElementById("shopeeChatShell")
+            ?.classList.add("mobile-chat-open");
+        }
+
+        await loadShopeeMessages(
+          conversation.id,
+        );
+      }
+
+      function renderShopeeConversationHeader(
+        conversation,
+      ) {
+        const customer =
+          conversation.customer || {};
+        const order =
+          conversation.order || {};
+
+        const avatarElement =
+          document.getElementById(
+            "shopeeCustomerAvatar",
+          );
+
+        if (avatarElement) {
+          avatarElement.innerHTML =
+            conversation.avatar
+              ? `<img
+                  src="${escapeShopeeHtml(conversation.avatar)}"
+                  alt=""
+                  style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                />`
+              : escapeShopeeHtml(
+                  conversation.name
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase() || "?",
+                );
+        }
+
+        setShopeeText(
+          "shopeeCustomerName",
+          conversation.name,
+        );
+
+        setShopeeText(
+          "shopeeCustomerSince",
+          customer.created_at
+            ? `Cliente desde ${formatShopeeDateTime(
+                customer.created_at,
+              )}`
+            : "",
+        );
+
+        setShopeeText(
+          "shopeeCustomerOrders",
+          customer.orders_count !== undefined
+            ? `${customer.orders_count} compra(s)`
+            : "",
+        );
+
+        setShopeeText(
+          "shopeeCustomerLastOrder",
+          order.id || order.order_sn
+            ? `Último pedido #${
+                order.id ||
+                order.order_sn
+              }`
+            : "",
+        );
+
+        const newBadge =
+          document.getElementById(
+            "shopeeNewBadge",
+          );
+
+        if (newBadge) {
+          newBadge.style.display =
+            conversation.unreadCount > 0
+              ? "inline-flex"
+              : "none";
+        }
+      }
+
+      async function loadShopeeMessages(
+        conversationId,
+      ) {
+        if (shopeeState.loadingMessages) {
+          return;
+        }
+
+        shopeeState.loadingMessages = true;
+
+        const messageArea =
+          document.getElementById(
+            "shopeeMessageArea",
+          );
+
+        if (messageArea) {
+          messageArea.innerHTML = `
+            <div class="shopee-chat-date">
+              Carregando mensagens...
+            </div>
+          `;
+        }
+
+        try {
+          const params = new URLSearchParams({
+            action: "messages",
+            conversation_id:
+              String(conversationId),
+          });
+
+          const response =
+            await authenticatedIntegrationFetch(
+              `${SHOPEE_API_ENDPOINT}?${params.toString()}`,
+              {
+                method: "GET",
+                headers: {
+                  Accept: "application/json",
+                },
+              },
+            );
+
+          const result =
+            await response.json().catch(() => ({}));
+
+          if (!response.ok || result.success === false) {
+            throw new Error(
+              getShopeeApiError(
+                result,
+                "Não foi possível carregar as mensagens.",
+              ),
+            );
+          }
+
+          const source =
+            result.messages ||
+            result.data?.messages ||
+            result.data ||
+            [];
+
+          if (!Array.isArray(source)) {
+            throw new Error(
+              "A API da Shopee retornou as mensagens em um formato inválido.",
+            );
+          }
+
+          shopeeState.messages =
+            source.map(normalizeShopeeMessage);
+
+          renderShopeeMessages();
+        } catch (error) {
+          console.error(
+            "Erro ao carregar mensagens da Shopee:",
+            error,
+          );
+
+          shopeeState.messages = [];
+
+          if (messageArea) {
+            messageArea.innerHTML = `
+              <div style="
+                min-height:240px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                padding:30px;
+                color:#d00000;
+                text-align:center;
+                font-size:12px;
+              ">
+                ${escapeShopeeHtml(
+                  error.message ||
+                  "Erro ao carregar as mensagens.",
+                )}
+              </div>
+            `;
+          }
+        } finally {
+          shopeeState.loadingMessages = false;
+        }
+      }
+
+      function renderShopeeMessages() {
+        const messageArea =
+          document.getElementById(
+            "shopeeMessageArea",
+          );
+
+        if (!messageArea) return;
+
+        if (!shopeeState.messages.length) {
+          messageArea.innerHTML = `
+            <div style="
+              min-height:240px;
+              display:flex;
+              flex-direction:column;
+              align-items:center;
+              justify-content:center;
+              gap:9px;
+              padding:30px;
+              color:#858995;
+              text-align:center;
+              font-size:12px;
+            ">
+              <strong style="color:#454850;">
+                Nenhuma mensagem nesta conversa.
+              </strong>
+              <span>
+                Quando a Shopee retornar mensagens, elas aparecerão aqui.
+              </span>
+            </div>
+          `;
+          return;
+        }
+
+        messageArea.innerHTML =
+          shopeeState.messages
+            .map((message) => `
+              <div class="shopee-message-row ${
+                message.outgoing
+                  ? "outgoing"
+                  : ""
+              }">
+                <div class="shopee-message-bubble">
+                  <div>
+                    ${escapeShopeeHtml(message.text)}
+                  </div>
+
+                  <div class="shopee-message-time">
+                    <span>
+                      ${escapeShopeeHtml(
+                        formatShopeeTime(
+                          message.createdAt,
+                        ),
+                      )}
+                    </span>
+
+                    ${
+                      message.outgoing
+                        ? '<span class="shopee-message-status">✓✓</span>'
+                        : ""
+                    }
+                  </div>
+                </div>
+              </div>
+            `)
+            .join("");
+
+        messageArea.scrollTop =
+          messageArea.scrollHeight;
+      }
+
+      function renderShopeeConversationDetails(
+        conversation,
+      ) {
+        const order =
+          conversation.order || {};
+        const customer =
+          conversation.customer || {};
+
+        const product =
+          order.product ||
+          order.item ||
+          conversation.raw?.product ||
+          {};
+
+        const productImage =
+          product.image_url ||
+          product.image ||
+          product.thumbnail ||
+          "";
+
+        const productImageElement =
+          document.getElementById(
+            "shopeeProductImage",
+          );
+
+        if (productImageElement) {
+          productImageElement.innerHTML =
+            productImage
+              ? `<img
+                  src="${escapeShopeeHtml(productImage)}"
+                  alt=""
+                  style="width:100%;height:100%;object-fit:cover;"
+                />`
+              : "—";
+        }
+
+        setShopeeText(
+          "shopeeProductName",
+          product.name ||
+          product.title ||
+          order.product_name,
+        );
+
+        setShopeeText(
+          "shopeeProductPrice",
+          order.formatted_total ||
+          product.formatted_price ||
+          order.total_amount ||
+          product.price,
+        );
+
+        setShopeeText(
+          "shopeeProductQty",
+          product.quantity
+            ? `x${product.quantity}`
+            : "",
+        );
+
+        setShopeeText(
+          "shopeeOrderId",
+          order.id ||
+          order.order_sn,
+        );
+
+        setShopeeText(
+          "shopeeOrderStatus",
+          order.status,
+        );
+
+        setShopeeText(
+          "shopeeOrderDate",
+          formatShopeeDateTime(
+            order.created_at ||
+            order.create_time,
+          ),
+        );
+
+        setShopeeText(
+          "shopeeOrderTotal",
+          order.formatted_total ||
+          order.total_amount,
+        );
+
+        setShopeeText(
+          "shopeeClientName",
+          customer.name ||
+          conversation.name,
+        );
+
+        setShopeeText(
+          "shopeeClientUsername",
+          customer.username ||
+          conversation.name,
+        );
+
+        setShopeeText(
+          "shopeeClientLocation",
+          customer.location ||
+          customer.city ||
+          customer.region,
+        );
+
+        setShopeeText(
+          "shopeeClientPurchases",
+          customer.approved_orders ??
+          customer.orders_count,
+        );
+
+        setShopeeText(
+          "shopeeClientRating",
+          customer.rating,
+        );
+
+        const tags =
+          conversation.raw?.tags ||
+          customer.tags ||
+          [];
+
+        const tagsElement =
+          document.getElementById(
+            "shopeeTags",
+          );
+
+        if (tagsElement) {
+          tagsElement.innerHTML =
+            Array.isArray(tags) &&
+            tags.length
+              ? tags
+                  .map(
+                    (tag) => `
+                      <span class="shopee-tag">
+                        ${escapeShopeeHtml(
+                          typeof tag === "string"
+                            ? tag
+                            : tag.name,
+                        )}
+                      </span>
+                    `,
+                  )
+                  .join("")
+              : '<span style="color:#8b8f99;font-size:10px;">Nenhuma tag disponível.</span>';
+        }
+      }
+
+      function clearShopeeSelectedConversation() {
+        shopeeState.selectedConversation = null;
+        shopeeState.selectedConversationId = null;
+        shopeeState.messages = [];
+
+        setShopeeComposerEnabled(false);
+
+        setShopeeText(
+          "shopeeCustomerAvatar",
+          "?",
+        );
+        setShopeeText(
+          "shopeeCustomerName",
+          "Selecione uma conversa",
+        );
+        setShopeeText(
+          "shopeeCustomerSince",
+          "",
+        );
+        setShopeeText(
+          "shopeeCustomerOrders",
+          "",
+        );
+        setShopeeText(
+          "shopeeCustomerLastOrder",
+          "",
+        );
+
+        const messageArea =
+          document.getElementById(
+            "shopeeMessageArea",
+          );
+
+        if (messageArea) {
+          messageArea.innerHTML = `
+            <div style="
+              min-height:300px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              padding:30px;
+              color:#858995;
+              text-align:center;
+              font-size:12px;
+            ">
+              Selecione uma conversa para visualizar as mensagens.
+            </div>
+          `;
+        }
+      }
+
+      function changeShopeeListTab(
+        tab,
+        element,
+      ) {
+        shopeeState.listTab = tab;
+
+        document
+          .querySelectorAll(
+            "[data-shopee-list-tab]",
+          )
+          .forEach((button) =>
+            button.classList.remove("active"),
+          );
+
+        element?.classList.add("active");
+
+        loadShopeeConversations({
+          preserveSelection: false,
+        });
+      }
+
+      function toggleShopeeUnreadFilter() {
+        shopeeState.unreadOnly =
+          !shopeeState.unreadOnly;
+
+        loadShopeeConversations({
+          preserveSelection: false,
+        });
+      }
+
+      let shopeeSearchTimer = null;
+
+      function filterShopeeConversations() {
+        clearTimeout(shopeeSearchTimer);
+
+        shopeeSearchTimer = setTimeout(() => {
+          loadShopeeConversations({
+            preserveSelection: false,
+          });
+        }, 350);
+      }
+
+      function useShopeeQuickReply(text) {
+        if (!shopeeState.selectedConversationId) {
+          return;
+        }
+
+        const input =
+          document.getElementById(
+            "shopeeMessageInput",
+          );
+
+        if (!input) return;
+
+        input.value = text;
+        input.focus();
+      }
+
+      async function sendShopeeMessage() {
+        const input =
+          document.getElementById(
+            "shopeeMessageInput",
+          );
+        const button =
+          document.getElementById(
+            "shopeeSendButton",
+          );
+
+        const text =
+          input?.value.trim();
+
+        if (
+          !shopeeState.selectedConversationId
+        ) {
+          return;
+        }
+
+        if (!text) {
+          input?.focus();
+          return;
+        }
+
+        const originalText =
+          button?.textContent || "";
+
+        try {
+          if (button) {
+            button.disabled = true;
+            button.textContent =
+              "Enviando...";
+          }
+
+          const response =
+            await authenticatedIntegrationFetch(
+              `${SHOPEE_API_ENDPOINT}?action=send_message`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                  Accept:
+                    "application/json",
+                },
+                body: JSON.stringify({
+                  conversation_id:
+                    shopeeState
+                      .selectedConversationId,
+                  message: text,
+                }),
+              },
+            );
+
+          const result =
+            await response.json().catch(() => ({}));
+
+          if (!response.ok || result.success === false) {
+            throw new Error(
+              getShopeeApiError(
+                result,
+                "Não foi possível enviar a mensagem.",
+              ),
+            );
+          }
+
+          if (input) {
+            input.value = "";
+          }
+
+          await loadShopeeMessages(
+            shopeeState
+              .selectedConversationId,
+          );
+
+          await loadShopeeConversations({
+            preserveSelection: true,
+          });
+
+          if (
+            typeof showToast === "function"
+          ) {
+            showToast(
+              "Mensagem enviada.",
+              "success",
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Erro ao enviar mensagem da Shopee:",
+            error,
+          );
+
+          if (
+            typeof showToast === "function"
+          ) {
+            showToast(
+              error.message ||
+                "Erro ao enviar a mensagem.",
+              "error",
+            );
+          } else {
+            alert(
+              error.message ||
+                "Erro ao enviar a mensagem.",
+            );
+          }
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent =
+              originalText ||
+              "Enviar mensagem";
+          }
+        }
+      }
+
+      function handleShopeeMessageKeydown(
+        event,
+      ) {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+          event.preventDefault();
+          sendShopeeMessage();
+        }
+      }
+
+      function closeShopeeMobileChat() {
+        document
+          .getElementById(
+            "shopeeChatShell",
+          )
+          ?.classList.remove(
+            "mobile-chat-open",
+          );
+      }
+
+      function initializeShopeeChat() {
+        clearShopeeSelectedConversation();
+        loadShopeeConversations();
+      }
+
+      window.loadShopeeConversations =
+        loadShopeeConversations;
+      window.selectShopeeConversation =
+        selectShopeeConversation;
+      window.changeShopeeListTab =
+        changeShopeeListTab;
+      window.toggleShopeeUnreadFilter =
+        toggleShopeeUnreadFilter;
+      window.filterShopeeConversations =
+        filterShopeeConversations;
+      window.useShopeeQuickReply =
+        useShopeeQuickReply;
+      window.sendShopeeMessage =
+        sendShopeeMessage;
+      window.handleShopeeMessageKeydown =
+        handleShopeeMessageKeydown;
+      window.closeShopeeMobileChat =
+        closeShopeeMobileChat;
+
       // ──────────────────────────────────────
       // DESKTOP: Tabs
       // ──────────────────────────────────────
@@ -11432,6 +13618,7 @@ if (notificationBadge) {
         if (tab === "stats") loadDesktopStats();
         if (tab === "users") {loadDesktopUsers();}
         if (tab === "post-sales") {loadPostSales();}
+        if (tab === "shopee") {initializeShopeeChat();}
 
       }
 
