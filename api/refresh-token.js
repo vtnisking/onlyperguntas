@@ -80,8 +80,6 @@ export default async function handler(req, res) {
           data.session.expires_in,
         expires_at:
           data.session.expires_at,
-        user:
-          data.session.user,
       },
     });
   } catch (error) {
