@@ -221,6 +221,31 @@ async function getPreviousQuestions(store, question, supabase) {
   }
 }
 
+async function getQuestionStatus(
+  questionId,
+  accessToken,
+) {
+  try {
+    const response = await axios.get(
+      `https://api.mercadolibre.com/questions/${questionId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Erro ao validar pergunta ${questionId}:`,
+      error.response?.data || error.message,
+    );
+
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   try {
     const supabase = createClient(
@@ -384,20 +409,67 @@ const hiddenQuestionIds = new Set(
 
         const questions = response.data.questions || [];
 
-        for (const question of questions) {
-            if (
-  hiddenQuestionIds.has(
-    String(question.id),
-  )
+for (const question of questions) {
+  if (
+    hiddenQuestionIds.has(
+      String(question.id),
+    )
+  ) {
+    continue;
+  }
+
+  const [
+    liveQuestion,
+    productData,
+    customerData,
+    previousQuestions,
+  ] = await Promise.all([
+    getQuestionStatus(
+      question.id,
+      store.access_token,
+    ),
+
+    getProductData(
+      question.item_id,
+      store.access_token,
+    ),
+
+    getCustomerData(
+      question.from?.id,
+      store.access_token,
+    ),
+
+    getPreviousQuestions(
+      store,
+      question,
+      supabase,
+    ),
+  ]);
+        
+            // Pergunta não existe mais no Mercado Livre
+if (!liveQuestion) {
+  continue;
+}
+
+// Não está mais realmente pendente
+if (
+  String(liveQuestion.status).toUpperCase() !==
+  "UNANSWERED"
 ) {
   continue;
 }
-          const [productData, customerData, previousQuestions] =
-            await Promise.all([
-              getProductData(question.item_id, store.access_token),
-              getCustomerData(question.from?.id, store.access_token),
-              getPreviousQuestions(store, question, supabase),
-            ]);
+
+// Pergunta removida da publicação
+if (
+  liveQuestion.deleted_from_listing === true
+) {
+  continue;
+}
+
+// Pergunta bloqueada / retida
+if (liveQuestion.hold === true) {
+  continue;
+}
 
 const productStatus =
   productData.status;
@@ -415,6 +487,11 @@ const unavailableReason =
 
 allQuestions.push({
   ...question,
+
+  status: liveQuestion.status,
+  hold: liveQuestion.hold === true,
+  deleted_from_listing:
+    liveQuestion.deleted_from_listing === true,
 
   store_name: store.name,
   store_id: store.id,
@@ -437,7 +514,6 @@ unavailable_reason:
 
   previous_questions: previousQuestions,
 
-  deleted_from_listing: false,
 });
         }
       } catch (storeError) {
