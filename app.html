@@ -11410,7 +11410,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-    function buildDesktopRow(item) {
+function buildDesktopRow(item) {
   const cardId = `ml-card-${item.id}`;
   const expandId = `ml-expanded-${item.id}`;
   const arrowId = `ml-arrow-${item.id}`;
@@ -11464,50 +11464,59 @@ document.addEventListener("keydown", (event) => {
             `
         }
 
-<div class="ml-card-product-info">
+        <div class="ml-card-product-info">
 
-    <div class="ml-card-product-title">
-        ${
-            item.product_title ||
-            item.item_id ||
-            "Produto sem título"
-        }
-    </div>
+          <div class="ml-card-product-title">
+            ${
+              item.product_title ||
+              item.item_id ||
+              "Produto sem título"
+            }
+          </div>
 
-    <div class="ml-card-product-subtitle">
+          <div class="ml-card-product-subtitle">
 
-        ${
-            item.product_sku
+            ${
+              item.product_sku
                 ? `
-                    <span>
-                        SKU ${item.product_sku}
-                    </span>
+                  <span>
+                    SKU ${item.product_sku}
+                  </span>
                 `
                 : ""
-        }
+            }
 
-    </div>
+          </div>
 
-    <div class="question-meta">
+          <div class="question-meta">
 
-        <span class="meta-chip">
-            🛍️
-            ${storeName}
-        </span>
+            <span class="meta-chip">
+              🛍️ ${storeName}
+            </span>
 
-        <span class="meta-chip">
-            🕒
-            ${formatQuestionAskedAt(item.date_created)}
-        </span>
+            <span class="meta-chip">
+              🕒 ${formatQuestionAskedAt(
+                item.date_created,
+              )}
+            </span>
 
-        <span class="meta-chip ${getQuestionElapsed(item.date_created).className}">
-            ⏱️
-            ${getQuestionElapsed(item.date_created).text}
-        </span>
+            <span
+              class="meta-chip ${
+                getQuestionElapsed(
+                  item.date_created,
+                ).className
+              }"
+            >
+              ⏱️ ${
+                getQuestionElapsed(
+                  item.date_created,
+                ).text
+              }
+            </span>
 
-    </div>
+          </div>
 
-</div>
+        </div>
 
         <div class="ml-card-meta-box">
           <div class="ml-card-meta-label">
@@ -11527,7 +11536,9 @@ document.addEventListener("keydown", (event) => {
           <div class="ml-card-meta-value">
             ${
               item.product_price
-                ? formatPrice(item.product_price)
+                ? formatPrice(
+                    item.product_price,
+                  )
                 : "—"
             }
           </div>
@@ -11553,7 +11564,7 @@ document.addEventListener("keydown", (event) => {
             toggleMlCard('${item.id}');
           "
         >
-         ⌄
+          ⌄
         </button>
 
       </div>
@@ -11598,307 +11609,320 @@ document.addEventListener("keydown", (event) => {
                 <span>•</span>
 
                 <span>
-                  há ${timeAgo(item.date_created)}
+                  há ${timeAgo(
+                    item.date_created,
+                  )}
                 </span>
 
               </div>
 
             </div>
 
-${
-  item.can_answer
-    ? `
-      <div class="ml-question-urgency">
-        ⏱
-        <span>
-          Responda o<br>
-          quanto antes
-        </span>
-      </div>
-    `
-    : `
-      <div
-        class="ml-question-urgency"
-        style="
-          color:#dc2626;
-          background:#fff1f2;
-          border-color:#fecaca;
-        "
-      >
-        ⚠
-        <span>
-          Pergunta<br>
-          indisponível
-        </span>
-      </div>
-    `
-}
-
-          </div>
-
-        </div>
-    <!-- PERGUNTAS ANTERIORES -->
-    ${
-      (item.previous_questions || []).length > 0
-        ? `
-          <div class="ml-previous-area">
-
-            <button
-              type="button"
-              class="ml-previous-toggle"
-              onclick="
-                togglePrevious('${previousId}')
-              "
-            >
-              🕘 Ver
-              ${item.previous_questions.length}
-              pergunta(s) anterior(es)
-            </button>
-
-            <div
-              id="${previousId}"
-              style="
-                display:none;
-                margin-top:10px;
-              "
-            >
-              ${item.previous_questions
-                .map(
-                  (q) => `
-                    <div
-                      class="previous"
-                      style="margin-bottom:8px;"
-                    >
-                      <div
-                        style="
-                          color:var(--text);
-                          font-size:13px;
-                          margin-bottom:6px;
-                        "
-                      >
-                        ${q.text || ""}
-                      </div>
-
-                      ${
-                        q.answer
-                          ? `
-                            <div
-                              style="
-                                color:var(--green);
-                                font-size:12px;
-                                margin-bottom:5px;
-                              "
-                            >
-                              ↳ ${q.answer}
-                            </div>
-                          `
-                          : ""
-                      }
-
-                      <div
-                        style="
-                          color:var(--text3);
-                          font-size:11px;
-                        "
-                      >
-                        ${formatDate(
-                          q.answer_date_created ||
-                          q.date_created,
-                        )}
-
-                        · ${
-                          q.status === "ANSWERED"
-                            ? "Respondida"
-                            : "Pendente"
-                        }
-
-                        ${
-                          q.status === "ANSWERED"
-                            ? `
-                              · Respondido por
-                              ${
-                                q.user_name ||
-                                q.user_email ||
-                                "Usuário"
-                              }
-                            `
-                            : ""
-                        }
-                      </div>
-                    </div>
-                  `,
-                )
-                .join("")}
-            </div>
-
-          </div>
-        `
-        : ""
-    }
-
-    <!-- AÇÕES DA PERGUNTA -->
-    <div class="ml-question-actions">
-
-      <button
-        type="button"
-        class="ml-question-action-delete"
-        onclick="
-          event.stopPropagation();
-          deleteMlQuestion(
-            '${item.id}',
-            '${item.store_id}',
-            this
-          );
-        "
-      >
-        Excluir pergunta
-      </button>
-
-      <button
-        type="button"
-        class="ml-question-action-block"
-        onclick="
-          event.stopPropagation();
-          blockMlBuyer(
-            '${item.from?.id || ""}',
-            '${item.store_id}',
-            this
-          );
-        "
-      >
-        Bloquear comprador
-      </button>
-
-    </div>
-
-    ${
-      item.can_answer
-        ? `
-          <!-- BARRA DE AÇÕES -->
-          <div class="ml-answer-toolbar">
-
-            <button
-              type="button"
-              class="ml-quick-replies-btn"
-              onclick="
-                window.openQuickRepliesPicker(
-                  '${taId}'
-                )
-              "
-            >
-              💬 Respostas rápidas
-              <span>⌄</span>
-            </button>
-
-            <div class="ml-answer-toolbar-right">
-
-              <span
-                class="ml-counter-top"
-                id="${cntId}-top"
-              >
-                0 / 2000
-              </span>
-
-              <button
-                type="button"
-                class="ml-reply-btn"
-                onclick="
-                  sendAnswerMl(
-                    '${item.id}',
-                    '${item.store_id}',
-                    '${taId}',
-                    this
-                  )
-                "
-              >
-                Responder
-                <span>➤</span>
-              </button>
-
-            </div>
-          </div>
-
-      </div>
-
-      <!-- CAMPO -->
-      <div class="ml-answer-wrap">
-
-        <textarea
-          id="${taId}"
-          maxlength="2000"
-          placeholder="Digite sua resposta..."
-          oninput="
-            document.getElementById(
-              '${cntId}'
-            ).innerText =
-              this.value.length +
-              ' / 2000';
-
-            document.getElementById(
-              '${cntId}-top'
-            ).innerText =
-              this.value.length +
-              ' / 2000';
-          "
-        ></textarea>
-
-        <div class="ml-answer-footer">
-
-          <span class="ml-answer-warning">
-            ⓘ Você pode enviar apenas 1 resposta.
-            Não inclua dados de contato.
-          </span>
-
-          <span id="${cntId}">
-            0 / 2000
-          </span>
-
-        </div>
-
-      </div>
-    `
-    : `
-      <!-- PERGUNTA INDISPONÍVEL -->
-      <div class="question-unavailable-box">
-
-        <div class="question-unavailable-icon">
-          !
-        </div>
-
-        <div class="question-unavailable-content">
-
-          <strong>
-            Pergunta indisponível
-          </strong>
-
-          <p>
             ${
-              item.unavailable_reason ||
-              "O produto foi vendido, o anúncio foi encerrado ou esta pergunta não está mais disponível no Mercado Livre."
+              item.can_answer
+                ? `
+                  <div class="ml-question-urgency">
+                    ⏱
+                    <span>
+                      Responda o<br>
+                      quanto antes
+                    </span>
+                  </div>
+                `
+                : `
+                  <div
+                    class="ml-question-urgency"
+                    style="
+                      color:#dc2626;
+                      background:#fff1f2;
+                      border-color:#fecaca;
+                    "
+                  >
+                    ⚠
+                    <span>
+                      Pergunta<br>
+                      indisponível
+                    </span>
+                  </div>
+                `
             }
-          </p>
+
+          </div>
+
+        </div>
+
+        <!-- PERGUNTAS ANTERIORES -->
+        ${
+          (item.previous_questions || [])
+            .length > 0
+            ? `
+              <div class="ml-previous-area">
+
+                <button
+                  type="button"
+                  class="ml-previous-toggle"
+                  onclick="
+                    togglePrevious(
+                      '${previousId}'
+                    )
+                  "
+                >
+                  🕘 Ver
+                  ${
+                    item.previous_questions
+                      .length
+                  }
+                  pergunta(s) anterior(es)
+                </button>
+
+                <div
+                  id="${previousId}"
+                  style="
+                    display:none;
+                    margin-top:10px;
+                  "
+                >
+                  ${item.previous_questions
+                    .map(
+                      (q) => `
+                        <div
+                          class="previous"
+                          style="
+                            margin-bottom:8px;
+                          "
+                        >
+
+                          <div
+                            style="
+                              color:var(--text);
+                              font-size:13px;
+                              margin-bottom:6px;
+                            "
+                          >
+                            ${q.text || ""}
+                          </div>
+
+                          ${
+                            q.answer
+                              ? `
+                                <div
+                                  style="
+                                    color:var(--green);
+                                    font-size:12px;
+                                    margin-bottom:5px;
+                                  "
+                                >
+                                  ↳ ${q.answer}
+                                </div>
+                              `
+                              : ""
+                          }
+
+                          <div
+                            style="
+                              color:var(--text3);
+                              font-size:11px;
+                            "
+                          >
+                            ${formatDate(
+                              q.answer_date_created ||
+                                q.date_created,
+                            )}
+
+                            · ${
+                              q.status ===
+                              "ANSWERED"
+                                ? "Respondida"
+                                : "Pendente"
+                            }
+
+                            ${
+                              q.status ===
+                              "ANSWERED"
+                                ? `
+                                  · Respondido por
+                                  ${
+                                    q.user_name ||
+                                    q.user_email ||
+                                    "Usuário"
+                                  }
+                                `
+                                : ""
+                            }
+
+                          </div>
+
+                        </div>
+                      `,
+                    )
+                    .join("")}
+                </div>
+
+              </div>
+            `
+            : ""
+        }
+
+        <!-- AÇÕES DA PERGUNTA -->
+        <div class="ml-question-actions">
 
           <button
             type="button"
-            class="question-remove-button"
+            class="ml-question-action-delete"
             onclick="
               event.stopPropagation();
-              removePendingQuestion(
+              deleteMlQuestion(
                 '${item.id}',
+                '${item.store_id}',
                 this
               );
             "
           >
-            Remover das pendentes
+            Excluir pergunta
+          </button>
+
+          <button
+            type="button"
+            class="ml-question-action-block"
+            onclick="
+              event.stopPropagation();
+              blockMlBuyer(
+                '${item.from?.id || ""}',
+                '${item.store_id}',
+                this
+              );
+            "
+          >
+            Bloquear comprador
           </button>
 
         </div>
 
-      </div>
-    `
-} 
+        ${
+          item.can_answer
+            ? `
+              <!-- BARRA DE RESPOSTA -->
+              <div class="ml-answer-toolbar">
 
-        </div>
+                <button
+                  type="button"
+                  class="ml-quick-replies-btn"
+                  onclick="
+                    window.openQuickRepliesPicker(
+                      '${taId}'
+                    )
+                  "
+                >
+                  💬 Respostas rápidas
+                  <span>⌄</span>
+                </button>
+
+                <div class="ml-answer-toolbar-right">
+
+                  <span
+                    class="ml-counter-top"
+                    id="${cntId}-top"
+                  >
+                    0 / 2000
+                  </span>
+
+                  <button
+                    type="button"
+                    class="ml-reply-btn"
+                    onclick="
+                      sendAnswerMl(
+                        '${item.id}',
+                        '${item.store_id}',
+                        '${taId}',
+                        this
+                      )
+                    "
+                  >
+                    Responder
+                    <span>➤</span>
+                  </button>
+
+                </div>
+
+              </div>
+
+              <!-- ÚNICO CAMPO DE RESPOSTA -->
+              <div class="ml-answer-wrap">
+
+                <textarea
+                  id="${taId}"
+                  maxlength="2000"
+                  placeholder="Digite sua resposta..."
+                  oninput="
+                    document.getElementById(
+                      '${cntId}'
+                    ).innerText =
+                      this.value.length +
+                      ' / 2000';
+
+                    document.getElementById(
+                      '${cntId}-top'
+                    ).innerText =
+                      this.value.length +
+                      ' / 2000';
+                  "
+                ></textarea>
+
+                <div class="ml-answer-footer">
+
+                  <span class="ml-answer-warning">
+                    ⓘ Você pode enviar apenas 1 resposta.
+                    Não inclua dados de contato.
+                  </span>
+
+                  <span id="${cntId}">
+                    0 / 2000
+                  </span>
+
+                </div>
+
+              </div>
+            `
+            : `
+              <!-- PERGUNTA INDISPONÍVEL -->
+              <div class="question-unavailable-box">
+
+                <div class="question-unavailable-icon">
+                  !
+                </div>
+
+                <div class="question-unavailable-content">
+
+                  <strong>
+                    Pergunta indisponível
+                  </strong>
+
+                  <p>
+                    ${
+                      item.unavailable_reason ||
+                      "O produto foi vendido, o anúncio foi encerrado ou esta pergunta não está mais disponível no Mercado Livre."
+                    }
+                  </p>
+
+                  <button
+                    type="button"
+                    class="question-remove-button"
+                    onclick="
+                      event.stopPropagation();
+                      removePendingQuestion(
+                        '${item.id}',
+                        this
+                      );
+                    "
+                  >
+                    Remover das pendentes
+                  </button>
+
+                </div>
+
+              </div>
+            `
+        }
 
       </div>
 
