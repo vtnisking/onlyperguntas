@@ -223,15 +223,6 @@ async function getPreviousQuestions(store, question, supabase) {
 
 export default async function handler(req, res) {
   try {
-    const companyId = req.query.company_id;
-
-    if (!companyId) {
-      return res.status(400).json({
-        success: false,
-        error: "company_id obrigatório",
-      });
-    }
-
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -242,6 +233,73 @@ export default async function handler(req, res) {
         },
       },
     );
+
+    // ==========================================
+    // REMOVER PERGUNTA DAS PENDENTES
+    // ==========================================
+    if (req.method === "POST") {
+      const {
+        question_id,
+        company_id,
+      } = req.body || {};
+
+      if (!question_id || !company_id) {
+        return res.status(400).json({
+          success: false,
+          error:
+            "question_id e company_id são obrigatórios",
+        });
+      }
+
+      const { error: hideError } = await supabase
+        .from("hidden_questions")
+        .upsert(
+          {
+            question_id: String(question_id),
+            company_id: String(company_id),
+          },
+          {
+            onConflict: "company_id,question_id",
+          },
+        );
+
+      if (hideError) {
+        console.error(
+          "Erro ao remover pergunta:",
+          hideError,
+        );
+
+        return res.status(500).json({
+          success: false,
+          error: hideError.message,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Pergunta removida das pendentes.",
+      });
+    }
+
+    // ==========================================
+    // LISTAR PERGUNTAS
+    // ==========================================
+    if (req.method !== "GET") {
+      return res.status(405).json({
+        success: false,
+        error: "Método não permitido",
+      });
+    }
+
+    const companyId = req.query.company_id;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: "company_id obrigatório",
+      });
+    }
 
     const { data: stores, error: storesError } = await supabase
       .from("stores")
