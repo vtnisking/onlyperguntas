@@ -3154,6 +3154,94 @@ overflow: hidden;
    PERGUNTAS PENDENTES — NOVO CARD DESKTOP
 ========================================================= */
 
+.question-unavailable {
+  border-color: #fecaca !important;
+  background: #fffafa;
+}
+
+.question-unavailable-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 18px;
+
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+
+  background: #fff7f7;
+}
+
+.question-unavailable-icon {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #fee2e2;
+  color: #dc2626;
+
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.question-unavailable-content {
+  flex: 1;
+}
+
+.question-unavailable-content strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #991b1b;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.question-unavailable-content p {
+  margin: 0 0 13px;
+
+  color: #7f1d1d;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.question-remove-button {
+  padding: 8px 13px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #dc2626;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.question-remove-button:hover {
+  background: #fee2e2;
+}
+
+.question-remove-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ml-card {
   width: 100%;
   margin-bottom: 12px;
@@ -11473,13 +11561,34 @@ document.addEventListener("keydown", (event) => {
 
             </div>
 
-            <div class="ml-question-urgency">
-              ⏱
-              <span>
-                Responda o<br>
-                quanto antes
-              </span>
-            </div>
+${
+  item.can_answer
+    ? `
+      <div class="ml-question-urgency">
+        ⏱
+        <span>
+          Responda o<br>
+          quanto antes
+        </span>
+      </div>
+    `
+    : `
+      <div
+        class="ml-question-urgency"
+        style="
+          color:#dc2626;
+          background:#fff1f2;
+          border-color:#fecaca;
+        "
+      >
+        ⚠
+        <span>
+          Pergunta<br>
+          indisponível
+        </span>
+      </div>
+    `
+}
 
           </div>
 
@@ -11586,85 +11695,131 @@ document.addEventListener("keydown", (event) => {
             : ""
         }
 
-        <!-- BARRA DE AÇÕES -->
-        <div class="ml-answer-toolbar">
+    ${
+  item.can_answer
+    ? `
+      <!-- BARRA DE AÇÕES -->
+      <div class="ml-answer-toolbar">
+
+        <button
+          type="button"
+          class="ml-quick-replies-btn"
+          onclick="
+            window.openQuickRepliesPicker(
+              '${taId}'
+            )
+          "
+        >
+          💬 Respostas rápidas
+          <span>⌄</span>
+        </button>
+
+        <div class="ml-answer-toolbar-right">
+
+          <span
+            class="ml-counter-top"
+            id="${cntId}-top"
+          >
+            0 / 2000
+          </span>
 
           <button
             type="button"
-            class="ml-quick-replies-btn"
+            class="ml-reply-btn"
             onclick="
-              window.openQuickRepliesPicker(
-                '${taId}'
+              sendAnswerMl(
+                '${item.id}',
+                '${item.store_id}',
+                '${taId}',
+                this
               )
             "
           >
-            💬 Respostas rápidas
-            <span>⌄</span>
+            Responder
+            <span>➤</span>
           </button>
-
-          <div class="ml-answer-toolbar-right">
-
-            <span
-              class="ml-counter-top"
-              id="${cntId}-top"
-            >
-              0 / 2000
-            </span>
-
-            <button
-              type="button"
-              class="ml-reply-btn"
-              onclick="
-                sendAnswerMl(
-                  '${item.id}',
-                  '${item.store_id}',
-                  '${taId}',
-                  this
-                )
-              "
-            >
-              Responder
-              <span>➤</span>
-            </button>
-
-          </div>
 
         </div>
 
-        <!-- CAMPO -->
-        <div class="ml-answer-wrap">
+      </div>
 
-          <textarea
-            id="${taId}"
-            maxlength="2000"
-            placeholder="Digite sua resposta..."
-            oninput="
-              document.getElementById(
-                '${cntId}'
-              ).innerText =
-                this.value.length +
-                ' / 2000';
+      <!-- CAMPO -->
+      <div class="ml-answer-wrap">
 
-              document.getElementById(
-                '${cntId}-top'
-              ).innerText =
-                this.value.length +
-                ' / 2000';
+        <textarea
+          id="${taId}"
+          maxlength="2000"
+          placeholder="Digite sua resposta..."
+          oninput="
+            document.getElementById(
+              '${cntId}'
+            ).innerText =
+              this.value.length +
+              ' / 2000';
+
+            document.getElementById(
+              '${cntId}-top'
+            ).innerText =
+              this.value.length +
+              ' / 2000';
+          "
+        ></textarea>
+
+        <div class="ml-answer-footer">
+
+          <span class="ml-answer-warning">
+            ⓘ Você pode enviar apenas 1 resposta.
+            Não inclua dados de contato.
+          </span>
+
+          <span id="${cntId}">
+            0 / 2000
+          </span>
+
+        </div>
+
+      </div>
+    `
+    : `
+      <!-- PERGUNTA INDISPONÍVEL -->
+      <div class="question-unavailable-box">
+
+        <div class="question-unavailable-icon">
+          !
+        </div>
+
+        <div class="question-unavailable-content">
+
+          <strong>
+            Pergunta indisponível
+          </strong>
+
+          <p>
+            ${
+              item.unavailable_reason ||
+              "O produto foi vendido, o anúncio foi encerrado ou esta pergunta não está mais disponível no Mercado Livre."
+            }
+          </p>
+
+          <button
+            type="button"
+            class="question-remove-button"
+            onclick="
+              event.stopPropagation();
+              removePendingQuestion(
+                '${item.id}',
+                this
+              );
             "
-          ></textarea>
+          >
+            Remover das pendentes
+          </button>
 
-          <div class="ml-answer-footer">
+        </div>
 
-            <span class="ml-answer-warning">
-              ⓘ Você pode enviar apenas 1 resposta.
-              Não inclua dados de contato.
-            </span>
-
-            <span id="${cntId}">
-              0 / 2000
-            </span>
-
-          </div>
+      </div>
+    `
+} 
 
         </div>
 
@@ -12340,15 +12495,15 @@ if (notificationBadge) {
       // SHARED: Send answer
       // ──────────────────────────────────────
 async function sendAnswer(questionId, storeId, button) {
-  // Tenta pegar o textarea do detalhe (desktop) ou do card (mobile)
   const textarea =
     document.getElementById(`detail-answer-${questionId}`) ||
-    document.getElementById(`answer-${questionId}`);
+    document.getElementById(`answer-${questionId}`) ||
+    document.getElementById(`ml-ta-${questionId}`);
 
   const text = textarea?.value.trim();
 
   if (!text) {
-    alert("Digite uma resposta.");
+    showToast("Digite uma resposta.", "error");
     return;
   }
 
@@ -12358,8 +12513,9 @@ async function sendAnswer(questionId, storeId, button) {
   try {
     const response = await fetch("/api/answer", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         question_id: questionId,
         store_id: storeId,
@@ -12380,44 +12536,64 @@ async function sendAnswer(questionId, storeId, button) {
         loadQuestions();
       }, 800);
 
-    } else {
-      const errorCode =
-        data?.code ||
-        data?.error?.error ||
-        data?.error;
-
-      let errorMessage =
-        data?.message ||
-        data?.error?.message ||
-        "Não foi possível responder.";
-
-      if (errorCode === "QUESTION_UNAVAILABLE") {
-
-        if (data?.reason === "ITEM_NOT_ACTIVE") {
-          errorMessage =
-            "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.";
-        }
-
-        if (data?.reason === "QUESTION_NOT_FOUND") {
-          errorMessage =
-            "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.";
-        }
-
-      } else if (errorCode === "not_unanswered_question") {
-
-        errorMessage =
-          "Essa pergunta já foi respondida ou não está mais pendente.";
-      }
-
-      showToast(errorMessage, "error");
-
-      loadQuestions();
-
-      button.disabled = false;
-      button.innerText = "Enviar resposta ✓";
+      return;
     }
 
-  } catch (e) {
+    const errorCode =
+      data?.code ||
+      data?.error?.error ||
+      data?.error;
+
+    // ========================================
+    // PRODUTO / PERGUNTA INDISPONÍVEL
+    // ========================================
+    if (errorCode === "QUESTION_UNAVAILABLE") {
+      markQuestionUnavailable(
+        questionId,
+        data?.message ||
+          "O produto foi vendido, o anúncio foi encerrado ou a pergunta não está mais disponível.",
+      );
+
+      showToast(
+        data?.message ||
+          "Esta pergunta não pode mais ser respondida.",
+        "error",
+      );
+
+      return;
+    }
+
+    // ========================================
+    // PERGUNTA JÁ RESPONDIDA
+    // ========================================
+    if (
+      errorCode === "not_unanswered_question" ||
+      errorCode === "QUESTION_ALREADY_ANSWERED"
+    ) {
+      showToast(
+        "Essa pergunta já foi respondida ou não está mais pendente.",
+        "error",
+      );
+
+      loadQuestions();
+      return;
+    }
+
+    const errorMessage =
+      data?.message ||
+      data?.error?.message ||
+      (typeof data?.error === "string"
+        ? data.error
+        : null) ||
+      "Não foi possível responder.";
+
+    showToast(errorMessage, "error");
+
+    button.disabled = false;
+    button.innerText = "Enviar resposta ✓";
+
+  } catch (error) {
+    console.error("Erro ao responder:", error);
 
     showToast("Erro no sistema.", "error");
 
@@ -12425,6 +12601,183 @@ async function sendAnswer(questionId, storeId, button) {
     button.innerText = "Enviar resposta ✓";
   }
 }
+
+function markQuestionUnavailable(questionId, message) {
+  // CARD NOVO DO DESKTOP
+  const card = document.getElementById(
+    `ml-card-${questionId}`,
+  );
+
+  if (card) {
+    const expanded = document.getElementById(
+      `ml-expanded-${questionId}`,
+    );
+
+    if (expanded) {
+      expanded.style.display = "block";
+
+      expanded.innerHTML = `
+        <div class="question-unavailable-box">
+
+          <div class="question-unavailable-icon">
+            !
+          </div>
+
+          <div class="question-unavailable-content">
+
+            <strong>
+              Pergunta indisponível
+            </strong>
+
+            <p>
+              ${escapeHtml(
+                message ||
+                  "O produto foi vendido ou esta pergunta não está mais disponível no Mercado Livre.",
+              )}
+            </p>
+
+            <button
+              type="button"
+              class="question-remove-button"
+              onclick="removePendingQuestion(
+                '${questionId}',
+                this
+              )"
+            >
+              Remover das pendentes
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    card.classList.add("question-unavailable");
+  }
+
+  // PAINEL ANTIGO / DETAIL DO DESKTOP
+  const detailContent =
+    document.getElementById("detailContent");
+
+  if (
+    detailContent &&
+    String(selectedQuestionId) ===
+      String(questionId)
+  ) {
+    detailContent.innerHTML = `
+      <div class="question-unavailable-box">
+
+        <div class="question-unavailable-icon">
+          !
+        </div>
+
+        <div class="question-unavailable-content">
+
+          <strong>
+            Pergunta indisponível
+          </strong>
+
+          <p>
+            ${escapeHtml(
+              message ||
+                "Esta pergunta não está mais disponível no Mercado Livre.",
+            )}
+          </p>
+
+          <button
+            type="button"
+            class="question-remove-button"
+            onclick="removePendingQuestion(
+              '${questionId}',
+              this
+            )"
+          >
+            Remover das pendentes
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  }
+}
+
+async function removePendingQuestion(
+  questionId,
+  button,
+) {
+  if (!questionId) return;
+
+  const originalText = button?.innerText;
+
+  if (button) {
+    button.disabled = true;
+    button.innerText = "Removendo...";
+  }
+
+  try {
+const response = await fetch(
+  "/api/remove",
+  {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          question_id: questionId,
+          company_id: loggedUser.company_id,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data?.message ||
+          data?.error ||
+          "Não foi possível remover a pergunta.",
+      );
+    }
+
+    showToast(
+      "Pergunta removida das pendentes.",
+      "success",
+    );
+
+    closeDetail();
+
+    await loadQuestions();
+
+  } catch (error) {
+    console.error(
+      "Erro ao remover pergunta:",
+      error,
+    );
+
+    showToast(
+      error.message ||
+        "Não foi possível remover a pergunta.",
+      "error",
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.innerText =
+        originalText ||
+        "Remover das pendentes";
+    }
+  }
+}
+
+window.markQuestionUnavailable =
+  markQuestionUnavailable;
+
+window.removePendingQuestion =
+  removePendingQuestion;
 
       // ──────────────────────────────────────
       // SHOPEE: integração com API

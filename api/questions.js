@@ -58,30 +58,34 @@ async function getProductData(itemId, accessToken) {
       )?.value_name ||
       null;
 
-    return {
-      title: item.title || itemId,
-      sku,
-      thumbnail: item.thumbnail
-        ? item.thumbnail.replace(/^http:\/\//i, "https://")
-        : null,
-      permalink: item.permalink || null,
-      available_quantity: item.available_quantity || 0,
-      price: item.price || null,
-    };
+return {
+  title: item.title || itemId,
+  sku,
+  thumbnail: item.thumbnail
+    ? item.thumbnail.replace(/^http:\/\//i, "https://")
+    : null,
+  permalink: item.permalink || null,
+  available_quantity: item.available_quantity || 0,
+  price: item.price || null,
+  status: item.status || null,
+};
+
   } catch (error) {
     console.error(
       `Erro ao carregar produto ${itemId}:`,
       error.response?.data || error.message,
     );
 
-    return {
-      title: itemId,
-      sku: null,
-      thumbnail: null,
-      permalink: null,
-      available_quantity: 0,
-      price: null,
-    };
+        return {
+        title: itemId,
+        sku: null,
+        thumbnail: null,
+        permalink: null,
+        available_quantity: 0,
+        price: null,
+        status: null,
+        };
+
   }
 }
 
@@ -259,6 +263,27 @@ export default async function handler(req, res) {
       });
     }
 
+    const {
+  data: hiddenQuestions,
+  error: hiddenQuestionsError,
+} = await supabase
+  .from("hidden_questions")
+  .select("question_id")
+  .eq("company_id", String(companyId));
+
+if (hiddenQuestionsError) {
+  console.error(
+    "Erro ao carregar perguntas removidas:",
+    hiddenQuestionsError,
+  );
+}
+
+const hiddenQuestionIds = new Set(
+  (hiddenQuestions || []).map((item) =>
+    String(item.question_id),
+  ),
+);
+
     const allQuestions = [];
 
     for (let store of stores) {
@@ -281,7 +306,6 @@ export default async function handler(req, res) {
           const tokenExpired =
             errorData?.message === "invalid_token" ||
             errorData?.error === "invalid_token" ||
-            errorData?.error === "bad_request" ||
             status === 401;
 
           if (!tokenExpired) {
@@ -303,6 +327,13 @@ export default async function handler(req, res) {
         const questions = response.data.questions || [];
 
         for (const question of questions) {
+            if (
+  hiddenQuestionIds.has(
+    String(question.id),
+  )
+) {
+  continue;
+}
           const [productData, customerData, previousQuestions] =
             await Promise.all([
               getProductData(question.item_id, store.access_token),
@@ -310,20 +341,46 @@ export default async function handler(req, res) {
               getPreviousQuestions(store, question, supabase),
             ]);
 
-          allQuestions.push({
-            ...question,
-            store_name: store.name,
-            store_id: store.id,
-            product_title: productData.title,
-            product_sku: productData.sku,
-            product_thumbnail: productData.thumbnail,
-            product_link: productData.permalink,
-            product_quantity: productData.available_quantity,
-            product_price: productData.price,
-            client_name: customerData.name,
-            client_nickname: customerData.nickname,
-            previous_questions: previousQuestions,
-          });
+const productStatus =
+  productData.status;
+
+const canAnswer =
+  productStatus !== "closed" &&
+  productStatus !== "paused";
+
+const unavailableReason =
+  productStatus === "closed"
+    ? "O produto foi vendido ou o anúncio foi encerrado."
+    : productStatus === "paused"
+      ? "O anúncio está pausado e não permite resposta no momento."
+      : null;
+
+allQuestions.push({
+  ...question,
+
+  store_name: store.name,
+  store_id: store.id,
+
+  product_title: productData.title,
+  product_sku: productData.sku,
+  product_thumbnail: productData.thumbnail,
+  product_link: productData.permalink,
+  product_quantity: productData.available_quantity,
+  product_price: productData.price,
+
+  product_status: productStatus,
+  can_answer: canAnswer,
+
+unavailable_reason:
+  unavailableReason,
+
+  client_name: customerData.name,
+  client_nickname: customerData.nickname,
+
+  previous_questions: previousQuestions,
+
+  deleted_from_listing: false,
+});
         }
       } catch (storeError) {
         console.error(
