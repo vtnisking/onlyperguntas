@@ -12339,64 +12339,92 @@ if (notificationBadge) {
       // ──────────────────────────────────────
       // SHARED: Send answer
       // ──────────────────────────────────────
-      async function sendAnswer(questionId, storeId, button) {
-        // Tenta pegar o textarea do detalhe (desktop) ou do card (mobile)
-        const textarea =
-          document.getElementById(`detail-answer-${questionId}`) ||
-          document.getElementById(`answer-${questionId}`);
+async function sendAnswer(questionId, storeId, button) {
+  // Tenta pegar o textarea do detalhe (desktop) ou do card (mobile)
+  const textarea =
+    document.getElementById(`detail-answer-${questionId}`) ||
+    document.getElementById(`answer-${questionId}`);
 
-        const text = textarea?.value.trim();
-        if (!text) {
-          alert("Digite uma resposta.");
-          return;
-        }
+  const text = textarea?.value.trim();
 
-        button.disabled = true;
-        button.innerText = "Enviando...";
+  if (!text) {
+    alert("Digite uma resposta.");
+    return;
+  }
 
-        try {
-          const response = await fetch("/api/answer", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              question_id: questionId,
-              store_id: storeId,
-              text,
-              user_id: loggedUser.id,
-              user_name: loggedUser.name,
-              user_email: loggedUser.email,
-            }),
-          });
-          const data = await response.json();
-          if (data.success) {
-            button.innerText = "✓ Respondido!";
-            setTimeout(() => {
-              closeDetail();
-              loadQuestions();
-            }, 800);
-          } else {
-            const errorCode =
-        data?.error?.error || data?.error;
+  button.disabled = true;
+  button.innerText = "Enviando...";
 
-        const errorMessage =
-        errorCode === "not_unanswered_question"
-            ? "Essa pergunta já foi respondida ou não está mais pendente."
-            : data?.error?.message ||
-            "Não foi possível responder.";
+  try {
+    const response = await fetch("/api/answer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
 
-        showToast(errorMessage, "error");
+      body: JSON.stringify({
+        question_id: questionId,
+        store_id: storeId,
+        text,
+        user_id: loggedUser.id,
+        user_name: loggedUser.name,
+        user_email: loggedUser.email,
+      }),
+    });
 
+    const data = await response.json();
+
+    if (data.success) {
+      button.innerText = "✓ Respondido!";
+
+      setTimeout(() => {
+        closeDetail();
         loadQuestions();
-            button.disabled = false;
-            button.innerText = "Enviar resposta ✓";
-          }
-        } catch (e) {
-          showToast("Erro no sistema.", "error");
-          button.disabled = false;
-          button.innerText = "Enviar resposta ✓";
+      }, 800);
+
+    } else {
+      const errorCode =
+        data?.code ||
+        data?.error?.error ||
+        data?.error;
+
+      let errorMessage =
+        data?.message ||
+        data?.error?.message ||
+        "Não foi possível responder.";
+
+      if (errorCode === "QUESTION_UNAVAILABLE") {
+
+        if (data?.reason === "ITEM_NOT_ACTIVE") {
+          errorMessage =
+            "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.";
         }
+
+        if (data?.reason === "QUESTION_NOT_FOUND") {
+          errorMessage =
+            "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.";
+        }
+
+      } else if (errorCode === "not_unanswered_question") {
+
+        errorMessage =
+          "Essa pergunta já foi respondida ou não está mais pendente.";
       }
 
+      showToast(errorMessage, "error");
+
+      loadQuestions();
+
+      button.disabled = false;
+      button.innerText = "Enviar resposta ✓";
+    }
+
+  } catch (e) {
+
+    showToast("Erro no sistema.", "error");
+
+    button.disabled = false;
+    button.innerText = "Enviar resposta ✓";
+  }
+}
 
       // ──────────────────────────────────────
       // SHOPEE: integração com API
