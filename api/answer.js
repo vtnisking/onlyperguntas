@@ -176,18 +176,57 @@ export default async function handler(req, res) {
       success: true,
       data: response.data,
     });
-  } catch (error) {
-    console.error(
-      "Erro em /api/answer:",
-      error.response?.data || error,
-    );
+} catch (error) {
+  const errorData = error.response?.data;
+  const status = error.response?.status;
 
-    return res.status(500).json({
+  console.error(
+    "Erro em /api/answer:",
+    errorData || error,
+  );
+
+  const mlMessage = String(
+    errorData?.message ||
+    errorData?.error ||
+    error.message ||
+    ""
+  ).toLowerCase();
+
+  // Anúncio encerrado, vendido ou inativo
+  if (
+    mlMessage.includes("item must be active") ||
+    mlMessage.includes("item is not active")
+  ) {
+    return res.status(409).json({
       success: false,
-      error:
-        error.response?.data ||
-        error.message ||
-        "Erro desconhecido",
+      code: "QUESTION_UNAVAILABLE",
+      reason: "ITEM_NOT_ACTIVE",
+      message:
+        "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.",
     });
   }
+
+  // Pergunta removida / inexistente
+  if (
+    status === 404 ||
+    mlMessage.includes("question not found") ||
+    mlMessage.includes("question does not exist")
+  ) {
+    return res.status(404).json({
+      success: false,
+      code: "QUESTION_UNAVAILABLE",
+      reason: "QUESTION_NOT_FOUND",
+      message:
+        "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.",
+    });
+  }
+
+  return res.status(status || 500).json({
+    success: false,
+    error:
+      errorData ||
+      error.message ||
+      "Erro desconhecido",
+  });
+}
 }
