@@ -3242,6 +3242,50 @@ overflow: hidden;
   cursor: not-allowed;
 }
 
+.ml-question-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.ml-question-action-delete,
+.ml-question-action-block {
+  padding: 8px 13px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ml-question-action-delete {
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #dc2626;
+}
+
+.ml-question-action-delete:hover {
+  background: #fff1f2;
+}
+
+.ml-question-action-block {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+}
+
+.ml-question-action-block:hover {
+  background: #f3f4f6;
+}
+
+.ml-question-action-delete:disabled,
+.ml-question-action-block:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ml-card {
   width: 100%;
   margin-bottom: 12px;
@@ -11698,6 +11742,42 @@ ${
     ${
   item.can_answer
     ? `
+            
+            <!-- AÇÕES DA PERGUNTA -->
+        <div class="ml-question-actions">
+
+        <button
+            type="button"
+            class="ml-question-action-delete"
+            onclick="
+            event.stopPropagation();
+            deleteMlQuestion(
+                '${item.id}',
+                '${item.store_id}',
+                this
+            );
+            "
+        >
+            Excluir pergunta
+        </button>
+
+        <button
+            type="button"
+            class="ml-question-action-block"
+            onclick="
+            event.stopPropagation();
+            blockMlBuyer(
+                '${item.from?.id || ""}',
+                '${item.store_id}',
+                this
+            );
+            "
+        >
+            Bloquear comprador
+        </button>
+
+        </div>
+
       <!-- BARRA DE AÇÕES -->
       <div class="ml-answer-toolbar">
 
@@ -11879,6 +11959,148 @@ ${
       }
 
       window.requestNotificationPermission = requestNotificationPermission;
+
+
+async function deleteMlQuestion(
+  questionId,
+  storeId,
+  button,
+) {
+  const confirmed = confirm(
+    "Deseja realmente excluir esta pergunta do Mercado Livre?",
+  );
+
+  if (!confirmed) return;
+
+  const originalText = button.innerText;
+
+  button.disabled = true;
+  button.innerText = "Excluindo...";
+
+  try {
+    const response = await fetch(
+      "/api/questions",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "delete_question",
+          question_id: questionId,
+          store_id: storeId,
+          company_id: loggedUser.company_id,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        "Não foi possível excluir a pergunta.",
+      );
+    }
+
+    showToast(
+      "Pergunta excluída com sucesso.",
+      "success",
+    );
+
+    closeDetail();
+    await loadQuestions();
+
+  } catch (error) {
+    console.error(error);
+
+    showToast(
+      error.message ||
+        "Não foi possível excluir a pergunta.",
+      "error",
+    );
+
+    button.disabled = false;
+    button.innerText = originalText;
+  }
+}
+
+async function blockMlBuyer(
+  buyerId,
+  storeId,
+  button,
+) {
+  if (!buyerId) {
+    showToast(
+      "Comprador não identificado.",
+      "error",
+    );
+    return;
+  }
+
+  const confirmed = confirm(
+    "Bloquear este comprador para que ele não possa fazer novas perguntas?",
+  );
+
+  if (!confirmed) return;
+
+  const originalText = button.innerText;
+
+  button.disabled = true;
+  button.innerText = "Bloqueando...";
+
+  try {
+    const response = await fetch(
+      "/api/questions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "block_buyer",
+          buyer_id: buyerId,
+          store_id: storeId,
+          company_id: loggedUser.company_id,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        "Não foi possível bloquear o comprador.",
+      );
+    }
+
+    showToast(
+      "Comprador bloqueado para novas perguntas.",
+      "success",
+    );
+
+    button.innerText = "Comprador bloqueado";
+
+  } catch (error) {
+    console.error(error);
+
+    showToast(
+      error.message ||
+        "Não foi possível bloquear o comprador.",
+      "error",
+    );
+
+    button.disabled = false;
+    button.innerText = originalText;
+  }
+}
+
+window.deleteMlQuestion = deleteMlQuestion;
+window.blockMlBuyer = blockMlBuyer;
+
 
       // ──────────────────────────────────────
       // SHARED: Load questions
