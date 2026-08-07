@@ -259,53 +259,265 @@ export default async function handler(req, res) {
       },
     );
 
-    // ==========================================
-    // REMOVER PERGUNTA DAS PENDENTES
-    // ==========================================
-    if (req.method === "POST") {
-      const {
-        question_id,
-        company_id,
-      } = req.body || {};
+ // ==========================================
+// AÇÕES DE PERGUNTAS
+// ==========================================
+if (req.method === "POST") {
+  const {
+    action,
+    question_id,
+    buyer_id,
+    store_id,
+    company_id,
+  } = req.body || {};
 
-      if (!question_id || !company_id) {
-        return res.status(400).json({
-          success: false,
-          error:
-            "question_id e company_id são obrigatórios",
-        });
-      }
-
-      const { error: hideError } = await supabase
-        .from("hidden_questions")
-        .upsert(
-          {
-            question_id: String(question_id),
-            company_id: String(company_id),
-          },
-          {
-            onConflict: "company_id,question_id",
-          },
-        );
-
-      if (hideError) {
-        console.error(
-          "Erro ao remover pergunta:",
-          hideError,
-        );
-
-        return res.status(500).json({
-          success: false,
-          error: hideError.message,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message:
-          "Pergunta removida das pendentes.",
+  // ========================================
+  // BLOQUEAR COMPRADOR
+  // ========================================
+  if (action === "block_buyer") {
+    if (!buyer_id || !store_id || !company_id) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "buyer_id, store_id e company_id são obrigatórios",
       });
     }
+
+    const {
+      data: store,
+      error: storeError,
+    } = await supabase
+      .from("stores")
+      .select("*")
+      .eq("id", store_id)
+      .eq("company_id", company_id)
+      .single();
+
+    if (storeError || !store) {
+      return res.status(404).json({
+        success: false,
+        error: "Loja não encontrada",
+      });
+    }
+
+    let activeStore = store;
+
+    try {
+      await axios.post(
+        `https://api.mercadolibre.com/users/${activeStore.seller_id}/questions_blacklist`,
+        {
+          user_id: Number(buyer_id),
+        },
+        {
+          headers: {
+            Authorization:
+              `Bearer ${activeStore.access_token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    } catch (blockError) {
+      const errorData =
+        blockError.response?.data;
+
+      const status =
+        blockError.response?.status;
+
+      const tokenExpired =
+        errorData?.message === "invalid_token" ||
+        errorData?.error === "invalid_token" ||
+        status === 401;
+
+      if (!tokenExpired) {
+        throw blockError;
+      }
+
+      activeStore =
+        await refreshStoreToken(
+          store,
+          supabase,
+        );
+
+      await axios.post(
+        `https://api.mercadolibre.com/users/${activeStore.seller_id}/questions_blacklist`,
+        {
+          user_id: Number(buyer_id),
+        },
+        {
+          headers: {
+            Authorization:
+              `Bearer ${activeStore.access_token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Comprador bloqueado para novas perguntas.",
+    });
+  }
+
+  // ========================================
+  // REMOVER DAS PENDENTES DO CHATI
+  // ========================================
+  if (!question_id || !company_id) {
+    return res.status(400).json({
+      success: false,
+      error:
+        "question_id e company_id são obrigatórios",
+    });
+  }
+
+  const { error: hideError } =
+    await supabase
+      .from("hidden_questions")
+      .upsert(
+        {
+          question_id:
+            String(question_id),
+
+          company_id:
+            String(company_id),
+        },
+        {
+          onConflict:
+            "company_id,question_id",
+        },
+      );
+
+  if (hideError) {
+    console.error(
+      "Erro ao remover pergunta:",
+      hideError,
+    );
+
+    return res.status(500).json({
+      success: false,
+      error:
+        hideError.message,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message:
+      "Pergunta removida das pendentes.",
+  });
+}
+
+// ==========================================
+// EXCLUIR PERGUNTA NO MERCADO LIVRE
+// ==========================================
+if (req.method === "DELETE") {
+  const {
+    question_id,
+    store_id,
+    company_id,
+  } = req.body || {};
+
+  if (
+    !question_id ||
+    !store_id ||
+    !company_id
+  ) {
+    return res.status(400).json({
+      success: false,
+      error:
+        "question_id, store_id e company_id são obrigatórios",
+    });
+  }
+
+  const {
+    data: store,
+    error: storeError,
+  } = await supabase
+    .from("stores")
+    .select("*")
+    .eq("id", store_id)
+    .eq("company_id", company_id)
+    .single();
+
+  if (storeError || !store) {
+    return res.status(404).json({
+      success: false,
+      error:
+        "Loja não encontrada",
+    });
+  }
+
+  let activeStore = store;
+
+  try {
+    await axios.delete(
+      `https://api.mercadolibre.com/questions/${question_id}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${activeStore.access_token}`,
+        },
+      },
+    );
+
+  } catch (deleteError) {
+    const errorData =
+      deleteError.response?.data;
+
+    const status =
+      deleteError.response?.status;
+
+    const tokenExpired =
+      errorData?.message === "invalid_token" ||
+      errorData?.error === "invalid_token" ||
+      status === 401;
+
+    if (!tokenExpired) {
+      throw deleteError;
+    }
+
+    activeStore =
+      await refreshStoreToken(
+        store,
+        supabase,
+      );
+
+    await axios.delete(
+      `https://api.mercadolibre.com/questions/${question_id}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${activeStore.access_token}`,
+        },
+      },
+    );
+  }
+
+  // Também evita que ela reapareça no Chati
+  await supabase
+    .from("hidden_questions")
+    .upsert(
+      {
+        question_id:
+          String(question_id),
+
+        company_id:
+          String(company_id),
+      },
+      {
+        onConflict:
+          "company_id,question_id",
+      },
+    );
+
+  return res.status(200).json({
+    success: true,
+    message:
+      "Pergunta excluída com sucesso.",
+  });
+}
+
 
     // ==========================================
     // LISTAR PERGUNTAS
