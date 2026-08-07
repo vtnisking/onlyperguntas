@@ -11637,189 +11637,186 @@ ${
           </div>
 
         </div>
+    <!-- PERGUNTAS ANTERIORES -->
+    ${
+      (item.previous_questions || []).length > 0
+        ? `
+          <div class="ml-previous-area">
 
-        <!-- PERGUNTAS ANTERIORES -->
-        ${
-          (item.previous_questions || []).length > 0
-            ? `
-              <div class="ml-previous-area">
+            <button
+              type="button"
+              class="ml-previous-toggle"
+              onclick="
+                togglePrevious('${previousId}')
+              "
+            >
+              🕘 Ver
+              ${item.previous_questions.length}
+              pergunta(s) anterior(es)
+            </button>
 
-                <button
-                  type="button"
-                  class="ml-previous-toggle"
-                  onclick="
-                    togglePrevious('${previousId}')
-                  "
-                >
-                  🕘 Ver
-                  ${item.previous_questions.length}
-                  pergunta(s) anterior(es)
-                </button>
+            <div
+              id="${previousId}"
+              style="
+                display:none;
+                margin-top:10px;
+              "
+            >
+              ${item.previous_questions
+                .map(
+                  (q) => `
+                    <div
+                      class="previous"
+                      style="margin-bottom:8px;"
+                    >
+                      <div
+                        style="
+                          color:var(--text);
+                          font-size:13px;
+                          margin-bottom:6px;
+                        "
+                      >
+                        ${q.text || ""}
+                      </div>
 
-                <div
-                  id="${previousId}"
-                  style="
-                    display:none;
-                    margin-top:10px;
-                  "
-                >
-                  ${item.previous_questions
-                    .map(
-                      (q) => `
-                        <div
-                          class="previous"
-                          style="margin-bottom:8px;"
-                        >
+                      ${
+                        q.answer
+                          ? `
+                            <div
+                              style="
+                                color:var(--green);
+                                font-size:12px;
+                                margin-bottom:5px;
+                              "
+                            >
+                              ↳ ${q.answer}
+                            </div>
+                          `
+                          : ""
+                      }
 
-                          <div
-                            style="
-                              color:var(--text);
-                              font-size:13px;
-                              margin-bottom:6px;
-                            "
-                          >
-                            ${q.text || ""}
-                          </div>
+                      <div
+                        style="
+                          color:var(--text3);
+                          font-size:11px;
+                        "
+                      >
+                        ${formatDate(
+                          q.answer_date_created ||
+                          q.date_created,
+                        )}
 
-                          ${
-                            q.answer
-                              ? `
-                                <div
-                                  style="
-                                    color:var(--green);
-                                    font-size:12px;
-                                    margin-bottom:5px;
-                                  "
-                                >
-                                  ↳ ${q.answer}
-                                </div>
-                              `
-                              : ""
-                          }
+                        · ${
+                          q.status === "ANSWERED"
+                            ? "Respondida"
+                            : "Pendente"
+                        }
 
-                          <div
-                            style="
-                              color:var(--text3);
-                              font-size:11px;
-                            "
-                          >
-                            ${formatDate(
-                              q.answer_date_created ||
-                              q.date_created,
-                            )}
+                        ${
+                          q.status === "ANSWERED"
+                            ? `
+                              · Respondido por
+                              ${
+                                q.user_name ||
+                                q.user_email ||
+                                "Usuário"
+                              }
+                            `
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  `,
+                )
+                .join("")}
+            </div>
 
-                            · ${
-                              q.status === "ANSWERED"
-                                ? "Respondida"
-                                : "Pendente"
-                            }
+          </div>
+        `
+        : ""
+    }
 
-                            ${
-                              q.status === "ANSWERED"
-                                ? `
-                                  · Respondido por
-                                  ${
-                                    q.user_name ||
-                                    q.user_email ||
-                                    "Usuário"
-                                  }
-                                `
-                                : ""
-                            }
-                          </div>
+    <!-- AÇÕES DA PERGUNTA -->
+    <div class="ml-question-actions">
 
-                        </div>
-                      `,
-                    )
-                    .join("")}
-                </div>
+      <button
+        type="button"
+        class="ml-question-action-delete"
+        onclick="
+          event.stopPropagation();
+          deleteMlQuestion(
+            '${item.id}',
+            '${item.store_id}',
+            this
+          );
+        "
+      >
+        Excluir pergunta
+      </button>
 
-              </div>
-            `
-            : ""
-        }
+      <button
+        type="button"
+        class="ml-question-action-block"
+        onclick="
+          event.stopPropagation();
+          blockMlBuyer(
+            '${item.from?.id || ""}',
+            '${item.store_id}',
+            this
+          );
+        "
+      >
+        Bloquear comprador
+      </button>
+
+    </div>
 
     ${
-  item.can_answer
-    ? `
-            
-            <!-- AÇÕES DA PERGUNTA -->
-        <div class="ml-question-actions">
+      item.can_answer
+        ? `
+          <!-- BARRA DE AÇÕES -->
+          <div class="ml-answer-toolbar">
 
-        <button
-            type="button"
-            class="ml-question-action-delete"
-            onclick="
-            event.stopPropagation();
-            deleteMlQuestion(
-                '${item.id}',
-                '${item.store_id}',
-                this
-            );
-            "
-        >
-            Excluir pergunta
-        </button>
+            <button
+              type="button"
+              class="ml-quick-replies-btn"
+              onclick="
+                window.openQuickRepliesPicker(
+                  '${taId}'
+                )
+              "
+            >
+              💬 Respostas rápidas
+              <span>⌄</span>
+            </button>
 
-        <button
-            type="button"
-            class="ml-question-action-block"
-            onclick="
-            event.stopPropagation();
-            blockMlBuyer(
-                '${item.from?.id || ""}',
-                '${item.store_id}',
-                this
-            );
-            "
-        >
-            Bloquear comprador
-        </button>
+            <div class="ml-answer-toolbar-right">
 
-        </div>
+              <span
+                class="ml-counter-top"
+                id="${cntId}-top"
+              >
+                0 / 2000
+              </span>
 
-      <!-- BARRA DE AÇÕES -->
-      <div class="ml-answer-toolbar">
+              <button
+                type="button"
+                class="ml-reply-btn"
+                onclick="
+                  sendAnswerMl(
+                    '${item.id}',
+                    '${item.store_id}',
+                    '${taId}',
+                    this
+                  )
+                "
+              >
+                Responder
+                <span>➤</span>
+              </button>
 
-        <button
-          type="button"
-          class="ml-quick-replies-btn"
-          onclick="
-            window.openQuickRepliesPicker(
-              '${taId}'
-            )
-          "
-        >
-          💬 Respostas rápidas
-          <span>⌄</span>
-        </button>
-
-        <div class="ml-answer-toolbar-right">
-
-          <span
-            class="ml-counter-top"
-            id="${cntId}-top"
-          >
-            0 / 2000
-          </span>
-
-          <button
-            type="button"
-            class="ml-reply-btn"
-            onclick="
-              sendAnswerMl(
-                '${item.id}',
-                '${item.store_id}',
-                '${taId}',
-                this
-              )
-            "
-          >
-            Responder
-            <span>➤</span>
-          </button>
-
-        </div>
+            </div>
+          </div>
 
       </div>
 
