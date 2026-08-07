@@ -146,11 +146,10 @@ export default async function handler(req, res) {
       const errorData = tokenError.response?.data;
       const status = tokenError.response?.status;
 
-      const tokenExpired =
-        errorData?.message === "invalid_token" ||
-        errorData?.error === "invalid_token" ||
-        errorData?.error === "bad_request" ||
-        status === 401;
+const tokenExpired =
+  errorData?.message === "invalid_token" ||
+  errorData?.error === "invalid_token" ||
+  status === 401;
 
       if (!tokenExpired) {
         throw tokenError;
@@ -185,12 +184,58 @@ export default async function handler(req, res) {
     errorData || error,
   );
 
-  const mlMessage = String(
-    errorData?.message ||
-    errorData?.error ||
-    error.message ||
-    ""
+  const rawError = JSON.stringify(
+    errorData || error.message || ""
   ).toLowerCase();
+
+  // Produto vendido, anúncio encerrado, pausado ou inativo
+  if (
+    rawError.includes("item must be active") ||
+    rawError.includes("item is not active")
+  ) {
+    return res.status(409).json({
+      success: false,
+      code: "QUESTION_UNAVAILABLE",
+      reason: "ITEM_NOT_ACTIVE",
+      message:
+        "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.",
+    });
+  }
+
+  // Pergunta excluída / inexistente
+  if (
+    status === 404 ||
+    rawError.includes("question not found") ||
+    rawError.includes("question does not exist")
+  ) {
+    return res.status(404).json({
+      success: false,
+      code: "QUESTION_UNAVAILABLE",
+      reason: "QUESTION_NOT_FOUND",
+      message:
+        "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.",
+    });
+  }
+
+  // Já respondida / não está pendente
+  if (rawError.includes("not_unanswered_question")) {
+    return res.status(409).json({
+      success: false,
+      code: "QUESTION_ALREADY_ANSWERED",
+      message:
+        "Essa pergunta já foi respondida ou não está mais pendente.",
+    });
+  }
+
+  return res.status(status || 500).json({
+    success: false,
+    message:
+      errorData?.message ||
+      errorData?.error ||
+      error.message ||
+      "Não foi possível responder.",
+  });
+
 
   // Anúncio encerrado, vendido ou inativo
   if (
