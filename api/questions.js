@@ -552,9 +552,12 @@ if (req.method === "DELETE") {
     }
 
     if (!stores || stores.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: "Nenhuma loja encontrada.",
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        questions: [],
+        stores: 0,
+        message: "Nenhuma loja do Mercado Livre integrada nesta empresa.",
       });
     }
 
