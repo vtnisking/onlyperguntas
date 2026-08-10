@@ -14255,7 +14255,17 @@ window.removePendingQuestion =
         container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
 
         try {
-          const response = await fetch("/api/answered");
+          const companyId = loggedUser?.company_id;
+
+if (!companyId) {
+  throw new Error(
+    "Empresa do usuário não encontrada."
+  );
+}
+
+const response = await fetch(
+  `/api/answered?company_id=${encodeURIComponent(companyId)}`
+);
           const data = await response.json();
           const questions = data.questions || [];
           container.innerHTML = "";
@@ -15046,7 +15056,11 @@ async function createUser() {
         if (tab === "answered") {
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando respondidas...</div>`;
           try {
-            const response = await fetch("/api/answered");
+            const response = await fetch(
+  `/api/answered?company_id=${encodeURIComponent(
+    loggedUser.company_id
+  )}`
+);
             const data = await response.json();
             const questions = data.questions || [];
             container.innerHTML = "";

@@ -18,14 +18,17 @@ async function refreshStoreToken(store, supabase) {
     .from("stores")
     .update({
       access_token: newData.access_token,
-      refresh_token: newData.refresh_token,
+      refresh_token:
+        newData.refresh_token || store.refresh_token,
     })
-    .eq("id", store.id);
+    .eq("id", store.id)
+    .eq("company_id", store.company_id);
 
   return {
     ...store,
     access_token: newData.access_token,
-    refresh_token: newData.refresh_token,
+    refresh_token:
+      newData.refresh_token || store.refresh_token,
   };
 }
 
@@ -44,32 +47,53 @@ async function getProductData(itemId, accessToken) {
 
     const sku =
       item.seller_custom_field ||
-      item.attributes?.find((attr) => attr.id === "SELLER_SKU")?.value_name ||
-      item.attributes?.find((attr) => attr.id === "SKU")?.value_name ||
+      item.attributes?.find(
+        (attr) => attr.id === "SELLER_SKU",
+      )?.value_name ||
+      item.attributes?.find(
+        (attr) => attr.id === "SKU",
+      )?.value_name ||
       item.variations?.[0]?.seller_custom_field ||
-      item.variations?.[0]?.attributes?.find((attr) => attr.id === "SELLER_SKU")
-        ?.value_name ||
+      item.variations?.[0]?.attributes?.find(
+        (attr) => attr.id === "SELLER_SKU",
+      )?.value_name ||
       null;
 
     return {
       title: item.title || itemId,
       sku,
-      thumbnail: item.thumbnail || null,
+      thumbnail: item.thumbnail
+        ? item.thumbnail.replace(
+            /^http:\/\//i,
+            "https://",
+          )
+        : null,
       permalink: item.permalink || null,
-      available_quantity: item.available_quantity || 0,
+      available_quantity:
+        item.available_quantity || 0,
       price: item.price || null,
     };
   } catch (error) {
+    console.error(
+      `Erro ao carregar produto ${itemId}:`,
+      error.response?.data || error.message,
+    );
+
     return {
       title: itemId,
       sku: null,
       thumbnail: null,
+      permalink: null,
+      available_quantity: 0,
+      price: null,
     };
   }
 }
 
-
-async function getCustomerData(userId, accessToken) {
+async function getCustomerData(
+  userId,
+  accessToken,
+) {
   try {
     if (!userId) {
       return {
@@ -77,7 +101,7 @@ async function getCustomerData(userId, accessToken) {
         nickname: null,
       };
     }
-    
+
     const response = await axios.get(
       `https://api.mercadolibre.com/users/${userId}`,
       {
@@ -103,28 +127,76 @@ async function getCustomerData(userId, accessToken) {
 
 export default async function handler(req, res) {
   try {
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  },
-);
-    const { data: stores, error } = await supabase
+    if (req.method !== "GET") {
+      return res.status(405).json({
+        success: false,
+        error: "Método não permitido",
+      });
+    }
+
+    // ==========================================
+    // EMPRESA LOGADA
+    // ==========================================
+
+    const companyId = req.query.company_id;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: "company_id obrigatório",
+      });
+    }
+
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      },
+    );
+
+    // ==========================================
+    // BUSCAR SOMENTE LOJAS DA EMPRESA
+    // ==========================================
+
+    const {
+      data: stores,
+      error: storesError,
+    } = await supabase
       .from("stores")
       .select("*")
-      .eq("platform", "mercadolivre");
+      .eq("platform", "mercadolivre")
+      .eq("company_id", companyId);
 
-    if (error || !stores || stores.length === 0) {
-      return res.status(400).json({
-        error: "Nenhuma loja encontrada.",
+    if (storesError) {
+      console.error(
+        "Erro ao carregar lojas:",
+        storesError,
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: storesError.message,
+      });
+    }
+
+    // Empresa ainda sem loja integrada
+    if (!stores || stores.length === 0) {
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        questions: [],
       });
     }
 
     let allAnswered = [];
+
+    // ==========================================
+    // BUSCAR RESPONDIDAS DE CADA LOJA DA EMPRESA
+    // ==========================================
 
     for (let store of stores) {
       try {
@@ -135,122 +207,220 @@ const supabase = createClient(
             `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=10&sort_fields=date_created&sort_types=DESC`,
             {
               headers: {
-                Authorization: `Bearer ${store.access_token}`,
+                Authorization:
+                  `Bearer ${store.access_token}`,
               },
             },
           );
         } catch (tokenError) {
-          const errorData = tokenError.response?.data;
+          const errorData =
+            tokenError.response?.data;
 
-          if (
-            errorData?.message === "invalid_token" ||
-            errorData?.error === "bad_request" ||
-            tokenError.response?.status === 401
-          ) {
-            store = await refreshStoreToken(store, supabase);
+          const tokenExpired =
+            errorData?.message ===
+              "invalid_token" ||
+            tokenError.response?.status === 401;
 
-            response = await axios.get(
-              `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=10`,
-              {
-                headers: {
-                  Authorization: `Bearer ${store.access_token}`,
-                },
-              },
-            );
-          } else {
+          if (!tokenExpired) {
             throw tokenError;
           }
+
+          store = await refreshStoreToken(
+            store,
+            supabase,
+          );
+
+          response = await axios.get(
+            `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}&status=ANSWERED&limit=10&sort_fields=date_created&sort_types=DESC`,
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${store.access_token}`,
+              },
+            },
+          );
         }
 
-        const questions = response.data.questions || [];
+        const questions =
+          response.data.questions || [];
 
-        const questionIds = questions.map((q) => String(q.id));
+        if (!questions.length) {
+          continue;
+        }
 
-const { data: logs, error: logsError } = await supabase
-  .from("answer_logs")
-  .select(
-    "question_id, store_id, user_id, user_name, user_email, created_at",
-  )
-  .eq("store_id", store.id)
-  .in("question_id", questionIds)
-  .order("created_at", { ascending: false });
+        const questionIds = questions.map(
+          (question) =>
+            String(question.id),
+        );
 
-if (logsError) {
-  console.error(
-    `Erro ao buscar answer_logs da loja ${store.name}:`,
-    logsError,
-  );
-}
+        // ======================================
+        // LOGS SOMENTE DA LOJA/EMPRESA
+        // ======================================
 
-const logsMap = {};
+        const {
+          data: logs,
+          error: logsError,
+        } = await supabase
+          .from("answer_logs")
+          .select(
+            "question_id, store_id, company_id, user_id, user_name, user_email, created_at",
+          )
+          .eq("company_id", companyId)
+          .eq("store_id", store.id)
+          .in("question_id", questionIds)
+          .order("created_at", {
+            ascending: false,
+          });
 
-(logs || []).forEach((log) => {
-  const questionId = String(log.question_id);
+        if (logsError) {
+          console.error(
+            `Erro ao buscar answer_logs da loja ${store.name}:`,
+            logsError,
+          );
+        }
 
-  if (!logsMap[questionId]) {
-    logsMap[questionId] = log;
-  }
-});
+        const logsMap = {};
 
-const enrichedQuestions = await Promise.all(
-  questions.map(async (question) => {
-    const customerData = await getCustomerData(
-      question.from?.id,
-      store.access_token,
-    );
+        (logs || []).forEach((log) => {
+          const questionId = String(
+            log.question_id,
+          );
 
-const productData = await getProductData(question.item_id, store.access_token);
-    
-    const log = logsMap[String(question.id)];
+          if (!logsMap[questionId]) {
+            logsMap[questionId] = log;
+          }
+        });
 
-    return {
-      ...question,
-      store_name: store.name,
-      store_id: store.id,
-      client_name: customerData.name,
-      client_nickname: customerData.nickname,
-      product_title: productData.title,
-      product_sku: productData.sku,
-      product_thumbnail: productData.thumbnail,
-      product_link: productData.permalink,
-      product_quantity: productData.available_quantity,
-      product_price: productData.price,
+        // ======================================
+        // ENRIQUECER PERGUNTAS
+        // ======================================
 
-      answer: {
-        ...question.answer,
-        user_name: log?.user_name || null,
-        user_email: log?.user_email || null,
-        date_created: log?.created_at || question.answer?.date_created,
-      },
-    };
-  }),
-);
+        const enrichedQuestions =
+          await Promise.all(
+            questions.map(
+              async (question) => {
+                const [
+                  customerData,
+                  productData,
+                ] = await Promise.all([
+                  getCustomerData(
+                    question.from?.id,
+                    store.access_token,
+                  ),
 
-allAnswered.push(...enrichedQuestions);
+                  getProductData(
+                    question.item_id,
+                    store.access_token,
+                  ),
+                ]);
 
+                const log =
+                  logsMap[
+                    String(question.id)
+                  ];
+
+                return {
+                  ...question,
+
+                  company_id: companyId,
+
+                  store_name: store.name,
+                  store_id: store.id,
+
+                  client_name:
+                    customerData.name,
+
+                  client_nickname:
+                    customerData.nickname,
+
+                  product_title:
+                    productData.title,
+
+                  product_sku:
+                    productData.sku,
+
+                  product_thumbnail:
+                    productData.thumbnail,
+
+                  product_link:
+                    productData.permalink,
+
+                  product_quantity:
+                    productData.available_quantity,
+
+                  product_price:
+                    productData.price,
+
+                  answer: {
+                    ...question.answer,
+
+                    user_name:
+                      log?.user_name || null,
+
+                    user_email:
+                      log?.user_email || null,
+
+                    date_created:
+                      log?.created_at ||
+                      question.answer
+                        ?.date_created,
+                  },
+                };
+              },
+            ),
+          );
+
+        allAnswered.push(
+          ...enrichedQuestions,
+        );
       } catch (storeError) {
-        console.log(
-          `Erro na loja ${store.name}`,
-          storeError.response?.data || storeError.message,
+        console.error(
+          `Erro na loja ${store.name}:`,
+          storeError.response?.data ||
+            storeError.message,
         );
       }
     }
 
+    // ==========================================
+    // ORDENAR MAIS RECENTES PRIMEIRO
+    // ==========================================
+
     allAnswered.sort((a, b) => {
-      const dateA = new Date(a.answer?.date_created || a.date_created);
-      const dateB = new Date(b.answer?.date_created || b.date_created);
+      const dateA = new Date(
+        a.answer?.date_created ||
+          a.date_created,
+      );
+
+      const dateB = new Date(
+        b.answer?.date_created ||
+          b.date_created,
+      );
+
       return dateB - dateA;
     });
 
-    allAnswered = allAnswered.slice(0, 20);
+    allAnswered =
+      allAnswered.slice(0, 20);
 
     return res.status(200).json({
+      success: true,
+      company_id: companyId,
       total: allAnswered.length,
       questions: allAnswered,
     });
   } catch (error) {
+    console.error(
+      "Erro em /api/answered:",
+      error.response?.data || error,
+    );
+
     return res.status(500).json({
-      error: error.response?.data || error.message,
+      success: false,
+      error:
+        error.response?.data ||
+        error.message ||
+        "Erro interno",
     });
   }
 }
