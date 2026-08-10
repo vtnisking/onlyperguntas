@@ -591,6 +591,26 @@
           <label>E-mail do admin</label>
           <input id="m-email" type="email" placeholder="admin@empresa.com" />
         </div>
+
+        <div class="field" id="m-password-field">
+          <label>Senha inicial</label>
+          <input
+            id="m-password"
+            type="password"
+            placeholder="Mínimo de 6 caracteres"
+            autocomplete="new-password"
+          />
+          <div
+            style="
+              font-size: 11px;
+              color: var(--text3);
+              margin-top: 6px;
+              line-height: 1.45;
+            "
+          >
+            Temporariamente, o administrador entrará com esta senha sem receber convite por e-mail.
+          </div>
+        </div>
         <div class="field">
           <label>Plano</label>
           <select id="m-plan">
@@ -1288,6 +1308,8 @@ function clearSuperadminSession() {
         document.getElementById("modal-save-btn").textContent = "Criar empresa";
         document.getElementById("m-name").value = "";
         document.getElementById("m-email").value = "";
+        document.getElementById("m-password").value = "";
+        document.getElementById("m-password-field").style.display = "flex";
         document.getElementById("m-plan").value = "bronze";
         document.getElementById("m-maxusers").value = "5";
         document.getElementById("m-expires").value = "";
@@ -1308,6 +1330,8 @@ function clearSuperadminSession() {
         document.getElementById("modal-save-btn").textContent = "Salvar";
         document.getElementById("m-name").value = c.name || "";
         document.getElementById("m-email").value = c.owner_email || "";
+        document.getElementById("m-password").value = "";
+        document.getElementById("m-password-field").style.display = "none";
         document.getElementById("m-plan").value = c.plan || "bronze";
         document.getElementById("m-maxusers").value = c.max_users || 5;
         document.getElementById("m-expires").value = c.expires_at
@@ -1320,6 +1344,7 @@ function clearSuperadminSession() {
       window.saveCompany = async function () {
         const name = document.getElementById("m-name").value.trim();
         const email = document.getElementById("m-email").value.trim();
+        const password = document.getElementById("m-password").value;
         const plan = document.getElementById("m-plan").value;
         const maxusers = parseInt(document.getElementById("m-maxusers").value);
         const expires = document.getElementById("m-expires").value;
@@ -1327,6 +1352,21 @@ function clearSuperadminSession() {
 
         if (!name) {
           showToast("⚠️ Nome da empresa obrigatório");
+          return;
+        }
+
+        if (!email) {
+          showToast("⚠️ E-mail do administrador obrigatório");
+          return;
+        }
+
+        if (!editingId && !password) {
+          showToast("⚠️ Senha inicial obrigatória");
+          return;
+        }
+
+        if (!editingId && password.length < 6) {
+          showToast("⚠️ A senha inicial deve ter pelo menos 6 caracteres");
           return;
         }
 
@@ -1383,6 +1423,7 @@ function clearSuperadminSession() {
       body: JSON.stringify({
         name,
         email,
+        password,
         plan,
         max_users: maxusers,
         expires_at: expires
@@ -1408,8 +1449,7 @@ function clearSuperadminSession() {
   closeModal();
 
   showToast(
-    "✅ Empresa criada e convite enviado para " +
-      email,
+    "✅ Empresa e administrador criados com sucesso",
   );
 
   await load();

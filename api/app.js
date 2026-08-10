@@ -370,7 +370,7 @@ if (
 }
 
 // ==========================================
-// CRIAR EMPRESA + CONVIDAR ADMINISTRADOR
+// CRIAR EMPRESA + CRIAR ADMINISTRADOR COM SENHA INICIAL
 // ==========================================
 
 if (action === "create-company") {
@@ -436,17 +436,25 @@ if (action === "create-company") {
     const {
       name,
       email,
+      password,
       plan,
       max_users,
       expires_at,
       status,
     } = req.body || {};
 
-    if (!name?.trim() || !email?.trim()) {
+    if (!name?.trim() || !email?.trim() || !password) {
       return res.status(400).json({
         success: false,
         error:
-          "Nome da empresa e e-mail do administrador são obrigatórios",
+          "Nome da empresa, e-mail do administrador e senha inicial são obrigatórios",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "A senha inicial deve ter pelo menos 6 caracteres",
       });
     }
 
@@ -505,36 +513,34 @@ if (action === "create-company") {
     createdCompanyId = company.id;
 
     // ========================================
-    // 2. ENVIA CONVITE PELO SUPABASE AUTH
+    // 2. CRIA ADMINISTRADOR NO SUPABASE AUTH
+    //    SEM ENVIAR E-MAIL (modo temporário)
     // ========================================
 
     const {
-      data: inviteData,
-      error: inviteError,
-    } = await supabase.auth.admin.inviteUserByEmail(
-      normalizedEmail,
-      {
-        redirectTo:
-          "https://chatiapp.com.br/redefinir-senha.html",
-
-        data: {
-          name: normalizedName,
-          company_id: company.id,
-          company_name: company.name,
-          role: "admin",
-        },
+      data: authCreateData,
+      error: authCreateError,
+    } = await supabase.auth.admin.createUser({
+      email: normalizedEmail,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        name: normalizedName,
+        company_id: company.id,
+        company_name: company.name,
+        role: "admin",
       },
-    );
+    });
 
-    if (inviteError) {
-      throw inviteError;
+    if (authCreateError) {
+      throw authCreateError;
     }
 
-    createdAuthUserId = inviteData?.user?.id;
+    createdAuthUserId = authCreateData?.user?.id;
 
     if (!createdAuthUserId) {
       throw new Error(
-        "O Supabase não retornou o usuário convidado",
+        "O Supabase não retornou o usuário criado",
       );
     }
 
@@ -567,7 +573,7 @@ if (action === "create-company") {
     return res.status(201).json({
       success: true,
       message:
-        "Empresa criada e convite enviado ao administrador",
+        "Empresa e administrador criados com sucesso",
       company,
       user: profile,
     });
