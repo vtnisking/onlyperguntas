@@ -1287,7 +1287,7 @@ function clearSuperadminSession() {
           <div class="actions">
             <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
-            <button class="btn-sm" onclick="clearPendingQuestions('${c.id}', ${JSON.stringify(c.name)})">Limpar pendentes</button>
+            <button class="btn-sm" onclick="clearPendingQuestions('${c.id}')">Limpar pendentes</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
             <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}')">Excluir</button>
           </div>
@@ -1575,8 +1575,14 @@ function clearSuperadminSession() {
 
       window.clearPendingQuestions = async function (
         companyId,
-        companyName,
       ) {
+        const company = companiesCache.find(
+          (item) => String(item.id) === String(companyId),
+        );
+
+        const companyName =
+          company?.name || "esta empresa";
+
         const confirmed = window.confirm(
           `Ignorar todas as perguntas pendentes atuais de "${companyName}"?\n\n` +
           "As perguntas NÃO serão apagadas nem respondidas no Mercado Livre. " +
@@ -1587,70 +1593,34 @@ function clearSuperadminSession() {
           return;
         }
 
-        const sessionRaw =
-          localStorage.getItem("chati_session") ||
-          sessionStorage.getItem("chati_session");
+        const cutoff = new Date().toISOString();
 
-        if (!sessionRaw) {
-          showToast("❌ Sessão não encontrada");
-          return;
-        }
+        const { error } = await supabase
+          .from("companies")
+          .update({
+            questions_since: cutoff,
+          })
+          .eq("id", companyId);
 
-        let session;
-
-        try {
-          session = JSON.parse(sessionRaw);
-        } catch (error) {
-          showToast("❌ Sessão inválida");
-          return;
-        }
-
-        if (!session?.access_token) {
-          showToast("❌ Token de acesso não encontrado");
-          return;
-        }
-
-        try {
-          const response = await fetch(
-            "/api/app?action=clear-pending-questions",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.access_token}`,
-              },
-              body: JSON.stringify({
-                company_id: companyId,
-              }),
-            },
-          );
-
-          const result = await response.json();
-
-          if (!response.ok || !result.success) {
-            throw new Error(
-              result.error ||
-                "Não foi possível limpar as perguntas pendentes",
-            );
-          }
-
-          showToast(
-            "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
-          );
-
-          await load();
-        } catch (error) {
+        if (error) {
           console.error(
-            "Erro ao limpar perguntas pendentes:",
+            "Erro ao definir corte das perguntas:",
             error,
           );
 
           showToast(
-            "❌ " +
-              (error.message ||
-                "Não foi possível limpar as perguntas pendentes"),
+            "❌ Erro ao limpar pendentes: " +
+              error.message,
           );
+
+          return;
         }
+
+        showToast(
+          "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
+        );
+
+        await load();
       };
 
       window.toggleStatus = async function (id, currentStatus) {
