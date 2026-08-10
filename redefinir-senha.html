@@ -277,23 +277,87 @@
 
 
   <script type="module">
-
     import { createClient }
       from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+    const hashParams = new URLSearchParams(
+      window.location.hash.replace(/^#/, ""),
+    );
+
+    const queryParams = new URLSearchParams(
+      window.location.search,
+    );
+
+    const authType =
+      hashParams.get("type") ||
+      queryParams.get("type");
+
+    const callbackAccessToken =
+      hashParams.get("access_token");
+
+    const isPasswordLink =
+      authType === "invite" ||
+      authType === "recovery";
+
+    function getJwtSubject(token) {
+      if (!token) return null;
+
+      try {
+        const payload = token.split(".")[1];
+        if (!payload) return null;
+
+        const normalized = payload
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+
+        const padded =
+          normalized +
+          "=".repeat((4 - (normalized.length % 4)) % 4);
+
+        const json = decodeURIComponent(
+          Array.from(atob(padded))
+            .map(
+              (char) =>
+                "%" +
+                char
+                  .charCodeAt(0)
+                  .toString(16)
+                  .padStart(2, "0"),
+            )
+            .join(""),
+        );
+
+        return JSON.parse(json)?.sub || null;
+      } catch (error) {
+        console.warn(
+          "Não foi possível identificar o usuário do link:",
+          error,
+        );
+        return null;
+      }
+    }
+
+    const expectedAuthUserId =
+      getJwtSubject(callbackAccessToken);
+
+    if (isPasswordLink) {
+      localStorage.removeItem("chati_session");
+      localStorage.removeItem("chati_user");
+      sessionStorage.removeItem("chati_session");
+      sessionStorage.removeItem("chati_user");
+    }
 
     const supabase = createClient(
       "https://vspcitxnssbsztqnfhmj.supabase.co",
-      "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS"
+      "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
     );
-
 
     const passwordInput =
       document.getElementById("password");
 
     const confirmPasswordInput =
       document.getElementById(
-        "confirm-password"
+        "confirm-password",
       );
 
     const saveButton =
@@ -302,292 +366,345 @@
     const message =
       document.getElementById("message");
 
-
     let sessionReady = false;
-
+    let validatedUserId = null;
 
     function showMessage(text, type) {
-
       message.textContent = text;
-
       message.className =
         "message " + type;
     }
 
-
-    function enableForm() {
-
-      sessionReady = true;
-
-      saveButton.disabled = false;
-
-      saveButton.textContent =
-        "Criar senha";
+    function hideMessage() {
+      message.textContent = "";
+      message.className = "message";
     }
 
+    function enableForm(session) {
+      sessionReady = true;
+      validatedUserId =
+        session?.user?.id || null;
 
-    function invalidLink() {
+      saveButton.disabled = false;
+      saveButton.textContent =
+        authType === "invite"
+          ? "Criar senha"
+          : "Salvar nova senha";
 
+      hideMessage();
+    }
+
+    function invalidLink(text) {
       sessionReady = false;
+      validatedUserId = null;
 
       saveButton.disabled = true;
-
       saveButton.textContent =
         "Link inválido";
 
       showMessage(
-        "Este link é inválido ou expirou. Solicite um novo convite.",
-        "error"
+        text ||
+          "Este link é inválido ou expirou. Solicite um novo convite ou uma nova recuperação de senha.",
+        "error",
       );
     }
 
+    function sessionMatchesLink(session) {
+      if (!session?.user) {
+        return false;
+      }
 
-    // ======================================
-    // EVENTOS DE AUTENTICAÇÃO
-    // ======================================
+      if (!isPasswordLink) {
+        return false;
+      }
+
+      if (
+        expectedAuthUserId &&
+        session.user.id !== expectedAuthUserId
+      ) {
+        return false;
+      }
+
+      return true;
+    }
 
     supabase.auth.onAuthStateChange(
       (event, session) => {
-
         console.log(
           "Auth event:",
           event,
-          session?.user?.email || null
+          session?.user?.email || null,
+          "type:",
+          authType,
         );
 
-        if (session?.user) {
-          enableForm();
+        if (
+          event === "PASSWORD_RECOVERY" &&
+          authType === "recovery" &&
+          sessionMatchesLink(session)
+        ) {
+          enableForm(session);
+          return;
         }
 
-      }
+        if (
+          authType === "invite" &&
+          sessionMatchesLink(session)
+        ) {
+          enableForm(session);
+        }
+      },
     );
 
-
-    // ======================================
-    // VERIFICA SESSÃO
-    // ======================================
-
     async function checkSession() {
-
       showMessage(
-        "Validando seu convite...",
-        "info"
+        "Validando seu link...",
+        "info",
       );
 
+      if (!isPasswordLink) {
+        invalidLink(
+          "Abra esta página pelo link enviado ao seu e-mail. Uma sessão já aberta no navegador não é suficiente para alterar a senha.",
+        );
+        return;
+      }
+
       try {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 350),
+        );
 
         const {
           data: { session },
-          error
-        } =
-          await supabase.auth.getSession();
-
+          error,
+        } = await supabase.auth.getSession();
 
         if (error) {
-
           console.error(
             "Erro ao validar sessão:",
-            error
+            error,
           );
 
           invalidLink();
-
           return;
         }
 
+        if (!sessionMatchesLink(session)) {
+          console.warn(
+            "A sessão atual não corresponde ao usuário do link.",
+            {
+              authType,
+              expectedAuthUserId,
+              sessionUserId:
+                session?.user?.id || null,
+            },
+          );
 
-        if (session?.user) {
-
-          enableForm();
-
-          message.className =
-            "message";
-
+          invalidLink(
+            "Este link não corresponde à sessão autenticada. Abra novamente o link recebido no e-mail.",
+          );
           return;
         }
 
-
-        // Aguarda um pouco porque o Supabase
-        // pode estar processando a sessão da URL.
-
-        setTimeout(
-          async () => {
-
-            const {
-              data: {
-                session: delayedSession
-              }
-            } =
-              await supabase.auth.getSession();
-
-
-            if (delayedSession?.user) {
-
-              enableForm();
-
-              message.className =
-                "message";
-
-              return;
-            }
-
-
-            invalidLink();
-
-          },
-          1000
+        const {
+          data: userData,
+          error: userError,
+        } = await supabase.auth.getUser(
+          session.access_token,
         );
 
-      } catch (error) {
+        if (
+          userError ||
+          !userData?.user ||
+          userData.user.id !== session.user.id
+        ) {
+          console.error(
+            "Não foi possível confirmar o usuário do link:",
+            userError,
+          );
 
+          invalidLink();
+          return;
+        }
+
+        enableForm(session);
+      } catch (error) {
         console.error(
           "Erro inesperado:",
-          error
+          error,
         );
 
         invalidLink();
       }
-
     }
-
-
-    // ======================================
-    // CRIAR SENHA
-    // ======================================
 
     saveButton.addEventListener(
       "click",
       async () => {
-
         const password =
           passwordInput.value;
 
         const confirmPassword =
           confirmPasswordInput.value;
 
-
-        if (!sessionReady) {
-
+        if (
+          !sessionReady ||
+          !validatedUserId ||
+          !isPasswordLink
+        ) {
           showMessage(
-            "O convite ainda não foi validado.",
-            "error"
+            "O link não foi validado para alteração de senha.",
+            "error",
           );
-
           return;
         }
-
 
         if (
           !password ||
           !confirmPassword
         ) {
-
           showMessage(
             "Preencha os dois campos.",
-            "error"
+            "error",
           );
-
           return;
         }
-
 
         if (password.length < 6) {
-
           showMessage(
             "A senha deve possuir pelo menos 6 caracteres.",
-            "error"
+            "error",
           );
-
           return;
         }
-
 
         if (
           password !==
           confirmPassword
         ) {
-
           showMessage(
             "As senhas não são iguais.",
-            "error"
+            "error",
           );
-
           return;
         }
 
-
         saveButton.disabled = true;
-
         saveButton.textContent =
-          "Criando senha...";
+          authType === "invite"
+            ? "Criando senha..."
+            : "Salvando senha...";
 
+        try {
+          const {
+            data: { session },
+            error: sessionError,
+          } = await supabase.auth.getSession();
 
-        const {
-          data,
-          error
-        } =
-          await supabase.auth.updateUser({
-            password
+          if (
+            sessionError ||
+            !sessionMatchesLink(session) ||
+            session.user.id !== validatedUserId
+          ) {
+            throw new Error(
+              "A sessão do link não é mais válida.",
+            );
+          }
+
+          const {
+            data: userData,
+            error: userError,
+          } = await supabase.auth.getUser(
+            session.access_token,
+          );
+
+          if (
+            userError ||
+            !userData?.user ||
+            userData.user.id !== validatedUserId
+          ) {
+            throw new Error(
+              "Não foi possível confirmar o usuário deste link.",
+            );
+          }
+
+          const {
+            data,
+            error,
+          } = await supabase.auth.updateUser({
+            password,
           });
 
+          if (error) {
+            throw error;
+          }
 
-        if (error) {
-
-          console.error(
-            "Erro ao criar senha:",
-            error
+          console.log(
+            "Senha definida para:",
+            data?.user?.email,
           );
 
           showMessage(
-            "Erro ao criar senha: " +
-              error.message,
-            "error"
+            authType === "invite"
+              ? "Senha criada com sucesso. Redirecionando para o login..."
+              : "Senha alterada com sucesso. Redirecionando para o login...",
+            "success",
+          );
+
+          saveButton.textContent =
+            "Senha salva";
+
+          sessionReady = false;
+
+          await supabase.auth.signOut();
+
+          localStorage.removeItem(
+            "chati_session",
+          );
+          localStorage.removeItem(
+            "chati_user",
+          );
+          sessionStorage.removeItem(
+            "chati_session",
+          );
+          sessionStorage.removeItem(
+            "chati_user",
+          );
+
+          history.replaceState(
+            null,
+            "",
+            "/redefinir-senha.html",
+          );
+
+          setTimeout(() => {
+            window.location.href =
+              "/login.html";
+          }, 1500);
+        } catch (error) {
+          console.error(
+            "Erro ao alterar senha:",
+            error,
+          );
+
+          showMessage(
+            "Erro ao alterar senha: " +
+              (error?.message ||
+                "tente novamente."),
+            "error",
           );
 
           saveButton.disabled = false;
 
           saveButton.textContent =
-            "Criar senha";
-
-          return;
+            authType === "invite"
+              ? "Criar senha"
+              : "Salvar nova senha";
         }
-
-
-        console.log(
-          "Senha criada:",
-          data?.user?.email
-        );
-
-
-        showMessage(
-          "Senha criada com sucesso. Redirecionando para o login...",
-          "success"
-        );
-
-
-        saveButton.textContent =
-          "Senha criada";
-
-
-        await supabase.auth.signOut();
-
-
-        setTimeout(
-          () => {
-
-            window.location.href =
-              "/login.html";
-
-          },
-          1500
-        );
-
-      }
+      },
     );
 
-
     checkSession();
-
   </script>
 
 </body>
