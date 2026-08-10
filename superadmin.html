@@ -813,6 +813,7 @@ let editingUserId = null;
 let currentCompanyIdForUsers = null;
 let deleteCompanyId = null;
 let deleteCompanyName = null;
+let companiesCache = [];
 
 function clearSuperadminSession() {
 
@@ -952,8 +953,10 @@ function clearSuperadminSession() {
           return;
         }
 
-        renderStats(companies);
-        renderTable(companies);
+        companiesCache = companies || [];
+
+        renderStats(companiesCache);
+        renderTable(companiesCache);
       }
 
       window.viewCompanyDetails = async function (companyId) {
@@ -1265,7 +1268,7 @@ function clearSuperadminSession() {
             <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
-            <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}', ${JSON.stringify(c.name)})">Excluir</button>
+            <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}')">Excluir</button>
           </div>
         </td>
       </tr>
@@ -1425,9 +1428,14 @@ function clearSuperadminSession() {
         load();
       };
 
-      window.openDeleteCompanyModal = function (id, name) {
+      window.openDeleteCompanyModal = function (id) {
         deleteCompanyId = id;
-        deleteCompanyName = name || "esta empresa";
+
+        const company = companiesCache.find(
+          (item) => String(item.id) === String(id),
+        );
+
+        deleteCompanyName = company?.name || "esta empresa";
 
         document.getElementById("delete-company-name").textContent =
           deleteCompanyName;
