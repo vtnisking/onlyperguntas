@@ -616,6 +616,127 @@ if (action === "create-company") {
 }
 
 
+
+// ==========================================
+// EXCLUIR EMPRESA
+// ==========================================
+
+if (action === "delete-company") {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  try {
+    const accessToken = getBearerToken(req);
+
+    const {
+      data: authData,
+      error: authError,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (authError || !authData?.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Sessão inválida ou expirada",
+      });
+    }
+
+    const {
+      data: requester,
+      error: requesterError,
+    } = await supabase
+      .from("users_app")
+      .select("id, role, status")
+      .eq("auth_id", authData.user.id)
+      .maybeSingle();
+
+    if (
+      requesterError ||
+      !requester ||
+      requester.role !== "superadmin" ||
+      requester.status !== "active"
+    ) {
+      return res.status(403).json({
+        success: false,
+        error: "Apenas o superadmin pode excluir empresas",
+      });
+    }
+
+    const { company_id: companyId } = req.body || {};
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: "company_id obrigatório",
+      });
+    }
+
+    const {
+      data: companyUsers,
+      error: usersError,
+    } = await supabase
+      .from("users_app")
+      .select("id, auth_id")
+      .eq("company_id", companyId);
+
+    if (usersError) {
+      throw usersError;
+    }
+
+    for (const user of companyUsers || []) {
+      if (user.auth_id) {
+        const { error: authDeleteError } =
+          await supabase.auth.admin.deleteUser(
+            user.auth_id,
+          );
+
+        if (authDeleteError) {
+          console.error(
+            "Erro ao excluir usuário do Authentication:",
+            user.auth_id,
+            authDeleteError,
+          );
+        }
+      }
+    }
+
+    const { error: profilesError } = await supabase
+      .from("users_app")
+      .delete()
+      .eq("company_id", companyId);
+
+    if (profilesError) {
+      throw profilesError;
+    }
+
+    const { error: companyError } = await supabase
+      .from("companies")
+      .delete()
+      .eq("id", companyId);
+
+    if (companyError) {
+      throw companyError;
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Empresa excluída com sucesso",
+    });
+  } catch (error) {
+    console.error("Erro ao excluir empresa:", error);
+
+    return res.status(500).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro interno ao excluir empresa",
+    });
+  }
+}
+
 // As ações antigas ainda usam company_id.
 // As ações seguras do Mercado Livre são tratadas antes.
 if (!company_id) {
@@ -1174,4 +1295,4 @@ if (action === "create-user") {
       error: error.message || "Erro interno",
     });
   }
-}f
+}
