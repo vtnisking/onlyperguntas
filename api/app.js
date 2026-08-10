@@ -369,6 +369,253 @@ if (
   }
 }
 
+// ==========================================
+// CRIAR EMPRESA + CONVIDAR ADMINISTRADOR
+// ==========================================
+
+if (action === "create-company") {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  let createdCompanyId = null;
+  let createdAuthUserId = null;
+
+  try {
+    // ========================================
+    // CONFIRMA SE QUEM ESTÁ CHAMANDO É SUPERADMIN
+    // ========================================
+
+    const accessToken = getBearerToken(req);
+
+    const {
+      data: authData,
+      error: authError,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (authError || !authData?.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Sessão inválida ou expirada",
+      });
+    }
+
+    const {
+      data: requester,
+      error: requesterError,
+    } = await supabase
+      .from("users_app")
+      .select("id, auth_id, role, status")
+      .eq("auth_id", authData.user.id)
+      .maybeSingle();
+
+    if (requesterError || !requester) {
+      return res.status(403).json({
+        success: false,
+        error: "Usuário não autorizado",
+      });
+    }
+
+    if (
+      requester.role !== "superadmin" ||
+      requester.status !== "active"
+    ) {
+      return res.status(403).json({
+        success: false,
+        error: "Apenas o superadmin pode criar empresas",
+      });
+    }
+
+    // ========================================
+    // DADOS
+    // ========================================
+
+    const {
+      name,
+      email,
+      plan,
+      max_users,
+      expires_at,
+      status,
+    } = req.body || {};
+
+    if (!name?.trim() || !email?.trim()) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Nome da empresa e e-mail do administrador são obrigatórios",
+      });
+    }
+
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // ========================================
+    // VERIFICA SE O E-MAIL JÁ EXISTE
+    // ========================================
+
+    const {
+      data: existingUser,
+      error: existingUserError,
+    } = await supabase
+      .from("users_app")
+      .select("id, email")
+      .eq("email", normalizedEmail)
+      .maybeSingle();
+
+    if (existingUserError) {
+      throw existingUserError;
+    }
+
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error:
+          "Já existe um usuário cadastrado com este e-mail",
+      });
+    }
+
+    // ========================================
+    // 1. CRIA EMPRESA
+    // ========================================
+
+    const {
+      data: company,
+      error: companyError,
+    } = await supabase
+      .from("companies")
+      .insert({
+        name: normalizedName,
+        owner_email: normalizedEmail,
+        plan: plan || "bronze",
+        max_users: Number(max_users) || 5,
+        expires_at: expires_at || null,
+        status: status || "active",
+      })
+      .select()
+      .single();
+
+    if (companyError) {
+      throw companyError;
+    }
+
+    createdCompanyId = company.id;
+
+    // ========================================
+    // 2. ENVIA CONVITE PELO SUPABASE AUTH
+    // ========================================
+
+    const {
+      data: inviteData,
+      error: inviteError,
+    } = await supabase.auth.admin.inviteUserByEmail(
+      normalizedEmail,
+      {
+        redirectTo:
+          "https://chatiapp.com.br/redefinir-senha.html",
+
+        data: {
+          name: normalizedName,
+          company_id: company.id,
+          company_name: company.name,
+          role: "admin",
+        },
+      },
+    );
+
+    if (inviteError) {
+      throw inviteError;
+    }
+
+    createdAuthUserId = inviteData?.user?.id;
+
+    if (!createdAuthUserId) {
+      throw new Error(
+        "O Supabase não retornou o usuário convidado",
+      );
+    }
+
+    // ========================================
+    // 3. CRIA PERFIL EM users_app
+    // ========================================
+
+    const {
+      data: profile,
+      error: profileError,
+    } = await supabase
+      .from("users_app")
+      .insert({
+        company_id: company.id,
+        auth_id: createdAuthUserId,
+        name: normalizedName,
+        email: normalizedEmail,
+        role: "admin",
+        status: "active",
+      })
+      .select(
+        "id, auth_id, company_id, name, email, role, status",
+      )
+      .single();
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    return res.status(201).json({
+      success: true,
+      message:
+        "Empresa criada e convite enviado ao administrador",
+      company,
+      user: profile,
+    });
+  } catch (error) {
+    console.error(
+      "Erro ao criar empresa:",
+      error,
+    );
+
+    // Remove usuário Auth caso tenha sido criado
+    if (createdAuthUserId) {
+      try {
+        await supabase.auth.admin.deleteUser(
+          createdAuthUserId,
+        );
+      } catch (rollbackError) {
+        console.error(
+          "Erro no rollback do Authentication:",
+          rollbackError,
+        );
+      }
+    }
+
+    // Remove empresa caso tenha sido criada
+    if (createdCompanyId) {
+      try {
+        await supabase
+          .from("companies")
+          .delete()
+          .eq("id", createdCompanyId);
+      } catch (rollbackError) {
+        console.error(
+          "Erro no rollback da empresa:",
+          rollbackError,
+        );
+      }
+    }
+
+    return res.status(500).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro interno ao criar empresa",
+    });
+  }
+}
+
+
 // As ações antigas ainda usam company_id.
 // As ações seguras do Mercado Livre são tratadas antes.
 if (!company_id) {
@@ -927,4 +1174,4 @@ if (action === "create-user") {
       error: error.message || "Erro interno",
     });
   }
-}
+}f

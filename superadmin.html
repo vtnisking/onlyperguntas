@@ -1293,14 +1293,81 @@ function clearSuperadminSession() {
 
         let error;
 
-        if (editingId) {
-          ({ error } = await supabase
-            .from("companies")
-            .update(payload)
-            .eq("id", editingId));
-        } else {
-          ({ error } = await supabase.from("companies").insert(payload));
-        }
+       if (editingId) {
+  ({ error } = await supabase
+    .from("companies")
+    .update(payload)
+    .eq("id", editingId));
+} else {
+  const sessionRaw =
+    localStorage.getItem("chati_session") ||
+    sessionStorage.getItem("chati_session");
+
+  if (!sessionRaw) {
+    showToast("❌ Sessão não encontrada");
+    return;
+  }
+
+  let session;
+
+  try {
+    session = JSON.parse(sessionRaw);
+  } catch (error) {
+    showToast("❌ Sessão inválida");
+    return;
+  }
+
+  if (!session?.access_token) {
+    showToast("❌ Token de acesso não encontrado");
+    return;
+  }
+
+  const response = await fetch(
+    "/api/app?action=create-company",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+
+      body: JSON.stringify({
+        name,
+        email,
+        plan,
+        max_users: maxusers,
+        expires_at: expires
+          ? new Date(expires).toISOString()
+          : null,
+        status,
+      }),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    showToast(
+      "❌ " +
+        (result.error ||
+          "Erro ao criar empresa"),
+    );
+
+    return;
+  }
+
+  closeModal();
+
+  showToast(
+    "✅ Empresa criada e convite enviado para " +
+      email,
+  );
+
+  await load();
+
+  return;
+}
 
         if (error) {
           showToast("Erro ao salvar: " + error.message);
