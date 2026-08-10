@@ -538,6 +538,33 @@ if (req.method === "DELETE") {
       });
     }
 
+    const {
+      data: company,
+      error: companyError,
+    } = await supabase
+      .from("companies")
+      .select("id, questions_since")
+      .eq("id", companyId)
+      .maybeSingle();
+
+    if (companyError) {
+      return res.status(500).json({
+        success: false,
+        error: companyError.message,
+      });
+    }
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        error: "Empresa não encontrada",
+      });
+    }
+
+    const questionsSince = company.questions_since
+      ? new Date(company.questions_since)
+      : null;
+
     const { data: stores, error: storesError } = await supabase
       .from("stores")
       .select("*")
@@ -629,6 +656,16 @@ for (const question of questions) {
     hiddenQuestionIds.has(
       String(question.id),
     )
+  ) {
+    continue;
+  }
+
+  // Se o Superadmin definiu um marco de início,
+  // ignora perguntas criadas antes dele.
+  if (
+    questionsSince &&
+    question.date_created &&
+    new Date(question.date_created) < questionsSince
   ) {
     continue;
   }
@@ -743,6 +780,7 @@ unavailable_reason:
       success: true,
       total: allQuestions.length,
       questions: allQuestions,
+      questions_since: company.questions_since || null,
     });
   } catch (error) {
     console.error(

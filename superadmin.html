@@ -1287,6 +1287,7 @@ function clearSuperadminSession() {
           <div class="actions">
             <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
+            <button class="btn-sm" onclick="clearPendingQuestions('${c.id}', ${JSON.stringify(c.name)})">Limpar pendentes</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
             <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}')">Excluir</button>
           </div>
@@ -1570,6 +1571,50 @@ function clearSuperadminSession() {
           btn.disabled = false;
           btn.textContent = originalText;
         }
+      };
+
+      window.clearPendingQuestions = async function (
+        companyId,
+        companyName,
+      ) {
+        const confirmed = window.confirm(
+          `Ignorar todas as perguntas pendentes atuais de "${companyName}"?\n\n` +
+          "As perguntas NÃO serão apagadas nem respondidas no Mercado Livre. " +
+          "O Chati apenas passará a exibir perguntas criadas a partir de agora.",
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        const cutoff = new Date().toISOString();
+
+        const { error } = await supabase
+          .from("companies")
+          .update({
+            questions_since: cutoff,
+          })
+          .eq("id", companyId);
+
+        if (error) {
+          console.error(
+            "Erro ao definir corte das perguntas:",
+            error,
+          );
+
+          showToast(
+            "❌ Erro ao limpar pendentes: " +
+              error.message,
+          );
+
+          return;
+        }
+
+        showToast(
+          "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
+        );
+
+        await load();
       };
 
       window.toggleStatus = async function (id, currentStatus) {
