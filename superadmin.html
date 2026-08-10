@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ADM · Chati</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -19,53 +18,34 @@
       }
 
       :root {
-        --bg: #f6f6fa;
+        --bg: #f5f5f7;
         --surface: #ffffff;
-        --surface2: #f2f2f8;
-        --surface3: #e9e9f2;
-        --border: rgba(20, 20, 40, 0.07);
-        --border2: rgba(20, 20, 40, 0.12);
-        --accent: #5b52e5;
-        --accent-dark: #4a41cf;
-        --accent-soft: rgba(91, 82, 229, 0.1);
-        --green: #178a4c;
-        --green-soft: rgba(23, 138, 76, 0.1);
-        --yellow: #b56c05;
-        --yellow-soft: rgba(181, 108, 5, 0.12);
-        --red: #d0342c;
-        --red-soft: rgba(208, 52, 44, 0.1);
-        --ink: #131320;
-        --ink-dim: #58586b;
-        --ink-faint: #9c9cae;
-        --radius-lg: 18px;
-        --radius-md: 12px;
-        --radius-sm: 9px;
-        --shadow-card: 0 1px 2px rgba(20, 20, 43, 0.04), 0 1px 1px rgba(20, 20, 43, 0.03);
-        --shadow-pop: 0 20px 50px -12px rgba(20, 20, 43, 0.25);
-        --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-        --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-      }
-
-      html {
-        color-scheme: light;
+        --surface2: #f0f0f5;
+        --surface3: #e8e8ef;
+        --border: rgba(0, 0, 0, 0.07);
+        --border2: rgba(0, 0, 0, 0.12);
+        --accent: #6c63ff;
+        --accent2: #5a52e0;
+        --green: #16a34a;
+        --yellow: #d97706;
+        --red: #dc2626;
+        --text: #111118;
+        --text2: #555566;
+        --text3: #9999aa;
       }
 
       body {
-        font-family: var(--font);
+        font-family: "Inter", Arial, sans-serif;
         background: var(--bg);
-        background-image: radial-gradient(circle at 15% 0%, rgba(91, 82, 229, 0.05), transparent 45%);
-        color: var(--ink);
+        color: var(--text);
         min-height: 100vh;
-        -webkit-font-smoothing: antialiased;
       }
 
-      /* ---------- Topbar ---------- */
       .topbar {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
+        background: var(--surface);
         border-bottom: 1px solid var(--border2);
         padding: 0 32px;
-        height: 64px;
+        height: 60px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -77,197 +57,105 @@
       .topbar-left {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
       }
 
-      .topbar-mark {
-        width: 34px;
-        height: 34px;
+      .topbar-icon {
+        width: 36px;
+        height: 36px;
         border-radius: 10px;
-        background: linear-gradient(155deg, var(--accent), #8b5cf6 120%);
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 14px -4px rgba(91, 82, 229, 0.55);
-        flex-shrink: 0;
-      }
-
-      .topbar-mark svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .topbar-titles {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
+        font-size: 18px;
       }
 
       .topbar-title {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 800;
         letter-spacing: -0.02em;
       }
 
       .topbar-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: var(--accent-soft);
-        color: var(--accent-dark);
-        font-size: 10.5px;
+        background: rgba(108, 99, 255, 0.1);
+        color: var(--accent);
+        font-size: 11px;
         font-weight: 700;
-        padding: 4px 9px;
+        padding: 3px 8px;
         border-radius: 999px;
-        letter-spacing: 0.06em;
-      }
-
-      .status-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: var(--green);
-        box-shadow: 0 0 0 0 rgba(23, 138, 76, 0.5);
-        animation: pulse-dot 2.2s infinite;
-      }
-
-      @keyframes pulse-dot {
-        0% {
-          box-shadow: 0 0 0 0 rgba(23, 138, 76, 0.45);
-        }
-        70% {
-          box-shadow: 0 0 0 6px rgba(23, 138, 76, 0);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(23, 138, 76, 0);
-        }
+        letter-spacing: 0.04em;
       }
 
       .topbar-right {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
       }
 
-      /* ---------- Buttons ---------- */
       .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 9px 16px;
-        border-radius: var(--radius-sm);
+        padding: 8px 16px;
+        border-radius: 10px;
         font-size: 13px;
         font-weight: 600;
-        font-family: var(--font);
+        font-family: "Inter", Arial, sans-serif;
         cursor: pointer;
         border: none;
-        transition:
-          background 0.15s ease,
-          border-color 0.15s ease,
-          transform 0.1s ease;
-      }
-
-      .btn:active {
-        transform: translateY(1px);
+        transition: all 0.2s;
       }
 
       .btn-primary {
         background: var(--accent);
         color: white;
-        box-shadow: 0 2px 8px -2px rgba(91, 82, 229, 0.55);
       }
 
       .btn-primary:hover {
-        background: var(--accent-dark);
+        background: var(--accent2);
       }
 
       .btn-ghost {
         background: transparent;
-        color: var(--ink-dim);
+        color: var(--text2);
         border: 1px solid var(--border2);
       }
 
       .btn-ghost:hover {
         background: var(--surface2);
-        color: var(--ink);
       }
 
-      /* ---------- Layout ---------- */
       .main {
-        max-width: 1180px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 36px 24px 64px;
+        padding: 32px 24px;
       }
 
       .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 14px;
-        margin-bottom: 36px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
       }
 
       .stat-card {
         background: var(--surface);
         border: 1px solid var(--border2);
-        border-radius: var(--radius-lg);
-        padding: 20px 22px;
-        box-shadow: var(--shadow-card);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .stat-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        background: var(--surface2);
-        color: var(--ink-dim);
-      }
-
-      .stat-icon svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .stat-card.total .stat-icon {
-        background: var(--accent-soft);
-        color: var(--accent-dark);
-      }
-      .stat-card.active .stat-icon {
-        background: var(--green-soft);
-        color: var(--green);
-      }
-      .stat-card.inactive .stat-icon {
-        background: var(--red-soft);
-        color: var(--red);
-      }
-      .stat-card.expiring .stat-icon {
-        background: var(--yellow-soft);
-        color: var(--yellow);
+        border-radius: 16px;
+        padding: 20px 24px;
       }
 
       .stat-label {
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 700;
-        color: var(--ink-faint);
+        color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
       }
 
       .stat-value {
-        font-family: var(--mono);
-        font-size: 26px;
-        font-weight: 600;
+        font-size: 28px;
+        font-weight: 800;
         letter-spacing: -0.02em;
-        line-height: 1;
       }
 
       .stat-value.green {
@@ -284,132 +172,75 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 18px;
-      }
-
-      .section-title-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-      }
-
-      .section-title {
-        font-size: 18px;
-        font-weight: 800;
-        letter-spacing: -0.01em;
-      }
-
-      .section-sub {
-        font-size: 12.5px;
-        color: var(--ink-faint);
+        margin-bottom: 16px;
       }
 
       .search-bar {
-        margin-bottom: 18px;
-        position: relative;
-      }
-
-      .search-bar svg {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 15px;
-        height: 15px;
-        color: var(--ink-faint);
-        pointer-events: none;
+        margin-bottom: 20px;
       }
 
       .search-bar input {
         width: 100%;
-        padding: 12px 16px 12px 40px;
+        padding: 12px 16px;
         border: 1px solid var(--border2);
-        border-radius: var(--radius-md);
+        border-radius: 12px;
         background: var(--surface);
-        color: var(--ink);
+        color: var(--text);
         font-size: 14px;
-        font-family: var(--font);
+        font-family: "Inter", Arial, sans-serif;
         font-weight: 500;
         outline: none;
-        box-shadow: var(--shadow-card);
         transition:
           border-color 0.2s,
           box-shadow 0.2s;
       }
 
-      .search-bar input::placeholder {
-        color: var(--ink-faint);
-      }
-
-      .search-bar input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 4px var(--accent-soft);
-      }
-
-      /* ---------- Details sections (inside modal) ---------- */
       .details-section {
         background: var(--surface2);
-        border-radius: var(--radius-md);
-        padding: 20px 22px;
-        margin-bottom: 16px;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
         border: 1px solid var(--border);
         overflow: hidden;
       }
 
       .details-section h3 {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
-        margin-bottom: 14px;
-        color: var(--ink);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        margin-bottom: 15px;
+        color: var(--text);
       }
 
       .details-section p {
-        font-size: 13.5px;
+        font-size: 14px;
         margin-bottom: 8px;
-        color: var(--ink-dim);
-        display: flex;
-        gap: 6px;
-      }
-
-      .details-section p:last-child {
-        margin-bottom: 0;
+        color: var(--text2);
       }
 
       .details-section p strong {
-        color: var(--ink);
-        font-weight: 600;
-        min-width: 150px;
+        color: var(--text);
       }
 
       .users-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 14px;
+        margin-top: 15px;
       }
 
       .users-table th {
         background: var(--surface3);
-        padding: 9px 10px;
+        padding: 10px 8px;
         text-align: left;
         font-size: 10px;
         font-weight: 700;
-        color: var(--ink-faint);
+        color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         border-bottom: 1px solid var(--border2);
       }
 
-      .users-table th:first-child {
-        border-top-left-radius: 8px;
-      }
-      .users-table th:last-child {
-        border-top-right-radius: 8px;
-      }
-
       .users-table td {
-        padding: 10px;
+        padding: 10px 8px;
         font-size: 13px;
         border-bottom: 1px solid var(--border);
         vertical-align: middle;
@@ -419,45 +250,47 @@
         border-bottom: none;
       }
       .users-table tr:hover td {
-        background: rgba(20, 20, 40, 0.02);
+        background: var(--surface3);
       }
 
-      /* ---------- Table ---------- */
+      .search-bar input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
       .table-wrap {
         background: var(--surface);
         border: 1px solid var(--border2);
-        border-radius: var(--radius-lg);
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: var(--shadow-card);
         margin-bottom: 32px;
-      }
-
-      .table-scroll {
-        overflow-x: auto;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 720px;
       }
 
       th {
         background: var(--surface2);
-        padding: 13px 20px;
+        padding: 12px 20px;
         text-align: left;
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 700;
-        color: var(--ink-faint);
+        color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         border-bottom: 1px solid var(--border2);
-        white-space: nowrap;
       }
 
       td {
-        padding: 13px 20px;
-        font-size: 13.5px;
+        padding: 14px 20px;
+        font-size: 14px;
         border-bottom: 1px solid var(--border);
         vertical-align: middle;
       }
@@ -466,7 +299,7 @@
         border-bottom: none;
       }
       tr:hover td {
-        background: rgba(20, 20, 40, 0.015);
+        background: var(--surface2);
       }
 
       .badge {
@@ -475,66 +308,61 @@
         gap: 5px;
         padding: 4px 10px;
         border-radius: 999px;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 600;
-        white-space: nowrap;
       }
 
       .badge-green {
-        background: var(--green-soft);
+        background: rgba(22, 163, 74, 0.1);
         color: var(--green);
       }
       .badge-yellow {
-        background: var(--yellow-soft);
+        background: rgba(217, 119, 6, 0.1);
         color: var(--yellow);
       }
       .badge-red {
-        background: var(--red-soft);
+        background: rgba(220, 38, 38, 0.1);
         color: var(--red);
       }
       .badge-gray {
         background: var(--surface3);
-        color: var(--ink-dim);
+        color: var(--text3);
       }
 
       .actions {
         display: flex;
         gap: 6px;
-        flex-wrap: wrap;
       }
 
       .btn-sm {
-        padding: 6px 10px;
+        padding: 5px 8px;
         border-radius: 8px;
         font-size: 12px;
         font-weight: 600;
-        font-family: var(--font);
+        font-family: "Inter", Arial, sans-serif;
         cursor: pointer;
         border: 1px solid var(--border2);
         background: var(--surface);
-        color: var(--ink-dim);
-        transition: all 0.15s ease;
-        white-space: nowrap;
+        color: var(--text2);
+        transition: all 0.2s;
       }
 
       .btn-sm:hover {
         background: var(--surface2);
-        border-color: var(--border2);
-        color: var(--ink);
       }
       .btn-sm.green {
         color: var(--green);
-        border-color: rgba(23, 138, 76, 0.28);
+        border-color: rgba(22, 163, 74, 0.3);
       }
       .btn-sm.green:hover {
-        background: var(--green-soft);
+        background: rgba(22, 163, 74, 0.08);
       }
       .btn-sm.red {
         color: var(--red);
-        border-color: rgba(208, 52, 44, 0.28);
+        border-color: rgba(220, 38, 38, 0.3);
       }
       .btn-sm.red:hover {
-        background: var(--red-soft);
+        background: rgba(220, 38, 38, 0.08);
       }
 
       .btn-sm.danger {
@@ -544,112 +372,77 @@
       }
 
       .btn-sm.danger:hover {
-        background: #b02a23;
-        border-color: #b02a23;
-      }
-
-      .company-cell {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .company-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 700;
-        color: #fff;
-        flex-shrink: 0;
+        background: #b91c1c;
+        border-color: #b91c1c;
       }
 
       .company-name {
         font-weight: 600;
-        line-height: 1.3;
       }
       .company-email {
         font-size: 12px;
-        color: var(--ink-faint);
-        margin-top: 1px;
+        color: var(--text3);
+        margin-top: 2px;
       }
 
-      /* ---------- Modals ---------- */
       .modal-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(15, 15, 30, 0.45);
+        background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
         z-index: 200;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         padding: 24px;
-        opacity: 0;
-        visibility: hidden;
-        transition:
-          opacity 0.18s ease,
-          visibility 0.18s ease;
       }
 
       .modal-overlay.open {
-        opacity: 1;
-        visibility: visible;
+        display: flex;
       }
 
       .modal {
         background: var(--surface);
-        border-radius: 22px;
+        border-radius: 24px;
         border: 1px solid var(--border2);
-        padding: 30px;
+        padding: 32px;
         width: 100%;
         max-width: 480px;
-        max-height: 88vh;
-        overflow-y: auto;
-        box-shadow: var(--shadow-pop);
-        transform: translateY(10px) scale(0.98);
-        transition: transform 0.18s ease;
-      }
-
-      .modal-overlay.open .modal {
-        transform: translateY(0) scale(1);
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
       }
 
       .modal-title {
-        font-size: 17px;
+        font-size: 18px;
         font-weight: 800;
-        margin-bottom: 22px;
-        letter-spacing: -0.01em;
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
       }
 
       .field {
         display: flex;
         flex-direction: column;
         gap: 6px;
-        margin-bottom: 15px;
+        margin-bottom: 16px;
       }
 
       label {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 700;
-        color: var(--ink-dim);
-        letter-spacing: 0.05em;
+        color: var(--text2);
+        letter-spacing: 0.04em;
         text-transform: uppercase;
       }
 
       input,
       select {
         width: 100%;
-        padding: 11px 13px;
+        padding: 12px 14px;
         border: 1px solid var(--border2);
-        border-radius: var(--radius-sm);
+        border-radius: 12px;
         background: var(--surface2);
-        color: var(--ink);
+        color: var(--text);
         font-size: 14px;
-        font-family: var(--font);
+        font-family: "Inter", Arial, sans-serif;
         font-weight: 500;
         outline: none;
         transition:
@@ -657,75 +450,41 @@
           box-shadow 0.2s;
       }
 
-      input:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
       input:focus,
       select:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 4px var(--accent-soft);
-        background: var(--surface);
-      }
-
-      .field-hint {
-        font-size: 11px;
-        color: var(--ink-faint);
-        margin-top: 4px;
-        line-height: 1.45;
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
       }
 
       .modal-footer {
         display: flex;
         gap: 10px;
         justify-content: flex-end;
-        margin-top: 22px;
-      }
-
-      .modal-note {
-        font-size: 13.5px;
-        color: var(--ink-dim);
-        line-height: 1.6;
-      }
-
-      .modal-warn {
-        font-size: 12.5px;
-        color: var(--red);
-        margin-top: 10px;
-        line-height: 1.5;
-      }
-
-      .modal-sub {
-        font-size: 12.5px;
-        color: var(--ink-faint);
-        margin-top: 10px;
+        margin-top: 24px;
       }
 
       .empty {
         text-align: center;
-        padding: 52px 20px;
-        color: var(--ink-faint);
-        font-size: 13.5px;
+        padding: 48px;
+        color: var(--text3);
+        font-size: 14px;
       }
 
       .toast {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        background: var(--ink);
+        background: var(--text);
         color: white;
-        padding: 13px 20px;
-        border-radius: var(--radius-md);
+        padding: 12px 20px;
+        border-radius: 12px;
         font-size: 13px;
         font-weight: 600;
         z-index: 999;
         opacity: 0;
         transform: translateY(8px);
-        transition: all 0.25s ease;
+        transition: all 0.3s;
         pointer-events: none;
-        box-shadow: var(--shadow-pop);
-        max-width: 360px;
       }
 
       .toast.show {
@@ -738,23 +497,14 @@
           padding: 0 16px;
         }
         .main {
-          padding: 24px 16px 48px;
+          padding: 20px 16px;
         }
         th,
         td {
-          padding: 11px 14px;
+          padding: 10px 14px;
         }
         .stats {
           grid-template-columns: 1fr 1fr;
-        }
-        .section-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-        }
-        .section-header .btn-primary {
-          width: 100%;
-          justify-content: center;
         }
       }
     </style>
@@ -762,21 +512,9 @@
   <body>
     <div class="topbar">
       <div class="topbar-left">
-        <div class="topbar-mark">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M4 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8c-1.13 0-2.2-.23-3.18-.66L4 20l1.02-4.4C4.38 14.5 4 13.29 4 12Z"
-              stroke="white"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-        <div class="topbar-titles">
-          <div class="topbar-title">Chati</div>
-          <span class="topbar-badge"><span class="status-dot"></span>Painel Superadmin</span>
-        </div>
+        <div class="topbar-icon">💬</div>
+        <div class="topbar-title">Chati</div>
+        <span class="topbar-badge">PAINEL SUPERADMIN</span>
       </div>
       <div class="topbar-right">
         <button class="btn btn-ghost" onclick="logout()">Sair</button>
@@ -785,86 +523,32 @@
 
     <div class="main">
       <div class="stats">
-        <div class="stat-card total">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M4 21V6a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v15M13 21V9a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v12M4 21h16M7 9h1M7 13h1M7 17h1M16 12h1M16 16h1"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div class="stat-label">Total de empresas</div>
-            <div class="stat-value" id="stat-total">—</div>
-          </div>
+        <div class="stat-card">
+          <div class="stat-label">Total de empresas</div>
+          <div class="stat-value" id="stat-total">—</div>
         </div>
-        <div class="stat-card active">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <div>
-            <div class="stat-label">Ativas</div>
-            <div class="stat-value green" id="stat-active">—</div>
-          </div>
+        <div class="stat-card">
+          <div class="stat-label">Ativas</div>
+          <div class="stat-value green" id="stat-active">—</div>
         </div>
-        <div class="stat-card inactive">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div class="stat-label">Inativas</div>
-            <div class="stat-value red" id="stat-inactive">—</div>
-          </div>
+        <div class="stat-card">
+          <div class="stat-label">Inativas</div>
+          <div class="stat-value red" id="stat-inactive">—</div>
         </div>
-        <div class="stat-card expiring">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 7v5l3 3M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9Z"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div class="stat-label">Expiram em 7 dias</div>
-            <div class="stat-value yellow" id="stat-expiring">—</div>
-          </div>
+        <div class="stat-card">
+          <div class="stat-label">Expiram em 7 dias</div>
+          <div class="stat-value yellow" id="stat-expiring">—</div>
         </div>
       </div>
 
       <div class="section-header">
-        <div class="section-title-wrap">
-          <div class="section-title">Empresas</div>
-          <div class="section-sub">Gerencie as empresas clientes do Chati</div>
-        </div>
+        <div class="section-title">Empresas</div>
         <button class="btn btn-primary" onclick="openModal()">
-          <svg viewBox="0 0 24 24" fill="none" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-          </svg>
-          Nova empresa
+          + Nova empresa
         </button>
       </div>
 
       <div class="search-bar">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="m21 21-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
-            stroke="currentColor"
-            stroke-width="1.9"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
         <input
           type="text"
           id="search-input"
@@ -874,25 +558,23 @@
       </div>
 
       <div class="table-wrap">
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Plano</th>
-                <th>Status</th>
-                <th>Expira em</th>
-                <th>Usuários</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="companies-tbody">
-              <tr>
-                <td colspan="6" class="empty">Carregando...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>Plano</th>
+              <th>Status</th>
+              <th>Expira em</th>
+              <th>Usuários</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="companies-tbody">
+            <tr>
+              <td colspan="6" class="empty">Carregando...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -918,7 +600,14 @@
             placeholder="Mínimo de 6 caracteres"
             autocomplete="new-password"
           />
-          <div class="field-hint">
+          <div
+            style="
+              font-size: 11px;
+              color: var(--text3);
+              margin-top: 6px;
+              line-height: 1.45;
+            "
+          >
             Temporariamente, o administrador entrará com esta senha sem receber convite por e-mail.
           </div>
         </div>
@@ -969,7 +658,7 @@
 
         <div class="details-section">
           <h3>Informações Gerais</h3>
-          <p><strong>ID:</strong> <span id="details-id" style="font-family: var(--mono); font-size: 12.5px"></span></p>
+          <p><strong>ID:</strong> <span id="details-id"></span></p>
           <p>
             <strong>E-mail do Admin:</strong> <span id="details-email"></span>
           </p>
@@ -1065,17 +754,20 @@
     </div>
     <!-- FIM DA MODAL DE EDIÇÃO DE USUÁRIO -->
 
+    <!-- TELA DE CONFIRMAÇÃO RESET SENHA-->
+
     <!-- Modal de confirmação para resetar senha -->
     <div class="modal-overlay" id="reset-password-modal">
       <div class="modal" style="max-width: 420px">
         <div class="modal-title">Resetar senha</div>
 
-        <p class="modal-note">
+        <p style="font-size: 14px; color: var(--text2); line-height: 1.6">
           Tem certeza que deseja resetar a senha do usuário
-          <strong id="reset-password-email" style="color: var(--ink)"></strong>?
+          <strong id="reset-password-email" style="color: var(--text)"></strong
+          >?
         </p>
 
-        <p class="modal-sub">
+        <p style="font-size: 13px; color: var(--text3); margin-top: 10px">
           Um e-mail de recuperação será enviado para o usuário.
         </p>
 
@@ -1090,6 +782,7 @@
         </div>
       </div>
     </div>
+
     <!-- fim TELA DE CONFIRMAÇÃO RESET SENHA-->
 
     <!-- Modal de confirmação para excluir empresa -->
@@ -1097,12 +790,12 @@
       <div class="modal" style="max-width: 440px">
         <div class="modal-title">Excluir empresa</div>
 
-        <p class="modal-note">
+        <p style="font-size: 14px; color: var(--text2); line-height: 1.6">
           Tem certeza que deseja excluir
-          <strong id="delete-company-name" style="color: var(--ink)"></strong>?
+          <strong id="delete-company-name" style="color: var(--text)"></strong>?
         </p>
 
-        <p class="modal-warn">
+        <p style="font-size: 13px; color: var(--red); margin-top: 10px; line-height: 1.5">
           Esta ação é permanente e também removerá os usuários vinculados à empresa.
         </p>
 
@@ -1141,31 +834,6 @@ let currentCompanyIdForUsers = null;
 let deleteCompanyId = null;
 let deleteCompanyName = null;
 let companiesCache = [];
-
-// Paleta de cores para os avatares das empresas (escolhida a partir do nome, de forma determinística)
-const AVATAR_COLORS = [
-  "#5B52E5",
-  "#0EA5A5",
-  "#D97706",
-  "#DB2777",
-  "#2563EB",
-  "#16A34A",
-  "#7C3AED",
-  "#C2410C",
-];
-
-function avatarColor(name) {
-  const str = name || "?";
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
-function avatarInitial(name) {
-  return (name || "?").trim().charAt(0).toUpperCase() || "?";
-}
 
 function clearSuperadminSession() {
 
@@ -1608,23 +1276,18 @@ function clearSuperadminSession() {
             return `
       <tr>
         <td>
-          <div class="company-cell">
-            <div class="company-avatar" style="background:${avatarColor(c.name)}">${avatarInitial(c.name)}</div>
-            <div>
-              <div class="company-name">${c.name}</div>
-              <div class="company-email">${c.owner_email || "—"}</div>
-            </div>
-          </div>
+          <div class="company-name">${c.name}</div>
+          <div class="company-email">${c.owner_email || "—"}</div>
         </td>
         <td>${planBadge}</td>
         <td>${statusBadge}</td>
-        <td style="font-family: var(--mono); font-size: 12.5px">${expires}</td>
-        <td style="font-family: var(--mono); font-size: 12.5px">${count} / ${max}</td>
+        <td>${expires}</td>
+        <td>${count} / ${max}</td>
         <td>
           <div class="actions">
             <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
-            <button class="btn-sm" onclick="clearPendingQuestions('${c.id}', ${JSON.stringify(c.name)})">Limpar pendentes</button>
+            <button class="btn-sm" onclick="clearPendingQuestions('${c.id}')">Limpar pendentes</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
             <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}')">Excluir</button>
           </div>
@@ -1912,8 +1575,14 @@ function clearSuperadminSession() {
 
       window.clearPendingQuestions = async function (
         companyId,
-        companyName,
       ) {
+        const company = companiesCache.find(
+          (item) => String(item.id) === String(companyId),
+        );
+
+        const companyName =
+          company?.name || "esta empresa";
+
         const confirmed = window.confirm(
           `Ignorar todas as perguntas pendentes atuais de "${companyName}"?\n\n` +
           "As perguntas NÃO serão apagadas nem respondidas no Mercado Livre. " +
@@ -1924,70 +1593,34 @@ function clearSuperadminSession() {
           return;
         }
 
-        const sessionRaw =
-          localStorage.getItem("chati_session") ||
-          sessionStorage.getItem("chati_session");
+        const cutoff = new Date().toISOString();
 
-        if (!sessionRaw) {
-          showToast("❌ Sessão não encontrada");
-          return;
-        }
+        const { error } = await supabase
+          .from("companies")
+          .update({
+            questions_since: cutoff,
+          })
+          .eq("id", companyId);
 
-        let session;
-
-        try {
-          session = JSON.parse(sessionRaw);
-        } catch (error) {
-          showToast("❌ Sessão inválida");
-          return;
-        }
-
-        if (!session?.access_token) {
-          showToast("❌ Token de acesso não encontrado");
-          return;
-        }
-
-        try {
-          const response = await fetch(
-            "/api/app?action=clear-pending-questions",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.access_token}`,
-              },
-              body: JSON.stringify({
-                company_id: companyId,
-              }),
-            },
-          );
-
-          const result = await response.json();
-
-          if (!response.ok || !result.success) {
-            throw new Error(
-              result.error ||
-                "Não foi possível limpar as perguntas pendentes",
-            );
-          }
-
-          showToast(
-            "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
-          );
-
-          await load();
-        } catch (error) {
+        if (error) {
           console.error(
-            "Erro ao limpar perguntas pendentes:",
+            "Erro ao definir corte das perguntas:",
             error,
           );
 
           showToast(
-            "❌ " +
-              (error.message ||
-                "Não foi possível limpar as perguntas pendentes"),
+            "❌ Erro ao limpar pendentes: " +
+              error.message,
           );
+
+          return;
         }
+
+        showToast(
+          "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
+        );
+
+        await load();
       };
 
       window.toggleStatus = async function (id, currentStatus) {
