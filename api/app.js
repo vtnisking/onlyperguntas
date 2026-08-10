@@ -1366,6 +1366,137 @@ if (action === "create-user") {
 }
 
     // ==========================================
+    // ATUALIZAR USUÁRIO
+    // ==========================================
+
+    if (action === "update-user") {
+      if (req.method !== "POST") {
+        return res.status(405).json({
+          success: false,
+          error: "Método não permitido",
+        });
+      }
+
+      const {
+        user_id,
+        name,
+        role,
+        status,
+      } = req.body || {};
+
+      if (!company_id) {
+        return res.status(400).json({
+          success: false,
+          error: "company_id obrigatório",
+        });
+      }
+
+      if (!user_id) {
+        return res.status(400).json({
+          success: false,
+          error: "user_id obrigatório",
+        });
+      }
+
+      if (!name?.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: "Nome obrigatório",
+        });
+      }
+
+      const allowedRoles = [
+        "employee",
+        "admin",
+      ];
+
+      const allowedStatuses = [
+        "active",
+        "inactive",
+      ];
+
+      if (!allowedRoles.includes(role)) {
+        return res.status(400).json({
+          success: false,
+          error: "Permissão inválida",
+        });
+      }
+
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          error: "Status inválido",
+        });
+      }
+
+      const {
+        data: existingUser,
+        error: existingUserError,
+      } = await supabase
+        .from("users_app")
+        .select(
+          "id, company_id, role, email",
+        )
+        .eq("id", user_id)
+        .eq("company_id", company_id)
+        .maybeSingle();
+
+      if (existingUserError) {
+        return res.status(500).json({
+          success: false,
+          error: existingUserError.message,
+        });
+      }
+
+      if (!existingUser) {
+        return res.status(404).json({
+          success: false,
+          error:
+            "Usuário não encontrado nesta empresa",
+        });
+      }
+
+      // Não permite alterar superadmin por esta tela.
+      if (existingUser.role === "superadmin") {
+        return res.status(403).json({
+          success: false,
+          error:
+            "O superadmin não pode ser alterado por esta tela",
+        });
+      }
+
+      const {
+        data: updatedUser,
+        error: updateError,
+      } = await supabase
+        .from("users_app")
+        .update({
+          name: name.trim(),
+          role,
+          status,
+        })
+        .eq("id", user_id)
+        .eq("company_id", company_id)
+        .select(
+          "id, name, email, role, status, company_id",
+        )
+        .single();
+
+      if (updateError) {
+        return res.status(500).json({
+          success: false,
+          error: updateError.message,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        user: updatedUser,
+      });
+    }
+
+
+    // ==========================================
     // DELETAR USUÁRIO
     // ==========================================
 

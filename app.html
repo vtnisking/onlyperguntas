@@ -14779,13 +14779,246 @@ function editDesktopUser(userId) {
     return;
   }
 
-  alert(
-    `A edição de ${user.name || user.email} será adicionada na próxima etapa.`,
-  );
+  const panel = document.getElementById("dt-users");
+
+  if (!panel) return;
+
+  const isAdmin =
+    user.role === "admin" ||
+    user.role === "owner";
+
+  panel.innerHTML = `
+    <div class="questions-list">
+      <div class="section-title">
+        ✎ Editar usuário
+      </div>
+
+      <div
+        class="settings-card"
+        style="max-width: 520px; margin-top: 18px"
+      >
+        <div class="settings-card-title">
+          Dados do usuário
+        </div>
+
+        <div style="display:grid; gap:14px">
+          <div>
+            <label
+              for="editUserName"
+              style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+              "
+            >
+              Nome
+            </label>
+
+            <input
+              id="editUserName"
+              type="text"
+              value="${escapeIntegrationHtml(user.name || "")}"
+              placeholder="Nome do usuário"
+              style="width:100%"
+            >
+          </div>
+
+          <div>
+            <label
+              for="editUserEmail"
+              style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+              "
+            >
+              E-mail
+            </label>
+
+            <input
+              id="editUserEmail"
+              type="email"
+              value="${escapeIntegrationHtml(user.email || "")}"
+              disabled
+              style="width:100%; opacity:.7; cursor:not-allowed"
+            >
+          </div>
+
+          <div>
+            <label
+              for="editUserRole"
+              style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+              "
+            >
+              Permissão
+            </label>
+
+            <select
+              id="editUserRole"
+              style="width:100%"
+            >
+              <option
+                value="employee"
+                ${!isAdmin ? "selected" : ""}
+              >
+                Funcionário
+              </option>
+
+              <option
+                value="admin"
+                ${isAdmin ? "selected" : ""}
+              >
+                Administrador
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              for="editUserStatus"
+              style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+              "
+            >
+              Status
+            </label>
+
+            <select
+              id="editUserStatus"
+              style="width:100%"
+            >
+              <option
+                value="active"
+                ${user.status !== "inactive" ? "selected" : ""}
+              >
+                Ativo
+              </option>
+
+              <option
+                value="inactive"
+                ${user.status === "inactive" ? "selected" : ""}
+              >
+                Inativo
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          style="
+            display:flex;
+            gap:10px;
+            justify-content:flex-end;
+            margin-top:20px;
+          "
+        >
+          <button
+            class="send-btn"
+            style="background:#fff;color:var(--text);border:1px solid var(--border2)"
+            onclick="showDesktopUsersPage()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            id="saveDesktopUserBtn"
+            class="send-btn"
+            onclick="saveDesktopUser('${user.id}')"
+          >
+            Salvar alterações
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveDesktopUser(userId) {
+  const name =
+    document
+      .getElementById("editUserName")
+      ?.value.trim() || "";
+
+  const role =
+    document.getElementById("editUserRole")?.value ||
+    "employee";
+
+  const status =
+    document.getElementById("editUserStatus")?.value ||
+    "active";
+
+  if (!name) {
+    alert("Informe o nome do usuário.");
+    return;
+  }
+
+  const button =
+    document.getElementById("saveDesktopUserBtn");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Salvando...";
+  }
+
+  try {
+    const response = await fetch(
+      `/api/app?action=update-user&company_id=${encodeURIComponent(
+        loggedUser.company_id,
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          name,
+          role,
+          status,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error ||
+          "Não foi possível atualizar o usuário.",
+      );
+    }
+
+    await showDesktopUsersPage();
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar usuário:",
+      error,
+    );
+
+    alert(
+      error.message ||
+        "Erro ao atualizar usuário.",
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Salvar alterações";
+    }
+  }
 }
 
 window.renderDesktopUsers = renderDesktopUsers;
 window.editDesktopUser = editDesktopUser;
+window.saveDesktopUser = saveDesktopUser;
 
       function openDesktopCreateUser() {
 
