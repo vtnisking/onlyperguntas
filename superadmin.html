@@ -1587,34 +1587,70 @@ function clearSuperadminSession() {
           return;
         }
 
-        const cutoff = new Date().toISOString();
+        const sessionRaw =
+          localStorage.getItem("chati_session") ||
+          sessionStorage.getItem("chati_session");
 
-        const { error } = await supabase
-          .from("companies")
-          .update({
-            questions_since: cutoff,
-          })
-          .eq("id", companyId);
+        if (!sessionRaw) {
+          showToast("❌ Sessão não encontrada");
+          return;
+        }
 
-        if (error) {
+        let session;
+
+        try {
+          session = JSON.parse(sessionRaw);
+        } catch (error) {
+          showToast("❌ Sessão inválida");
+          return;
+        }
+
+        if (!session?.access_token) {
+          showToast("❌ Token de acesso não encontrado");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "/api/app?action=clear-pending-questions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({
+                company_id: companyId,
+              }),
+            },
+          );
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(
+              result.error ||
+                "Não foi possível limpar as perguntas pendentes",
+            );
+          }
+
+          showToast(
+            "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
+          );
+
+          await load();
+        } catch (error) {
           console.error(
-            "Erro ao definir corte das perguntas:",
+            "Erro ao limpar perguntas pendentes:",
             error,
           );
 
           showToast(
-            "❌ Erro ao limpar pendentes: " +
-              error.message,
+            "❌ " +
+              (error.message ||
+                "Não foi possível limpar as perguntas pendentes"),
           );
-
-          return;
         }
-
-        showToast(
-          "✅ Pendentes atuais ignoradas. A empresa verá apenas novas perguntas.",
-        );
-
-        await load();
       };
 
       window.toggleStatus = async function (id, currentStatus) {

@@ -624,6 +624,125 @@ if (action === "create-company") {
 
 
 // ==========================================
+// IGNORAR PERGUNTAS PENDENTES ATUAIS
+// ==========================================
+
+if (action === "clear-pending-questions") {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  try {
+    const accessToken = getBearerToken(req);
+
+    const {
+      data: authData,
+      error: authError,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (authError || !authData?.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Sessão inválida ou expirada",
+      });
+    }
+
+    const {
+      data: requester,
+      error: requesterError,
+    } = await supabase
+      .from("users_app")
+      .select("id, role, status")
+      .eq("auth_id", authData.user.id)
+      .maybeSingle();
+
+    if (
+      requesterError ||
+      !requester ||
+      requester.role !== "superadmin" ||
+      requester.status !== "active"
+    ) {
+      return res.status(403).json({
+        success: false,
+        error:
+          "Apenas o superadmin pode limpar perguntas pendentes",
+      });
+    }
+
+    const { company_id: companyId } =
+      req.body || {};
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: "company_id obrigatório",
+      });
+    }
+
+    const {
+      data: company,
+      error: companyError,
+    } = await supabase
+      .from("companies")
+      .select("id, name")
+      .eq("id", companyId)
+      .maybeSingle();
+
+    if (companyError) {
+      throw companyError;
+    }
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        error: "Empresa não encontrada",
+      });
+    }
+
+    const cutoff = new Date().toISOString();
+
+    const {
+      data: updatedCompany,
+      error: updateError,
+    } = await supabase
+      .from("companies")
+      .update({
+        questions_since: cutoff,
+      })
+      .eq("id", companyId)
+      .select("id, name, questions_since")
+      .single();
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Perguntas pendentes atuais ignoradas com sucesso",
+      company: updatedCompany,
+    });
+  } catch (error) {
+    console.error(
+      "Erro ao limpar perguntas pendentes:",
+      error,
+    );
+
+    return res.status(500).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro ao limpar perguntas pendentes",
+    });
+  }
+}
+
+
+// ==========================================
 // EXCLUIR EMPRESA
 // ==========================================
 
