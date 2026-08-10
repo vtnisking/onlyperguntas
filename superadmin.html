@@ -759,14 +759,19 @@
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-      const supabase = createClient(
-        "https://vspcitxnssbsztqnfhmj.supabase.co",
-        "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
-      );
+const supabase = createClient(
+  "https://vspcitxnssbsztqnfhmj.supabase.co",
+  "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
+);
 
-      let me = {};
+let me = {};
 
-      function clearSuperadminSession() {
+let editingId = null;
+let editingUserId = null;
+let currentCompanyIdForUsers = null;
+
+function clearSuperadminSession() {
+
   localStorage.removeItem("chati_session");
   localStorage.removeItem("chati_user");
 
@@ -969,6 +974,8 @@
         document.getElementById("user-modal").classList.remove("open");
         editingUserId = null;
       };
+
+      window.load = load;
 
       function renderUsersTable(users) {
         const tbody = document.getElementById("details-users-tbody");
