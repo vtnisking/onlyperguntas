@@ -365,6 +365,17 @@
         background: rgba(220, 38, 38, 0.08);
       }
 
+      .btn-sm.danger {
+        color: #fff;
+        background: var(--red);
+        border-color: var(--red);
+      }
+
+      .btn-sm.danger:hover {
+        background: #b91c1c;
+        border-color: #b91c1c;
+      }
+
       .company-name {
         font-weight: 600;
       }
@@ -754,6 +765,37 @@
 
     <!-- fim TELA DE CONFIRMAÇÃO RESET SENHA-->
 
+    <!-- Modal de confirmação para excluir empresa -->
+    <div class="modal-overlay" id="delete-company-modal">
+      <div class="modal" style="max-width: 440px">
+        <div class="modal-title">Excluir empresa</div>
+
+        <p style="font-size: 14px; color: var(--text2); line-height: 1.6">
+          Tem certeza que deseja excluir
+          <strong id="delete-company-name" style="color: var(--text)"></strong>?
+        </p>
+
+        <p style="font-size: 13px; color: var(--red); margin-top: 10px; line-height: 1.5">
+          Esta ação é permanente e também removerá os usuários vinculados à empresa.
+        </p>
+
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeDeleteCompanyModal()">
+            Cancelar
+          </button>
+
+          <button
+            class="btn"
+            id="delete-company-confirm-btn"
+            style="background: var(--red); color: white"
+            onclick="confirmDeleteCompany()"
+          >
+            Excluir empresa
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script type="module">
@@ -769,6 +811,8 @@ let me = {};
 let editingId = null;
 let editingUserId = null;
 let currentCompanyIdForUsers = null;
+let deleteCompanyId = null;
+let deleteCompanyName = null;
 
 function clearSuperadminSession() {
 
@@ -1221,6 +1265,7 @@ function clearSuperadminSession() {
             <button class="btn-sm" onclick="viewCompanyDetails('${c.id}')">Detalhes</button>
             <button class="btn-sm" onclick="editCompany('${c.id}')">Editar</button>
             <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${c.id}', '${c.status}')">${toggleLabel}</button>
+            <button class="btn-sm danger" onclick="openDeleteCompanyModal('${c.id}', ${JSON.stringify(c.name)})">Excluir</button>
           </div>
         </td>
       </tr>
@@ -1380,6 +1425,105 @@ function clearSuperadminSession() {
         load();
       };
 
+      window.openDeleteCompanyModal = function (id, name) {
+        deleteCompanyId = id;
+        deleteCompanyName = name || "esta empresa";
+
+        document.getElementById("delete-company-name").textContent =
+          deleteCompanyName;
+
+        document
+          .getElementById("delete-company-modal")
+          .classList.add("open");
+      };
+
+      window.closeDeleteCompanyModal = function () {
+        document
+          .getElementById("delete-company-modal")
+          .classList.remove("open");
+
+        deleteCompanyId = null;
+        deleteCompanyName = null;
+      };
+
+      window.confirmDeleteCompany = async function () {
+        if (!deleteCompanyId) {
+          showToast("❌ Empresa não selecionada");
+          return;
+        }
+
+        const sessionRaw =
+          localStorage.getItem("chati_session") ||
+          sessionStorage.getItem("chati_session");
+
+        if (!sessionRaw) {
+          showToast("❌ Sessão não encontrada");
+          return;
+        }
+
+        let session;
+
+        try {
+          session = JSON.parse(sessionRaw);
+        } catch (error) {
+          showToast("❌ Sessão inválida");
+          return;
+        }
+
+        if (!session?.access_token) {
+          showToast("❌ Token de acesso não encontrado");
+          return;
+        }
+
+        const btn = document.getElementById(
+          "delete-company-confirm-btn",
+        );
+
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Excluindo...";
+
+        try {
+          const response = await fetch(
+            "/api/app?action=delete-company",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({
+                company_id: deleteCompanyId,
+              }),
+            },
+          );
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              result.error ||
+                "Não foi possível excluir a empresa",
+            );
+          }
+
+          closeDeleteCompanyModal();
+          showToast("✅ Empresa excluída com sucesso");
+          await load();
+        } catch (error) {
+          console.error("Erro ao excluir empresa:", error);
+
+          showToast(
+            "❌ " +
+              (error.message ||
+                "Não foi possível excluir a empresa"),
+          );
+        } finally {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      };
+
       window.toggleStatus = async function (id, currentStatus) {
         const newStatus = currentStatus === "active" ? "inactive" : "active";
         const { error } = await supabase
@@ -1445,6 +1589,12 @@ window.logout = async function () {
         .getElementById("reset-password-modal")
         .addEventListener("click", function (e) {
           if (e.target === this) closeResetPasswordModal();
+        });
+
+      document
+        .getElementById("delete-company-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeDeleteCompanyModal();
         });
 
       async function initializeSuperadmin() {
