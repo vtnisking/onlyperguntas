@@ -9994,9 +9994,96 @@ function updateLoggedUserInterface() {
   );
 }
 
+async function refreshLoggedUserFromServer() {
+  try {
+    const session = getChatiSession();
+
+    if (!session?.access_token) {
+      updateLoggedUserInterface();
+      return;
+    }
+
+    const response = await fetch(
+      "/api/app?action=me",
+      {
+        method: "GET",
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const data = await response
+      .json()
+      .catch(() => ({}));
+
+    if (
+      !response.ok ||
+      !data.success ||
+      !data.user
+    ) {
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
+        console.warn(
+          "Não foi possível atualizar o usuário logado:",
+          data.error,
+        );
+      }
+
+      updateLoggedUserInterface();
+      return;
+    }
+
+    loggedUser = {
+      ...loggedUser,
+      ...data.user,
+    };
+
+    localStorage.setItem(
+      "chati_user",
+      JSON.stringify(loggedUser),
+    );
+
+    if (
+      sessionStorage.getItem("chati_user")
+    ) {
+      sessionStorage.setItem(
+        "chati_user",
+        JSON.stringify(loggedUser),
+      );
+    }
+
+    updateLoggedUserInterface();
+
+    if (
+      typeof updateDashboardHeader ===
+      "function"
+    ) {
+      updateDashboardHeader();
+    }
+
+    if (
+      typeof updateMobileSidemenuUser ===
+      "function"
+    ) {
+      updateMobileSidemenuUser();
+    }
+  } catch (error) {
+    console.error(
+      "Erro ao sincronizar usuário logado:",
+      error,
+    );
+
+    updateLoggedUserInterface();
+  }
+}
+
 document.addEventListener(
   "DOMContentLoaded",
-  updateLoggedUserInterface,
+  refreshLoggedUserFromServer,
 );
 
 // Variáveis globais

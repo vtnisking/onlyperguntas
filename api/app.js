@@ -98,7 +98,7 @@ console.log("userData:", userData);
     error: appUserError,
   } = await supabase
     .from("users_app")
-    .select("id, company_id, auth_id, role")
+    .select("id, company_id, auth_id, name, email, role, status")
     .eq("auth_id", authUser.id)
     .single();
 
@@ -146,6 +146,70 @@ if (!action) {
     error: "action obrigatório",
   });
 }
+
+// ==========================================
+// USUÁRIO LOGADO / PERFIL ATUAL
+// ==========================================
+
+if (action === "me") {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
+
+    return res.status(405).json({
+      success: false,
+      error: "Método não permitido",
+    });
+  }
+
+  try {
+    const {
+      appUser,
+    } = await getAuthenticatedCompany(
+      req,
+      supabase,
+    );
+
+    if (!appUser) {
+      return res.status(404).json({
+        success: false,
+        error: "Perfil do usuário não encontrado",
+      });
+    }
+
+    if (appUser.status !== "active") {
+      return res.status(403).json({
+        success: false,
+        error: "Usuário inativo",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: appUser.id,
+        auth_id: appUser.auth_id,
+        company_id: appUser.company_id,
+        name: appUser.name,
+        email: appUser.email,
+        role: appUser.role,
+        status: appUser.status,
+      },
+    });
+  } catch (error) {
+    const statusCode =
+      error instanceof AuthError
+        ? error.statusCode
+        : 500;
+
+    return res.status(statusCode).json({
+      success: false,
+      error:
+        error?.message ||
+        "Erro ao carregar usuário logado",
+    });
+  }
+}
+
 
 // ==========================================
 // INTEGRAÇÃO MERCADO LIVRE
