@@ -8601,10 +8601,12 @@ body.ps-detail-open {
           Carregando...
         </div>
 
-        <div class="sidebar-user-role">
-          Administrador
-        </div>
-      </div>
+<div
+  class="sidebar-user-role"
+  id="desktopUserRole"
+>
+  Carregando...
+</div>
     </div>
 
     <button
@@ -9972,11 +9974,21 @@ function updateLoggedUserInterface() {
     .slice(0, 2)
     .toUpperCase();
 
+  const userRole =
+    loggedUser.role === "owner" ||
+    loggedUser.role === "admin" ||
+    loggedUser.role === "superadmin"
+      ? "Administrador"
+      : "Funcionário";
+
   const elements = {
     desktopUserName: displayName,
     desktopUserAvatar: initials,
+    desktopUserRole: userRole,
+
     dSettingsName: displayName,
     dSettingsEmail: loggedUser.email || "—",
+
     mobileSidemenuName: displayName,
     mobileSidemenuEmail: loggedUser.email || "—",
     mobileSidemenuAvatar: initials,
@@ -9993,6 +10005,7 @@ function updateLoggedUserInterface() {
     },
   );
 }
+
 
 async function refreshLoggedUserFromServer() {
   try {
