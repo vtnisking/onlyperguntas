@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     const supabase = createClient(
       process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY,
+      process.env.SUPABASE_PUBLISHABLE_KEY,
     );
 
     const { error } = await supabase.from("push_subscriptions").upsert(
