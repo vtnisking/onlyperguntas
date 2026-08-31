@@ -399,7 +399,7 @@ export default async function handler(req, res) {
       getRequiredEnvironment("SUPABASE_URL");
 
     const serviceRoleKey =
-      getRequiredEnvironment("SUPABASE_SERVICE_ROLE_KEY");
+      getRequiredEnvironment("CHATI_SUPABASE_SECRET_KEY");
 
     const supabase = createClient(
       supabaseUrl,

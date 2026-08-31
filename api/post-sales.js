@@ -891,7 +891,7 @@ export default async function handler(req, res) {
 
     const { action = "overview" } = req.query;
     const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseServiceRoleKey = process.env.CHATI_SUPABASE_SECRET_KEY;
 
     if (!supabaseUrl || !supabaseServiceRoleKey) {
       return res.status(500).json({
