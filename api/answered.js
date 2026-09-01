@@ -1,5 +1,9 @@
 import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
+import {
+  AuthError,
+  getAuthenticatedContext,
+} from "../lib/auth.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -134,19 +138,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // ==========================================
-    // EMPRESA LOGADA
-    // ==========================================
-
-    const companyId = req.query.company_id;
-
-    if (!companyId) {
-      return res.status(400).json({
-        success: false,
-        error: "company_id obrigatório",
-      });
-    }
-
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.CHATI_SUPABASE_SECRET_KEY,
@@ -157,6 +148,9 @@ export default async function handler(req, res) {
         },
       },
     );
+
+    const { companyId } =
+      await getAuthenticatedContext(req, supabase);
 
     // ==========================================
     // BUSCAR SOMENTE LOJAS DA EMPRESA
@@ -414,6 +408,13 @@ export default async function handler(req, res) {
       "Erro em /api/answered:",
       error.response?.data || error,
     );
+
+    if (error instanceof AuthError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: error.message,
+      });
+    }
 
     return res.status(500).json({
       success: false,
