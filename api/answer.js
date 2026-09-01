@@ -1,5 +1,9 @@
 import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
+import {
+  AuthError,
+  getAuthenticatedContext,
+} from "../lib/auth.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -35,7 +39,11 @@ async function refreshStoreToken(store, supabase) {
   };
 }
 
-async function sendMercadoLivreAnswer(store, questionId, text) {
+async function sendMercadoLivreAnswer(
+  store,
+  questionId,
+  text,
+) {
   return axios.post(
     "https://api.mercadolibre.com/answers",
     {
@@ -51,7 +59,12 @@ async function sendMercadoLivreAnswer(store, questionId, text) {
   );
 }
 
-async function saveAnswerLog(supabase, store, body, text) {
+async function saveAnswerLog(
+  supabase,
+  store,
+  body,
+  text,
+) {
   const { error: logError } = await supabase
     .from("answer_logs")
     .insert({
@@ -66,7 +79,10 @@ async function saveAnswerLog(supabase, store, body, text) {
     });
 
   if (logError) {
-    console.error("Erro ao salvar answer_log:", logError);
+    console.error(
+      "Erro ao salvar answer_log:",
+      logError,
+    );
 
     throw new Error(
       `A resposta foi enviada, mas o histórico não foi salvo: ${logError.message}`,
@@ -87,9 +103,6 @@ export default async function handler(req, res) {
       question_id,
       text,
       store_id,
-      user_id,
-      user_name,
-      user_email,
     } = req.body || {};
 
     if (!question_id || !text || !store_id) {
@@ -110,10 +123,22 @@ export default async function handler(req, res) {
       },
     );
 
-    const { data: store, error: storeError } = await supabase
+    const {
+      profile,
+      companyId,
+    } = await getAuthenticatedContext(
+      req,
+      supabase,
+    );
+
+    const {
+      data: store,
+      error: storeError,
+    } = await supabase
       .from("stores")
       .select("*")
       .eq("id", store_id)
+      .eq("company_id", companyId)
       .single();
 
     if (storeError || !store) {
@@ -128,9 +153,9 @@ export default async function handler(req, res) {
       question_id,
       text,
       store_id,
-      user_id: user_id || null,
-      user_name: user_name || null,
-      user_email: user_email || null,
+      user_id: profile.id,
+      user_name: profile.name,
+      user_email: profile.email,
     };
 
     let activeStore = store;
@@ -143,19 +168,25 @@ export default async function handler(req, res) {
         text,
       );
     } catch (tokenError) {
-      const errorData = tokenError.response?.data;
-      const status = tokenError.response?.status;
+      const errorData =
+        tokenError.response?.data;
 
-const tokenExpired =
-  errorData?.message === "invalid_token" ||
-  errorData?.error === "invalid_token" ||
-  status === 401;
+      const status =
+        tokenError.response?.status;
+
+      const tokenExpired =
+        errorData?.message === "invalid_token" ||
+        errorData?.error === "invalid_token" ||
+        status === 401;
 
       if (!tokenExpired) {
         throw tokenError;
       }
 
-      activeStore = await refreshStoreToken(store, supabase);
+      activeStore = await refreshStoreToken(
+        store,
+        supabase,
+      );
 
       response = await sendMercadoLivreAnswer(
         activeStore,
@@ -175,103 +206,79 @@ const tokenExpired =
       success: true,
       data: response.data,
     });
-} catch (error) {
-  const errorData = error.response?.data;
-  const status = error.response?.status;
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: error.message,
+      });
+    }
 
-  console.error(
-    "Erro em /api/answer:",
-    errorData || error,
-  );
+    const errorData = error.response?.data;
+    const status = error.response?.status;
 
-  const rawError = JSON.stringify(
-    errorData || error.message || ""
-  ).toLowerCase();
+    console.error(
+      "Erro em /api/answer:",
+      errorData || error,
+    );
 
-  // Produto vendido, anúncio encerrado, pausado ou inativo
-  if (
-    rawError.includes("item must be active") ||
-    rawError.includes("item is not active")
-  ) {
-    return res.status(409).json({
+    const rawError = JSON.stringify(
+      errorData || error.message || "",
+    ).toLowerCase();
+
+    // Produto vendido, anúncio encerrado,
+    // pausado ou inativo
+    if (
+      rawError.includes("item must be active") ||
+      rawError.includes("item is not active")
+    ) {
+      return res.status(409).json({
+        success: false,
+        code: "QUESTION_UNAVAILABLE",
+        reason: "ITEM_NOT_ACTIVE",
+        message:
+          "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.",
+      });
+    }
+
+    // Pergunta excluída / inexistente
+    if (
+      status === 404 ||
+      rawError.includes("question not found") ||
+      rawError.includes(
+        "question does not exist",
+      )
+    ) {
+      return res.status(404).json({
+        success: false,
+        code: "QUESTION_UNAVAILABLE",
+        reason: "QUESTION_NOT_FOUND",
+        message:
+          "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.",
+      });
+    }
+
+    // Já respondida / não está pendente
+    if (
+      rawError.includes(
+        "not_unanswered_question",
+      )
+    ) {
+      return res.status(409).json({
+        success: false,
+        code: "QUESTION_ALREADY_ANSWERED",
+        message:
+          "Essa pergunta já foi respondida ou não está mais pendente.",
+      });
+    }
+
+    return res.status(status || 500).json({
       success: false,
-      code: "QUESTION_UNAVAILABLE",
-      reason: "ITEM_NOT_ACTIVE",
       message:
-        "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.",
+        errorData?.message ||
+        errorData?.error ||
+        error.message ||
+        "Não foi possível responder.",
     });
   }
-
-  // Pergunta excluída / inexistente
-  if (
-    status === 404 ||
-    rawError.includes("question not found") ||
-    rawError.includes("question does not exist")
-  ) {
-    return res.status(404).json({
-      success: false,
-      code: "QUESTION_UNAVAILABLE",
-      reason: "QUESTION_NOT_FOUND",
-      message:
-        "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.",
-    });
-  }
-
-  // Já respondida / não está pendente
-  if (rawError.includes("not_unanswered_question")) {
-    return res.status(409).json({
-      success: false,
-      code: "QUESTION_ALREADY_ANSWERED",
-      message:
-        "Essa pergunta já foi respondida ou não está mais pendente.",
-    });
-  }
-
-  return res.status(status || 500).json({
-    success: false,
-    message:
-      errorData?.message ||
-      errorData?.error ||
-      error.message ||
-      "Não foi possível responder.",
-  });
-
-
-  // Anúncio encerrado, vendido ou inativo
-  if (
-    mlMessage.includes("item must be active") ||
-    mlMessage.includes("item is not active")
-  ) {
-    return res.status(409).json({
-      success: false,
-      code: "QUESTION_UNAVAILABLE",
-      reason: "ITEM_NOT_ACTIVE",
-      message:
-        "O produto foi vendido ou o anúncio foi encerrado. Esta pergunta não pode mais ser respondida.",
-    });
-  }
-
-  // Pergunta removida / inexistente
-  if (
-    status === 404 ||
-    mlMessage.includes("question not found") ||
-    mlMessage.includes("question does not exist")
-  ) {
-    return res.status(404).json({
-      success: false,
-      code: "QUESTION_UNAVAILABLE",
-      reason: "QUESTION_NOT_FOUND",
-      message:
-        "Esta pergunta foi excluída ou não está mais disponível no Mercado Livre.",
-    });
-  }
-
-  return res.status(status || 500).json({
-    success: false,
-    error:
-      errorData ||
-      error.message ||
-      "Erro desconhecido",
-  });
-}
 }
