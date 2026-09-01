@@ -14364,7 +14364,7 @@ if (!companyId) {
   );
 }
 
-const response = await fetch(
+const response = await authenticatedIntegrationFetch(
   `/api/answered?company_id=${encodeURIComponent(companyId)}`
 );
           const data = await response.json();
@@ -15390,7 +15390,7 @@ async function createUser() {
         if (tab === "answered") {
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando respondidas...</div>`;
           try {
-            const response = await fetch(
+            const response = await authenticatedIntegrationFetch(
   `/api/answered?company_id=${encodeURIComponent(
     loggedUser.company_id
   )}`
