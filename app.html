@@ -16396,10 +16396,10 @@ async function loadMonthlyRanking(containerId) {
 
     const data = await response.json();
 
-    const ranking = Object.entries(data.by_user || {})
-      .filter(([name, total]) => name && Number(total) > 0)
-      .sort((a, b) => Number(b[1]) - Number(a[1]))
-      .slice(0, 3);
+const ranking = Object.entries(data.by_user || {})
+  .filter(([name]) => name)
+  .sort((a, b) => Number(b[1]) - Number(a[1]))
+  .slice(0, 3);
 
     if (ranking.length === 0) {
       box.innerHTML = "";
