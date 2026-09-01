@@ -12612,7 +12612,7 @@ if (notificationBadge) {
           const dStores = document.getElementById("dStatStores");
           if (dStores) dStores.innerText = storeNames.length || "—";
 
-          fetch(
+          authenticatedIntegrationFetch(
             `/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`,
           )
             .then((r) => r.json())
@@ -14452,7 +14452,7 @@ const response = await authenticatedIntegrationFetch(
           url += `&start=${formatDateToApi(calendarStart)}&end=${formatDateToApi(calendarEnd)}`;
         }
 
-        const response = await fetch(url);
+        const response = await authenticatedIntegrationFetch(url);
         const data = await response.json();
         const users = Object.entries(data.by_user || {}).sort(
           (a, b) => b[1] - a[1],
@@ -14516,14 +14516,14 @@ const response = await authenticatedIntegrationFetch(
   `;
 
   try {
-    const [usersResponse, statsResponse] = await Promise.all([
-      fetch(
-        `/api/app?action=users&company_id=${loggedUser.company_id}`,
-      ),
-      fetch(
-        `/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`,
-      ),
-    ]);
+  const [usersResponse, statsResponse] = await Promise.all([
+    authenticatedIntegrationFetch(
+      `/api/app?action=users&company_id=${loggedUser.company_id}`,
+    ),
+    authenticatedIntegrationFetch(
+      `/api/app?action=stats&company_id=${loggedUser.company_id}&period=day`,
+    ),
+  ]);
 
     const usersData = await usersResponse.json();
     const statsData = await statsResponse.json();
@@ -15563,7 +15563,7 @@ async function createUser() {
         let url = `/api/app?action=stats&company_id=${loggedUser.company_id}&period=${period}`;
         if (period === "custom")
           url += `&start=${formatDateToApi(calendarStart)}&end=${formatDateToApi(calendarEnd)}`;
-        const response = await fetch(url);
+        const response = await authenticatedIntegrationFetch(url);
         const data = await response.json();
         const users = Object.entries(data.by_user || {}).sort(
           (a, b) => b[1] - a[1],
@@ -15621,7 +15621,7 @@ async function createUser() {
         const box = document.getElementById("usersList");
         if (!box) return;
         try {
-          const response = await fetch(
+          const response = await authenticatedIntegrationFetch(
             `/api/app?action=users&company_id=${loggedUser.company_id}`,
           );
           const data = await response.json();
@@ -16386,7 +16386,7 @@ async function loadMonthlyRanking(containerId) {
   `;
 
   try {
-    const response = await fetch(
+    const response = await authenticatedIntegrationFetch(
       `/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`,
     );
 

@@ -66,8 +66,6 @@ async function getAuthenticatedCompany(
     );
   }
 
-console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-console.log("Access token recebido:", accessToken.substring(0, 20) + "...");
 
   const {
     data: userData,
@@ -76,8 +74,6 @@ console.log("Access token recebido:", accessToken.substring(0, 20) + "...");
     accessToken,
   );
 
-  console.log("userError:", userError);
-console.log("userData:", userData);
 
   if (userError || !userData?.user) {
     console.error(
@@ -116,6 +112,16 @@ console.log("userData:", userData);
       403,
     );
   }
+
+  if (
+  appUser.status &&
+  appUser.status !== "active"
+) {
+  throw new AuthError(
+    "Usuário inativo",
+    403,
+  );
+}
 
   return {
     user: authUser,
@@ -926,15 +932,33 @@ if (action === "delete-company") {
   }
 }
 
-// As ações antigas ainda usam company_id.
-// As ações seguras do Mercado Livre são tratadas antes.
-if (!company_id) {
-  return res.status(400).json({
+// ==========================================
+// AUTENTICAÇÃO DAS AÇÕES DA EMPRESA
+// ==========================================
+
+const {
+  appUser: authenticatedAppUser,
+  companyId,
+} = await getAuthenticatedCompany(
+  req,
+  supabase,
+);
+
+const adminOnlyActions = new Set([
+  "create-user",
+  "update-user",
+  "delete-user",
+]);
+
+if (
+  adminOnlyActions.has(action) &&
+  !["admin", "superadmin"].includes(authenticatedAppUser.role)
+) {
+  return res.status(403).json({
     success: false,
-    error: "company_id obrigatório",
+    error: "Você não tem permissão para gerenciar usuários",
   });
 }
-
     // ==========================================
     // USUÁRIOS
     // ==========================================
@@ -943,7 +967,7 @@ if (!company_id) {
       const { data, error } = await supabase
         .from("users_app")
         .select("id, name, email, role, status, created_at")
-        .eq("company_id", company_id)
+        .eq("company_id", companyId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -1061,7 +1085,7 @@ if (!company_id) {
           count: "exact",
           head: true,
         })
-        .eq("company_id", company_id);
+        .eq("company_id", companyId);
 
       if (countError) {
         return res.status(500).json({
@@ -1074,7 +1098,7 @@ if (!company_id) {
       const { data: logs, error: logsError } = await supabase
         .from("answer_logs")
         .select("*")
-        .eq("company_id", company_id)
+        .eq("company_id", companyId)
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString())
         .order("created_at", { ascending: false });
@@ -1104,7 +1128,7 @@ if (!company_id) {
       } = await supabase
         .from("users_app")
         .select("name, email")
-        .eq("company_id", company_id);
+        .eq("company_id", companyId);
 
       if (usersError) {
         return res.status(500).json({
@@ -1152,7 +1176,7 @@ if (action === "quick-replies") {
     const { data, error } = await supabase
       .from("quick_replies")
       .select("*")
-      .eq("company_id", company_id)
+      .eq("company_id", companyId)
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -1182,7 +1206,7 @@ if (action === "quick-replies") {
     const { data, error } = await supabase
       .from("quick_replies")
       .insert({
-        company_id,
+        company_id: companyId,
         reply_text: reply_text.trim(),
       })
       .select()
@@ -1212,7 +1236,7 @@ if (action === "quick-replies") {
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
-      .eq("company_id", company_id);
+      .eq("company_id", companyId);
 
     if (error) {
       return res.status(500).json({
@@ -1234,7 +1258,7 @@ if (action === "quick-replies") {
       .from("quick_replies")
       .delete()
       .eq("id", id)
-      .eq("company_id", company_id);
+      .eq("company_id", companyId);
 
     if (error) {
       return res.status(500).json({
@@ -1372,7 +1396,7 @@ if (action === "create-user") {
     } = await supabase
       .from("users_app")
       .insert({
-        company_id,
+        company_id: companyId,
         auth_id: createdAuthUserId,
         name: normalizedName,
         email: normalizedEmail,
@@ -1448,13 +1472,6 @@ if (action === "create-user") {
         status,
       } = req.body || {};
 
-      if (!company_id) {
-        return res.status(400).json({
-          success: false,
-          error: "company_id obrigatório",
-        });
-      }
-
       if (!user_id) {
         return res.status(400).json({
           success: false,
@@ -1502,7 +1519,7 @@ if (action === "create-user") {
           "id, company_id, role, email",
         )
         .eq("id", user_id)
-        .eq("company_id", company_id)
+        .eq("company_id", companyId)
         .maybeSingle();
 
       if (existingUserError) {
@@ -1540,7 +1557,7 @@ if (action === "create-user") {
           status,
         })
         .eq("id", user_id)
-        .eq("company_id", company_id)
+        .eq("company_id", companyId)
         .select(
           "id, name, email, role, status, company_id",
         )
@@ -1585,7 +1602,7 @@ if (action === "create-user") {
         .from("users_app")
         .delete()
         .eq("id", user_id)
-        .eq("company_id", company_id);
+        .eq("company_id", companyId);
 
       if (error) {
         return res.status(500).json({
@@ -1607,12 +1624,19 @@ if (action === "create-user") {
       success: false,
       error: "Ação não encontrada",
     });
-  } catch (error) {
-    console.error("Erro em /api/app:", error);
+} catch (error) {
+  console.error("Erro em /api/app:", error);
 
-    return res.status(500).json({
+  if (error instanceof AuthError) {
+    return res.status(error.statusCode).json({
       success: false,
-      error: error.message || "Erro interno",
+      error: error.message,
     });
   }
+
+  return res.status(500).json({
+    success: false,
+    error: error.message || "Erro interno",
+  });
+}
 }
