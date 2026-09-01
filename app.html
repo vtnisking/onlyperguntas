@@ -12100,7 +12100,7 @@ async function deleteMlQuestion(
   button.innerText = "Excluindo...";
 
   try {
-    const response = await fetch(
+    const response = await authenticatedIntegrationFetch(
       "/api/questions",
       {
         method: "DELETE",
@@ -12173,7 +12173,7 @@ async function blockMlBuyer(
   button.innerText = "Bloqueando...";
 
   try {
-    const response = await fetch(
+    const response = await authenticatedIntegrationFetch(
       "/api/questions",
       {
         method: "POST",
@@ -12239,7 +12239,7 @@ window.blockMlBuyer = blockMlBuyer;
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>`;
 
         try {
-          const response = await fetch(
+          const response = await authenticatedIntegrationFetch(
             `/api/questions?company_id=${loggedUser.company_id}`,
           );
           const data = await response.json();
@@ -12553,7 +12553,7 @@ ${renderPreviousQuestions(item)}
           listEl.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
 
         try {
-          const response = await fetch(
+          const response = await authenticatedIntegrationFetch(
             `/api/questions?company_id=${loggedUser.company_id}`,
           );
           const data = await response.json();
@@ -13061,7 +13061,7 @@ async function removePendingQuestion(
   }
 
   try {
-const response = await fetch(
+const response = await authenticatedIntegrationFetch(
   "/api/questions",
   {
         method: "POST",

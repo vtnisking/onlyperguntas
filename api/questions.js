@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
+import { AuthError, getAuthenticatedContext } from "../lib/auth.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -259,6 +260,10 @@ export default async function handler(req, res) {
       },
     );
 
+    // A empresa nunca é confiada a partir do navegador.
+    // Ela é derivada exclusivamente do usuário autenticado.
+    const { companyId } = await getAuthenticatedContext(req, supabase);
+
  // ==========================================
 // AÇÕES DE PERGUNTAS
 // ==========================================
@@ -268,18 +273,17 @@ if (req.method === "POST") {
     question_id,
     buyer_id,
     store_id,
-    company_id,
   } = req.body || {};
 
   // ========================================
   // BLOQUEAR COMPRADOR
   // ========================================
   if (action === "block_buyer") {
-    if (!buyer_id || !store_id || !company_id) {
+    if (!buyer_id || !store_id) {
       return res.status(400).json({
         success: false,
         error:
-          "buyer_id, store_id e company_id são obrigatórios",
+          "buyer_id e store_id são obrigatórios",
       });
     }
 
@@ -290,7 +294,7 @@ if (req.method === "POST") {
       .from("stores")
       .select("*")
       .eq("id", store_id)
-      .eq("company_id", company_id)
+      .eq("company_id", companyId)
       .single();
 
     if (storeError || !store) {
@@ -363,11 +367,11 @@ if (req.method === "POST") {
   // ========================================
   // REMOVER DAS PENDENTES DO CHATI
   // ========================================
-  if (!question_id || !company_id) {
+  if (!question_id) {
     return res.status(400).json({
       success: false,
       error:
-        "question_id e company_id são obrigatórios",
+        "question_id é obrigatório",
     });
   }
 
@@ -380,7 +384,7 @@ if (req.method === "POST") {
             String(question_id),
 
           company_id:
-            String(company_id),
+            String(companyId),
         },
         {
           onConflict:
@@ -415,18 +419,16 @@ if (req.method === "DELETE") {
   const {
     question_id,
     store_id,
-    company_id,
   } = req.body || {};
 
   if (
     !question_id ||
-    !store_id ||
-    !company_id
+    !store_id
   ) {
     return res.status(400).json({
       success: false,
       error:
-        "question_id, store_id e company_id são obrigatórios",
+        "question_id e store_id são obrigatórios",
     });
   }
 
@@ -437,7 +439,7 @@ if (req.method === "DELETE") {
     .from("stores")
     .select("*")
     .eq("id", store_id)
-    .eq("company_id", company_id)
+    .eq("company_id", companyId)
     .single();
 
   if (storeError || !store) {
@@ -503,7 +505,7 @@ if (req.method === "DELETE") {
           String(question_id),
 
         company_id:
-          String(company_id),
+          String(companyId),
       },
       {
         onConflict:
@@ -528,17 +530,7 @@ if (req.method === "DELETE") {
         error: "Método não permitido",
       });
     }
-
-    const companyId = req.query.company_id;
-
-    if (!companyId) {
-      return res.status(400).json({
-        success: false,
-        error: "company_id obrigatório",
-      });
-    }
-
-    const {
+const {
       data: company,
       error: companyError,
     } = await supabase
@@ -788,7 +780,12 @@ unavailable_reason:
       error.response?.data || error,
     );
 
-    return res.status(500).json({
+    const statusCode =
+      error instanceof AuthError
+        ? error.statusCode
+        : 500;
+
+    return res.status(statusCode).json({
       success: false,
       error: error.response?.data || error.message || "Erro interno",
     });
