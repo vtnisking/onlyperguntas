@@ -1800,8 +1800,6 @@ overflow: hidden;
 ========================================================= */
 
 .integrations-card {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   min-width: 0;
   padding: 0 !important;
@@ -1809,63 +1807,188 @@ overflow: hidden;
   grid-column: 1 / -1;
 }
 
-.integrations-header {
+.integrations-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  width: 100%;
   padding: 28px 30px 24px;
-  border-bottom: 1px solid #eceef1;
-  box-sizing: border-box;
-}
-
-.integrations-header-text {
-  flex: 1;
-  min-width: 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .integrations-description {
-  margin-top: 8px;
-  color: #8c9689;
+  max-width: 720px;
+  margin-top: 7px;
+  color: var(--text3);
   font-size: 14px;
-  line-height: 1.5;
-}
-
-.btn-connect-meli {
-  flex-shrink: 0;
-  min-height: 42px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 12px;
-  background: #ffe600;
-  color: #111827;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.btn-connect-meli:hover {
-  background: #f5dc00;
-  box-shadow: 0 8px 18px rgba(255, 230, 0, 0.22);
-  transform: translateY(-1px);
-}
-
-.btn-connect-meli:active {
-  transform: translateY(0);
+  line-height: 1.55;
 }
 
 .integrations-body {
-  width: 100%;
+  padding: 26px 30px 30px;
+}
+
+.integration-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.integration-section-title {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.integration-section-description {
+  margin-top: 4px;
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   CANAIS DISPONÍVEIS
+========================================================= */
+
+.integration-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.integration-channel-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   min-width: 0;
-  padding: 24px 30px 30px;
-  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface2);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.integration-channel-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
+}
+
+.integration-channel-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.integration-channel-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.integration-channel-logo-ml {
+  background: #ffe600;
+  color: #2d3277;
+}
+
+.integration-channel-logo-shopee {
+  background: #ee4d2d;
+  color: #ffffff;
+}
+
+.integration-channel-info {
+  min-width: 0;
+}
+
+.integration-channel-name {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.integration-channel-text {
+  max-width: 370px;
+  margin-top: 5px;
+  color: var(--text3);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.integration-connect-btn {
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 15px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.integration-connect-btn:hover {
+  transform: translateY(-1px);
+}
+
+
+/* Mercado Livre */
+
+.integration-connect-btn-ml {
+  border: 1px solid #ffe600;
+  background: #ffe600;
+  color: #252a63;
+}
+
+.integration-connect-btn-ml:hover {
+  background: #f5dc00;
+  border-color: #f5dc00;
+  box-shadow: 0 7px 18px rgba(255, 230, 0, 0.2);
+}
+
+
+/* Shopee */
+
+.integration-connect-btn-shopee {
+  border: 1px solid #ee4d2d;
+  background: #ee4d2d;
+  color: #ffffff;
+}
+
+.integration-connect-btn-shopee:hover {
+  background: #d94023;
+  border-color: #d94023;
+  box-shadow: 0 7px 18px rgba(238, 77, 45, 0.18);
+}
+
+
+/* =========================================================
+   LOJAS CONECTADAS
+========================================================= */
+
+.integration-stores-section {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border);
 }
 
 .integration-loading {
@@ -1873,8 +1996,8 @@ overflow: hidden;
   align-items: center;
   justify-content: center;
   min-height: 140px;
-  color: #6b7280;
-  font-size: 14px;
+  color: var(--text3);
+  font-size: 13px;
   text-align: center;
 }
 
@@ -1883,62 +2006,68 @@ overflow: hidden;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 220px;
-  padding: 32px 20px;
-  border: 1px dashed #d8dde5;
+  min-height: 190px;
+  padding: 28px 20px;
+  border: 1px dashed var(--border2);
   border-radius: 16px;
-  background: #fafbfc;
+  background: var(--surface2);
   text-align: center;
-  box-sizing: border-box;
 }
 
 .integration-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
   margin-bottom: 12px;
-  font-size: 30px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text3);
+  font-size: 22px;
+  font-weight: 400;
 }
 
 .integration-empty strong {
-  margin-bottom: 6px;
-  color: #111827;
-  font-size: 16px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .integration-empty span {
-  max-width: 420px;
-  color: #6b7280;
-  font-size: 14px;
+  max-width: 400px;
+  margin-top: 5px;
+  color: var(--text3);
+  font-size: 12px;
   line-height: 1.5;
 }
 
-/* Grade responsiva: sem carrossel e sem lojas cortadas */
 .integration-stores-list {
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(min(100%, 290px), 1fr)
+    minmax(min(100%, 300px), 1fr)
   );
-  gap: 18px;
+  gap: 15px;
   width: 100%;
-  min-width: 0;
-  height: auto;
-  max-height: none;
-  overflow: visible;
-  box-sizing: border-box;
 }
 
-/* Compatibilidade com nomes possíveis usados no JavaScript */
+
+/* =========================================================
+   CARD DE LOJA CONECTADA
+========================================================= */
+
 .integration-store-card,
 .integration-store-item {
   display: flex;
   flex-direction: column;
-  width: 100%;
   min-width: 0;
-  min-height: 230px;
-  padding: 20px;
-  border: 1px solid #e4e7ec;
-  border-radius: 16px;
-  background: #fafbfc;
-  box-sizing: border-box;
+  min-height: 215px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface2);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -1947,16 +2076,16 @@ overflow: hidden;
 
 .integration-store-card:hover,
 .integration-store-item:hover {
-  border-color: #d0d5dd;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
-  transform: translateY(-2px);
+  border-color: var(--border2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
 }
 
 .integration-store-top,
 .integration-store-header {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -1965,13 +2094,13 @@ overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: #ffe600;
-  color: #27326f;
-  font-size: 19px;
+  color: #2d3277;
+  font-size: 16px;
   font-weight: 900;
 }
 
@@ -1981,13 +2110,11 @@ overflow: hidden;
 }
 
 .integration-store-name {
-  max-width: 100%;
-  margin: 1px 0 6px;
   overflow: hidden;
-  color: #111827;
-  font-size: 15px;
+  color: var(--text);
+  font-size: 14px;
   font-weight: 800;
-  line-height: 1.3;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1995,17 +2122,17 @@ overflow: hidden;
 .integration-status {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
+  margin-top: 4px;
   color: #16a34a;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .integration-status::before {
   content: "";
-  flex: 0 0 8px;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -2021,28 +2148,27 @@ overflow: hidden;
 .integration-store-details,
 .integration-details {
   display: grid;
-  gap: 11px;
-  margin-top: 20px;
+  gap: 9px;
+  margin-top: 17px;
 }
 
 .integration-detail {
   display: grid;
-  gap: 3px;
+  gap: 2px;
 }
 
 .integration-detail-label {
-  color: #98a2b3;
-  font-size: 11px;
+  color: var(--text3);
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .integration-detail-value {
-  max-width: 100%;
   overflow-wrap: anywhere;
-  color: #475467;
-  font-size: 13px;
+  color: var(--text2);
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
 }
@@ -2051,24 +2177,23 @@ overflow: hidden;
 .integration-actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 9px;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 17px;
 }
 
 .integration-store-actions button,
 .integration-actions button,
 .btn-disconnect-integration,
 .btn-disconnect-store {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 35px;
+  padding: 0 12px;
   border: 1px solid #fecaca;
-  border-radius: 10px;
-  background: #ffffff;
+  border-radius: 9px;
+  background: var(--surface);
   color: #dc2626;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
   transition:
@@ -2086,8 +2211,16 @@ overflow: hidden;
   transform: translateY(-1px);
 }
 
-/* Tablet */
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
 @media (max-width: 1050px) {
+  .integration-channel-grid {
+    grid-template-columns: 1fr;
+  }
+
   .integration-stores-list {
     grid-template-columns: repeat(
       2,
@@ -2096,37 +2229,31 @@ overflow: hidden;
   }
 }
 
-/* Celular e tablet pequeno */
 @media (max-width: 720px) {
-  .integrations-header {
-    align-items: stretch;
-    flex-direction: column;
+  .integrations-topbar {
     padding: 22px 20px;
-  }
-
-  .btn-connect-meli {
-    width: 100%;
   }
 
   .integrations-body {
     padding: 20px;
   }
 
-  .integration-stores-list {
-    grid-template-columns: 1fr;
-    gap: 14px;
+  .integration-channel-card {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .integration-store-card,
-  .integration-store-item {
-    min-height: auto;
-    padding: 17px;
+  .integration-connect-btn {
+    width: 100%;
+  }
+
+  .integration-stores-list {
+    grid-template-columns: 1fr;
   }
 }
 
-/* Celular muito pequeno */
 @media (max-width: 420px) {
-  .integrations-header {
+  .integrations-topbar {
     padding: 20px 16px;
   }
 
@@ -2134,16 +2261,19 @@ overflow: hidden;
     padding: 16px;
   }
 
-  .integration-store-top,
-  .integration-store-header {
-    gap: 11px;
+  .integration-channel-card {
+    padding: 16px;
   }
 
-  .integration-platform-logo,
-  .integration-store-logo {
+  .integration-channel-logo {
     flex-basis: 44px;
     width: 44px;
     height: 44px;
+  }
+
+  .integration-store-card,
+  .integration-store-item {
+    min-height: auto;
   }
 
   .integration-store-actions,
@@ -2157,7 +2287,6 @@ overflow: hidden;
     width: 100%;
   }
 }
-
 
 /* =========================================================
    INTEGRAÇÕES — MOBILE
@@ -9575,60 +9704,137 @@ body.ps-detail-open {
 
 <!-- Integrações -->
 <div class="settings-card integrations-card">
-  <div class="integrations-header">
-    <div class="integrations-header-text">
+
+  <div class="integrations-topbar">
+    <div>
       <div class="settings-card-title">
         Integrações
       </div>
 
       <div class="integrations-description">
-        Conecte e gerencie suas lojas de marketplaces.
+        Conecte seus canais de venda e centralize o atendimento em um só lugar.
+      </div>
+    </div>
+  </div>
+
+  <div class="integrations-body">
+
+    <div class="integration-section-heading">
+      <div>
+        <div class="integration-section-title">
+          Conectar novos canais
+        </div>
+
+        <div class="integration-section-description">
+          Escolha um marketplace para iniciar a integração.
+        </div>
       </div>
     </div>
 
-  <button
-  type="button"
-  class="btn-connect-meli"
-  onclick="connectMercadoLivre()"
->
-  + Conectar Mercado Livre
-</button>
+    <div class="integration-channel-grid">
 
-<button
-  type="button"
-  class="btn-connect-shopee"
-  onclick="connectShopee()"
->
-  + Conectar Shopee
-</button>
+      <div class="integration-channel-card integration-channel-ml">
+        <div class="integration-channel-main">
+          <div class="integration-channel-logo integration-channel-logo-ml">
+            ML
+          </div>
 
-  <div class="integrations-body">
-    <div
-      id="integrationStoresLoading"
-      class="integration-loading"
-    >
-      Carregando lojas conectadas...
+          <div class="integration-channel-info">
+            <div class="integration-channel-name">
+              Mercado Livre
+            </div>
+
+            <div class="integration-channel-text">
+              Conecte uma ou mais contas do Mercado Livre ao Chati.
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="integration-connect-btn integration-connect-btn-ml"
+          onclick="connectMercadoLivre()"
+        >
+          Conectar
+        </button>
+      </div>
+
+      <div class="integration-channel-card integration-channel-shopee">
+        <div class="integration-channel-main">
+          <div class="integration-channel-logo integration-channel-logo-shopee">
+            S
+          </div>
+
+          <div class="integration-channel-info">
+            <div class="integration-channel-name">
+              Shopee
+            </div>
+
+            <div class="integration-channel-text">
+              Autorize sua loja Shopee para gerenciar o atendimento pelo Chati.
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="integration-connect-btn integration-connect-btn-shopee"
+          onclick="connectShopee()"
+        >
+          Conectar
+        </button>
+      </div>
+
     </div>
 
-    <div
-      id="integrationStoresEmpty"
-      class="integration-empty"
-      style="display: none"
-    >
-      <div class="integration-empty-icon">🔗</div>
+    <div class="integration-stores-section">
 
-      <strong>Nenhuma loja conectada</strong>
+      <div class="integration-section-heading">
+        <div>
+          <div class="integration-section-title">
+            Lojas conectadas
+          </div>
 
-      <span>
-        Conecte uma conta do Mercado Livre para começar.
-      </span>
+          <div class="integration-section-description">
+            Gerencie as contas atualmente vinculadas ao Chati.
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="integrationStoresLoading"
+        class="integration-loading"
+      >
+        Carregando lojas conectadas...
+      </div>
+
+      <div
+        id="integrationStoresEmpty"
+        class="integration-empty"
+        style="display: none"
+      >
+        <div class="integration-empty-icon">
+          +
+        </div>
+
+        <strong>
+          Nenhuma loja conectada
+        </strong>
+
+        <span>
+          Conecte um dos canais acima para começar.
+        </span>
+      </div>
+
+      <div
+        id="integrationStoresList"
+        class="integration-stores-list"
+      ></div>
+
     </div>
 
-    <div
-      id="integrationStoresList"
-      class="integration-stores-list"
-    ></div>
   </div>
+
 </div>
 
     <!-- Painel de gerenciamento de usuários -->
