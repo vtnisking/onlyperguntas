@@ -13911,130 +13911,221 @@ window.removePendingQuestion =
         `;
       }
 
-      async function loadShopeeConversations({
-        preserveSelection = true,
-      } = {}) {
-        if (shopeeState.loadingConversations) {
-          return;
-        }
+async function loadShopeeConversations({
+  preserveSelection = true,
+} = {}) {
+  if (shopeeState.loadingConversations) {
+    return;
+  }
 
-        shopeeState.loadingConversations = true;
+  shopeeState.loadingConversations = true;
 
-        renderShopeeConversationState(
-          "Carregando conversas da Shopee...",
+  renderShopeeConversationState(
+    "Carregando conversas da Shopee...",
+  );
+
+  try {
+    /* =========================================
+       1. VERIFICA SE EXISTE LOJA SHOPEE
+    ========================================= */
+
+    const storesResponse =
+      await authenticatedIntegrationFetch(
+        "/api/app?action=list_stores",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+    const storesResult =
+      await storesResponse
+        .json()
+        .catch(() => ({}));
+
+    if (
+      !storesResponse.ok ||
+      storesResult.success === false
+    ) {
+      throw new Error(
+        storesResult.error ||
+          "Não foi possível verificar as lojas conectadas.",
+      );
+    }
+
+    const stores =
+      Array.isArray(storesResult.stores)
+        ? storesResult.stores
+        : [];
+
+    const hasShopeeStore =
+      stores.some(
+        (store) =>
+          String(
+            store.platform || "",
+          ).toLowerCase() === "shopee",
+      );
+
+    /* =========================================
+       2. NENHUMA LOJA SHOPEE CONECTADA
+    ========================================= */
+
+    if (!hasShopeeStore) {
+      shopeeState.conversations = [];
+
+      clearShopeeSelectedConversation();
+
+      renderShopeeConversationState(
+        "Nenhuma loja Shopee conectada. Conecte uma loja em Ajustes → Integrações para visualizar suas conversas.",
+        "empty",
+      );
+
+      return;
+    }
+
+    /* =========================================
+       3. CARREGA AS CONVERSAS
+    ========================================= */
+
+    const params = new URLSearchParams({
+      action: "conversations",
+    });
+
+    if (shopeeState.listTab === "today") {
+      params.set("period", "today");
+    }
+
+    if (shopeeState.unreadOnly) {
+      params.set("unread_only", "true");
+    }
+
+    const search =
+      document
+        .getElementById(
+          "shopeeConversationSearch",
+        )
+        ?.value.trim();
+
+    if (search) {
+      params.set(
+        "search",
+        search,
+      );
+    }
+
+    const response =
+      await authenticatedIntegrationFetch(
+        `${SHOPEE_API_ENDPOINT}?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+    const result =
+      await response
+        .json()
+        .catch(() => ({}));
+
+    if (
+      !response.ok ||
+      result.success === false
+    ) {
+      throw new Error(
+        getShopeeApiError(
+          result,
+          "Não foi possível carregar as conversas da Shopee.",
+        ),
+      );
+    }
+
+    const source =
+      result.conversations ||
+      result.data?.conversations ||
+      result.data ||
+      [];
+
+    if (!Array.isArray(source)) {
+      throw new Error(
+        "A API da Shopee retornou as conversas em um formato inválido.",
+      );
+    }
+
+    shopeeState.conversations =
+      source
+        .map(
+          normalizeShopeeConversation,
+        )
+        .filter(
+          (conversation) =>
+            conversation.id,
         );
 
-        try {
-          const params = new URLSearchParams({
-            action: "conversations",
-          });
+    renderShopeeConversationList();
 
-          if (shopeeState.listTab === "today") {
-            params.set("period", "today");
-          }
+    /* =========================================
+       4. LOJA CONECTADA, MAS SEM CONVERSAS
+    ========================================= */
 
-          if (shopeeState.unreadOnly) {
-            params.set("unread_only", "true");
-          }
+    if (
+      !shopeeState.conversations.length
+    ) {
+      clearShopeeSelectedConversation();
 
-          const search =
-            document
-              .getElementById(
-                "shopeeConversationSearch",
-              )
-              ?.value.trim();
+      renderShopeeConversationState(
+        "Nenhuma conversa encontrada para os filtros selecionados.",
+        "empty",
+      );
 
-          if (search) {
-            params.set("search", search);
-          }
+      return;
+    }
 
-          const response =
-            await authenticatedIntegrationFetch(
-              `${SHOPEE_API_ENDPOINT}?${params.toString()}`,
-              {
-                method: "GET",
-                headers: {
-                  Accept: "application/json",
-                },
-              },
-            );
+    const previousId =
+      preserveSelection
+        ? shopeeState
+            .selectedConversationId
+        : null;
 
-          const result =
-            await response.json().catch(() => ({}));
+    const nextConversation =
+      shopeeState.conversations.find(
+        (conversation) =>
+          conversation.id ===
+          previousId,
+      ) ||
+      shopeeState.conversations[0];
 
-          if (!response.ok || result.success === false) {
-            throw new Error(
-              getShopeeApiError(
-                result,
-                "Não foi possível carregar as conversas da Shopee.",
-              ),
-            );
-          }
+    await selectShopeeConversation(
+      nextConversation.id,
+      {
+        openMobile: false,
+        reloadList: false,
+      },
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao carregar conversas da Shopee:",
+      error,
+    );
 
-          const source =
-            result.conversations ||
-            result.data?.conversations ||
-            result.data ||
-            [];
+    shopeeState.conversations = [];
 
-          if (!Array.isArray(source)) {
-            throw new Error(
-              "A API da Shopee retornou as conversas em um formato inválido.",
-            );
-          }
+    clearShopeeSelectedConversation();
 
-          shopeeState.conversations =
-            source
-              .map(normalizeShopeeConversation)
-              .filter(
-                (conversation) =>
-                  conversation.id,
-              );
-
-          renderShopeeConversationList();
-
-          if (!shopeeState.conversations.length) {
-            clearShopeeSelectedConversation();
-            return;
-          }
-
-          const previousId =
-            preserveSelection
-              ? shopeeState.selectedConversationId
-              : null;
-
-          const nextConversation =
-            shopeeState.conversations.find(
-              (conversation) =>
-                conversation.id === previousId,
-            ) ||
-            shopeeState.conversations[0];
-
-          await selectShopeeConversation(
-            nextConversation.id,
-            {
-              openMobile: false,
-              reloadList: false,
-            },
-          );
-        } catch (error) {
-          console.error(
-            "Erro ao carregar conversas da Shopee:",
-            error,
-          );
-
-          shopeeState.conversations = [];
-          clearShopeeSelectedConversation();
-
-          renderShopeeConversationState(
-            error.message ||
-              "Erro ao carregar as conversas da Shopee.",
-            "error",
-          );
-        } finally {
-          shopeeState.loadingConversations = false;
-        }
-      }
+    /* Aqui continua sendo erro REAL */
+    renderShopeeConversationState(
+      error.message ||
+        "Erro ao carregar as conversas da Shopee.",
+      "error",
+    );
+  } finally {
+    shopeeState.loadingConversations =
+      false;
+  }
+}
 
       function renderShopeeConversationList() {
         const list =
