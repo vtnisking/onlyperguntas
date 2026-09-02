@@ -1985,8 +1985,8 @@ overflow: hidden;
 ========================================================= */
 
 .integration-stores-section {
-  margin-top: 30px;
-  padding-top: 26px;
+  margin-top: 14px;
+  padding-top: 13px;
   border-top: 1px solid var(--border);
 }
 
@@ -1994,9 +1994,9 @@ overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 140px;
+  min-height: 105px;
   color: var(--text3);
-  font-size: 13px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -2005,10 +2005,10 @@ overflow: hidden;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 190px;
-  padding: 28px 20px;
+  min-height: 110px;
+  padding: 14px 20px;
   border: 1px dashed var(--border2);
-  border-radius: 16px;
+  border-radius: 13px;
   background: var(--surface2);
   text-align: center;
 }
@@ -2067,6 +2067,68 @@ overflow: hidden;
   width: 100%;
 }
 
+.integration-store-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin-top: 14px;
+}
+
+.integration-store-details-grid .integration-detail {
+  min-width: 0;
+}
+
+.integration-store-details-grid
+.integration-detail-label {
+  display: block;
+  margin-bottom: 3px;
+
+  color: var(--text3);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.integration-store-details-grid
+.integration-detail-value {
+  display: block;
+
+  overflow-wrap: anywhere;
+
+  color: var(--text2);
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.integration-store-details-grid
+.integration-detail-status {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.integration-store-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 14px 0 12px;
+
+  background: var(--border);
+}
+
+.integration-platform-logo-ml {
+  background: #ffe600;
+  color: #2d3277;
+}
+
+.integration-platform-logo-shopee {
+  background: #ee4d2d;
+  color: #fff;
+}
 
 /* =========================================================
    CARD DE LOJA CONECTADA
@@ -2078,16 +2140,12 @@ overflow: hidden;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  height: auto;
   padding: 14px;
 
   border: 1px solid var(--border);
   border-radius: 13px;
   background: var(--surface2);
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
 }
 
 .integration-store-card:hover,
@@ -2474,8 +2532,8 @@ overflow: hidden;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    margin-top: 16px;
-    padding-top: 14px;
+    margin-top: 14px;
+    padding-top: 13px;
   }
 
   .integration-stores-section > .integration-section-heading {
@@ -17721,22 +17779,56 @@ async function loadIntegrationStores() {
           );
 
         const connectionDate =
-          formatIntegrationDate(
-            store.connected_at ||
-              store.created_at,
+          escapeIntegrationHtml(
+            formatIntegrationDate(
+              store.connected_at ||
+                store.created_at,
+            ),
           );
+
+        const platform =
+          String(
+            store.platform ||
+              "mercadolivre",
+          ).toLowerCase();
+
+        const isShopee =
+          platform === "shopee";
+
+        const platformName =
+          isShopee
+            ? "Shopee"
+            : "Mercado Livre";
+
+        const platformLogo =
+          isShopee
+            ? "S"
+            : "ML";
+
+        const platformClass =
+          isShopee
+            ? "integration-platform-logo-shopee"
+            : "integration-platform-logo-ml";
 
         return `
           <article
             class="integration-store-card"
             data-store-id="${storeId}"
           >
+
             <div class="integration-store-top">
-              <div class="integration-platform-logo">
-                ML
+
+              <div
+                class="
+                  integration-platform-logo
+                  ${platformClass}
+                "
+              >
+                ${platformLogo}
               </div>
 
               <div class="integration-store-info">
+
                 <div
                   class="integration-store-name"
                   title="${safeStoreName}"
@@ -17747,11 +17839,20 @@ async function loadIntegrationStores() {
                 <div class="integration-status">
                   Conectado
                 </div>
+
               </div>
+
             </div>
 
-            <div class="integration-details">
+            <div
+              class="
+                integration-details
+                integration-store-details-grid
+              "
+            >
+
               <div class="integration-detail">
+
                 <span class="integration-detail-label">
                   Seller ID
                 </span>
@@ -17759,34 +17860,71 @@ async function loadIntegrationStores() {
                 <span class="integration-detail-value">
                   ${sellerId}
                 </span>
+
               </div>
 
               <div class="integration-detail">
+
                 <span class="integration-detail-label">
                   Última conexão
                 </span>
 
                 <span class="integration-detail-value">
-                  ${escapeIntegrationHtml(
-                    connectionDate,
-                  )}
+                  ${connectionDate}
                 </span>
+
               </div>
+
+              <div class="integration-detail">
+
+                <span class="integration-detail-label">
+                  Canal
+                </span>
+
+                <span class="integration-detail-value">
+                  ${platformName}
+                </span>
+
+              </div>
+
+              <div class="integration-detail">
+
+                <span class="integration-detail-label">
+                  Status
+                </span>
+
+                <span
+                  class="
+                    integration-detail-value
+                    integration-detail-status
+                  "
+                >
+                  Ativo
+                </span>
+
+              </div>
+
             </div>
+
+            <div class="integration-store-divider"></div>
 
             <div class="integration-actions">
 
-        <button
-        type="button"
-        class="integration-action-btn integration-disconnect-btn"
-        data-disconnect-store
-        data-store-id="${storeId}"
-        data-store-name="${safeStoreName}"
-        >
-        Desconectar
-        </button>
+              <button
+                type="button"
+                class="
+                  integration-action-btn
+                  integration-disconnect-btn
+                "
+                data-disconnect-store
+                data-store-id="${storeId}"
+                data-store-name="${safeStoreName}"
+              >
+                Desconectar
+              </button>
 
             </div>
+
           </article>
         `;
       })
@@ -17822,7 +17960,6 @@ async function loadIntegrationStores() {
     }
   }
 }
-
 
 function updateIntegrationSummary(total) {
   const summaryElement =
