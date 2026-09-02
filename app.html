@@ -1437,7 +1437,6 @@ overflow: hidden;
         }
       } /* end @media desktop */
 
-
       /* =========================================
    MODAL DESCONECTAR LOJA
 ========================================= */
@@ -2018,15 +2017,30 @@ overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
+
+  width: 54px;
+  height: 54px;
+
+  margin-bottom: 10px;
+
+  border: none;
+  border-radius: 0;
+
+  background: transparent;
   color: var(--text3);
-  font-size: 22px;
-  font-weight: 400;
+}
+
+.integration-empty-icon svg {
+  width: 52px;
+  height: 52px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  opacity: 0.75;
 }
 
 .integration-empty strong {
@@ -2036,11 +2050,13 @@ overflow: hidden;
 }
 
 .integration-empty span {
-  max-width: 400px;
+  max-width: 520px;
+
   margin-top: 5px;
+
   color: var(--text3);
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .integration-stores-list {
@@ -2285,6 +2301,232 @@ overflow: hidden;
   .integration-store-actions button,
   .integration-actions button {
     width: 100%;
+  }
+}
+
+/* =========================================================
+   AJUSTES — DESKTOP ENQUADRADO NA TELA
+========================================================= */
+
+@media (min-width: 900px) {
+  #dt-settings {
+    height: calc(100vh - 64px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #dt-settings > .questions-list {
+    height: 100%;
+    min-height: 0;
+    padding: 16px 22px 18px;
+    overflow: hidden;
+  }
+
+  #dt-settings .settings-grid {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+    padding: 0;
+    align-content: stretch;
+  }
+
+  .settings-top-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+  }
+
+  .settings-compact-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 150px;
+    padding: 18px 20px;
+  }
+
+  .settings-compact-card .settings-card-title {
+    margin-bottom: 0;
+  }
+
+  .settings-card-description {
+    margin: 8px 0 14px;
+    color: var(--text2);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .settings-compact-card .send-btn {
+    align-self: flex-start;
+    min-height: 38px;
+    margin-top: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .settings-user-name {
+    margin-top: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .settings-user-email {
+    margin-top: 4px;
+    margin-bottom: 14px;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  .integrations-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin-top: 0;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .integrations-topbar {
+    flex: 0 0 auto;
+    gap: 12px;
+    padding: 18px 22px 14px;
+  }
+
+  .integrations-topbar .settings-card-title {
+    margin-bottom: 0;
+  }
+
+  .integrations-description {
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .integrations-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 22px 18px;
+  }
+
+  .integration-section-heading {
+    flex: 0 0 auto;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .integration-section-title {
+    font-size: 14px;
+  }
+
+  .integration-section-description {
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .integration-channel-grid {
+    flex: 0 0 auto;
+    gap: 12px;
+  }
+
+  .integration-channel-card {
+    gap: 14px;
+    min-height: 76px;
+    padding: 12px 14px;
+    border-radius: 13px;
+  }
+
+  .integration-channel-main {
+    gap: 12px;
+  }
+
+  .integration-channel-logo {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+
+  .integration-channel-name {
+    font-size: 13px;
+  }
+
+  .integration-channel-text {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .integration-connect-btn {
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 9px;
+    font-size: 11px;
+  }
+
+  .integration-stores-section {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    padding-top: 14px;
+  }
+
+  .integration-stores-section > .integration-section-heading {
+    flex: 0 0 auto;
+  }
+
+  .integration-loading,
+  .integration-empty {
+    flex: 1;
+    min-height: 105px;
+  }
+
+  .integration-empty {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .integration-empty-icon {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 10px;
+    border-radius: 9px;
+    font-size: 17px;
+  }
+
+  .integration-empty strong {
+    font-size: 13px;
+  }
+
+  .integration-empty span {
+    margin-top: 3px;
+    font-size: 11px;
+  }
+
+  .integration-stores-list {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .integration-store-card,
+  .integration-store-item {
+    min-height: 145px;
+    padding: 14px;
   }
 }
 
@@ -9622,85 +9864,78 @@ body.ps-detail-open {
 <div class="desktop-tab" id="dt-settings">
   <div class="questions-list">
 
-    <div class="section-title" style="margin-bottom: 20px">
-      ⚙️ Ajustes
-    </div>
 
     <div class="settings-grid">
 
 
 
-      <!-- Notificações -->
-      <div class="settings-card">
-        <div class="settings-card-title">
-          Notificações
-        </div>
+<div class="settings-top-grid">
 
-        <p
-          style="
-            color: var(--text2);
-            font-size: 13px;
-            margin-bottom: 16px;
-            line-height: 1.5;
-          "
-        >
-          Receba alertas em tempo real quando novas perguntas chegarem.
-        </p>
+  <!-- Notificações -->
+  <div class="settings-card settings-compact-card">
+    <div class="settings-card-title">
+      Notificações
+    </div>
 
-        <button
-          class="send-btn"
-          onclick="requestNotificationPermission()"
-        >
-          🔔 Ativar notificações
-        </button>
-      </div>
+    <p class="settings-card-description">
+      Receba alertas em tempo real quando novas perguntas chegarem.
+    </p>
 
-      <!-- Usuários -->
+    <button
+      class="send-btn"
+      onclick="requestNotificationPermission()"
+    >
+      🔔 Ativar notificações
+    </button>
+  </div>
 
+  <!-- Respostas rápidas -->
+  <div class="settings-card settings-compact-card">
+    <div class="settings-card-title">
+      Respostas rápidas
+    </div>
 
-      <!-- Respostas rápidas -->
-      <div class="settings-card">
-        <div class="settings-card-title">
-          Respostas rápidas
-        </div>
+    <p class="settings-card-description">
+      Crie e gerencie respostas rápidas para agilizar seu atendimento.
+    </p>
 
-        <button
-          class="send-btn"
-          onclick="openDesktopQuickRepliesPanel()"
-        >
-          💬 Gerenciar respostas rápidas
-        </button>
-      </div>
+    <button
+      class="send-btn"
+      onclick="openDesktopQuickRepliesPanel()"
+    >
+      💬 Gerenciar respostas rápidas
+    </button>
+  </div>
 
-            <!-- Usuário logado -->
-      <div class="settings-card">
-        <div class="settings-card-title">Usuário logado</div>
+  <!-- Usuário logado -->
+  <div class="settings-card settings-compact-card">
+    <div class="settings-card-title">
+      Usuário logado
+    </div>
 
-        <div
-          class="user-info-name"
-          id="dSettingsName"
-        >
-          —
-        </div>
+    <div
+      class="user-info-name settings-user-name"
+      id="dSettingsName"
+    >
+      —
+    </div>
 
-        <div
-          id="dSettingsEmail"
-          style="
-            color: var(--text3);
-            font-size: 13px;
-            margin-bottom: 16px;
-          "
-        >
-          —
-        </div>
+    <div
+      id="dSettingsEmail"
+      class="settings-user-email"
+    >
+      —
+    </div>
 
-        <button
-          class="send-btn"
-          onclick="logout()"
-        >
-          Sair da conta
-        </button>
-      </div>
+    <button
+      class="send-btn"
+      onclick="logout()"
+    >
+      Sair da conta
+    </button>
+  </div>
+
+</div>
 
 <!-- Integrações -->
 <div class="settings-card integrations-card">
@@ -9808,23 +10043,54 @@ body.ps-detail-open {
         Carregando lojas conectadas...
       </div>
 
-      <div
-        id="integrationStoresEmpty"
-        class="integration-empty"
-        style="display: none"
-      >
-        <div class="integration-empty-icon">
-          +
-        </div>
+    <div
+  id="integrationStoresEmpty"
+  class="integration-empty"
+  style="display: none"
+>
+  <div class="integration-empty-icon">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 10v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9"
+      />
 
-        <strong>
-          Nenhuma loja conectada
-        </strong>
+      <path
+        d="M3 10l2-6h14l2 6"
+      />
 
-        <span>
-          Conecte um dos canais acima para começar.
-        </span>
-      </div>
+      <path
+        d="M3 10c0 1.1.9 2 2 2s2-.9 2-2"
+      />
+
+      <path
+        d="M7 10c0 1.1.9 2 2 2s2-.9 2-2"
+      />
+
+      <path
+        d="M11 10c0 1.1.9 2 2 2s2-.9 2-2"
+      />
+
+      <path
+        d="M15 10c0 1.1.9 2 2 2s2-.9 2-2"
+      />
+
+      <path
+        d="M8 20v-5h8v5"
+      />
+    </svg>
+  </div>
+
+  <strong>
+    Nenhuma loja conectada
+  </strong>
+
+  <span>
+    Conecte uma conta do Mercado Livre ou Shopee para visualizar suas lojas aqui.
+  </span>
+</div>
 
       <div
         id="integrationStoresList"
