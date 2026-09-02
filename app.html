@@ -12855,7 +12855,7 @@ async function sendAnswer(questionId, storeId, button) {
   button.innerText = "Enviando...";
 
   try {
-    const response = await fetch("/api/answer", {
+    const response = await authenticatedIntegrationFetch("/api/answer", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16637,7 +16637,7 @@ const ranking = Object.entries(data.by_user || {})
         button.disabled = true;
         button.innerText = "Enviando...";
         try {
-          const response = await fetch("/api/answer", {
+          const response = await authenticatedIntegrationFetch("/api/answer", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
