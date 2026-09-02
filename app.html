@@ -9586,14 +9586,21 @@ body.ps-detail-open {
       </div>
     </div>
 
-    <button
-      type="button"
-      class="btn-connect-meli"
-      onclick="connectMercadoLivre()"
-    >
-      + Conectar Mercado Livre
-    </button>
-  </div>
+  <button
+  type="button"
+  class="btn-connect-meli"
+  onclick="connectMercadoLivre()"
+>
+  + Conectar Mercado Livre
+</button>
+
+<button
+  type="button"
+  class="btn-connect-shopee"
+  onclick="connectShopee()"
+>
+  + Conectar Shopee
+</button>
 
   <div class="integrations-body">
     <div
@@ -17443,6 +17450,71 @@ async function connectMercadoLivre() {
     alert(
       error.message ||
       "Erro ao conectar Mercado Livre.",
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
+async function connectShopee() {
+  const session = getChatiSession();
+
+  if (!session?.access_token) {
+    alert(
+      "Sua sessão expirou. Saia e entre novamente.",
+    );
+
+    return;
+  }
+
+  const button = document.querySelector(
+    ".btn-connect-shopee",
+  );
+
+  const originalText =
+    button?.textContent || "";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Conectando...";
+    }
+
+    const response =
+      await authenticatedIntegrationFetch(
+        "/api/shopee?action=connect&redirect=/app",
+        {
+          method: "GET",
+        },
+      );
+
+    const result = await response.json();
+
+    if (
+      !response.ok ||
+      !result.success ||
+      !result.authorization_url
+    ) {
+      throw new Error(
+        result.error ||
+        "Não foi possível iniciar a conexão com a Shopee",
+      );
+    }
+
+    window.location.href =
+      result.authorization_url;
+  } catch (error) {
+    console.error(
+      "Erro ao conectar Shopee:",
+      error,
+    );
+
+    alert(
+      error.message ||
+      "Erro ao conectar Shopee.",
     );
 
     if (button) {

@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createOAuthState } from "../lib/oauth.js";
 
 class ApiError extends Error {
   constructor(message, statusCode = 500, details = null) {
@@ -258,6 +259,71 @@ async function sendShopeeMessage({
   );
 }
 
+async function handleConnect({
+  req,
+  res,
+  context,
+}) {
+  assertMethod(req, res, "GET");
+
+  const partnerId =
+    getRequiredEnvironment(
+      "SHOPEE_TEST_PARTNER_ID",
+    );
+
+  const redirectUri =
+    getRequiredEnvironment(
+      "SHOPEE_TEST_REDIRECT_URI",
+    );
+
+  const redirectPath =
+    getStringQuery(req, "redirect") || "/app";
+
+  const state = createOAuthState({
+    provider: "shopee",
+    companyId: context.companyId,
+    profileId: context.profile.id,
+    authId: context.authUser.id,
+    redirectPath,
+  });
+
+  const authorizationUrl = new URL(
+    "https://open.sandbox.test-stable.shopee.com.br/auth",
+  );
+
+  authorizationUrl.searchParams.set(
+    "partner_id",
+    partnerId,
+  );
+
+  authorizationUrl.searchParams.set(
+    "auth_type",
+    "seller",
+  );
+
+  authorizationUrl.searchParams.set(
+    "redirect_uri",
+    redirectUri,
+  );
+
+  authorizationUrl.searchParams.set(
+    "response_type",
+    "code",
+  );
+
+  authorizationUrl.searchParams.set(
+    "state",
+    state,
+  );
+
+  return res.status(200).json({
+    success: true,
+    provider: "shopee",
+    authorization_url:
+      authorizationUrl.toString(),
+  });
+}
+
 async function handleConversations({ req, res, stores }) {
   assertMethod(req, res, "GET");
 
@@ -427,6 +493,16 @@ export default async function handler(req, res) {
     if (!action) {
       throw new ApiError("action é obrigatório", 400);
     }
+
+
+    if (action === "connect") {
+  return handleConnect({
+    req,
+    res,
+    context,
+  });
+}
+
 
     if (action === "test") {
       return handleTest({
