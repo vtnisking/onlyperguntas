@@ -288,8 +288,8 @@ async function handleConnect({
   });
 
   const authorizationUrl = new URL(
-    "https://open.sandbox.test-stable.shopee.com.br/auth",
-  );
+  "https://open.test-stable.shopee.com/auth",
+);
 
   authorizationUrl.searchParams.set(
     "partner_id",
