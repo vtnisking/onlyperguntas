@@ -16315,7 +16315,10 @@ async function quickRepliesRequest(method = "GET", body = null) {
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(quickRepliesUrl(), options);
+  const response = await authenticatedIntegrationFetch(
+  quickRepliesUrl(),
+  options,
+);
   const responseText = await response.text();
 
   let data;
