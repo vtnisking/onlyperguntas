@@ -23,6 +23,21 @@ function getRequiredEnvironment(name) {
   return value;
 }
 
+function getShopeeEnvironment() {
+  const environment =
+    (process.env.SHOPEE_ENV || "sandbox")
+      .trim()
+      .toLowerCase();
+
+  if (!["sandbox", "production"].includes(environment)) {
+    throw new ApiError(
+      "SHOPEE_ENV deve ser sandbox ou production",
+      500,
+    );
+  }
+
+  return environment;
+}
 function getBearerToken(req) {
   const authorization =
     req.headers?.authorization ||
@@ -266,14 +281,24 @@ async function handleConnect({
 }) {
   assertMethod(req, res, "GET");
 
+  const environment =
+    getShopeeEnvironment();
+
+  const isProduction =
+    environment === "production";
+
   const partnerId =
     getRequiredEnvironment(
-      "SHOPEE_TEST_PARTNER_ID",
+      isProduction
+        ? "SHOPEE_PARTNER_ID"
+        : "SHOPEE_TEST_PARTNER_ID",
     );
 
   const redirectUri =
     getRequiredEnvironment(
-      "SHOPEE_TEST_REDIRECT_URI",
+      isProduction
+        ? "SHOPEE_REDIRECT_URI"
+        : "SHOPEE_TEST_REDIRECT_URI",
     );
 
   const redirectPath =
@@ -288,8 +313,10 @@ async function handleConnect({
   });
 
   const authorizationUrl = new URL(
-  "https://open.test-stable.shopee.com/auth",
-);
+    isProduction
+      ? "https://open.shopee.com/auth"
+      : "https://open.test-stable.shopee.com/auth",
+  );
 
   authorizationUrl.searchParams.set(
     "partner_id",
@@ -319,11 +346,11 @@ async function handleConnect({
   return res.status(200).json({
     success: true,
     provider: "shopee",
+    environment,
     authorization_url:
       authorizationUrl.toString(),
   });
 }
-
 async function handleConversations({ req, res, stores }) {
   assertMethod(req, res, "GET");
 

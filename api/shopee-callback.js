@@ -26,6 +26,21 @@ function getRequiredEnvironment(name) {
   return value;
 }
 
+function getShopeeEnvironment() {
+  const environment =
+    (process.env.SHOPEE_ENV || "sandbox")
+      .trim()
+      .toLowerCase();
+
+  if (!["sandbox", "production"].includes(environment)) {
+    throw new ApiError(
+      "SHOPEE_ENV deve ser sandbox ou production",
+      500,
+    );
+  }
+
+  return environment;
+}
 function createShopeeSignature({
   partnerId,
   partnerKey,
@@ -45,14 +60,24 @@ async function exchangeCodeForTokens({
   code,
   shopId,
 }) {
+  const environment =
+    getShopeeEnvironment();
+
+  const isProduction =
+    environment === "production";
+
   const partnerId =
     getRequiredEnvironment(
-      "SHOPEE_TEST_PARTNER_ID",
+      isProduction
+        ? "SHOPEE_PARTNER_ID"
+        : "SHOPEE_TEST_PARTNER_ID",
     );
 
   const partnerKey =
     getRequiredEnvironment(
-      "SHOPEE_TEST_PARTNER_KEY",
+      isProduction
+        ? "SHOPEE_PARTNER_KEY"
+        : "SHOPEE_TEST_PARTNER_KEY",
     );
 
   const apiPath =
@@ -68,8 +93,13 @@ async function exchangeCodeForTokens({
     timestamp,
   });
 
+  const baseUrl =
+    isProduction
+      ? getRequiredEnvironment("SHOPEE_GATEWAY_URL")
+      : "https://openplatform.sandbox.test-stable.shopee.sg";
+
   const url = new URL(
-    `https://openplatform.sandbox.test-stable.shopee.sg${apiPath}`,
+    `${baseUrl.replace(/\/+$/, "")}${apiPath}`,
   );
 
   url.searchParams.set(
@@ -87,6 +117,13 @@ async function exchangeCodeForTokens({
     sign,
   );
 
+  const gatewayAuthorization =
+    isProduction
+      ? `Basic ${Buffer.from(
+          `${getRequiredEnvironment("SHOPEE_GATEWAY_USER")}:${getRequiredEnvironment("SHOPEE_GATEWAY_PASSWORD")}`,
+        ).toString("base64")}`
+      : null;
+
   const response = await fetch(
     url.toString(),
     {
@@ -94,6 +131,9 @@ async function exchangeCodeForTokens({
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        ...(gatewayAuthorization
+          ? { Authorization: gatewayAuthorization }
+          : {}),
       },
       body: JSON.stringify({
         code,
@@ -146,7 +186,6 @@ async function exchangeCodeForTokens({
 
   return data;
 }
-
 async function validateStateOwner(
   supabase,
   statePayload,
