@@ -11,6 +11,10 @@
 
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Chati" />
+    <script src="/pwa.js" defer></script>
     <link rel="icon" href="logo.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
@@ -12564,6 +12568,8 @@ function buildDesktopRow(item) {
             alert("Notificações não permitidas.");
             return;
           }
+          // Garante que o service worker está ativo (antes ele nunca era registrado e esta etapa travava).
+          await navigator.serviceWorker.register("/sw.js");
           const registration = await navigator.serviceWorker.ready;
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
