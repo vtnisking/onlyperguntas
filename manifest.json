@@ -1,11 +1,14 @@
 {
+  "id": "/app",
   "name": "Chati",
   "short_name": "Chati",
+  "description": "Atendimento de marketplaces em um só lugar",
+  "lang": "pt-BR",
   "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#c90000",
-
   "icons": [
     {
       "src": "/icon-192.png",
