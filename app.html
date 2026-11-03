@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=6" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=7" />
   </head>
 
   <body>
@@ -8360,6 +8360,7 @@ body.ps-detail-open {
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
 </svg>
 
@@ -9934,243 +9935,107 @@ body.ps-detail-open {
   <div class="questions-list">
 
 
-    <div class="settings-grid">
+    <div class="settings-grid cfg-page">
 
-
-
-<div class="settings-top-grid">
-
-  <!-- Notificações -->
-  <div class="settings-card settings-compact-card">
-    <div class="settings-card-title">
-      Notificações
-    </div>
-
-    <p class="settings-card-description">
-      Receba alertas em tempo real quando novas perguntas chegarem.
-    </p>
-
-    <button
-      class="send-btn"
-      onclick="requestNotificationPermission()"
-    >
-      🔔 Ativar notificações
-    </button>
-  </div>
-
-  <!-- Respostas rápidas -->
-  <div class="settings-card settings-compact-card">
-    <div class="settings-card-title">
-      Respostas rápidas
-    </div>
-
-    <p class="settings-card-description">
-      Crie e gerencie respostas rápidas para agilizar seu atendimento.
-    </p>
-
-    <button
-      class="send-btn"
-      onclick="openDesktopQuickRepliesPanel()"
-    >
-      💬 Gerenciar respostas rápidas
-    </button>
-  </div>
-
-  <!-- Usuário logado -->
-  <div class="settings-card settings-compact-card">
-    <div class="settings-card-title">
-      Usuário logado
-    </div>
-
-    <div
-      class="user-info-name settings-user-name"
-      id="dSettingsName"
-    >
-      —
-    </div>
-
-    <div
-      id="dSettingsEmail"
-      class="settings-user-email"
-    >
-      —
-    </div>
-
-    <button
-      class="send-btn"
-      onclick="logout()"
-    >
-      Sair da conta
-    </button>
-  </div>
-
-</div>
-
-<!-- Integrações -->
-<div class="settings-card integrations-card">
-
-  <div class="integrations-topbar">
-    <div>
-      <div class="settings-card-title">
-        Integrações
-      </div>
-
-      <div class="integrations-description">
-        Conecte seus canais de venda e centralize o atendimento em um só lugar.
-      </div>
-    </div>
-  </div>
-
-  <div class="integrations-body">
-
-    <div class="integration-section-heading">
-      <div>
-        <div class="integration-section-title">
-          Conectar novos canais
-        </div>
-
-        <div class="integration-section-description">
-          Escolha um marketplace para iniciar a integração.
-        </div>
-      </div>
-    </div>
-
-    <div class="integration-channel-grid">
-
-      <div class="integration-channel-card integration-channel-ml">
-        <div class="integration-channel-main">
-          <div class="integration-channel-logo integration-channel-logo-ml">
-            ML
-          </div>
-
-          <div class="integration-channel-info">
-            <div class="integration-channel-name">
-              Mercado Livre
-            </div>
-
-            <div class="integration-channel-text">
-              Conecte uma ou mais contas do Mercado Livre ao Chati.
-            </div>
+      <header class="cfg-header">
+        <div class="page-hero">
+          <div class="page-hero-icon"><svg class="ui-i"><use href="#icon-ajustes"/></svg></div>
+          <div>
+            <h1 class="st-title">Ajustes</h1>
+            <p class="st-subtitle">Sua conta, notificações e canais de venda</p>
           </div>
         </div>
+      </header>
 
-        <button
-          type="button"
-          class="integration-connect-btn integration-connect-btn-ml"
-          onclick="connectMercadoLivre()"
-        >
-          Conectar
+      <!-- Perfil -->
+      <section class="cfg-profile">
+        <div class="cfg-profile-avatar" id="dSettingsAvatar">?</div>
+        <div class="cfg-profile-info">
+          <div class="cfg-profile-name" id="dSettingsName">—</div>
+          <div class="cfg-profile-meta">
+            <span id="dSettingsEmail">—</span>
+            <span class="cfg-dot"></span>
+            <span id="dSettingsRole">—</span>
+          </div>
+        </div>
+        <button type="button" class="cfg-btn cfg-btn-glass" onclick="logout()">
+          <svg class="ui-i"><use href="#icon-sair"/></svg><span>Sair da conta</span>
         </button>
+      </section>
+
+      <!-- Preferências -->
+      <div class="cfg-grid-2">
+        <section class="cfg-card cfg-pref">
+          <div class="cfg-pref-icon cfg-tone-amber"><svg class="ui-i"><use href="#i-bell"/></svg></div>
+          <div class="cfg-pref-body">
+            <div class="cfg-pref-title">
+              Notificações
+              <span class="cfg-pill" id="dNotifStatus">—</span>
+            </div>
+            <p>Receba um alerta no navegador ou celular assim que uma nova pergunta chegar.</p>
+          </div>
+          <button type="button" class="cfg-btn cfg-btn-primary" onclick="requestNotificationPermission()">
+            Ativar
+          </button>
+        </section>
+
+        <section class="cfg-card cfg-pref">
+          <div class="cfg-pref-icon cfg-tone-violet"><svg class="ui-i"><use href="#i-zap"/></svg></div>
+          <div class="cfg-pref-body">
+            <div class="cfg-pref-title">Respostas rápidas</div>
+            <p>Crie modelos de resposta para responder as perguntas mais comuns em um clique.</p>
+          </div>
+          <button type="button" class="cfg-btn" onclick="openDesktopQuickRepliesPanel()">
+            Gerenciar
+          </button>
+        </section>
       </div>
 
-      <div class="integration-channel-card integration-channel-shopee">
-        <div class="integration-channel-main">
-          <div class="integration-channel-logo integration-channel-logo-shopee">
-            S
-          </div>
-
-          <div class="integration-channel-info">
-            <div class="integration-channel-name">
-              Shopee
-            </div>
-
-            <div class="integration-channel-text">
-              Autorize sua loja Shopee para gerenciar o atendimento pelo Chati.
-            </div>
+      <!-- Integrações -->
+      <section class="cfg-card cfg-integrations">
+        <div class="cfg-card-head">
+          <div>
+            <h2>Integrações</h2>
+            <p id="integrationSummary">Conecte seus canais de venda e centralize o atendimento.</p>
           </div>
         </div>
 
-        <button
-          type="button"
-          class="integration-connect-btn integration-connect-btn-shopee"
-          onclick="connectShopee()"
-        >
-          Conectar
-        </button>
-      </div>
+        <div class="cfg-channels">
+          <button type="button" class="cfg-channel cfg-channel-ml" onclick="connectMercadoLivre()">
+            <span class="cfg-channel-logo">ML</span>
+            <span class="cfg-channel-text">
+              <strong>Mercado Livre</strong>
+              <small>Conecte uma ou mais contas</small>
+            </span>
+            <span class="cfg-channel-cta">Conectar <svg class="ui-i"><use href="#i-chevron-left"/></svg></span>
+          </button>
 
-    </div>
-
-    <div class="integration-stores-section">
-
-      <div class="integration-section-heading">
-        <div>
-          <div class="integration-section-title">
-            Lojas conectadas
-          </div>
-
-          <div class="integration-section-description">
-            Gerencie as contas atualmente vinculadas ao Chati.
-          </div>
+          <button type="button" class="cfg-channel cfg-channel-shopee" onclick="connectShopee()">
+            <span class="cfg-channel-logo">S</span>
+            <span class="cfg-channel-text">
+              <strong>Shopee</strong>
+              <small>Autorize sua loja Shopee</small>
+            </span>
+            <span class="cfg-channel-cta">Conectar <svg class="ui-i"><use href="#i-chevron-left"/></svg></span>
+          </button>
         </div>
-      </div>
 
-      <div
-        id="integrationStoresLoading"
-        class="integration-loading"
-      >
-        Carregando lojas conectadas...
-      </div>
+        <div class="cfg-subhead">
+          <h3>Lojas conectadas</h3>
+        </div>
 
-    <div
-  id="integrationStoresEmpty"
-  class="integration-empty"
-  style="display: none"
->
-  <div class="integration-empty-icon">
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        d="M4 10v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9"
-      />
+        <div id="integrationStoresLoading" class="integration-loading cfg-loading">
+          Carregando lojas conectadas...
+        </div>
 
-      <path
-        d="M3 10l2-6h14l2 6"
-      />
+        <div id="integrationStoresEmpty" class="cfg-empty" style="display: none">
+          <div class="cfg-empty-icon"><svg class="ui-i"><use href="#i-store"/></svg></div>
+          <strong>Nenhuma loja conectada</strong>
+          <span>Conecte uma conta do Mercado Livre ou Shopee para ver suas lojas aqui.</span>
+        </div>
 
-      <path
-        d="M3 10c0 1.1.9 2 2 2s2-.9 2-2"
-      />
-
-      <path
-        d="M7 10c0 1.1.9 2 2 2s2-.9 2-2"
-      />
-
-      <path
-        d="M11 10c0 1.1.9 2 2 2s2-.9 2-2"
-      />
-
-      <path
-        d="M15 10c0 1.1.9 2 2 2s2-.9 2-2"
-      />
-
-      <path
-        d="M8 20v-5h8v5"
-      />
-    </svg>
-  </div>
-
-  <strong>
-    Nenhuma loja conectada
-  </strong>
-
-  <span>
-    Conecte uma conta do Mercado Livre ou Shopee para visualizar suas lojas aqui.
-  </span>
-</div>
-
-      <div
-        id="integrationStoresList"
-        class="integration-stores-list"
-      ></div>
-
-    </div>
-
-  </div>
-
-</div>
+        <div id="integrationStoresList" class="cfg-stores"></div>
+      </section>
 
     <!-- Painel de gerenciamento de usuários -->
     <div
@@ -10537,6 +10402,8 @@ function updateLoggedUserInterface() {
 
     dSettingsName: displayName,
     dSettingsEmail: loggedUser.email || "—",
+    dSettingsAvatar: initials,
+    dSettingsRole: userRole,
 
     mobileSidemenuName: displayName,
     mobileSidemenuEmail: loggedUser.email || "—",
@@ -12572,6 +12439,23 @@ function buildDesktopRow(item) {
       // ──────────────────────────────────────
       // SHARED: Notification
       // ──────────────────────────────────────
+      function updateSettingsNotifStatus() {
+        const el = document.getElementById("dNotifStatus");
+        if (!el) return;
+        const state = "Notification" in window ? Notification.permission : "unsupported";
+        const map = {
+          granted: ["Ativadas", "is-on"],
+          denied: ["Bloqueadas", "is-off"],
+          default: ["Desativadas", ""],
+          unsupported: ["Indisponível", "is-off"],
+        };
+        const [label, cls] = map[state] || map.default;
+        el.textContent = label;
+        el.className = `cfg-pill ${cls}`;
+      }
+      window.updateSettingsNotifStatus = updateSettingsNotifStatus;
+      document.addEventListener("DOMContentLoaded", updateSettingsNotifStatus);
+
       async function requestNotificationPermission() {
         try {
           if (!("Notification" in window)) {
@@ -12605,6 +12489,7 @@ function buildDesktopRow(item) {
             }),
           });
           const saved = await result.json();
+          updateSettingsNotifStatus();
           alert(JSON.stringify(saved));
         } catch (error) {
           alert("Erro ao ativar notificações: " + error.message);
@@ -18249,119 +18134,32 @@ async function loadIntegrationStores() {
 
         return `
           <article
-            class="integration-store-card"
+            class="cfg-store"
             data-store-id="${storeId}"
           >
+            <span class="cfg-store-logo ${isShopee ? "is-shopee" : "is-ml"}">${platformLogo}</span>
 
-            <div class="integration-store-top">
-
-              <div
-                class="
-                  integration-platform-logo
-                  ${platformClass}
-                "
-              >
-                ${platformLogo}
-              </div>
-
-              <div class="integration-store-info">
-
-                <div
-                  class="integration-store-name"
-                  title="${safeStoreName}"
-                >
-                  ${safeStoreName}
-                </div>
-
-                <div class="integration-status">
-                  Conectado
-                </div>
-
-              </div>
-
+            <div class="cfg-store-main">
+              <div class="cfg-store-name" title="${safeStoreName}">${safeStoreName}</div>
+              <div class="cfg-store-sub">${platformName} · Seller ID ${sellerId}</div>
             </div>
 
-            <div
-              class="
-                integration-details
-                integration-store-details-grid
-              "
+            <div class="cfg-store-col">
+              <span>Última conexão</span>
+              <strong>${connectionDate}</strong>
+            </div>
+
+            <span class="cfg-pill is-on"><span class="cfg-live"></span>Conectado</span>
+
+            <button
+              type="button"
+              class="cfg-btn cfg-btn-danger"
+              data-disconnect-store
+              data-store-id="${storeId}"
+              data-store-name="${safeStoreName}"
             >
-
-              <div class="integration-detail">
-
-                <span class="integration-detail-label">
-                  Seller ID
-                </span>
-
-                <span class="integration-detail-value">
-                  ${sellerId}
-                </span>
-
-              </div>
-
-              <div class="integration-detail">
-
-                <span class="integration-detail-label">
-                  Última conexão
-                </span>
-
-                <span class="integration-detail-value">
-                  ${connectionDate}
-                </span>
-
-              </div>
-
-              <div class="integration-detail">
-
-                <span class="integration-detail-label">
-                  Canal
-                </span>
-
-                <span class="integration-detail-value">
-                  ${platformName}
-                </span>
-
-              </div>
-
-              <div class="integration-detail">
-
-                <span class="integration-detail-label">
-                  Status
-                </span>
-
-                <span
-                  class="
-                    integration-detail-value
-                    integration-detail-status
-                  "
-                >
-                  Ativo
-                </span>
-
-              </div>
-
-            </div>
-
-            <div class="integration-store-divider"></div>
-
-            <div class="integration-actions">
-
-              <button
-                type="button"
-                class="
-                  integration-action-btn
-                  integration-disconnect-btn
-                "
-                data-disconnect-store
-                data-store-id="${storeId}"
-                data-store-name="${safeStoreName}"
-              >
-                Desconectar
-              </button>
-
-            </div>
-
+              Desconectar
+            </button>
           </article>
         `;
       })
@@ -18416,12 +18214,12 @@ function updateIntegrationSummary(total) {
 
   if (total === 1) {
     summaryElement.textContent =
-      "1 loja do Mercado Livre conectada";
+      "1 loja conectada";
     return;
   }
 
   summaryElement.textContent =
-    `${total} lojas do Mercado Livre conectadas`;
+    `${total} lojas conectadas`;
 }
 
 async function connectMercadoLivre() {
