@@ -1,5 +1,5 @@
-import crypto from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
+import { shopeeConfig, getTokens, getShopInfo } from "../lib/shopee.js";
 import {
   OAuthStateError,
   verifyOAuthState,
@@ -26,165 +26,11 @@ function getRequiredEnvironment(name) {
   return value;
 }
 
-function getShopeeEnvironment() {
-  const environment =
-    (process.env.SHOPEE_ENV || "sandbox")
-      .trim()
-      .toLowerCase();
-
-  if (!["sandbox", "production"].includes(environment)) {
-    throw new ApiError(
-      "SHOPEE_ENV deve ser sandbox ou production",
-      500,
-    );
-  }
-
-  return environment;
-}
-function createShopeeSignature({
-  partnerId,
-  partnerKey,
-  apiPath,
-  timestamp,
-}) {
-  const baseString =
-    `${partnerId}${apiPath}${timestamp}`;
-
-  return crypto
-    .createHmac("sha256", partnerKey)
-    .update(baseString)
-    .digest("hex");
-}
-
-async function exchangeCodeForTokens({
-  code,
-  shopId,
-}) {
-  const environment =
-    getShopeeEnvironment();
-
-  const isProduction =
-    environment === "production";
-
-  const partnerId =
-    getRequiredEnvironment(
-      isProduction
-        ? "SHOPEE_PARTNER_ID"
-        : "SHOPEE_TEST_PARTNER_ID",
-    );
-
-  const partnerKey =
-    getRequiredEnvironment(
-      isProduction
-        ? "SHOPEE_PARTNER_KEY"
-        : "SHOPEE_TEST_PARTNER_KEY",
-    );
-
-  const apiPath =
-    "/api/v2/auth/token/get";
-
-  const timestamp =
-    Math.floor(Date.now() / 1000);
-
-  const sign = createShopeeSignature({
-    partnerId,
-    partnerKey,
-    apiPath,
-    timestamp,
-  });
-
-  const baseUrl =
-    isProduction
-      ? getRequiredEnvironment("SHOPEE_GATEWAY_URL")
-      : "https://openplatform.sandbox.test-stable.shopee.sg";
-
-  const url = new URL(
-    `${baseUrl.replace(/\/+$/, "")}${apiPath}`,
-  );
-
-  url.searchParams.set(
-    "partner_id",
-    partnerId,
-  );
-
-  url.searchParams.set(
-    "timestamp",
-    String(timestamp),
-  );
-
-  url.searchParams.set(
-    "sign",
-    sign,
-  );
-
-  const gatewayAuthorization =
-    isProduction
-      ? `Basic ${Buffer.from(
-          `${getRequiredEnvironment("SHOPEE_GATEWAY_USER")}:${getRequiredEnvironment("SHOPEE_GATEWAY_PASSWORD")}`,
-        ).toString("base64")}`
-      : null;
-
-  const response = await fetch(
-    url.toString(),
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        ...(gatewayAuthorization
-          ? { Authorization: gatewayAuthorization }
-          : {}),
-      },
-      body: JSON.stringify({
-        code,
-        partner_id: Number(partnerId),
-        shop_id: parseInt(shopId, 10),
-      }),
-    },
-  );
-
-  const responseText =
-    await response.text();
-
-  let data = null;
-
-  try {
-    data = JSON.parse(responseText);
-  } catch {
-    data = null;
-  }
-
-  if (!response.ok) {
-    console.error(
-      "Erro ao trocar code Shopee:",
-      response.status,
-      responseText,
-    );
-
-    throw new ApiError(
-      data?.message ||
-        data?.error ||
-        "A Shopee recusou a autorização",
-      400,
-    );
-  }
-
-  if (
-    !data?.access_token ||
-    !data?.refresh_token
-  ) {
-    console.error(
-      "Resposta inesperada da Shopee:",
-      responseText,
-    );
-
-    throw new ApiError(
-      "A Shopee não retornou os tokens esperados",
-      502,
-    );
-  }
-
-  return data;
+async function exchangeCodeForTokens({ code, shopId }) {
+  const cfg = shopeeConfig();
+  const tokens = await getTokens(cfg, code, shopId);
+  const info = await getShopInfo(cfg, tokens.access_token, shopId);
+  return { ...tokens, shop_name: info?.shop_name || null };
 }
 async function validateStateOwner(
   supabase,
@@ -247,7 +93,7 @@ async function saveShopeeStore({
   const sellerId = String(shopId);
 
   const storeData = {
-    name: `[Shopee - ${sellerId}]`,
+    name: tokens.shop_name || `Shopee ${sellerId}`,
     platform: "shopee",
     seller_id: sellerId,
     access_token: tokens.access_token,
@@ -449,7 +295,9 @@ export default async function handler(req, res) {
 
     if (!shopId) {
       throw new ApiError(
-        "shop_id não informado pela Shopee",
+        typeof req.query.main_account_id === "string"
+          ? "Você autorizou uma conta principal. Autorize uma loja (shop) específica para conectar ao Chati."
+          : "shop_id não informado pela Shopee",
         400,
       );
     }
