@@ -10,12 +10,12 @@
     <title>Chati | Chat Inteligente</title>
 
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Chati" />
     <script src="/pwa.js" defer></script>
-    <link rel="icon" href="logo.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=2" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=4" />
   </head>
 
   <body>
@@ -8740,8 +8740,9 @@ body.ps-detail-open {
       <svg class="ui-i"><use href="#i-menu"/></svg>
     </button>
 
-    <a href="/" class="logo-full">
-      <img src="logo.png" alt="Chati" />
+    <a href="/" class="logo-full" aria-label="Chati">
+      <img class="brand-wordmark brand-wordmark-light" src="/assets/logo-chati-black.png" alt="Chati" />
+      <img class="brand-wordmark brand-wordmark-dark" src="/assets/logo-chati-white.png" alt="Chati" />
     </a>
   </div>
         <div style="display: flex; align-items: center; gap: 8px">
@@ -8868,12 +8869,12 @@ body.ps-detail-open {
   <div class="sidebar-header">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">
-        <img src="logo.png" alt="Chati" />
+        <img src="/icon-192.png" alt="Chati" />
       </div>
 
       <div class="sidebar-brand-text">
-        <div class="sidebar-brand-name">Chati</div>
-        <div class="sidebar-brand-subtitle">Atendimento</div>
+        <img class="brand-wordmark brand-wordmark-light" src="/assets/logo-chati-black.png" alt="Chati" />
+        <img class="brand-wordmark brand-wordmark-dark" src="/assets/logo-chati-white.png" alt="Chati" />
       </div>
     </div>
 

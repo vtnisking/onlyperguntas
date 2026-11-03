@@ -101,6 +101,12 @@
         height: 19px;
       }
 
+      .brand-wordmark {
+        display: block;
+        height: 26px;
+        width: auto;
+      }
+
       .topbar-title {
         font-size: 15.5px;
         font-weight: 800;
@@ -897,7 +903,8 @@
       }
     </style>
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Chati" />
@@ -906,18 +913,7 @@
   <body>
     <div class="topbar">
       <div class="topbar-left">
-        <div class="topbar-mark">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M4 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8c-1.13 0-2.2-.23-3.18-.66L4 20l1.02-4.4C4.38 14.5 4 13.29 4 12Z"
-              stroke="white"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-        <div class="topbar-title">Chati</div>
+        <img class="brand-wordmark" src="/assets/logo-chati-black.png" alt="Chati" />
         <span class="topbar-badge">Painel Superadmin</span>
       </div>
       <button class="btn btn-ghost" onclick="logout()">Sair</button>

@@ -2058,3 +2058,83 @@ html body .st-feed-main p {
     grid-template-columns: 1fr;
   }
 }
+
+/* =====================================================================
+   LOGO (wordmark nova)
+   ===================================================================== */
+html body .brand-wordmark {
+  display: block;
+  width: auto;
+  height: 22px;
+}
+
+html body .brand-wordmark-dark,
+body.dark .brand-wordmark-light {
+  display: none;
+}
+
+body.dark .brand-wordmark-dark {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  html body .sidebar .sidebar-header {
+    min-height: 44px;
+  }
+
+  html body .sidebar .sidebar-brand {
+    padding-left: 4px;
+  }
+
+  /* Ícone quadrado só aparece com o menu recolhido */
+  html body .sidebar .sidebar-brand-icon {
+    display: none;
+  }
+
+  html body .sidebar .brand-wordmark {
+    height: 24px;
+  }
+
+  html body .sidebar.collapsed .sidebar-brand {
+    padding-left: 0;
+  }
+
+  html body .sidebar.collapsed .sidebar-brand-icon {
+    display: flex;
+  }
+
+  html body .sidebar.collapsed .sidebar-brand-icon,
+  html body .sidebar.collapsed .sidebar-brand-icon img {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 9px;
+  }
+}
+
+@media (max-width: 899px) {
+  html body .logo-full {
+    height: auto;
+    max-width: none;
+    align-items: center;
+  }
+
+  html body .logo-full img.brand-wordmark {
+    width: auto;
+    height: 22px;
+    max-width: none;
+    object-fit: contain;
+  }
+
+  html body .logo-full img.brand-wordmark-dark {
+    display: none;
+  }
+
+  body.dark .logo-full img.brand-wordmark-light {
+    display: none;
+  }
+
+  body.dark .logo-full img.brand-wordmark-dark {
+    display: block;
+  }
+}
