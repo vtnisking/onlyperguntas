@@ -3868,3 +3868,674 @@ body.wn-open {
     animation: none !important;
   }
 }
+
+/* ---------- Modal obrigatório: tremida ao clicar fora ---------- */
+.wn-modal.wn-shake {
+  animation: wnShake 0.4s ease;
+}
+
+@keyframes wnShake {
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+.wn-badge.is-violet {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  box-shadow: 0 8px 18px -8px rgba(124, 58, 237, 0.8);
+}
+
+a.wn-btn {
+  text-decoration: none;
+}
+
+/* =====================================================================
+   MODAL — INAUGURAÇÃO
+   ===================================================================== */
+.is-inauguracao .wn-stage {
+  background:
+    radial-gradient(80% 70% at 50% 40%, rgba(255, 51, 85, 0.28), transparent 65%),
+    radial-gradient(90% 80% at 100% 100%, rgba(139, 92, 246, 0.28), transparent 60%),
+    linear-gradient(160deg, #17090d, #0b0b10);
+}
+
+.ia-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ia-confetti i {
+  position: absolute;
+  top: -20px;
+  width: var(--s);
+  height: calc(var(--s) * 0.45);
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0.85;
+  animation: iaFall var(--du) linear var(--dl) infinite;
+}
+
+.ia-confetti i:nth-child(3n) {
+  height: var(--s);
+  border-radius: 50%;
+}
+
+@keyframes iaFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { transform: translateY(520px) rotate(var(--r)); opacity: 0; }
+}
+
+.ia-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.ia-rings {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.ia-rings span {
+  position: absolute;
+  left: -90px;
+  top: -90px;
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  animation: iaRing 3.6s ease-out infinite;
+}
+
+.ia-rings span:nth-child(2) { animation-delay: 1.2s; }
+.ia-rings span:nth-child(3) { animation-delay: 2.4s; }
+
+@keyframes iaRing {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.ia-logo {
+  position: relative;
+  width: 170px;
+  height: auto;
+  filter: drop-shadow(0 10px 30px rgba(255, 51, 85, 0.45));
+  animation: iaLogo 3s ease-in-out infinite;
+}
+
+@keyframes iaLogo {
+  50% { transform: translateY(-4px) scale(1.02); }
+}
+
+.ia-date {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  animation: wnItem 0.6s ease 0.2s both;
+}
+
+.ia-date-day {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  background: linear-gradient(180deg, #ffffff, #ffb3c1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ia-date-sep {
+  width: 2px;
+  height: 46px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #ff3355, #a78bfa);
+}
+
+.ia-date-rest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.ia-date-rest b {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ia-date-rest small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+.ia-count {
+  display: grid;
+  grid-template-columns: repeat(4, 64px);
+  gap: 8px;
+}
+
+.ia-count > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9px 0 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.ia-count strong {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ia-count strong.flip {
+  animation: iaFlip 0.35s ease;
+}
+
+@keyframes iaFlip {
+  0% { transform: translateY(-6px); opacity: 0.2; }
+  100% { transform: none; opacity: 1; }
+}
+
+.ia-count span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ia-today {
+  grid-column: 1 / -1;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff3355, #c20026);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ia-when {
+  margin: -2px 0 10px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.is-inauguracao .wn-btn-primary {
+  width: 100%;
+}
+
+/* =====================================================================
+   MODAL — CHATI ERP
+   ===================================================================== */
+.is-erp .wn-stage {
+  background:
+    radial-gradient(110% 90% at 0% 0%, rgba(232, 0, 45, 0.25), transparent 55%),
+    radial-gradient(90% 80% at 100% 100%, rgba(59, 130, 246, 0.2), transparent 60%),
+    linear-gradient(160deg, #121418, #0b0c0f);
+}
+
+.erp-brand {
+  height: 26px;
+  width: auto;
+  margin-bottom: 14px;
+  align-self: flex-start;
+}
+
+.erp-brand-dark,
+body.dark .erp-brand-light {
+  display: none;
+}
+
+body.dark .erp-brand-dark {
+  display: block;
+}
+
+.erp-window {
+  position: relative;
+  z-index: 1;
+  width: min(380px, 100%);
+  aspect-ratio: 4 / 3;
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: #f4f5f7;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.75), 0 0 0 6px rgba(255, 255, 255, 0.04);
+  transform: perspective(900px) rotateX(5deg) rotateY(-9deg);
+  animation: wnTilt 7s ease-in-out infinite;
+  font-family: inherit;
+}
+
+.erp-side {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 7px;
+  background: #121418;
+}
+
+.erp-logo {
+  width: 78%;
+  height: auto;
+  margin: 0 0 9px 4px;
+}
+
+.erp-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  border-radius: 5px;
+  color: #b9bec8;
+  font-size: 9px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background 0.25s, color 0.25s;
+}
+
+.erp-nav b {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 2px;
+  background: #3a3f49;
+  transition: background 0.25s;
+}
+
+.erp-nav.is-active {
+  background: #1c1f25;
+  color: #fff;
+}
+
+.erp-nav.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: #e8002d;
+}
+
+.erp-nav.is-active b {
+  background: #e8002d;
+}
+
+.erp-main {
+  position: relative;
+  min-width: 0;
+}
+
+.erp-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 11px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.35s, transform 0.35s, visibility 0.35s;
+}
+
+.erp-scene.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.erp-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  color: #15171c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.erp-btn {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e8002d;
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 600;
+}
+
+.erp-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.erp-kpis div {
+  padding: 6px;
+  border: 1px solid #e3e5e9;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.erp-kpis small {
+  display: block;
+  color: #8a909c;
+  font-size: 6.5px;
+  white-space: nowrap;
+}
+
+.erp-kpis strong {
+  color: #15171c;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.erp-kpis div:first-child strong {
+  color: #e8002d;
+}
+
+.erp-chart {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  padding: 8px;
+  border: 1px solid #e3e5e9;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.erp-chart i {
+  flex: 1;
+  height: var(--h);
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #ff4d6d, #c20026);
+  transform-origin: bottom;
+}
+
+.erp-scene.is-active .erp-chart i {
+  animation: erpBar 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation-delay: calc(var(--d) * 0.07s);
+}
+
+@keyframes erpBar {
+  from { transform: scaleY(0); }
+}
+
+.erp-row,
+.erp-pub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border: 1px solid #e3e5e9;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 8px;
+  color: #15171c;
+}
+
+.erp-scene.is-active .erp-row,
+.erp-scene.is-active .erp-pub {
+  animation: erpRow 0.4s ease both;
+  animation-delay: calc(0.1s + var(--d) * 0.12s);
+}
+
+@keyframes erpRow {
+  from { opacity: 0; transform: translateX(10px); }
+}
+
+.erp-thumb {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+}
+
+.erp-row-name,
+.erp-pub-main span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.erp-tag {
+  padding: 1px 5px;
+  border-radius: 99px;
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.erp-tag.ok {
+  background: #e6f4ec;
+  color: #1b7f46;
+}
+
+.erp-tag.warn {
+  background: #fff3df;
+  color: #9a5b00;
+}
+
+.erp-ai {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e3e5e9;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.erp-ai-photo {
+  width: 54px;
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+}
+
+.erp-ai-photo span {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+}
+
+.erp-ai-photo span:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 2 / 1.2;
+}
+
+.erp-ai-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.erp-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  width: fit-content;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  color: #fff;
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.erp-ai-badge .ui-i {
+  width: 8px;
+  height: 8px;
+}
+
+.erp-ai-text i {
+  display: block;
+  height: 5px;
+  width: 0;
+  border-radius: 3px;
+  background: #d4d7dd;
+}
+
+.erp-scene.is-active .erp-ai-text i {
+  animation: erpType 0.6s ease forwards;
+  animation-delay: calc(0.2s + var(--d) * 0.35s);
+}
+
+@keyframes erpType {
+  to { width: var(--w); }
+}
+
+.erp-progress {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e3e5e9;
+}
+
+.erp-progress b {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #7c3aed, #e8002d);
+}
+
+.erp-scene.is-active .erp-progress b {
+  animation: erpFill 1.8s ease forwards 0.2s;
+}
+
+@keyframes erpFill {
+  to { width: 100%; }
+}
+
+.erp-ch {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  font-size: 6.5px;
+  font-weight: 800;
+}
+
+.erp-ch.ml {
+  background: #ffe600;
+  color: #2d3277;
+}
+
+.erp-ch.shopee {
+  background: #ee4d2d;
+  color: #fff;
+}
+
+.erp-pub-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.erp-pub-main i {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e3e5e9;
+}
+
+.erp-pub-main i b {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #1b7f46;
+}
+
+.erp-scene.is-active .erp-pub-main i b {
+  animation: erpFill 0.9s ease forwards;
+  animation-delay: calc(0.3s + var(--d) * 0.35s);
+}
+
+.erp-ok {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1b7f46;
+  color: #fff;
+  transform: scale(0);
+}
+
+.erp-ok .ui-i {
+  width: 8px;
+  height: 8px;
+  stroke-width: 3;
+}
+
+.erp-scene.is-active .erp-ok {
+  animation: erpPop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) forwards;
+  animation-delay: calc(1.2s + var(--d) * 0.35s);
+}
+
+@keyframes erpPop {
+  to { transform: scale(1); }
+}
+
+.erp-window .wn-cursor {
+  left: 72%;
+  top: 70%;
+}
+
+@media (max-width: 760px) {
+  .ia-date-day {
+    font-size: 52px;
+  }
+
+  .ia-count {
+    grid-template-columns: repeat(4, 58px);
+  }
+
+  .ia-logo {
+    width: 140px;
+  }
+
+  .erp-window {
+    width: min(320px, 100%);
+  }
+}
