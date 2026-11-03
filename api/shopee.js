@@ -1,5 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 import { createOAuthState } from "../lib/oauth.js";
+import {
+  ShopeeError,
+  shopeeConfig,
+  buildAuthUrl,
+  listarConversas,
+  listarMensagens,
+  marcarComoLida,
+  enviarMensagem,
+  separarConversaId,
+} from "../lib/shopee.js";
 
 class ApiError extends Error {
   constructor(message, statusCode = 500, details = null) {
@@ -23,21 +33,6 @@ function getRequiredEnvironment(name) {
   return value;
 }
 
-function getShopeeEnvironment() {
-  const environment =
-    (process.env.SHOPEE_ENV || "sandbox")
-      .trim()
-      .toLowerCase();
-
-  if (!["sandbox", "production"].includes(environment)) {
-    throw new ApiError(
-      "SHOPEE_ENV deve ser sandbox ou production",
-      500,
-    );
-  }
-
-  return environment;
-}
 function getBearerToken(req) {
   const authorization =
     req.headers?.authorization ||
@@ -205,105 +200,17 @@ function getJsonBody(req) {
   return {};
 }
 
-async function fetchShopeeConversations({
-  stores,
-  period,
-  unreadOnly,
-  search,
-}) {
-  void period;
-  void unreadOnly;
-  void search;
-
-  if (!stores.length) {
-    return {
-      conversations: [],
-      summary: {
-        today: 0,
-        total: 0,
-        pending: 0,
-        unread: 0,
-      },
-      warnings: ["Nenhuma loja Shopee conectada."],
-    };
-  }
-
-  throw new ApiError(
-    "A conta Shopee está cadastrada, mas a consulta oficial de conversas ainda não foi implementada.",
-    501,
-  );
+function lojaDaConversa(stores, valor) {
+  const { storeId, conversationId } = separarConversaId(valor);
+  const store = stores.find((s) => String(s.id) === storeId);
+  if (!store) throw new ApiError("Esta conversa não pertence a uma loja Shopee sua", 404);
+  return { store, conversationId };
 }
 
-async function fetchShopeeMessages({
-  stores,
-  conversationId,
-}) {
-  void conversationId;
-
-  if (!stores.length) {
-    return {
-      messages: [],
-      warnings: ["Nenhuma loja Shopee conectada."],
-    };
-  }
-
-  throw new ApiError(
-    "A conta Shopee está cadastrada, mas a consulta oficial de mensagens ainda não foi implementada.",
-    501,
-  );
-}
-
-async function sendShopeeMessage({
-  stores,
-  conversationId,
-  message,
-}) {
-  void conversationId;
-  void message;
-
-  if (!stores.length) {
-    throw new ApiError(
-      "Nenhuma loja Shopee conectada.",
-      409,
-    );
-  }
-
-  throw new ApiError(
-    "A conta Shopee está cadastrada, mas o envio oficial de mensagens ainda não foi implementado.",
-    501,
-  );
-}
-
-async function handleConnect({
-  req,
-  res,
-  context,
-}) {
+async function handleConnect({ req, res, context }) {
   assertMethod(req, res, "GET");
-
-  const environment =
-    getShopeeEnvironment();
-
-  const isProduction =
-    environment === "production";
-
-  const partnerId =
-    getRequiredEnvironment(
-      isProduction
-        ? "SHOPEE_PARTNER_ID"
-        : "SHOPEE_TEST_PARTNER_ID",
-    );
-
-  const redirectUri =
-    getRequiredEnvironment(
-      isProduction
-        ? "SHOPEE_REDIRECT_URI"
-        : "SHOPEE_TEST_REDIRECT_URI",
-    );
-
-  const redirectPath =
-    getStringQuery(req, "redirect") || "/app";
-
+  const cfg = shopeeConfig();
+  const redirectPath = getStringQuery(req, "redirect") || "/app";
   const state = createOAuthState({
     provider: "shopee",
     companyId: context.companyId,
@@ -311,101 +218,86 @@ async function handleConnect({
     authId: context.authUser.id,
     redirectPath,
   });
-
-  const authorizationUrl = new URL(
-    isProduction
-      ? "https://open.shopee.com/auth"
-      : "https://open.test-stable.shopee.com/auth",
-  );
-
-  authorizationUrl.searchParams.set(
-    "partner_id",
-    partnerId,
-  );
-
-  authorizationUrl.searchParams.set(
-    "auth_type",
-    "seller",
-  );
-
-  authorizationUrl.searchParams.set(
-    "redirect_uri",
-    redirectUri,
-  );
-
-  authorizationUrl.searchParams.set(
-    "response_type",
-    "code",
-  );
-
-  authorizationUrl.searchParams.set(
-    "state",
-    state,
-  );
-
   return res.status(200).json({
     success: true,
     provider: "shopee",
-    environment,
-    authorization_url:
-      authorizationUrl.toString(),
-  });
-}
-async function handleConversations({ req, res, stores }) {
-  assertMethod(req, res, "GET");
-
-  const period = getStringQuery(req, "period") || "all";
-  const unreadOnly =
-    getStringQuery(req, "unread_only") === "true";
-  const search = getStringQuery(req, "search");
-
-  const result = await fetchShopeeConversations({
-    stores,
-    period,
-    unreadOnly,
-    search,
-  });
-
-  return res.status(200).json({
-    success: true,
-    conversations: result.conversations || [],
-    summary: result.summary || {
-      today: 0,
-      total: 0,
-      pending: 0,
-      unread: 0,
-    },
-    warnings: result.warnings || [],
+    environment: cfg.environment,
+    authorization_url: buildAuthUrl(cfg, state),
   });
 }
 
-async function handleMessages({ req, res, stores }) {
+async function handleConversations({ req, res, stores, supabase }) {
   assertMethod(req, res, "GET");
+  const unreadOnly = getStringQuery(req, "unread_only") === "true";
+  const search = getStringQuery(req, "search").toLowerCase();
 
-  const conversationId =
-    getStringQuery(req, "conversation_id");
+  if (!stores.length) {
+    return res.status(200).json({
+      success: true,
+      conversations: [],
+      summary: { today: 0, total: 0, pending: 0, unread: 0 },
+      warnings: ["Nenhuma loja Shopee conectada."],
+    });
+  }
 
-  if (!conversationId) {
-    throw new ApiError(
-      "conversation_id é obrigatório",
-      400,
+  const cfg = shopeeConfig();
+  const warnings = [];
+  const resultados = await Promise.all(
+    stores.map((store) =>
+      listarConversas(cfg, supabase, store, { tipo: unreadOnly ? "unread" : "all" }).catch((e) => {
+        warnings.push(`${store.name}: ${e.message}`);
+        return [];
+      }),
+    ),
+  );
+
+  let conversations = resultados
+    .flat()
+    .sort((a, b) => new Date(b.last_message.created_at || 0) - new Date(a.last_message.created_at || 0));
+
+  if (search) {
+    conversations = conversations.filter((c) =>
+      `${c.customer.name} ${c.last_message.text}`.toLowerCase().includes(search),
     );
   }
 
-  const result = await fetchShopeeMessages({
-    stores,
-    conversationId,
+  const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const diaDe = (iso) =>
+    iso ? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date(iso)) : "";
+  conversations.forEach((c) => {
+    c.is_today = diaDe(c.last_message.created_at) === hoje;
   });
+
+  if (warnings.length && !conversations.length && warnings.length === stores.length) {
+    throw new ApiError(warnings[0].split(": ").slice(1).join(": ") || "Erro ao carregar conversas", 502);
+  }
 
   return res.status(200).json({
     success: true,
-    conversation_id: conversationId,
-    messages: result.messages || [],
-    warnings: result.warnings || [],
+    conversations,
+    summary: {
+      today: conversations.filter((c) => c.is_today).length,
+      total: conversations.length,
+      pending: conversations.filter((c) => c.unread_count > 0).length,
+      unread: conversations.reduce((n, c) => n + c.unread_count, 0),
+    },
+    warnings,
   });
 }
 
-async function handleSendMessage({ req, res, stores }) {
+async function handleMessages({ req, res, stores, supabase }) {
+  assertMethod(req, res, "GET");
+  const valor = getStringQuery(req, "conversation_id");
+  if (!valor) throw new ApiError("conversation_id é obrigatório", 400);
+  const { store, conversationId } = lojaDaConversa(stores, valor);
+  const cfg = shopeeConfig();
+  const messages = await listarMensagens(cfg, supabase, store, conversationId);
+  const ultima = [...messages].reverse().find((m) => m.direction === "incoming");
+  marcarComoLida(cfg, supabase, store, conversationId, ultima?.id);
+  return res.status(200).json({ success: true, conversation_id: valor, messages, warnings: [] });
+}
+
+async function handleSendMessage({ req, res, stores, supabase }) {
   assertMethod(req, res, "POST");
 
   const body = getJsonBody(req);
@@ -430,24 +322,21 @@ async function handleSendMessage({ req, res, stores }) {
     );
   }
 
-  if (message.length > 5000) {
+  if (message.length > 1000) {
     throw new ApiError(
       "A mensagem ultrapassa o limite permitido",
       400,
     );
   }
 
-  const result = await sendShopeeMessage({
-    stores,
-    conversationId,
-    message,
-  });
+  const { store, conversationId: idShopee } = lojaDaConversa(stores, conversationId);
+  const result = await enviarMensagem(shopeeConfig(), supabase, store, idShopee, message);
 
   return res.status(200).json({
     success: true,
     conversation_id: conversationId,
-    message_id: result?.message_id || null,
-    data: result?.data || null,
+    message_id: result?.message_id ? String(result.message_id) : null,
+    data: result || null,
   });
 }
 
@@ -545,6 +434,7 @@ export default async function handler(req, res) {
         req,
         res,
         stores,
+        supabase,
       });
     }
 
@@ -553,6 +443,7 @@ export default async function handler(req, res) {
         req,
         res,
         stores,
+        supabase,
       });
     }
 
@@ -561,6 +452,7 @@ export default async function handler(req, res) {
         req,
         res,
         stores,
+        supabase,
       });
     }
 
@@ -572,7 +464,7 @@ export default async function handler(req, res) {
     console.error("Erro em /api/shopee:", error);
 
     const statusCode =
-      error instanceof ApiError
+      error instanceof ApiError || error instanceof ShopeeError
         ? error.statusCode
         : 500;
 
@@ -582,7 +474,7 @@ export default async function handler(req, res) {
         error?.message ||
         "Erro interno na API da Shopee",
       details:
-        error instanceof ApiError
+        error instanceof ApiError || error instanceof ShopeeError
           ? error.details
           : null,
     });
