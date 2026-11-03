@@ -1421,3 +1421,640 @@ html body .empty {
     padding: 0;
   }
 }
+
+/* =====================================================================
+   ESTATÍSTICAS (desktop)
+   ===================================================================== */
+html body #dt-stats .questions-list {
+  padding: 28px 32px 56px;
+}
+
+html body .st-page {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+html body .st-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-bottom: 20px;
+}
+
+html body .st-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+html body .st-subtitle {
+  margin: 4px 0 0;
+  color: var(--text3);
+  font-size: 13.5px;
+  font-weight: 400;
+}
+
+html body .st-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html body .st-segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface2);
+}
+
+html body .st-seg {
+  height: 28px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+html body .st-seg:hover {
+  color: var(--text);
+}
+
+html body .st-seg.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(10, 10, 11, 0.08), 0 0 0 1px var(--border);
+}
+
+body.dark .st-seg.active {
+  background: var(--surface3);
+  box-shadow: none;
+}
+
+html body .st-btn {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+html body .st-btn:hover {
+  background: var(--surface2);
+}
+
+html body .st-btn .ui-i {
+  color: var(--text2);
+}
+
+html body .st-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+html body .st-btn.active .ui-i {
+  color: var(--accent);
+}
+
+html body .st-btn-icon {
+  width: 36px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* Calendário personalizado como popover */
+html body .st-custom-wrap {
+  position: relative;
+}
+
+html body .st-calendar {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: 300px;
+  padding: 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgba(10, 10, 11, 0.14);
+}
+
+html body .st-calendar .send-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Indicadores */
+html body .st-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+html body .st-kpi,
+html body .st-card {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+html body .st-kpi {
+  padding: 16px 18px;
+}
+
+html body .st-kpi-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text3);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+html body .st-kpi-label .ui-i {
+  width: 14px;
+  height: 14px;
+}
+
+html body .st-kpi-value {
+  overflow: hidden;
+  margin-top: 10px;
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .st-kpi-of {
+  color: var(--text3);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+html body .st-kpi-sub {
+  margin-top: 4px;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* Cards */
+html body .st-card {
+  margin-bottom: 12px;
+  padding: 18px 20px;
+}
+
+html body .st-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+html body .st-card-head h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+html body .st-card-meta {
+  color: var(--text3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-empty {
+  padding: 28px 0;
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+html body .st-empty-sm {
+  padding: 12px 0 4px;
+  text-align: left;
+}
+
+html body .st-loading {
+  padding: 48px 0;
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+html body #dStatsContent {
+  transition: opacity 0.15s;
+}
+
+html body #dStatsContent.is-loading {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Gráfico de barras */
+html body .st-chart {
+  position: relative;
+  padding-left: 28px;
+}
+
+html body .st-chart-grid {
+  position: absolute;
+  inset: 0 0 22px 28px;
+  pointer-events: none;
+}
+
+html body .st-chart-tick {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--border);
+}
+
+html body .st-chart-tick:first-child {
+  border-top-style: solid;
+  border-color: var(--border2);
+}
+
+html body .st-chart-tick span {
+  position: absolute;
+  left: -28px;
+  width: 22px;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-chart-bars,
+html body .st-chart-labels {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 2px;
+}
+
+html body .st-chart-bars {
+  position: relative;
+  height: 200px;
+  align-items: end;
+}
+
+html body .st-bar-col {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  outline: none;
+  cursor: default;
+}
+
+html body .st-bar {
+  width: min(100%, 28px);
+  max-width: 70%;
+  min-width: 3px;
+  border-radius: 4px 4px 0 0;
+  background: var(--accent);
+  transition: opacity 0.15s;
+}
+
+html body .st-bar.is-zero {
+  height: 0;
+}
+
+html body .st-chart-bars:hover .st-bar {
+  opacity: 0.45;
+}
+
+html body .st-chart-bars .st-bar-col:hover .st-bar,
+html body .st-chart-bars .st-bar-col:focus-visible .st-bar {
+  opacity: 1;
+}
+
+html body .st-bar-col:hover::before,
+html body .st-bar-col:focus-visible::before {
+  content: "";
+  position: absolute;
+  inset: 0 -1px;
+  border-radius: 6px;
+  background: var(--surface2);
+  z-index: -1;
+}
+
+html body .st-bar-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  display: none;
+  transform: translateX(-50%);
+  padding: 7px 10px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(10, 10, 11, 0.12);
+  pointer-events: none;
+}
+
+html body .st-bar-tip strong {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-bar-tip span {
+  display: block;
+  margin-top: 1px;
+  color: var(--text3);
+}
+
+html body .st-bar-col .st-bar-tip {
+  bottom: calc(var(--h, 0%) + 8px);
+}
+
+html body .st-bar-col:hover .st-bar-tip,
+html body .st-bar-col:focus-visible .st-bar-tip {
+  display: block;
+}
+
+html body .st-bar-col:first-child .st-bar-tip,
+html body .st-bar-col:nth-child(2) .st-bar-tip {
+  left: 0;
+  transform: none;
+}
+
+html body .st-bar-col:last-child .st-bar-tip,
+html body .st-bar-col:nth-last-child(2) .st-bar-tip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+html body .st-chart-labels {
+  height: 22px;
+  align-items: end;
+}
+
+html body .st-chart-labels span {
+  overflow: visible;
+  color: var(--text3);
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-chart-foot {
+  margin-top: 10px;
+  padding-left: 28px;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* Colunas inferiores */
+html body .st-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+html body .st-cols .st-card {
+  margin-bottom: 0;
+}
+
+html body .st-side {
+  display: grid;
+  gap: 12px;
+}
+
+/* Ranking */
+html body .st-rank,
+html body .st-list,
+html body .st-feed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+html body .st-rank-row {
+  display: grid;
+  grid-template-columns: 20px 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+html body .st-rank-row + .st-rank-row {
+  border-top: 1px solid var(--border);
+}
+
+html body .st-rank-pos {
+  color: var(--text3);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-rank-pos.is-first {
+  color: var(--accent);
+}
+
+html body .st-avatar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+html body .st-avatar-sm {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  font-size: 10px;
+}
+
+html body .st-rank-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+html body .st-rank-name,
+html body .st-list-name {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .st-list-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+html body .st-list-name .ui-i {
+  width: 14px;
+  height: 14px;
+  color: var(--text3);
+}
+
+html body .st-rank-num {
+  flex-shrink: 0;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-rank-num small {
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+html body .st-meter {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface2);
+}
+
+html body .st-meter span {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+html body .st-rank-row.is-zero .st-rank-name,
+html body .st-rank-row.is-zero .st-rank-num {
+  color: var(--text3);
+}
+
+html body .st-list li + li {
+  margin-top: 12px;
+}
+
+/* Últimas respostas */
+html body .st-feed li {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+html body .st-feed li:first-child {
+  padding-top: 0;
+}
+
+html body .st-feed li + li {
+  border-top: 1px solid var(--border);
+}
+
+html body .st-feed-main {
+  min-width: 0;
+  flex: 1;
+}
+
+html body .st-feed-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+html body .st-feed-top strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+html body .st-feed-top time {
+  flex-shrink: 0;
+  color: var(--text3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-feed-main p {
+  display: -webkit-box;
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: var(--text2);
+  font-size: 12.5px;
+  line-height: 1.45;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+@media (max-width: 1280px) {
+  html body .st-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 1100px) {
+  html body .st-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html body .st-cols {
+    grid-template-columns: 1fr;
+  }
+}
