@@ -107,6 +107,38 @@
         width: auto;
       }
 
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-back {
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(135deg, #ff3355, #c20026);
+        box-shadow: 0 8px 18px -8px rgba(232, 0, 45, 0.75);
+      }
+
+      .btn-back:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+      }
+
+      .btn-back svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .btn-back-short {
+        display: none;
+      }
+
       .topbar-title {
         font-size: 15.5px;
         font-weight: 800;
@@ -878,6 +910,18 @@
         .topbar {
           padding: 0 16px;
         }
+        .topbar-badge {
+          display: none;
+        }
+        .btn-back-label {
+          display: none;
+        }
+        .btn-back-short {
+          display: inline;
+        }
+        .topbar-right .btn {
+          padding: 8px 13px;
+        }
         .main {
           padding: 26px 16px 48px;
         }
@@ -916,7 +960,14 @@
         <img class="brand-wordmark" src="/assets/logo-chati-black.png" alt="Chati" />
         <span class="topbar-badge">Painel Superadmin</span>
       </div>
-      <button class="btn btn-ghost" onclick="logout()">Sair</button>
+      <div class="topbar-right">
+        <a class="btn btn-back" href="/app" title="Voltar para o Chati">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+          <span class="btn-back-label">Voltar para o Chati</span>
+          <span class="btn-back-short">Chati</span>
+        </a>
+        <button class="btn btn-ghost" onclick="logout()">Sair</button>
+      </div>
     </div>
 
     <div class="main">
