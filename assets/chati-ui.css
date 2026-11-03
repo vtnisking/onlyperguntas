@@ -2211,7 +2211,7 @@ body.dark {
   }
 
   html body .topbar {
-    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
   }
 
   /* Menu: item ativo com faixa vermelha e leve gradiente */
@@ -4395,4 +4395,488 @@ body.dark .shopee-open-order:hover {
     background: var(--surface2);
     color: var(--text);
   }
+}
+
+/* =====================================================================
+   TOPO FIXO AO ROLAR
+   "overflow-x: hidden" no html/body transformava o body em área de
+   rolagem própria e quebrava o position: sticky do topo. "clip" corta
+   o excesso lateral sem criar essa área.
+   ===================================================================== */
+html,
+html body {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+@media (min-width: 900px) {
+  html body .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+  }
+}
+
+@media (min-width: 900px) {
+  html body .sidebar .sidebar-superadmin {
+    color: #7c3aed;
+  }
+
+  html body .sidebar .sidebar-superadmin .nav-icon {
+    color: #7c3aed;
+  }
+
+  html body .sidebar .sidebar-superadmin:hover {
+    background: rgba(124, 58, 237, 0.08);
+    color: #6d28d9;
+  }
+
+  body.dark .sidebar .sidebar-superadmin,
+  body.dark .sidebar .sidebar-superadmin .nav-icon {
+    color: #c4a3f2;
+  }
+}
+
+/* =====================================================================
+   RESPONDIDAS (desktop)
+   ===================================================================== */
+html body #dt-answered .questions-list {
+  padding: 28px 28px 56px;
+}
+
+html body .ans-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(360px, 100%);
+}
+
+html body .ans-search .ui-i {
+  position: absolute;
+  left: 12px;
+  color: var(--text3);
+}
+
+html body .ans-search input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px 0 36px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+}
+
+html body .ans-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+html body .ans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+html body .ans-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+html body .ans-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+}
+
+html body .ans-thumb {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--text3);
+}
+
+html body .ans-thumb .ui-i {
+  width: 22px;
+  height: 22px;
+}
+
+html body .ans-body {
+  min-width: 0;
+}
+
+html body .ans-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+html body .ans-product {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .ans-top .cfg-pill .ui-i {
+  width: 12px;
+  height: 12px;
+}
+
+html body .ans-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 12px;
+}
+
+html body .ans-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 12px;
+}
+
+html body .ans-meta .ui-i {
+  width: 13px;
+  height: 13px;
+  color: var(--text3);
+}
+
+html body .ans-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+html body .ans-q,
+html body .ans-a {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+html body .ans-q {
+  background: var(--surface2);
+}
+
+html body .ans-a {
+  border: 1px solid color-mix(in srgb, var(--green) 25%, transparent);
+  background: linear-gradient(135deg, var(--green-soft), transparent 80%), var(--surface);
+}
+
+html body .ans-q small,
+html body .ans-a small {
+  color: var(--text3);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+html body .ans-q p,
+html body .ans-a p {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+html body .ans-avatar {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+html body .ans-avatar.is-team {
+  border-color: transparent;
+  background: var(--grad-red);
+  color: #fff;
+  box-shadow: var(--glow-red);
+}
+
+html body .ans-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 48px 16px;
+  border: 1px dashed var(--border2);
+  border-radius: 16px;
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+html body .ans-empty strong {
+  color: var(--text);
+  font-size: 14.5px;
+}
+
+/* =====================================================================
+   PÓS-VENDAS e USUÁRIOS — alinhar ao visual novo
+   ===================================================================== */
+html body .post-sales-page,
+html body .users-page {
+  padding: 28px 28px 56px;
+}
+
+html body .post-sales-header,
+html body .users-page-header {
+  margin-bottom: 20px;
+}
+
+html body .post-sales-refresh {
+  height: 36px;
+  gap: 7px;
+  padding: 0 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+html body .post-sales-refresh:hover {
+  background: var(--surface2);
+}
+
+html body .post-sales-tabs {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface2);
+}
+
+html body .post-sales-tab {
+  color: var(--text2);
+}
+
+html body .post-sales-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--border);
+}
+
+html body .post-sales-tab.active .post-sales-tab-count {
+  background: var(--grad-red);
+  color: #fff;
+}
+
+html body .post-sales-summary-card,
+html body .users-summary-card,
+html body .post-sales-case,
+html body .users-table-card,
+html body .users-table,
+html body .users-list-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+
+html body .post-sales-summary-card.active {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent), var(--glow-red-lg);
+}
+
+html body .post-sales-summary-card.active::before {
+  display: none;
+}
+
+html body .post-sales-summary-icon,
+html body .users-summary-icon {
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: 0;
+}
+
+html body .post-sales-summary-icon .ui-i,
+html body .users-summary-icon .ui-i {
+  width: 18px;
+  height: 18px;
+}
+
+html body .post-sales-summary-icon.attention,
+html body .users-summary-red {
+  background: var(--grad-red);
+  color: #fff;
+  box-shadow: var(--glow-red);
+}
+
+html body .post-sales-summary-icon.progress,
+html body .users-summary-yellow {
+  background: var(--yellow-soft);
+  color: var(--yellow);
+}
+
+html body .post-sales-summary-icon.resolved,
+html body .users-summary-green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+html body .users-summary-gray {
+  background: var(--surface2);
+  color: var(--text3);
+}
+
+html body .post-sales-summary-number,
+html body .users-summary-number {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+html body .users-number-green {
+  color: var(--green);
+}
+
+html body .users-number-gray {
+  color: var(--text3);
+}
+
+html body .post-sales-search input,
+html body .users-search input,
+html body .users-toolbar input,
+html body .users-toolbar select {
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+html body .post-sales-search input:focus,
+html body .users-toolbar input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  outline: none;
+}
+
+html body .post-sales-filter-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+html body .post-sales-filter-button .ui-i {
+  width: 14px;
+  height: 14px;
+  color: var(--text2);
+}
+
+html body .post-sales-search > span {
+  display: grid;
+  place-items: center;
+  color: var(--text3);
+}
+
+html body .post-sales-open-button,
+html body .users-create-button,
+html body #dt-users .users-create-btn {
+  border: 0;
+  background: var(--grad-red);
+  color: #fff;
+  box-shadow: var(--glow-red), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+html body .post-sales-product,
+html body .post-sales-actions {
+  border-color: var(--border) !important;
+}
+
+html body .post-sales-last-message {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+}
+
+html body .users-answer-star {
+  display: inline-grid;
+  place-items: center;
+  color: var(--accent);
+}
+
+html body .users-answer-star .ui-i {
+  width: 13px;
+  height: 13px;
+}
+
+/* Modo escuro: cores fixas antigas dessas telas */
+body.dark .post-sales-page,
+body.dark .users-page {
+  color: var(--text);
+}
+
+body.dark .post-sales-summary-card,
+body.dark .users-summary-card,
+body.dark .post-sales-case,
+body.dark .users-table-card,
+body.dark .users-table,
+body.dark .users-list-card,
+body.dark .users-table-head,
+body.dark .users-row,
+body.dark .users-table-footer {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+body.dark .post-sales-case-title,
+body.dark .post-sales-product-name,
+body.dark .post-sales-summary-card strong,
+body.dark .users-user-name,
+body.dark .users-name {
+  color: var(--text);
+}
+
+html body .users-avatar {
+  background: var(--grad-red-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+}
+
+html body .post-sales-deadline {
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
 }

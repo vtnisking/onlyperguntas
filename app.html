@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=11" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=12" />
   </head>
 
   <body>
@@ -9021,6 +9021,18 @@ body.ps-detail-open {
 
   <div class="sidebar-bottom">
 
+    <button
+      type="button"
+      class="nav-item sidebar-superadmin"
+      id="superadminDesktopBtn"
+      onclick="openSuperadmin()"
+      style="display: none"
+      title="Painel Superadmin"
+    >
+      <span class="nav-icon"><svg class="ui-i"><use href="#i-shield"/></svg></span>
+      <span class="nav-label">Painel Superadmin</span>
+    </button>
+
     <div class="sidebar-user">
       <div
         class="user-avatar"
@@ -9222,14 +9234,12 @@ body.ps-detail-open {
   <div class="post-sales-page">
 
     <div class="post-sales-header">
-      <div>
-        <h1 class="post-sales-title">
-          Pós-vendas
-        </h1>
-
-        <p class="post-sales-subtitle">
-          Acompanhe reclamações, mensagens e devoluções das suas lojas.
-        </p>
+      <div class="page-hero">
+        <div class="page-hero-icon"><svg class="ui-i"><use href="#icon-pos-vendas"/></svg></div>
+        <div>
+          <h1 class="st-title">Pós-vendas</h1>
+          <p class="st-subtitle">Acompanhe reclamações, mensagens e devoluções das suas lojas.</p>
+        </div>
       </div>
 
       <button
@@ -9237,7 +9247,7 @@ body.ps-detail-open {
         class="post-sales-refresh"
         onclick="loadPostSales()"
       >
-        <span>↻</span>
+        <svg class="ui-i"><use href="#i-refresh"/></svg>
         Atualizar
       </button>
     </div>
@@ -9301,7 +9311,7 @@ body.ps-detail-open {
       >
         <div class="post-sales-summary-top">
           <span class="post-sales-summary-icon attention">
-            !
+            <svg class="ui-i"><use href="#i-alert"/></svg>
           </span>
 
           <span
@@ -9327,7 +9337,7 @@ body.ps-detail-open {
       >
         <div class="post-sales-summary-top">
           <span class="post-sales-summary-icon progress">
-            ↻
+            <svg class="ui-i"><use href="#i-clock"/></svg>
           </span>
 
           <span
@@ -9353,7 +9363,7 @@ body.ps-detail-open {
       >
         <div class="post-sales-summary-top">
           <span class="post-sales-summary-icon resolved">
-            ✓
+            <svg class="ui-i"><use href="#i-check"/></svg>
           </span>
 
           <span
@@ -9374,7 +9384,7 @@ body.ps-detail-open {
 
     <div class="post-sales-toolbar">
       <div class="post-sales-search">
-        <span>⌕</span>
+        <span><svg class="ui-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></span>
 
         <input
           id="postSalesSearch"
@@ -9388,14 +9398,14 @@ body.ps-detail-open {
         type="button"
         class="post-sales-filter-button"
       >
-        📅 Filtrar por data
+        <svg class="ui-i"><use href="#i-calendar"/></svg> Filtrar por data
       </button>
 
       <button
         type="button"
         class="post-sales-filter-button"
       >
-        ⚙ Filtrar e ordenar
+        <svg class="ui-i"><use href="#icon-ajustes"/></svg> Filtrar e ordenar
       </button>
 
       <div
@@ -9771,13 +9781,11 @@ body.ps-detail-open {
 <div class="desktop-tab" id="dt-users">
   <div class="users-page">
     <div class="users-page-header">
-      <div>
-        <div class="users-page-title">
-          👥 Usuários
-        </div>
-
-        <div class="users-page-subtitle">
-          Gerencie os usuários que têm acesso ao sistema.
+      <div class="page-hero">
+        <div class="page-hero-icon"><svg class="ui-i"><use href="#icon-equipe"/></svg></div>
+        <div>
+          <h1 class="st-title">Usuários</h1>
+          <p class="st-subtitle">Gerencie os usuários que têm acesso ao sistema.</p>
         </div>
       </div>
     </div>
@@ -9785,7 +9793,7 @@ body.ps-detail-open {
     <div class="users-summary-grid">
       <div class="users-summary-card">
         <div class="users-summary-icon users-summary-red">
-          👥
+          <svg class="ui-i"><use href="#icon-equipe"/></svg>
         </div>
 
         <div>
@@ -9805,7 +9813,7 @@ body.ps-detail-open {
 
       <div class="users-summary-card">
         <div class="users-summary-icon users-summary-green">
-          ●
+          <svg class="ui-i"><use href="#i-check"/></svg>
         </div>
 
         <div>
@@ -9828,7 +9836,7 @@ body.ps-detail-open {
 
       <div class="users-summary-card">
         <div class="users-summary-icon users-summary-gray">
-          ●
+          <svg class="ui-i"><use href="#i-clock"/></svg>
         </div>
 
         <div>
@@ -9851,7 +9859,7 @@ body.ps-detail-open {
 
       <div class="users-summary-card">
         <div class="users-summary-icon users-summary-yellow">
-          🏆
+          <svg class="ui-i"><use href="#i-zap"/></svg>
         </div>
 
         <div>
@@ -10791,7 +10799,9 @@ function renderPostSalesCases() {
               ${escapeHtml(
                 isResolved && item.resolved_at
                   ? `Resolvida em ${formatPostSalesDate(item.resolved_at)}`
-                  : item.deadline,
+                  : item.deadline && !Number.isNaN(Date.parse(item.deadline))
+                    ? `Prazo: ${formatPostSalesDate(item.deadline)}`
+                    : item.deadline || "",
               )}
             </div>
 
@@ -12458,17 +12468,21 @@ function buildDesktopRow(item) {
 
       async function requestNotificationPermission() {
         try {
-          if (!("Notification" in window)) {
-            alert("Este navegador não suporta notificações.");
-            return;
-          }
-          if (!("serviceWorker" in navigator)) {
-            alert("Service Worker não suportado.");
+          const avisar = (msg, tipo = "success") =>
+            typeof showToast === "function" ? showToast(msg, tipo) : alert(msg);
+          if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+            avisar("Este navegador não permite notificações. Tente pelo Chrome ou pelo app instalado.", "error");
             return;
           }
           const permission = await Notification.requestPermission();
+          updateSettingsNotifStatus();
           if (permission !== "granted") {
-            alert("Notificações não permitidas.");
+            avisar(
+              permission === "denied"
+                ? "As notificações estão bloqueadas. Libere no cadeado ao lado do endereço do site."
+                : "Você não permitiu as notificações.",
+              "error",
+            );
             return;
           }
           // Garante que o service worker está ativo (antes ele nunca era registrado e esta etapa travava).
@@ -12488,11 +12502,14 @@ function buildDesktopRow(item) {
               user_email: loggedUser.email,
             }),
           });
-          const saved = await result.json();
+          const saved = await result.json().catch(() => ({}));
           updateSettingsNotifStatus();
-          alert(JSON.stringify(saved));
+          if (!result.ok || saved.error) throw new Error("falha ao salvar");
+          avisar("Notificações ativadas! Você será avisado quando chegar uma nova pergunta.");
         } catch (error) {
-          alert("Erro ao ativar notificações: " + error.message);
+          console.error("Erro ao ativar notificações:", error);
+          const msg = "Não foi possível ativar as notificações agora. Tente de novo em instantes.";
+          typeof showToast === "function" ? showToast(msg, "error") : alert(msg);
         }
       }
 
@@ -14867,85 +14884,115 @@ async function loadShopeeConversations({
       // ──────────────────────────────────────
       // DESKTOP: Answered
       // ──────────────────────────────────────
+      let answeredCache = [];
+
+      function answeredWhen(v) {
+        if (!v) return "—";
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return "—";
+        const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+        const dia = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(d);
+        const hora = d.toLocaleTimeString("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" });
+        if (dia === hoje) return `Hoje, ${hora}`;
+        return `${d.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" })}, ${hora}`;
+      }
+
+      function renderDesktopAnswered() {
+        const list = document.getElementById("answeredList");
+        const countEl = document.getElementById("answeredCount");
+        if (!list) return;
+        const q = (document.getElementById("answeredSearch")?.value || "").trim().toLowerCase();
+        const itens = answeredCache.filter((item) => {
+          if (!q) return true;
+          return [item.product_title, item.text, item.answer?.text, item.store_name, clientName(item), item.answer?.user_name]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+            .includes(q);
+        });
+        if (countEl) countEl.textContent = `${itens.length} ${itens.length === 1 ? "pergunta" : "perguntas"}`;
+
+        if (itens.length === 0) {
+          list.innerHTML = `<div class="ans-empty"><span class="cfg-empty-icon"><svg class="ui-i"><use href="#icon-respondidas"/></svg></span><strong>${
+            q ? "Nada encontrado" : "Nenhuma pergunta respondida ainda"
+          }</strong><span>${q ? "Tente outra palavra na busca." : "As respostas enviadas aparecem aqui."}</span></div>`;
+          return;
+        }
+
+        list.innerHTML = itens
+          .map((item) => {
+            const quem = item.answer?.user_name || item.answer?.user_email || "Usuário";
+            const cliente = clientName(item) || "Comprador";
+            return `
+          <article class="ans-card">
+            ${
+              item.product_thumbnail
+                ? `<img class="ans-thumb" src="${escapeHtml(item.product_thumbnail)}" alt="" loading="lazy">`
+                : `<span class="ans-thumb ans-thumb-empty"><svg class="ui-i"><use href="#i-package"/></svg></span>`
+            }
+            <div class="ans-body">
+              <div class="ans-top">
+                <span class="ans-product">${escapeHtml(item.product_title || item.item_id || "Produto")}</span>
+                <span class="cfg-pill is-on"><svg class="ui-i"><use href="#i-check"/></svg>Respondida</span>
+              </div>
+              <div class="ans-meta">
+                <span><svg class="ui-i"><use href="#i-store"/></svg>${escapeHtml(item.store_name || "Loja")}</span>
+                <span><svg class="ui-i"><use href="#i-calendar"/></svg>${escapeHtml(answeredWhen(item.answer?.date_created))}</span>
+              </div>
+              <div class="ans-thread">
+                <div class="ans-q">
+                  <span class="ans-avatar">${escapeHtml(String(cliente).trim().charAt(0).toUpperCase() || "?")}</span>
+                  <div><small>${escapeHtml(cliente)}</small><p>${escapeHtml(item.text || "")}</p></div>
+                </div>
+                <div class="ans-a">
+                  <span class="ans-avatar is-team">${escapeHtml(String(quem).trim().charAt(0).toUpperCase() || "?")}</span>
+                  <div><small>${escapeHtml(quem)}</small><p>${escapeHtml(item.answer?.text || "Sem resposta")}</p></div>
+                </div>
+              </div>
+            </div>
+          </article>`;
+          })
+          .join("");
+      }
+      window.renderDesktopAnswered = renderDesktopAnswered;
+
       async function loadDesktopAnswered() {
         const container = document.getElementById("desktopAnswered");
         if (!container) return;
-        container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
+        if (!document.getElementById("answeredList")) {
+          container.innerHTML = `
+            <div class="ans-page">
+              <header class="st-header">
+                <div class="page-hero">
+                  <div class="page-hero-icon"><svg class="ui-i"><use href="#icon-respondidas"/></svg></div>
+                  <div>
+                    <h1 class="st-title">Perguntas respondidas</h1>
+                    <p class="st-subtitle" id="answeredCount">Carregando...</p>
+                  </div>
+                </div>
+                <label class="ans-search">
+                  <svg class="ui-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                  <input id="answeredSearch" type="search" placeholder="Buscar por produto, pergunta, cliente..." oninput="renderDesktopAnswered()" />
+                </label>
+              </header>
+              <div id="answeredList" class="ans-list"></div>
+            </div>`;
+        }
+        const list = document.getElementById("answeredList");
+        list.innerHTML = `<div class="st-loading">Carregando respostas...</div>`;
 
         try {
           const companyId = loggedUser?.company_id;
-
-if (!companyId) {
-  throw new Error(
-    "Empresa do usuário não encontrada."
-  );
-}
-
-const response = await authenticatedIntegrationFetch(
-  `/api/answered?company_id=${encodeURIComponent(companyId)}`
-);
+          if (!companyId) throw new Error("Empresa do usuário não encontrada.");
+          const response = await authenticatedIntegrationFetch(
+            `/api/answered?company_id=${encodeURIComponent(companyId)}`,
+          );
           const data = await response.json();
-          const questions = data.questions || [];
-          container.innerHTML = "";
-
-          if (questions.length === 0) {
-            container.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Nenhuma pergunta respondida.</div>`;
-            return;
-          }
-
-          questions.forEach((item) => {
-            const row = document.createElement("div");
-            row.className = "q-row";
-            row.style.cursor = "default";
-            row.innerHTML = `
-        ${
-          item.product_thumbnail
-            ? `<img class="q-thumb" src="${item.product_thumbnail}" alt="produto">`
-            : `<div class="q-thumb-placeholder">📦</div>`
-        }
-        <div class="q-body">
-          <div class="q-top">
-            <span class="q-store">🏪 ${item.store_name}</span>
-            <span class="status status-answered" style="margin-left:auto;font-size:11px;padding:4px 10px;">✓ Respondida</span>
-          </div>
-          <div class="q-product">${item.product_title || item.item_id}</div>
-          <div class="q-text" style="-webkit-line-clamp:1;">${item.text}</div>
-          <div style="margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--text2);">
-            ↳ ${item.answer?.text || "Sem resposta"}
-          </div>
-          <div class="q-client" style="margin-top:8px;">
-            👤 ${clientName(item)} &nbsp;·&nbsp; 🕒 ${formatDate(item.answer?.date_created)}
-            &nbsp;·&nbsp; Respondido por ${item.answer?.user_name || item.answer?.user_email || "Usuário"}
-          </div>
-        </div>
-      `;
-            container.appendChild(row);
-          });
-
+          answeredCache = data.questions || [];
+          renderDesktopAnswered();
         } catch (e) {
-          console.error("Erro ao renderizar perguntas:", e);
-
-          container.innerHTML = `
-            <div class="empty">
-              <span class="empty-icon">⚠️</span>
-
-              <div>Erro ao carregar.</div>
-
-              <pre style="
-                margin-top:15px;
-                text-align:left;
-                white-space:pre-wrap;
-                max-width:900px;
-                overflow:auto;
-                color:#c62828;
-                font-size:13px;
-              ">${escapeHtml(
-                e?.stack ||
-                e?.message ||
-                String(e)
-              )}</pre>
-            </div>
-          `;
+          console.error("Erro ao carregar respondidas:", e);
+          list.innerHTML = `<div class="ans-empty"><strong>Não foi possível carregar as respostas</strong><span>Tente atualizar a página.</span></div>`;
         }
       }
 
@@ -15674,7 +15721,7 @@ function renderDesktopUsers() {
 
           <div>
             <div class="users-answer-count">
-              <span class="users-answer-star">★</span>
+              <span class="users-answer-star"><svg class="ui-i"><use href="#i-send"/></svg></span>
 
               <span class="users-answer-number">
                 ${answerCount}
@@ -15691,14 +15738,14 @@ function renderDesktopUsers() {
               class="users-action-button"
               onclick="editDesktopUser('${user.id}')"
             >
-              ✎ Editar
+              Editar
             </button>
 
             <button
               class="users-action-button delete"
               onclick="deleteUser('${user.id}')"
             >
-              🗑 Excluir
+              Excluir
             </button>
           </div>
 
