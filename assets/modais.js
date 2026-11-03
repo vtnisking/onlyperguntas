@@ -387,96 +387,28 @@
   /* =====================================================================
      3) CHATI ERP — navegação animada pelo sistema
      ===================================================================== */
-  const ERP_MENU = [
-    { nome: "Dashboard", cena: "dash", legenda: "Visão completa da operação em tempo real" },
-    { nome: "Produtos", cena: "prod", legenda: "Cadastro de peças com fotos e pendências" },
-    { nome: "Criar anúncios", cena: "ia", legenda: "Anúncios gerados com inteligência artificial" },
-    { nome: "Fila de publicação", cena: "pub", legenda: "Publicação no Mercado Livre e na Shopee" },
+  // Legendas sincronizadas com o vídeo gravado no sistema real (segundos do vídeo)
+  const ERP_LEGENDAS = [
+    [0, "Dashboard com os números reais da operação"],
+    [6.7, "Produtos com fotos, etapas e pendências"],
+    [17, "Anúncio montado a partir do cadastro"],
+    [26.5, "Aprovação por versão antes de publicar"],
+    [30.4, "Fila de publicação para Mercado Livre e Shopee"],
   ];
 
   function montarErp() {
-    const menu = ERP_MENU.map(
-      (m, i) => `<span class="erp-nav ${i === 0 ? "is-active" : ""}" data-i="${i}"><b></b>${m.nome}</span>`,
-    ).join("");
-
-    const linhasProd = [
-      ["Roda Traseira Titan 150", "ok"],
-      ["Chicote Elite 125", "warn"],
-      ["Kit Relação CG 160", "ok"],
-      ["Farol Fan 160", "ok"],
-    ]
-      .map(
-        ([n, s], i) => `
-        <div class="erp-row" style="--d:${i}">
-          <span class="erp-thumb"></span>
-          <span class="erp-row-name">${n}</span>
-          <span class="erp-tag ${s}">${s === "ok" ? "Pronto" : "Pendente"}</span>
-        </div>`,
-      )
-      .join("");
-
-    const linhasPub = [
-      ["ML", "Roda Traseira Titan 150"],
-      ["S", "Kit Relação CG 160"],
-      ["ML", "Farol Fan 160"],
-    ]
-      .map(
-        ([c, n], i) => `
-        <div class="erp-pub" style="--d:${i}">
-          <span class="erp-ch ${c === "S" ? "shopee" : "ml"}">${c}</span>
-          <span class="erp-pub-main"><span>${n}</span><i><b></b></i></span>
-          <span class="erp-ok">${icone("i-check")}</span>
-        </div>`,
-      )
-      .join("");
-
     const stage = `
-      <div class="erp-window" data-erp>
-        <div class="erp-side">
-          <img class="erp-logo" src="/assets/logo-chati-erp-white.png" alt="" />
-          ${menu}
+      <div class="erp-browser">
+        <div class="erp-browser-bar">
+          <span class="erp-dots"><i></i><i></i><i></i></span>
+          <span class="erp-url">${icone("i-shield")} app.chatierp.com.br</span>
         </div>
-        <div class="erp-main">
-          <div class="erp-scene is-active" data-scene="dash">
-            <div class="erp-h">Dashboard</div>
-            <div class="erp-kpis">
-              <div><small>Cadastrados hoje</small><strong data-count="128">0</strong></div>
-              <div><small>Publicados</small><strong data-count="96">0</strong></div>
-              <div><small>Vendas</small><strong data-count="41">0</strong></div>
-            </div>
-            <div class="erp-chart">${[38, 55, 46, 70, 62, 84, 95]
-              .map((h, i) => `<i style="--h:${h}%;--d:${i}"></i>`)
-              .join("")}</div>
-          </div>
-
-          <div class="erp-scene" data-scene="prod">
-            <div class="erp-h">Produtos <span class="erp-btn">+ Nova peça</span></div>
-            ${linhasProd}
-          </div>
-
-          <div class="erp-scene" data-scene="ia">
-            <div class="erp-h">Criar anúncios</div>
-            <div class="erp-ai">
-              <div class="erp-ai-photo"><span></span><span></span><span></span></div>
-              <div class="erp-ai-text">
-                <span class="erp-ai-badge">${icone("i-zap")} IA escrevendo...</span>
-                <i style="--w:92%;--d:0"></i>
-                <i style="--w:78%;--d:1"></i>
-                <i style="--w:86%;--d:2"></i>
-                <i style="--w:60%;--d:3"></i>
-              </div>
-            </div>
-            <div class="erp-progress"><b></b></div>
-          </div>
-
-          <div class="erp-scene" data-scene="pub">
-            <div class="erp-h">Fila de publicação</div>
-            ${linhasPub}
-          </div>
-        </div>
-        ${CURSOR}
+        <video class="erp-video" poster="/assets/chati-erp-tour.jpg?v=1" autoplay muted loop playsinline preload="auto">
+          <source src="/assets/chati-erp-tour.webm?v=1" type="video/webm" />
+          <source src="/assets/chati-erp-tour.mp4?v=1" type="video/mp4" />
+        </video>
       </div>
-      <div class="wn-mode-label" data-caption>${ERP_MENU[0].legenda}</div>
+      <div class="wn-mode-label" data-caption>${ERP_LEGENDAS[0][1]}</div>
     `;
 
     const body = `
@@ -486,7 +418,7 @@
       <h2>Conheça o Chati ERP</h2>
       <p class="wn-lead">
         O ERP que vai revolucionar a forma de vender online. Do cadastro da peça ao anúncio
-        publicado, tudo em um só lugar e com inteligência artificial trabalhando por você.
+        publicado, tudo em um só lugar. Veja o sistema de verdade em funcionamento.
       </p>
       <ul class="wn-features">
         <li style="--d:0">
@@ -495,11 +427,11 @@
         </li>
         <li style="--d:1">
           <span class="wn-f-icon tone-violet">${icone("i-zap")}</span>
-          <span><strong>Anúncios com IA</strong><small>Títulos e descrições prontos em segundos.</small></span>
+          <span><strong>Anúncio em minutos</strong><small>Texto gerado a partir do cadastro, e a IA está chegando.</small></span>
         </li>
         <li style="--d:2">
           <span class="wn-f-icon tone-green">${icone("i-send")}</span>
-          <span><strong>Mercado Livre e Shopee</strong><small>Publicação e vendas acompanhadas em um só painel.</small></span>
+          <span><strong>Mercado Livre e Shopee</strong><small>Aprovação por versão e fila de publicação para os dois canais.</small></span>
         </li>
       </ul>
       <div class="wn-actions">
@@ -515,71 +447,28 @@
       stage,
       body,
       aoAbrir(ctx) {
-        const win = ctx.wrap.querySelector("[data-erp]");
-        const cursor = win.querySelector(".wn-cursor");
+        const video = ctx.wrap.querySelector(".erp-video");
         const caption = ctx.wrap.querySelector("[data-caption]");
-        const navs = [...win.querySelectorAll(".erp-nav")];
-        const scenes = [...win.querySelectorAll(".erp-scene")];
         let atual = 0;
-
-        function contar(scene) {
-          scene.querySelectorAll("[data-count]").forEach((el) => {
-            const alvo = Number(el.dataset.count);
-            const t0 = performance.now();
-            const dur = 900;
-            function passo(t) {
-              const p = Math.min((t - t0) / dur, 1);
-              el.textContent = Math.round(alvo * (1 - Math.pow(1 - p, 3)));
-              if (p < 1 && document.body.contains(el)) requestAnimationFrame(passo);
-            }
-            requestAnimationFrame(passo);
+        if (reduzirMovimento) {
+          video.removeAttribute("autoplay");
+          video.pause();
+        } else {
+          video.play().catch(() => {});
+        }
+        video.addEventListener("timeupdate", () => {
+          let idx = 0;
+          ERP_LEGENDAS.forEach(([t], i) => {
+            if (video.currentTime >= t) idx = i;
           });
-        }
-
-        function mostrar(i) {
-          atual = i;
-          navs.forEach((n, k) => n.classList.toggle("is-active", k === i));
-          scenes.forEach((s) => {
-            const on = s.dataset.scene === ERP_MENU[i].cena;
-            s.classList.remove("is-active");
-            if (on) {
-              void s.offsetWidth; // reinicia animações da cena
-              s.classList.add("is-active");
-              contar(s);
-            }
-          });
-          caption.textContent = ERP_MENU[i].legenda;
-          caption.classList.remove("pop");
-          void caption.offsetWidth;
-          caption.classList.add("pop");
-        }
-
-        function moverCursorPara(i) {
-          const nav = navs[i];
-          const wr = win.getBoundingClientRect();
-          const nr = nav.getBoundingClientRect();
-          // posição relativa sem escala/perspectiva exata: usa offsets do layout
-          cursor.style.left = `${nav.offsetLeft + nav.offsetWidth * 0.55}px`;
-          cursor.style.top = `${nav.offsetTop + nav.offsetHeight * 0.45}px`;
-          return wr && nr;
-        }
-
-        contar(scenes[0]);
-
-        function ciclo() {
-          const prox = (atual + 1) % ERP_MENU.length;
-          moverCursorPara(prox);
-          ctx.later(() => cursor.classList.add("click"), 850);
-          ctx.later(() => mostrar(prox), 950);
-          ctx.later(() => cursor.classList.remove("click"), 1200);
-          ctx.later(() => {
-            cursor.style.left = "72%";
-            cursor.style.top = "70%";
-          }, 1500);
-          ctx.later(ciclo, 3600);
-        }
-
-        if (!reduzirMovimento) ctx.later(ciclo, 1600);
+          if (idx !== atual) {
+            atual = idx;
+            caption.textContent = ERP_LEGENDAS[idx][1];
+            caption.classList.remove("pop");
+            void caption.offsetWidth;
+            caption.classList.add("pop");
+          }
+        });
       },
     });
   }
