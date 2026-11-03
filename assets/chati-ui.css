@@ -4539,3 +4539,179 @@ body.dark .erp-brand-dark {
     width: min(320px, 100%);
   }
 }
+
+/* =====================================================================
+   SHOPEE — adapta o chat ao modo escuro (o CSS antigo usava cores fixas)
+   ===================================================================== */
+body.dark #dt-shopee {
+  background: var(--bg);
+}
+
+body.dark .shopee-chat-shell,
+body.dark .shopee-chat-sidebar,
+body.dark .shopee-chat-main,
+body.dark .shopee-composer,
+body.dark .shopee-conversation {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+body.dark .shopee-chat-details {
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+body.dark .shopee-chat-header {
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  border-color: var(--border);
+}
+
+body.dark .shopee-chat-search-wrap,
+body.dark .shopee-chat-tabs,
+body.dark .shopee-chat-list-toolbar,
+body.dark .shopee-composer-tabs,
+body.dark .shopee-product-summary {
+  border-color: var(--border);
+}
+
+body.dark .shopee-chat-search input,
+body.dark .shopee-composer-box,
+body.dark .shopee-composer-box textarea {
+  background: var(--surface2);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+body.dark .shopee-chat-search input::placeholder,
+body.dark .shopee-composer-box textarea::placeholder {
+  color: var(--text3);
+}
+
+body.dark .shopee-chat-search input:focus {
+  background: var(--surface2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+body.dark .shopee-filter-icon-btn,
+body.dark .shopee-list-filter-btn,
+body.dark .shopee-quick-reply,
+body.dark .shopee-add-tag,
+body.dark .shopee-chat-date {
+  background: var(--surface2);
+  border-color: var(--border2);
+  color: var(--text2);
+}
+
+body.dark .shopee-quick-reply:hover {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+}
+
+body.dark .shopee-chat-tab,
+body.dark .shopee-composer-tab {
+  color: var(--text2);
+}
+
+body.dark .shopee-chat-tab.active,
+body.dark .shopee-composer-tab.active {
+  color: var(--accent);
+}
+
+body.dark .shopee-chat-tab.active::after,
+body.dark .shopee-composer-tab.active::after {
+  background: var(--accent);
+}
+
+body.dark .shopee-conversation:hover {
+  background: var(--surface2);
+}
+
+body.dark .shopee-conversation.active {
+  background: var(--accent-soft);
+}
+
+body.dark .shopee-conversation-name,
+body.dark .shopee-customer-name,
+body.dark .shopee-detail-title,
+body.dark .shopee-product-name,
+body.dark .shopee-detail-line strong {
+  color: var(--text);
+}
+
+body.dark .shopee-conversation-time,
+body.dark .shopee-conversation-preview,
+body.dark .shopee-customer-subline,
+body.dark .shopee-message-time,
+body.dark .shopee-product-qty,
+body.dark .shopee-detail-line,
+body.dark .shopee-chat-list-toolbar {
+  color: var(--text3);
+}
+
+body.dark .shopee-header-action,
+body.dark .shopee-attachment-btn {
+  color: var(--text2);
+}
+
+body.dark .shopee-header-action:hover,
+body.dark .shopee-attachment-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+body.dark .shopee-message-bubble {
+  background: var(--surface2);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+body.dark .shopee-message-row.outgoing .shopee-message-bubble {
+  background: linear-gradient(135deg, #ff3355, #c20026);
+  border-color: transparent;
+  color: #fff;
+}
+
+body.dark .shopee-message-row.outgoing .shopee-message-time {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark .shopee-detail-card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+body.dark .shopee-product-image {
+  background: var(--surface2);
+  color: var(--accent);
+}
+
+body.dark .shopee-product-price {
+  color: var(--accent);
+}
+
+body.dark .shopee-order-status,
+body.dark .shopee-warning-pill,
+body.dark .shopee-tag {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--accent) !important;
+}
+
+body.dark .shopee-open-order {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent);
+}
+
+body.dark .shopee-open-order:hover {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 760px) {
+  body.dark .shopee-mobile-back {
+    background: var(--surface2);
+    color: var(--text);
+  }
+}
