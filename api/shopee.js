@@ -412,7 +412,7 @@ export default async function handler(req, res) {
 
 
     if (action === "connect") {
-  return handleConnect({
+  return await handleConnect({
     req,
     res,
     context,
@@ -421,7 +421,7 @@ export default async function handler(req, res) {
 
 
     if (action === "test") {
-      return handleTest({
+      return await handleTest({
         req,
         res,
         stores,
@@ -430,7 +430,7 @@ export default async function handler(req, res) {
     }
 
     if (action === "conversations") {
-      return handleConversations({
+      return await handleConversations({
         req,
         res,
         stores,
@@ -439,7 +439,7 @@ export default async function handler(req, res) {
     }
 
     if (action === "messages") {
-      return handleMessages({
+      return await handleMessages({
         req,
         res,
         stores,
@@ -448,7 +448,7 @@ export default async function handler(req, res) {
     }
 
     if (action === "send_message") {
-      return handleSendMessage({
+      return await handleSendMessage({
         req,
         res,
         stores,
