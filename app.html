@@ -8268,6 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=1" />
   </head>
 
   <body>
@@ -8339,6 +8340,27 @@ body.ps-detail-open {
     <path d="M15 12H3"/>
     <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/>
   </symbol>
+
+  <!-- Ícones da interface (visual clean) -->
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v1a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 12.5V20h14v-7.5"/><path d="M10 20v-4h4v4"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-3.5L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.9 3.5L20 15"/><path d="M20 20v-5h-5"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
 </svg>
 
     <audio
@@ -8715,7 +8737,7 @@ body.ps-detail-open {
       aria-label="Abrir menu"
       title="Abrir menu"
     >
-      ☰
+      <svg class="ui-i"><use href="#i-menu"/></svg>
     </button>
 
     <a href="/" class="logo-full">
@@ -8730,7 +8752,7 @@ body.ps-detail-open {
             style="display: none"
             title="Painel Superadmin"
           >
-            🛡️
+            <svg class="ui-i"><use href="#i-shield"/></svg>
           </button>
 
           <button
@@ -8738,7 +8760,7 @@ body.ps-detail-open {
             onclick="toggleTheme()"
             id="themeBtnMobile"
           >
-            🌙
+            <svg class="ui-i"><use href="#i-moon"/></svg>
           </button>
         </div>
       </header>
@@ -8747,7 +8769,7 @@ body.ps-detail-open {
 
   <div class="stats-card">
     <div class="stats-left">
-      <div class="stats-icon">📥</div>
+      <div class="stats-icon"><svg class="ui-i"><use href="#i-inbox"/></svg></div>
 
       <div class="stats-info">
         <h2>Pendentes</h2>
@@ -8762,8 +8784,8 @@ body.ps-detail-open {
       </div>
     </div>
 
-    <button class="refresh-btn" onclick="location.reload()">
-      ↻
+    <button class="refresh-btn" onclick="location.reload()" aria-label="Atualizar">
+      <svg class="ui-i"><use href="#i-refresh"/></svg>
     </button>
   </div>
 
@@ -8862,7 +8884,7 @@ body.ps-detail-open {
       title="Recolher menu"
       aria-label="Recolher menu"
     >
-      ‹
+      <svg class="ui-i"><use href="#i-chevron-left"/></svg>
     </button>
   </div>
 
@@ -9058,14 +9080,14 @@ body.ps-detail-open {
       onclick="toggleTheme()"
       id="themeBtn"
     >
-      🌙 Escuro
+      <svg class="ui-i"><use href="#i-moon"/></svg><span>Escuro</span>
     </button>
 
     <button
       class="topbar-btn primary"
       onclick="desktopReload()"
     >
-      ↻ Atualizar
+      <svg class="ui-i"><use href="#i-refresh"/></svg><span>Atualizar</span>
     </button>
   </div>
 </div>
@@ -9093,7 +9115,7 @@ body.ps-detail-open {
         <span class="dashboard-status-online"></span>
 
         <div>
-            <strong>Sistema Online</strong>
+            <strong>Online</strong>
             <small>Todos os serviços ativos</small>
         </div>
 
@@ -9104,7 +9126,7 @@ body.ps-detail-open {
     <div class="dashboard-status-box metric-box">
 
         <div class="metric-icon">
-            📥
+            <svg class="ui-i"><use href="#i-inbox"/></svg>
         </div>
 
         <div class="metric-info">
@@ -9132,7 +9154,7 @@ body.ps-detail-open {
     <div class="dashboard-status-box metric-box">
 
         <div class="metric-icon">
-            ✓
+            <svg class="ui-i"><use href="#i-check"/></svg>
         </div>
 
         <div class="metric-info">
@@ -9152,7 +9174,7 @@ body.ps-detail-open {
     <div class="dashboard-status-box metric-box">
 
         <div class="metric-icon">
-            🏪
+            <svg class="ui-i"><use href="#i-store"/></svg>
         </div>
 
         <div class="metric-info">
@@ -12079,7 +12101,7 @@ function buildDesktopRow(item) {
             `
             : `
               <div class="ml-card-product-placeholder">
-                📦
+                <svg class="ui-i"><use href="#i-package"/></svg>
               </div>
             `
         }
@@ -12111,11 +12133,11 @@ function buildDesktopRow(item) {
           <div class="question-meta">
 
             <span class="meta-chip">
-              🛍️ ${storeName}
+              <svg class="ui-i"><use href="#i-store"/></svg> ${storeName}
             </span>
 
             <span class="meta-chip">
-              🕒 ${formatQuestionAskedAt(
+              <svg class="ui-i"><use href="#i-calendar"/></svg> ${formatQuestionAskedAt(
                 item.date_created,
               )}
             </span>
@@ -12127,7 +12149,7 @@ function buildDesktopRow(item) {
                 ).className
               }"
             >
-              ⏱️ ${
+              <svg class="ui-i"><use href="#i-clock"/></svg> ${
                 getQuestionElapsed(
                   item.date_created,
                 ).text
@@ -12140,7 +12162,7 @@ function buildDesktopRow(item) {
 
         <div class="ml-card-meta-box">
           <div class="ml-card-meta-label">
-            ◇ Estoque
+            Estoque
           </div>
 
           <div class="ml-card-meta-value">
@@ -12150,7 +12172,7 @@ function buildDesktopRow(item) {
 
         <div class="ml-card-meta-box">
           <div class="ml-card-meta-label">
-            ◇ Preço
+            Preço
           </div>
 
           <div class="ml-card-meta-value">
@@ -12166,7 +12188,7 @@ function buildDesktopRow(item) {
 
         <div class="ml-card-meta-box">
           <div class="ml-card-meta-label">
-            🚚 Frete
+            Frete
           </div>
 
           <div class="ml-card-meta-value freight">
@@ -12184,7 +12206,7 @@ function buildDesktopRow(item) {
             toggleMlCard('${item.id}');
           "
         >
-          ⌄
+          <svg class="ui-i"><use href="#i-chevron-down"/></svg>
         </button>
 
       </div>
@@ -12201,7 +12223,7 @@ function buildDesktopRow(item) {
           <div class="ml-question-content">
 
             <div class="ml-question-label">
-              💬 Pergunta do comprador
+              Pergunta do comprador
             </div>
 
             <div class="ml-question-text">
@@ -12213,7 +12235,7 @@ function buildDesktopRow(item) {
           <div class="ml-question-customer">
 
             <div class="ml-customer-avatar">
-              ♙
+              ${String(customer).trim().charAt(0).toUpperCase() || "?"}
             </div>
 
             <div>
@@ -12242,26 +12264,17 @@ function buildDesktopRow(item) {
               item.can_answer
                 ? `
                   <div class="ml-question-urgency">
-                    ⏱
+                    <svg class="ui-i"><use href="#i-clock"/></svg>
                     <span>
-                      Responda o<br>
-                      quanto antes
+                      Responda o quanto antes
                     </span>
                   </div>
                 `
                 : `
-                  <div
-                    class="ml-question-urgency"
-                    style="
-                      color:#dc2626;
-                      background:#fff1f2;
-                      border-color:#fecaca;
-                    "
-                  >
-                    ⚠
+                  <div class="ml-question-urgency is-unavailable">
+                    <svg class="ui-i"><use href="#i-alert"/></svg>
                     <span>
-                      Pergunta<br>
-                      indisponível
+                      Pergunta indisponível
                     </span>
                   </div>
                 `
@@ -12287,7 +12300,7 @@ function buildDesktopRow(item) {
                     )
                   "
                 >
-                  🕘 Ver
+                  <svg class="ui-i"><use href="#i-history"/></svg> Ver
                   ${
                     item.previous_questions
                       .length
@@ -12433,8 +12446,8 @@ function buildDesktopRow(item) {
                     )
                   "
                 >
-                  💬 Respostas rápidas
-                  <span>⌄</span>
+                  <svg class="ui-i"><use href="#i-zap"/></svg> Respostas rápidas
+                  <svg class="ui-i"><use href="#i-chevron-down"/></svg>
                 </button>
 
                 <div class="ml-answer-toolbar-right">
@@ -12459,7 +12472,7 @@ function buildDesktopRow(item) {
                     "
                   >
                     Responder
-                    <span>➤</span>
+                    <svg class="ui-i"><use href="#i-send"/></svg>
                   </button>
 
                 </div>
@@ -12491,7 +12504,7 @@ function buildDesktopRow(item) {
                 <div class="ml-answer-footer">
 
                   <span class="ml-answer-warning">
-                    ⓘ Você pode enviar apenas 1 resposta.
+                    <svg class="ui-i"><use href="#i-info"/></svg> Você pode enviar apenas 1 resposta.
                     Não inclua dados de contato.
                   </span>
 
@@ -12802,6 +12815,14 @@ container.innerHTML = `
         }
       }
 
+      function setThemeButtons(isDark, btnDesktop, btnMobile) {
+        const icon = isDark ? "i-sun" : "i-moon";
+        const svg = `<svg class="ui-i"><use href="#${icon}"/></svg>`;
+        if (btnDesktop)
+          btnDesktop.innerHTML = `${svg}<span>${isDark ? "Claro" : "Escuro"}</span>`;
+        if (btnMobile) btnMobile.innerHTML = svg;
+      }
+
       function toggleTheme() {
         const isDark = document.body.classList.toggle("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
@@ -12809,13 +12830,7 @@ container.innerHTML = `
         const btnDesktop = document.getElementById("themeBtn");
         const btnMobile = document.getElementById("themeBtnMobile");
 
-        if (isDark) {
-          if (btnDesktop) btnDesktop.innerHTML = "☀️ Claro";
-          if (btnMobile) btnMobile.innerHTML = "☀️";
-        } else {
-          if (btnDesktop) btnDesktop.innerHTML = "🌙 Escuro";
-          if (btnMobile) btnMobile.innerHTML = "🌙";
-        }
+        setThemeButtons(isDark, btnDesktop, btnMobile);
       }
 
       window.toggleTheme = toggleTheme;
@@ -12863,8 +12878,7 @@ container.innerHTML = `
           document.addEventListener("DOMContentLoaded", () => {
             const btnDesktop = document.getElementById("themeBtn");
             const btnMobile = document.getElementById("themeBtnMobile");
-            if (btnDesktop) btnDesktop.innerHTML = "☀️ Claro";
-            if (btnMobile) btnMobile.innerHTML = "☀️";
+            setThemeButtons(true, btnDesktop, btnMobile);
           });
         }
       })();
@@ -12924,13 +12938,13 @@ container.innerHTML = `
                   loading="lazy"
                   onerror="
                     this.outerHTML =
-                    '<span class=\\'mobile-question-product-placeholder\\'>📦</span>'
+                    '<span class=\\'mobile-question-product-placeholder\\'><svg class=\\'ui-i\\'><use href=\\'#i-package\\'/></svg></span>'
                   "
                 >
               `
               : `
                 <span class="mobile-question-product-placeholder">
-                  📦
+                  <svg class="ui-i"><use href="#i-package"/></svg>
                 </span>
               `
           }
@@ -12976,7 +12990,7 @@ container.innerHTML = `
       <div class="mobile-question-buyer">
 
         <div class="mobile-question-buyer-avatar">
-          👤
+          ${escapeHtml(String(buyerName || "?").trim().charAt(0).toUpperCase())}
         </div>
 
         <div class="mobile-question-buyer-info">
@@ -13024,7 +13038,7 @@ ${renderPreviousQuestions(item)}
   class="mobile-question-quick-button"
   onclick="window.openQuickRepliesPicker('${answerId}')"
 >
-  <span>💬</span>
+  <svg class="ui-i"><use href="#i-zap"/></svg>
   Respostas rápidas
 </button>
 
@@ -13255,7 +13269,7 @@ if (notificationBadge) {
       (item.previous_questions || []).length > 0
         ? `
       <button class="previous-toggle" onclick="togglePrevious('detail-prev-${item.id}')">
-        🕐 Ver ${item.previous_questions.length} pergunta(s) anterior(es)
+        <svg class="ui-i"><use href="#i-history"/></svg> Ver ${item.previous_questions.length} pergunta(s) anterior(es)
       </button>
       <div id="detail-prev-${item.id}" style="display:none;margin-bottom:12px;">
         ${item.previous_questions
@@ -16823,7 +16837,7 @@ function renderPreviousQuestions(item) {
       class="previous-toggle"
       onclick="togglePrevious('${item.id}')"
     >
-      🕐 Ver ${previous.length} pergunta(s) anterior(es)
+      <svg class="ui-i"><use href="#i-history"/></svg> Ver ${previous.length} pergunta(s) anterior(es)
     </button>
 
     <div
@@ -17026,7 +17040,7 @@ const ranking = Object.entries(data.by_user || {})
     box.innerHTML = `
       <div class="monthly-ranking-box">
         <div class="monthly-ranking-title">
-          🏆 Top funcionários do mês
+          Top funcionários do mês
         </div>
 
         <div class="monthly-ranking-grid">
@@ -17036,8 +17050,8 @@ const ranking = Object.entries(data.by_user || {})
                 <div class="monthly-ranking-card ${
                   index === 0 ? "monthly-ranking-first" : ""
                 }">
-                  <div class="monthly-ranking-medal">
-                    ${medals[index]}
+                  <div class="monthly-ranking-medal" data-rank="${index + 1}">
+                    ${index + 1}
                   </div>
 
                   <div class="monthly-ranking-name">
