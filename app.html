@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=4" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=5" />
   </head>
 
   <body>
@@ -9102,9 +9102,12 @@ body.ps-detail-open {
 
          <div class="dashboard-header-bar">
 
-        <div class="dashboard-header-title">
-            <h1>Perguntas pendentes</h1>
-            <p>Monitoramento em tempo real das perguntas</p>
+        <div class="dashboard-header-title page-hero">
+            <div class="page-hero-icon"><svg class="ui-i"><use href="#i-inbox"/></svg></div>
+            <div>
+                <h1>Perguntas pendentes</h1>
+                <p>Monitoramento em tempo real das perguntas</p>
+            </div>
         </div>
 
         <div class="dashboard-metrics">
@@ -9124,7 +9127,7 @@ body.ps-detail-open {
 
     <!-- Pendentes -->
 
-    <div class="dashboard-status-box metric-box">
+    <div class="dashboard-status-box metric-box metric-pending">
 
         <div class="metric-icon">
             <svg class="ui-i"><use href="#i-inbox"/></svg>
@@ -9152,7 +9155,7 @@ body.ps-detail-open {
 
     <!-- Respondidas -->
 
-    <div class="dashboard-status-box metric-box">
+    <div class="dashboard-status-box metric-box metric-today">
 
         <div class="metric-icon">
             <svg class="ui-i"><use href="#i-check"/></svg>
@@ -9172,7 +9175,7 @@ body.ps-detail-open {
 
     <!-- Lojas -->
 
-    <div class="dashboard-status-box metric-box">
+    <div class="dashboard-status-box metric-box metric-stores">
 
         <div class="metric-icon">
             <svg class="ui-i"><use href="#i-store"/></svg>
@@ -9718,9 +9721,12 @@ body.ps-detail-open {
             <div class="questions-list">
               <div class="st-page">
                 <header class="st-header">
-                  <div>
+                  <div class="page-hero">
+                    <div class="page-hero-icon"><svg class="ui-i"><use href="#icon-estatisticas"/></svg></div>
+                    <div>
                     <h1 class="st-title">Estatísticas</h1>
                     <p class="st-subtitle" id="selectedPeriodText">Respostas enviadas pela equipe</p>
+                    </div>
                   </div>
 
                   <div class="st-controls">
@@ -15333,7 +15339,7 @@ const response = await authenticatedIntegrationFetch(
         const maxStore = Math.max(...stores.map(([, n]) => n), 1);
 
         const kpi = (label, value, sub, icon) => `
-          <div class="st-kpi">
+          <div class="st-kpi st-kpi-${icon.replace("i-", "")}">
             <div class="st-kpi-label"><svg class="ui-i"><use href="#${icon}"/></svg>${label}</div>
             <div class="st-kpi-value">${value}</div>
             <div class="st-kpi-sub">${sub}</div>
