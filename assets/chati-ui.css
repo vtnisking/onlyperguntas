@@ -2423,10 +2423,21 @@ html body .monthly-ranking-card:hover {
   border-color: var(--border2);
 }
 
+/* 1º lugar: brilho roxo suave e espalhado */
 html body .monthly-ranking-card.monthly-ranking-first {
-  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
-  background: linear-gradient(135deg, var(--accent-soft), transparent 70%), var(--surface);
-  box-shadow: var(--glow-red-lg);
+  border-color: rgba(139, 92, 246, 0.28);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.07), transparent 75%), var(--surface);
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.05),
+    0 6px 48px -6px rgba(139, 92, 246, 0.16);
+}
+
+body.dark .monthly-ranking-card.monthly-ranking-first {
+  border-color: rgba(167, 139, 250, 0.26);
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), transparent 75%), var(--surface);
+  box-shadow:
+    0 0 0 1px rgba(167, 139, 250, 0.04),
+    0 8px 56px -8px rgba(139, 92, 246, 0.22);
 }
 
 html body .monthly-ranking-medal[data-rank="1"] {
