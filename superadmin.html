@@ -2314,7 +2314,7 @@ function clearSuperadminSession() {
 
 window.logout = async function () {
   try {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
   } catch (error) {
     console.warn(
       "Erro ao encerrar sessão no Supabase:",

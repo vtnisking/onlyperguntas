@@ -17723,6 +17723,25 @@ function saveChatiSession(session) {
   return session;
 }
 
+let chatiExpiring = false;
+
+function chatiSessionExpired() {
+  if (chatiExpiring) return;
+  chatiExpiring = true;
+  try {
+    localStorage.removeItem("chati_session");
+    localStorage.removeItem("chati_user");
+    sessionStorage.removeItem("chati_session");
+    sessionStorage.removeItem("chati_user");
+  } catch (e) {}
+  if (typeof showToast === "function") {
+    showToast("Sua sessão expirou. Entre novamente.", "error");
+  }
+  setTimeout(() => {
+    window.location.replace("/login?sessao=expirada");
+  }, 1200);
+}
+
 async function refreshChatiSession() {
   if (chatiRefreshPromise) {
     return chatiRefreshPromise;
@@ -17760,6 +17779,22 @@ const response = await fetch(
       !data.success ||
       !data.session?.access_token
     ) {
+      // Outra aba pode ter renovado a sessão um instante antes (o refresh
+      // token do Supabase é de uso único). Se já existe uma sessão nova
+      // salva, usa ela em vez de derrubar o usuário.
+      const latest = getChatiSession();
+      if (
+        latest?.access_token &&
+        latest.refresh_token &&
+        latest.refresh_token !== refreshToken
+      ) {
+        return latest;
+      }
+
+      if (response.status === 401) {
+        chatiSessionExpired();
+      }
+
       throw new Error(
         data.error ||
         "Não foi possível renovar sua sessão.",

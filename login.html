@@ -816,7 +816,7 @@ async function redirectIfAuthenticated() {
     sessionStorage.removeItem("chati_session");
     sessionStorage.removeItem("chati_user");
 
-    await supabase.auth.signOut().catch(() => {});
+    await supabase.auth.signOut({ scope: "local" }).catch(() => {});
   }
 }
 
@@ -838,6 +838,10 @@ redirectIfAuthenticated();
       function clearFeedback() {
         errorBox.className = "feedback";
         errorBox.textContent = "";
+      }
+
+      if (new URLSearchParams(location.search).get("sessao") === "expirada") {
+        showFeedback("Sua sessão expirou. Entre novamente para continuar.");
       }
 
       function setLoading(isLoading) {
@@ -877,12 +881,12 @@ redirectIfAuthenticated();
             .single();
 
           if (userError || !userData) {
-            await supabase.auth.signOut();
+            await supabase.auth.signOut({ scope: "local" });
             throw new Error("Usuário não cadastrado no sistema.");
           }
 
           if (userData.status !== "active") {
-            await supabase.auth.signOut();
+            await supabase.auth.signOut({ scope: "local" });
             throw new Error("Este usuário está desativado.");
           }
 
