@@ -14,614 +14,137 @@
     />
 
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      :root {
-        color-scheme: light;
-        --bg: #f4f4f5;
-        --surface: #ffffff;
-        --surface-soft: #f7f7f8;
-        --dark: #0b0b0d;
-        --dark-soft: #17171b;
-        --text: #17171b;
-        --text-soft: #686872;
-        --text-muted: #9a9aa3;
-        --border: #e5e5e8;
-        --border-strong: #d7d7dc;
-        --accent: #ef2323;
-        --accent-dark: #c9151d;
-        --success: #16814b;
-        --danger: #c6212b;
-        --shadow: 0 24px 80px rgba(12, 12, 16, 0.14);
-      }
-
-      html {
-        min-width: 320px;
-        background: var(--bg);
-      }
-
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { min-height: 100%; }
       body {
-        min-height: 100vh;
-        min-height: 100dvh;
-        font-family: "Inter", Arial, sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 10% 10%, rgba(225, 38, 47, 0.08), transparent 28rem),
-          radial-gradient(circle at 92% 90%, rgba(15, 15, 18, 0.06), transparent 30rem),
-          var(--bg);
-        padding: 24px;
-      }
-
-      button,
-      input,
-      a {
-        font: inherit;
-      }
-
-      button,
-      a {
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .login-shell {
-        width: min(1120px, 100%);
-        min-height: calc(100vh - 48px);
-        min-height: calc(100dvh - 48px);
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: minmax(0, 1.08fr) minmax(400px, 0.92fr);
-        overflow: hidden;
-        border: 1px solid rgba(18, 18, 22, 0.08);
-        border-radius: 32px;
-        background: var(--surface);
-        box-shadow: var(--shadow);
-      }
-
-      .brand-panel {
-        position: relative;
-        isolation: isolate;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 650px;
-        padding: 52px;
-        overflow: hidden;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background: #08090b;
         color: #fff;
-        background:
-          radial-gradient(circle at 80% 15%, rgba(225, 38, 47, 0.4), transparent 23rem),
-          linear-gradient(145deg, #09090b 0%, #111114 60%, #1b0c0f 100%);
       }
-
-      .brand-panel::before,
-      .brand-panel::after {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        border-radius: 999px;
-        pointer-events: none;
-      }
-
-      .brand-panel::before {
-        width: 320px;
-        height: 320px;
-        top: -120px;
-        right: -90px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow:
-          0 0 0 48px rgba(255, 255, 255, 0.025),
-          0 0 0 96px rgba(255, 255, 255, 0.018);
-      }
-
-      .brand-panel::after {
-        width: 260px;
-        height: 260px;
-        bottom: -150px;
-        left: -80px;
-        background: rgba(225, 38, 47, 0.16);
-        filter: blur(2px);
-      }
-
-      .brand-wordmark {
-        display: block;
-        width: auto;
-        height: 36px;
-      }
-
-      .mobile-logo .brand-wordmark {
-        height: 30px;
-      }
-
-      .brand-logo {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        width: fit-content;
-        color: #fff;
-        text-decoration: none;
-      }
-
-      .brand-mark {
-        display: grid;
-        place-items: center;
-        width: 54px;
-        height: 54px;
-        flex: 0 0 auto;
-      }
-
-      .brand-mark img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        filter: drop-shadow(0 10px 22px rgba(239, 35, 35, 0.24));
-      }
-
-      .brand-name {
-        font-size: 24px;
-        font-weight: 800;
-        letter-spacing: -0.05em;
-      }
-
-      .brand-name span {
-        color: var(--accent);
-      }
-
-      .brand-content {
-        max-width: 520px;
-        padding: 76px 0;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 24px;
-        padding: 8px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 999px;
-        color: rgba(255, 255, 255, 0.76);
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .eyebrow-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--accent);
-        box-shadow: 0 0 0 5px rgba(225, 38, 47, 0.14);
-      }
-
-      .brand-content h1 {
-        max-width: 500px;
-        margin-bottom: 20px;
-        font-size: clamp(40px, 5vw, 64px);
-        line-height: 0.98;
-        letter-spacing: -0.065em;
-      }
-
-      .brand-content h1 span {
-        color: var(--accent);
-      }
-
-      .brand-content p {
-        max-width: 470px;
-        color: rgba(255, 255, 255, 0.62);
-        font-size: 16px;
-        line-height: 1.75;
-      }
-
-      .benefits {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 34px;
-      }
-
-      .benefit {
-        padding: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.045);
-      }
-
-      .benefit svg {
-        width: 20px;
-        height: 20px;
-        margin-bottom: 18px;
-        color: var(--accent);
-      }
-
-      .benefit strong {
-        display: block;
-        margin-bottom: 4px;
-        color: rgba(255, 255, 255, 0.92);
-        font-size: 13px;
-      }
-
-      .benefit small {
-        color: rgba(255, 255, 255, 0.45);
-        font-size: 11px;
-        line-height: 1.45;
-      }
-
-      .brand-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        color: rgba(255, 255, 255, 0.35);
-        font-size: 11px;
-      }
-
-      .secure-note {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-      }
-
-      .secure-note svg {
-        width: 14px;
-        height: 14px;
-      }
-
-      .form-panel {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 48px;
-        background:
-          linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
-          radial-gradient(circle at 70% 10%, rgba(225, 38, 47, 0.08), transparent 20rem);
-      }
-
-      .form-wrap {
-        width: min(100%, 410px);
-      }
-
-      .mobile-logo {
-        display: none;
-      }
-
-      .form-heading {
-        margin-bottom: 34px;
-      }
-
-      .form-heading h2 {
-        margin-bottom: 10px;
-        font-size: 32px;
-        line-height: 1.1;
-        letter-spacing: -0.045em;
-      }
-
-      .form-heading p {
-        color: var(--text-soft);
-        font-size: 14px;
-        line-height: 1.65;
-      }
-
-      .login-form {
-        display: grid;
-        gap: 20px;
-      }
-
-      .field {
-        display: grid;
-        gap: 8px;
-      }
-
-      .field-label-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-      }
-
-      label {
-        color: #33333a;
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      .forgot-link {
-        border: 0;
-        color: var(--accent);
-        background: transparent;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-      }
-
-      .forgot-link:hover {
-        text-decoration: underline;
-        text-underline-offset: 3px;
-      }
-
-      .input-wrap {
-        position: relative;
-      }
-
-      .input-icon {
-        position: absolute;
-        top: 50%;
-        left: 16px;
-        width: 19px;
-        height: 19px;
-        color: #92929b;
-        pointer-events: none;
-        transform: translateY(-50%);
-      }
-
-      input {
-        width: 100%;
-        height: 54px;
-        padding: 0 48px;
-        border: 1px solid var(--border);
-        border-radius: 15px;
-        outline: none;
-        color: var(--text);
-        background: var(--surface-soft);
-        font-size: 14px;
-        font-weight: 500;
-        transition:
-          border-color 0.18s ease,
-          box-shadow 0.18s ease,
-          background-color 0.18s ease;
-      }
-
-      input:hover {
-        border-color: var(--border-strong);
-      }
-
-      input:focus {
-        border-color: var(--accent);
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(225, 38, 47, 0.1);
-      }
-
-      input::placeholder {
-        color: #a7a7ae;
-        font-weight: 400;
-      }
-
-      .password-toggle {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        display: grid;
-        place-items: center;
-        width: 36px;
-        height: 36px;
-        border: 0;
-        border-radius: 10px;
-        color: #7d7d86;
-        background: transparent;
-        cursor: pointer;
-        transform: translateY(-50%);
-      }
-
-      .password-toggle:hover {
-        color: var(--text);
-        background: #ebebee;
-      }
-
-      .password-toggle svg {
-        width: 19px;
-        height: 19px;
-      }
-
-      .btn-login {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        min-height: 54px;
-        margin-top: 2px;
-        padding: 0 22px;
-        overflow: hidden;
-        border: 0;
-        border-radius: 15px;
-        color: #fff;
-        background: var(--dark);
-        box-shadow: 0 10px 24px rgba(11, 11, 13, 0.16);
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition:
-          transform 0.18s ease,
-          background-color 0.18s ease,
-          box-shadow 0.18s ease;
-      }
-
-      .btn-login::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(110deg, transparent 10%, rgba(255,255,255,.14) 50%, transparent 90%);
-        transform: translateX(-120%);
-        transition: transform 0.55s ease;
-      }
-
-      .btn-login:hover:not(:disabled) {
-        background: #17171a;
-        box-shadow: 0 14px 30px rgba(11, 11, 13, 0.22);
-        transform: translateY(-1px);
-      }
-
-      .btn-login:hover:not(:disabled)::before {
-        transform: translateX(120%);
-      }
-
-      .btn-login:active:not(:disabled) {
-        transform: translateY(0) scale(0.99);
-      }
-
-      .btn-login:disabled {
-        cursor: wait;
-        opacity: 0.72;
-      }
-
-      .btn-arrow {
-        width: 18px;
-        height: 18px;
-      }
-
-      .spinner {
-        display: none;
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(255, 255, 255, 0.35);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-      }
-
-      .btn-login.loading .spinner {
-        display: block;
-      }
-
-      .btn-login.loading .btn-arrow {
-        display: none;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      .feedback {
-        display: flex;
-        align-items: flex-start;
-        gap: 9px;
-        min-height: 0;
-        margin-top: -4px;
-        padding: 12px 14px;
-        border: 1px solid transparent;
-        border-radius: 13px;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 1.5;
-      }
-
-      .feedback:empty {
-        display: none;
-      }
-
-      .feedback.error {
-        color: var(--danger);
-        border-color: rgba(198, 33, 43, 0.16);
-        background: rgba(198, 33, 43, 0.06);
-      }
-
-      .feedback.success {
-        color: var(--success);
-        border-color: rgba(22, 129, 75, 0.16);
-        background: rgba(22, 129, 75, 0.06);
-      }
-
-      .form-footer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        margin-top: 30px;
-        color: var(--text-muted);
-        font-size: 11px;
-        font-weight: 500;
-      }
-
-      .form-footer svg {
-        width: 14px;
-        height: 14px;
-      }
-
-      @media (max-width: 900px) {
-        body {
-          padding: 0;
-          background: #fff;
-        }
-
-        .login-shell {
-          min-height: 100vh;
-          min-height: 100dvh;
-          grid-template-columns: 1fr;
-          border: 0;
-          border-radius: 0;
-          box-shadow: none;
-        }
-
-        .brand-panel {
-          display: none;
-        }
-
-        .form-panel {
-          min-height: 100vh;
-          min-height: 100dvh;
-          padding: 34px 24px;
-        }
-
-        .mobile-logo {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 54px;
-          color: var(--dark);
-          text-decoration: none;
-        }
-
-        .mobile-logo .brand-mark {
-          width: 48px;
-          height: 48px;
-        }
-
-        .mobile-logo .brand-mark img {
-          filter: drop-shadow(0 8px 18px rgba(239, 35, 35, 0.2));
-        }
-
-        .mobile-logo .brand-name {
-          font-size: 23px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .form-panel {
-          align-items: flex-start;
-          padding-top: 28px;
-        }
-
-        .mobile-logo {
-          margin-bottom: 44px;
-        }
-
-        .form-heading {
-          margin-bottom: 30px;
-        }
-
-        .form-heading h2 {
-          font-size: 29px;
-        }
+      [hidden] { display: none !important; }
+
+      .tela-login { position: relative; min-height: 100vh; min-height: 100dvh; overflow: hidden; isolation: isolate; }
+      .tela-login.saindo { animation: login-sair .3s ease forwards; }
+      @keyframes login-sair { to { opacity: 0; transform: scale(.985); } }
+
+      /* ---------- Fundo animado ---------- */
+      .login-fundo { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+      .login-camada { position: absolute; inset: 0; will-change: transform; }
+      .login-orbe { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; }
+      .login-orbe-1 { width: 55vmax; height: 55vmax; left: -12vmax; bottom: -22vmax;
+        background: radial-gradient(circle, #e8002d 0%, rgba(232, 0, 45, 0) 65%);
+        animation: login-orbe-1 18s ease-in-out infinite alternate; }
+      .login-orbe-2 { width: 45vmax; height: 45vmax; right: -14vmax; top: -18vmax;
+        background: radial-gradient(circle, #a8001f 0%, rgba(168, 0, 31, 0) 65%);
+        opacity: .4; animation: login-orbe-2 22s ease-in-out infinite alternate; }
+      @keyframes login-orbe-1 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }
+      @keyframes login-orbe-2 { to { transform: translate(-10vmax, 10vmax) scale(.9); } }
+      .login-luz { position: absolute; left: 0; top: 0; width: 38vmax; height: 38vmax; margin: -19vmax 0 0 -19vmax; border-radius: 50%;
+        background: radial-gradient(circle, rgba(232, 0, 45, .16) 0%, rgba(232, 0, 45, 0) 62%); filter: blur(40px);
+        opacity: 0; transition: opacity .8s ease; will-change: transform; }
+      .login-luz.ativa { opacity: 1; }
+      .login-grade { position: absolute; inset: 0; opacity: .06;
+        background-image: linear-gradient(rgba(255, 255, 255, .7) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .7) 1px, transparent 1px);
+        background-size: 56px 56px;
+        -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+        mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); }
+      .login-linhas span { position: absolute; left: -30%; height: 1.5px; width: 22%; border-radius: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 51, 85, .95), transparent); opacity: 0; animation: login-linha 7s linear infinite; }
+      .login-linhas span:nth-child(1) { top: 14%; }
+      .login-linhas span:nth-child(2) { top: 31%; width: 15%; animation-delay: 1.6s; animation-duration: 5.5s; }
+      .login-linhas span:nth-child(3) { top: 49%; animation-delay: 3.1s; animation-duration: 8s; }
+      .login-linhas span:nth-child(4) { top: 66%; width: 18%; animation-delay: .8s; animation-duration: 6.5s; }
+      .login-linhas span:nth-child(5) { top: 81%; animation-delay: 4.4s; }
+      .login-linhas span:nth-child(6) { top: 92%; width: 12%; animation-delay: 2.4s; animation-duration: 6s; }
+      @keyframes login-linha { 0% { transform: translateX(0); opacity: 0; } 12% { opacity: .9; } 80% { opacity: .5; } 100% { transform: translateX(650%); opacity: 0; } }
+
+      /* ---------- Cartão central ---------- */
+      .login-centro { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.6rem; padding: 2rem 1.2rem; }
+      .login-cartao { position: relative; width: min(420px, 100%); background: #fff; color: #0b0c0f; border-radius: 20px; padding: 2.4rem 2.2rem 2rem;
+        display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .06);
+        animation: login-entra .7s cubic-bezier(.2, .8, .2, 1) both; }
+      .login-cartao::before { content: ""; position: absolute; left: 24px; right: 24px; top: 0; height: 3px; border-radius: 0 0 3px 3px;
+        background: linear-gradient(90deg, transparent, #e8002d, #ff3355, #e8002d, transparent); background-size: 200% 100%; animation: login-faixa 4s linear infinite; }
+      @keyframes login-faixa { from { background-position: 200% 0; } to { background-position: 0 0; } }
+      @keyframes login-entra { from { opacity: 0; transform: translateY(22px) scale(.98); } to { opacity: 1; transform: none; } }
+      .login-cartao > * { animation: login-item .6s ease both; }
+      .login-cartao > :nth-child(2) { animation-delay: .08s; }
+      .login-cartao > :nth-child(3) { animation-delay: .14s; }
+      .login-cartao > :nth-child(4) { animation-delay: .2s; }
+      .login-cartao > :nth-child(5), .login-cartao > :nth-child(6) { animation-delay: .26s; }
+      .login-cartao > :nth-child(n+7) { animation-delay: .32s; }
+      @keyframes login-item { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+      .login-marca { display: flex; justify-content: center; margin: .2rem 0 .8rem; }
+      .login-marca img { width: 170px; height: auto; display: block; }
+      .login-cabecalho { margin-bottom: .4rem; text-align: center; }
+      .login-cabecalho h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -.025em; margin: 0 0 .35rem; }
+      .login-cabecalho p { color: #6b7180; margin: 0 auto; max-width: 36ch; line-height: 1.5; font-size: .95rem; }
+      .destaque-marca { color: #e8002d; font-weight: 700; }
+      .login-rodape { color: #8b909b; font-size: .9rem; letter-spacing: .01em; animation: login-item .8s .5s ease both; }
+      .login-rodape em { font-style: normal; color: #ff3355; font-weight: 600; }
+
+      /* ---------- Campos com rótulo flutuante ---------- */
+      .lc-campo { position: relative; }
+      .lc-campo input { width: 100%; height: 56px; padding: 1.35rem 1rem .45rem; font: inherit; font-size: 1rem; color: #0b0c0f;
+        border: 1.5px solid #e3e5ea; border-radius: 12px; background: #f7f7f9; transition: border-color .2s, background .2s, box-shadow .2s; }
+      .lc-com-botao input { padding-right: 3.2rem; }
+      .lc-campo input:hover { border-color: #c9ccd4; }
+      .lc-campo input:focus { outline: none; border-color: #0b0c0f; background: #fff; box-shadow: 0 0 0 4px rgba(232, 0, 45, .12); }
+      .lc-campo input:-webkit-autofill, .lc-campo input:-webkit-autofill:hover { -webkit-box-shadow: 0 0 0 100px #f7f7f9 inset; -webkit-text-fill-color: #0b0c0f; caret-color: #0b0c0f; }
+      .lc-campo input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 100px #fff inset, 0 0 0 4px rgba(232, 0, 45, .12); }
+      .lc-campo label { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #8a8f9c; font-size: 1rem; pointer-events: none;
+        transition: top .18s ease, font-size .18s ease, color .18s ease; }
+      .lc-campo input:focus + label, .lc-campo input:not(:placeholder-shown) + label, .lc-campo input:-webkit-autofill + label {
+        top: 1.05rem; font-size: .72rem; font-weight: 700; color: #0b0c0f; letter-spacing: .02em; }
+      .lc-campo input:focus + label { color: #e8002d; }
+      .lc-olho { position: absolute; right: .55rem; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: grid; place-items: center;
+        border: 0; background: none; color: #8a8f9c; border-radius: 10px; cursor: pointer; transition: color .2s, background .2s; }
+      .lc-olho:hover { color: #0b0c0f; background: #eceef2; }
+      .lc-olho svg { width: 20px; height: 20px; }
+
+      .lc-opcoes { display: flex; justify-content: space-between; align-items: center; gap: .5rem 1rem; flex-wrap: wrap; margin: -.2rem 0 .2rem; }
+      .lc-check { display: inline-flex; align-items: center; gap: .45rem; font-size: .86rem; color: #4b5060; cursor: pointer; user-select: none; }
+      .lc-check input { width: 17px; height: 17px; margin: 0; accent-color: #e8002d; cursor: pointer; }
+      .lc-link { border: 0; background: none; padding: 0; font: inherit; font-size: .86rem; font-weight: 600; color: #e8002d; cursor: pointer; }
+      .lc-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+      /* Mensagens (erro e sucesso) */
+      .feedback { text-align: center; max-height: 0; overflow: hidden; font-size: .88rem; font-weight: 600; line-height: 1.4;
+        opacity: 0; margin: -.3rem 0 0; transition: max-height .25s ease, opacity .25s ease, margin .25s ease; }
+      .feedback.error, .feedback.success { max-height: 5rem; opacity: 1; margin: 0; }
+      .feedback.error { color: #c20026; }
+      .feedback.success { color: #1b7f46; }
+      .lc-sacode { animation: lc-sacode .4s ease !important; }
+      @keyframes lc-sacode { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+
+      .btn-login { position: relative; height: 54px; margin-top: .2rem; border: 0; border-radius: 12px; background: #e8002d; color: #fff; font: inherit; font-weight: 700; font-size: 1rem;
+        cursor: pointer; overflow: hidden; transition: background .2s, transform .15s, box-shadow .2s; box-shadow: 0 10px 24px -10px rgba(232, 0, 45, .75); }
+      .btn-login::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .28) 50%, transparent 70%);
+        transform: translateX(-100%); transition: transform .6s ease; }
+      .btn-login:hover:not(:disabled) { background: #c20026; box-shadow: 0 14px 28px -10px rgba(232, 0, 45, .85); transform: translateY(-1px); }
+      .btn-login:hover:not(:disabled)::after { transform: translateX(100%); }
+      .btn-login:active:not(:disabled) { transform: translateY(1px) scale(.995); }
+      .btn-login:disabled { cursor: wait; }
+      .spinner { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border: 2.5px solid rgba(255, 255, 255, .35);
+        border-top-color: #fff; border-radius: 50%; opacity: 0; animation: lc-gira .7s linear infinite; }
+      .btn-login.loading .btn-text { opacity: 0; }
+      .btn-login.loading .spinner { opacity: 1; }
+      @keyframes lc-gira { to { transform: rotate(360deg); } }
+      .lc-ajuda { display: flex; align-items: center; justify-content: center; gap: .4rem; color: #8a8f9c; font-size: .82rem; margin-top: .3rem; text-align: center; }
+      .lc-ajuda svg { width: 14px; height: 14px; flex: none; }
+
+      @media (max-width: 520px) {
+        .login-cartao { padding: 2rem 1.4rem 1.6rem; border-radius: 18px; }
+        .login-cabecalho h1 { font-size: 1.5rem; }
+        .lc-opcoes { flex-wrap: nowrap; }
+        .lc-check, .lc-link { font-size: .82rem; white-space: nowrap; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          scroll-behavior: auto !important;
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
+        *, *::before, *::after { transition: none !important; animation: none !important; }
+        .login-luz { display: none; }
       }
     </style>
     <link rel="manifest" href="/manifest.json" />
@@ -634,128 +157,113 @@
   </head>
 
   <body>
-    <main class="login-shell">
-      <section class="brand-panel" aria-label="Apresentação do Chati">
-        <a class="brand-logo" href="/" aria-label="Chati - Página inicial">
-          <img class="brand-wordmark" src="/assets/logo-chati-white.png" alt="Chati" />
-        </a>
+    <div class="tela-login">
+      <div class="login-fundo" aria-hidden="true">
+        <div class="login-camada" data-prof="-70"><div class="login-orbe login-orbe-1"></div></div>
+        <div class="login-camada" data-prof="55"><div class="login-orbe login-orbe-2"></div></div>
+        <div class="login-luz"></div>
+        <div class="login-grade"></div>
+        <div class="login-linhas"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
 
-        <div class="brand-content">
-          <div class="eyebrow"><span class="eyebrow-dot"></span> Atendimento centralizado</div>
-          <h1>Todos os canais. <span>Um só lugar.</span></h1>
-          <p>
-            Entre no painel para acompanhar perguntas, organizar sua equipe e responder seus clientes com mais rapidez.
-          </p>
-
-          <div class="benefits">
-            <article class="benefit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 2v20M2 12h20" />
-                <path d="m5 5 14 14M19 5 5 19" opacity=".25" />
-              </svg>
-              <strong>Centralize</strong>
-              <small>Seus canais em uma tela</small>
-            </article>
-
-            <article class="benefit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" />
-              </svg>
-              <strong>Responda</strong>
-              <small>Mais rápido e organizado</small>
-            </article>
-
-            <article class="benefit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 3v18h18" />
-                <path d="m7 15 4-4 3 3 5-7" />
-              </svg>
-              <strong>Acompanhe</strong>
-              <small>Resultados da sua equipe</small>
-            </article>
+      <main class="login-centro">
+        <form class="login-cartao" id="loginForm" novalidate>
+          <div class="login-marca">
+            <img src="/assets/logo-chati-black.png" alt="Chati" width="170" height="59" />
           </div>
-        </div>
 
-        <div class="brand-footer">
-          <span>© 2026 Chati</span>
-          <span class="secure-note">
+          <header class="login-cabecalho">
+            <h1>Bem-vindo de volta</h1>
+            <p>Atender com <strong class="destaque-marca">inteligência</strong> nunca foi tão fácil.</p>
+          </header>
+
+          <div class="lc-campo">
+            <input id="email" name="email" type="email" placeholder=" " autocomplete="username" inputmode="email" required autofocus />
+            <label for="email">E-mail</label>
+          </div>
+
+          <div class="lc-campo lc-com-botao">
+            <input id="password" name="password" type="password" placeholder=" " autocomplete="current-password" required />
+            <label for="password">Senha</label>
+            <button class="lc-olho password-toggle" id="passwordToggle" type="button" aria-label="Mostrar senha" aria-pressed="false">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2.06 12.35a1 1 0 0 1 0-.7C3.72 7.6 7.65 5 12 5c4.35 0 8.28 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.28 16.4 16.35 19 12 19c-4.35 0-8.28-2.6-9.94-6.65Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="lc-opcoes">
+            <label class="lc-check"><input type="checkbox" id="lembrarEmail" /><span>Lembrar meu e-mail</span></label>
+            <button class="lc-link forgot-link" type="button" onclick="forgotPassword()">Esqueci minha senha</button>
+          </div>
+
+          <div class="feedback" id="error" role="alert" aria-live="polite"></div>
+
+          <button class="btn-login" type="submit">
+            <span class="btn-text">Entrar</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+
+          <p class="lc-ajuda">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect width="18" height="11" x="3" y="11" rx="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
-            Ambiente seguro
-          </span>
-        </div>
-      </section>
+            Ambiente seguro e criptografado
+          </p>
+        </form>
 
-      <section class="form-panel">
-        <div class="form-wrap">
-          <a class="mobile-logo" href="/" aria-label="Chati - Página inicial">
-            <img class="brand-wordmark" src="/assets/logo-chati-black.png" alt="Chati" />
-          </a>
+        <p class="login-rodape">Todos os canais, <em>um só lugar.</em></p>
+      </main>
+    </div>
 
-          <header class="form-heading">
-            <h2>Bem-vindo de volta</h2>
-            <p>Informe seus dados para acessar o painel do Chati.</p>
-          </header>
+    <script>
+      // Luz que acompanha o mouse e leve paralaxe das manchas (igual ao Chati ERP)
+      (function () {
+        const fundo = document.querySelector(".login-fundo");
+        if (!fundo || matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(pointer: coarse)").matches) return;
+        const camadas = [...fundo.querySelectorAll("[data-prof]")].map((el) => ({ el, prof: Number(el.dataset.prof) }));
+        const luz = fundo.querySelector(".login-luz");
+        const alvo = { x: 0.5, y: 0.5 };
+        const atual = { x: 0.5, y: 0.5 };
+        let quadro = null;
+        function passo() {
+          atual.x += (alvo.x - atual.x) * 0.05;
+          atual.y += (alvo.y - atual.y) * 0.05;
+          const dx = atual.x - 0.5, dy = atual.y - 0.5;
+          for (const c of camadas) c.el.style.transform = `translate3d(${(dx * c.prof).toFixed(1)}px, ${(dy * c.prof).toFixed(1)}px, 0)`;
+          luz.style.transform = `translate3d(${(atual.x * innerWidth).toFixed(1)}px, ${(atual.y * innerHeight).toFixed(1)}px, 0)`;
+          quadro = Math.abs(alvo.x - atual.x) + Math.abs(alvo.y - atual.y) > 0.0004 ? requestAnimationFrame(passo) : null;
+        }
+        addEventListener("pointermove", (e) => {
+          alvo.x = e.clientX / innerWidth;
+          alvo.y = e.clientY / innerHeight;
+          luz.classList.add("ativa");
+          if (!quadro) quadro = requestAnimationFrame(passo);
+        }, { passive: true });
+      })();
 
-          <form class="login-form" id="loginForm" novalidate>
-            <div class="field">
-              <label for="email">E-mail</label>
-              <div class="input-wrap">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-                <input id="email" name="email" type="email" placeholder="nome@empresa.com" autocomplete="email" inputmode="email" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="field-label-row">
-                <label for="password">Senha</label>
-                <button class="forgot-link" type="button" onclick="forgotPassword()">Esqueci minha senha</button>
-              </div>
-
-              <div class="input-wrap">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="18" height="11" x="3" y="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-
-                <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required />
-
-                <button class="password-toggle" id="passwordToggle" type="button" aria-label="Mostrar senha" aria-pressed="false">
-                  <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M2.06 12.35a1 1 0 0 1 0-.7C3.72 7.6 7.65 5 12 5c4.35 0 8.28 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.28 16.4 16.35 19 12 19c-4.35 0-8.28-2.6-9.94-6.65Z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <button class="btn-login" type="submit">
-              <span class="spinner" aria-hidden="true"></span>
-              <span class="btn-text">Entrar na conta</span>
-              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 12h14" />
-                <path d="m13 6 6 6-6 6" />
-              </svg>
-            </button>
-
-            <div class="feedback" id="error" role="alert" aria-live="polite"></div>
-          </form>
-
-          <div class="form-footer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7Z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-            Seus dados são protegidos e não serão compartilhados.
-          </div>
-        </div>
-      </section>
-    </main>
+      // Lembrar e-mail (só neste navegador)
+      (function () {
+        const email = document.getElementById("email");
+        const caixa = document.getElementById("lembrarEmail");
+        let salvo = "";
+        try { salvo = localStorage.getItem("chati_lembrar_email") || ""; } catch (e) {}
+        if (salvo) {
+          email.value = salvo;
+          caixa.checked = true;
+          email.removeAttribute("autofocus");
+          setTimeout(() => document.getElementById("password").focus(), 0);
+        }
+        document.getElementById("loginForm").addEventListener("submit", () => {
+          try {
+            if (caixa.checked && email.value.trim()) localStorage.setItem("chati_lembrar_email", email.value.trim());
+            else localStorage.removeItem("chati_lembrar_email");
+          } catch (e) {}
+        }, true);
+      })();
+    </script>
 
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
@@ -846,6 +354,12 @@ redirectIfAuthenticated();
       function showFeedback(message, type = "error") {
         errorBox.className = `feedback ${type}`;
         errorBox.textContent = message;
+        if (type === "error") {
+          const card = document.getElementById("loginForm");
+          card.classList.remove("lc-sacode");
+          void card.offsetWidth;
+          card.classList.add("lc-sacode");
+        }
       }
 
       function clearFeedback() {
@@ -860,7 +374,7 @@ redirectIfAuthenticated();
       function setLoading(isLoading) {
         btn.disabled = isLoading;
         btn.classList.toggle("loading", isLoading);
-        btnText.textContent = isLoading ? "Entrando..." : "Entrar na conta";
+        btnText.textContent = "Entrar";
         btn.setAttribute("aria-busy", String(isLoading));
       }
 
@@ -884,7 +398,13 @@ redirectIfAuthenticated();
 
           if (authError || !authData.user) {
             console.error("Erro do Supabase Auth:", authError);
-            throw new Error(authError?.message || "E-mail ou senha incorretos.");
+            const msg = String(authError?.message || "");
+            throw new Error(
+              /invalid login|invalid credentials/i.test(msg) ? "E-mail ou senha incorretos." :
+              /email not confirmed/i.test(msg) ? "Confirme seu e-mail antes de entrar." :
+              /rate limit|too many/i.test(msg) ? "Muitas tentativas. Aguarde um pouco e tente de novo." :
+              msg || "E-mail ou senha incorretos.",
+            );
           }
 
           const { data: userData, error: userError } = await supabase
