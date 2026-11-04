@@ -760,9 +760,22 @@
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+      // Remove cópias antigas da sessão guardadas pela biblioteca do Supabase.
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("sb-") && k.endsWith("-auth-token"))
+        .forEach((k) => localStorage.removeItem(k));
+
+      // Sem guardar/renovar sessão aqui: quem renova é o Chati (/api/refresh-token).
       const supabase = createClient(
         "https://vspcitxnssbsztqnfhmj.supabase.co",
         "sb_publishable_4j4tzbnIkFYJHBdpvibKFg_weJPN_qS",
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+          },
+        },
       );
 
 async function redirectIfAuthenticated() {

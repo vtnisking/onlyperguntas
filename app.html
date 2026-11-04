@@ -10440,15 +10440,10 @@ async function refreshLoggedUserFromServer() {
       return;
     }
 
-    const response = await fetch(
+    // Usa o fetch autenticado: renova a sessão antes, se estiver vencida.
+    const response = await authenticatedIntegrationFetch(
       "/api/app?action=me",
-      {
-        method: "GET",
-        headers: {
-          Authorization:
-            `Bearer ${session.access_token}`,
-        },
-      },
+      { method: "GET" },
     );
 
     const data = await response
@@ -17697,6 +17692,14 @@ function getChatiSession() {
 
 let chatiRefreshPromise = null;
 
+// Cópias da sessão na chave da biblioteca do Supabase faziam outras telas
+// renovarem o mesmo refresh token e o Supabase cancelava o login. Limpa.
+try {
+  Object.keys(localStorage)
+    .filter((k) => k.startsWith("sb-") && k.endsWith("-auth-token"))
+    .forEach((k) => localStorage.removeItem(k));
+} catch (e) {}
+
 function saveChatiSession(session) {
   if (!session?.access_token) {
     throw new Error("A sessão renovada não possui access_token.");
@@ -17706,19 +17709,6 @@ function saveChatiSession(session) {
     "chati_session",
     JSON.stringify(session),
   );
-
-  const supabaseKey = Object.keys(localStorage).find(
-    (key) =>
-      key.startsWith("sb-") &&
-      key.endsWith("-auth-token"),
-  );
-
-  if (supabaseKey) {
-    localStorage.setItem(
-      supabaseKey,
-      JSON.stringify(session),
-    );
-  }
 
   return session;
 }
