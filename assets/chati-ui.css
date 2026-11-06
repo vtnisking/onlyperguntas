@@ -4974,3 +4974,40 @@ body {
     flex-basis: 38px;
   }
 }
+
+/* Logo centralizada e maior no menu lateral */
+@media (min-width: 900px) {
+  html body .sidebar .sidebar-header {
+    position: relative;
+    justify-content: center;
+    min-height: 64px;
+    margin-bottom: 18px;
+    padding: 0 34px;
+  }
+
+  html body .sidebar .sidebar-brand {
+    flex: 1;
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  html body .sidebar .brand-wordmark {
+    height: 42px;
+  }
+
+  html body .sidebar .sidebar-collapse-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  html body .sidebar.collapsed .sidebar-collapse-btn {
+    position: static;
+    transform: rotate(180deg);
+  }
+
+  html body .sidebar.collapsed .sidebar-header {
+    padding: 0;
+  }
+}
