@@ -4880,3 +4880,97 @@ html body .post-sales-deadline {
   font-size: 12px;
   font-weight: 500;
 }
+
+/* =====================================================================
+   MENU LATERAL MAIOR
+   ===================================================================== */
+:root,
+body {
+  --sidebar-w: 264px;
+}
+
+@media (min-width: 900px) {
+  html body .sidebar {
+    padding: 18px 14px;
+  }
+
+  html body .sidebar .sidebar-header {
+    min-height: 52px;
+    margin-bottom: 22px;
+  }
+
+  html body .sidebar .brand-wordmark {
+    height: 30px;
+  }
+
+  html body .sidebar .sidebar-nav-title {
+    margin-bottom: 8px;
+    font-size: 11.5px;
+  }
+
+  html body .sidebar .sidebar-nav-section + .sidebar-nav-section {
+    margin-top: 22px;
+  }
+
+  html body .sidebar .nav-item {
+    min-height: 42px;
+    gap: 12px;
+    padding: 0 12px;
+    margin: 2px 0;
+    border-radius: 10px;
+    font-size: 14.5px;
+  }
+
+  html body .sidebar .nav-icon,
+  html body .sidebar .nav-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  html body .sidebar .nav-badge,
+  html body .sidebar .nav-item.active .nav-badge {
+    min-width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  html body .sidebar .sidebar-user {
+    padding: 8px;
+  }
+
+  html body .sidebar .user-avatar {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    font-size: 13px;
+  }
+
+  html body .sidebar .sidebar-user-name {
+    font-size: 14px;
+  }
+
+  html body .sidebar .sidebar-user-role {
+    font-size: 12px;
+  }
+
+  /* Menu recolhido continua compacto */
+  html body .sidebar.collapsed {
+    width: 72px;
+  }
+
+  html body .sidebar.collapsed + .main-content {
+    margin-left: 72px;
+  }
+
+  html body .sidebar.collapsed .nav-item {
+    width: 44px;
+    min-height: 40px;
+  }
+
+  html body .sidebar.collapsed .sidebar-brand-icon,
+  html body .sidebar.collapsed .sidebar-brand-icon img {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+}
