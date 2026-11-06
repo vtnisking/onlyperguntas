@@ -1,1990 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chati — Atendimento de marketplaces em um só lugar</title>
-<meta name="description" content="Centralize perguntas e atendimentos dos seus marketplaces em um painel simples, rápido e organizado com o Chati.">
-<meta name="theme-color" content="#E30613">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --red:#E30613;
-    --red-dark:#B70510;
-    --red-light:#FDECEC;
-    --white:#FFFFFF;
-    --bg:#FAFAFA;
-    --text:#111111;
-    --gray:#6B7280;
-    --gray-light:#9CA3AF;
-    --border:#ECECEC;
-    --shadow-sm: 0 1px 2px rgba(17,17,17,0.04);
-    --shadow-md: 0 4px 16px rgba(17,17,17,0.06);
-    --shadow-lg: 0 20px 60px rgba(17,17,17,0.10);
-    --shadow-red: 0 8px 24px rgba(227,6,19,0.25);
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --ease: cubic-bezier(.16,1,.3,1);
-  }
-
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-    color:var(--text);
-    background:var(--bg);
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  img,svg{display:block;max-width:100%;}
-  a{text-decoration:none;color:inherit;}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;}
-  ul{list-style:none;}
-
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
-  }
-
-  :focus-visible{outline:2px solid var(--red); outline-offset:3px; border-radius:4px;}
-
-  .container{max-width:1200px; margin:0 auto; padding:0 24px;}
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px;
-    font-size:13px; font-weight:600; color:var(--red);
-    text-transform:uppercase; letter-spacing:0.04em;
-    margin-bottom:16px;
-  }
-  section{position:relative;}
-
-  h1,h2,h3,h4{font-weight:800; letter-spacing:-0.02em; line-height:1.08;}
-  .section-label{
-    font-size:14px; font-weight:600; color:var(--gray);
-    display:block; margin-bottom:12px;
-  }
-  .section-title{
-    font-size:clamp(28px,4vw,44px);
-    font-weight:800;
-    letter-spacing:-0.02em;
-    line-height:1.15;
-    color:var(--text);
-  }
-  .section-sub{
-    font-size:17px; color:var(--gray); line-height:1.6; margin-top:16px; max-width:560px;
-  }
-  .section-head{margin-bottom:56px;}
-  .section-head.center{text-align:center;}
-  .section-head.center .section-sub{margin-left:auto;margin-right:auto;}
-
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    padding:14px 26px; border-radius:999px; font-weight:600; font-size:15px;
-    transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
-    white-space:nowrap;
-  }
-  .btn-primary{
-    background:var(--red); color:var(--white);
-    box-shadow: var(--shadow-red);
-  }
-  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 32px rgba(227,6,19,0.35); background:var(--red-dark);}
-  .btn-secondary{
-    background:var(--white); color:var(--text); border:1px solid var(--border);
-    box-shadow:var(--shadow-sm);
-  }
-  .btn-secondary:hover{ border-color:#D8D8D8; transform:translateY(-2px); box-shadow:var(--shadow-md);}
-  .btn-ghost{ color:var(--text); font-weight:600; font-size:15px; padding:10px 4px;}
-  .btn-sm{padding:10px 18px; font-size:14px;}
-
-  /* ---------------- NAV ---------------- */
-  header.nav{
-    position:sticky; top:0; z-index:100;
-    background:rgba(250,250,250,0.78);
-    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--border);
-  }
-  .nav-inner{
-    display:flex; align-items:center; justify-content:space-between;
-    height:72px;
-  }
-  .logo{
-    display:flex; align-items:center; gap:10px;
-    font-weight:800; font-size:18px; letter-spacing:-0.01em;
-  }
-  .logo-mark{
-    width:32px; height:32px; border-radius:9px;
-    background:linear-gradient(155deg, var(--red), #ff4d55);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:var(--shadow-red);
-  }
-  .logo-mark svg{width:17px;height:17px;}
-  .logo .brand-wordmark{display:block; height:28px; width:auto;}
-  .nav-links{
-    display:flex; align-items:center; gap:36px;
-  }
-  .nav-links a{
-    font-size:14.5px; font-weight:500; color:var(--gray);
-    transition:color .2s;
-    position:relative;
-  }
-  .nav-links a:hover{color:var(--text);}
-  .nav-actions{display:flex; align-items:center; gap:12px;}
-  .nav-toggle{display:none; flex-direction:column; gap:5px; padding:6px;}
-  .nav-toggle span{width:22px; height:2px; background:var(--text); border-radius:2px;}
-
-  /* ---------------- HERO ---------------- */
-  .hero{
-    padding:96px 0 60px;
-    background:
-      radial-gradient(60% 50% at 82% 12%, rgba(227,6,19,0.07) 0%, rgba(227,6,19,0) 70%),
-      var(--bg);
-  }
-  .hero-inner{
-    display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;
-  }
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    background:var(--red-light); color:var(--red-dark);
-    font-size:13px; font-weight:600;
-    padding:8px 16px 8px 10px; border-radius:999px;
-    margin-bottom:24px;
-  }
-  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--red); box-shadow:0 0 0 3px rgba(227,6,19,0.18);}
-  .hero h1{
-    font-size:clamp(34px,4.6vw,54px);
-    line-height:1.08;
-  }
-  .hero h1 .accent{color:var(--red);}
-  .hero p.sub{
-    font-size:18px; color:var(--gray); line-height:1.65;
-    margin-top:22px; max-width:520px;
-  }
-  .hero-ctas{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
-  .trust-row{
-    display:flex; align-items:center; gap:24px; margin-top:36px; flex-wrap:wrap;
-  }
-  .trust-item{
-    display:flex; align-items:center; gap:8px;
-    font-size:13.5px; color:var(--gray); font-weight:500;
-  }
-  .trust-item svg{width:16px; height:16px; color:var(--red); flex-shrink:0;}
-
-  /* Hero dashboard mockup */
-  .hero-visual{ position:relative; }
-  .channel-orbit{
-    position:absolute; inset:-40px -40px auto auto; width:100%; height:100%;
-    pointer-events:none; z-index:0;
-  }
-  .chip{
-    position:absolute;
-    display:flex; align-items:center; justify-content:center;
-    width:44px; height:44px; border-radius:12px;
-    background:var(--white); box-shadow:var(--shadow-md);
-    font-size:18px;
-    animation: float 6s ease-in-out infinite;
-  }
-  .chip svg{width:20px;height:20px;}
-  .chip.c1{top:-6%; left:6%; animation-delay:0s;}
-  .chip.c2{top:14%; right:-4%; animation-delay:1.1s;}
-  .chip.c3{top:56%; left:-8%; animation-delay:2s;}
-  .chip.c4{bottom:2%; right:8%; animation-delay:.6s;}
-  .chip.c5{bottom:-6%; left:22%; animation-delay:1.6s;}
-  @keyframes float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-10px);}
-  }
-
-  .dash{
-    position:relative; z-index:1;
-    background:var(--white);
-    border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-lg);
-    overflow:hidden;
-    display:grid;
-    grid-template-columns:64px 1fr 1.15fr;
-    min-height:480px;
-  }
-  .dash-side{
-    background:#FBFBFB; border-right:1px solid var(--border);
-    display:flex; flex-direction:column; align-items:center; gap:18px; padding:20px 0;
-  }
-  .dash-side .sq{width:34px; height:34px; border-radius:9px; background:var(--border);}
-  .dash-side .sq.active{background:var(--red); box-shadow:var(--shadow-red);}
-  .dash-list{border-right:1px solid var(--border); padding:16px 14px; overflow:hidden;}
-  .dash-list h5{font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--gray-light); font-weight:700; margin-bottom:12px;}
-  .conv-item{
-    display:flex; gap:10px; align-items:center;
-    padding:10px 8px; border-radius:10px; margin-bottom:4px;
-  }
-  .conv-item.active{background:var(--red-light);}
-  .avatar{
-    width:34px; height:34px; border-radius:50%; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    color:var(--white); font-size:12px; font-weight:700;
-  }
-  .conv-meta{min-width:0;flex:1;}
-  .conv-meta .name{font-size:13px; font-weight:600; color:var(--text); display:flex; justify-content:space-between; gap:6px;}
-  .conv-meta .name span:last-child{font-weight:400; color:var(--gray-light); font-size:11px;}
-  .conv-meta .preview{font-size:12px; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
-  .tag-pill{font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:99px; display:inline-block; margin-top:4px;}
-
-  .dash-main{padding:18px 20px; display:flex; flex-direction:column; gap:14px;}
-  .dash-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
-  .stat-card{
-    background:#FBFBFB; border:1px solid var(--border); border-radius:12px; padding:12px;
-  }
-  .stat-card .n{font-size:18px; font-weight:800;}
-  .stat-card .l{font-size:10.5px; color:var(--gray); margin-top:2px;}
-  .chat-panel{
-    flex:1; border:1px solid var(--border); border-radius:14px; padding:14px;
-    display:flex; flex-direction:column; gap:10px; background:linear-gradient(180deg,#fff,#fcfcfc);
-  }
-  .bubble{max-width:75%; padding:9px 12px; border-radius:14px; font-size:12px; line-height:1.4;}
-  .bubble.in{background:#F1F1F3; align-self:flex-start; border-bottom-left-radius:4px;}
-  .bubble.out{background:var(--red); color:#fff; align-self:flex-end; border-bottom-right-radius:4px;}
-  .mini-chart{display:flex; align-items:flex-end; gap:4px; height:46px; margin-top:auto;}
-  .mini-chart .bar{flex:1; background:linear-gradient(180deg, var(--red), #ff7b82); border-radius:4px 4px 0 0; opacity:.85;}
-  .online-row{display:flex; align-items:center; gap:6px;}
-  .online-row .avatar{width:22px;height:22px;font-size:9px; margin-left:-8px; border:2px solid #fff;}
-  .online-row .avatar:first-child{margin-left:0;}
-
-  /* ---------------- LOGO CLOUD ---------------- */
-  .logocloud{padding:48px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--white);}
-  .logocloud p{text-align:center; font-size:13px; color:var(--gray-light); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:32px;}
-  .logo-row{
-    display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:44px 56px;
-  }
-  .logo-row .plat{
-    display:flex; align-items:center; gap:8px;
-    color:var(--gray-light); font-weight:700; font-size:15px;
-    filter:grayscale(1); opacity:.7; transition:opacity .25s, filter .25s;
-  }
-  .logo-row .plat:hover{opacity:1; filter:grayscale(0); color:var(--text);}
-  .logo-row .plat svg{width:20px; height:20px;}
-
-  /* ---------------- PROBLEM ---------------- */
-  .problem{padding:120px 0;}
-  .problem-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;}
-  .chaos{position:relative; height:400px;}
-  .tab-card{
-    position:absolute; width:230px; background:var(--white); border:1px solid var(--border);
-    border-radius:14px; box-shadow:var(--shadow-md); padding:14px;
-  }
-  .tab-card .dots{display:flex; gap:5px; margin-bottom:10px;}
-  .tab-card .dots span{width:8px; height:8px; border-radius:50%; background:var(--border);}
-  .tab-card .line{height:8px; background:var(--border); border-radius:4px; margin-bottom:7px;}
-  .tab-card .line.short{width:60%;}
-  .tab-card.t1{top:0; left:4%; transform:rotate(-7deg); z-index:1;}
-  .tab-card.t2{top:14%; left:38%; transform:rotate(4deg); z-index:3; box-shadow:var(--shadow-lg);}
-  .tab-card.t3{top:2%; right:0; transform:rotate(9deg); z-index:2;}
-  .tab-card.t4{bottom:0; left:16%; transform:rotate(-3deg); z-index:2;}
-  .tab-card.t5{bottom:6%; right:8%; transform:rotate(6deg); z-index:1;}
-  .arrow-flow{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    color:var(--gray-light); font-weight:600; font-size:13px; margin:8px 0;
-  }
-  .problem-copy .kpi-list{margin-top:28px; display:flex; flex-direction:column; gap:16px;}
-  .kpi-list li{display:flex; gap:12px; align-items:flex-start; font-size:15px; color:var(--text);}
-  .kpi-list li svg{width:20px;height:20px; color:var(--red); flex-shrink:0; margin-top:2px;}
-  .kpi-list b{display:block; font-weight:700;}
-  .kpi-list span.d{color:var(--gray); font-size:14px;}
-
-  /* ---------------- FEATURES ---------------- */
-  .features{padding:120px 0; background:var(--white); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
-  .feature-grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
-  }
-  .feature-card{
-    background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md);
-    padding:28px 24px; transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease);
-  }
-  .feature-card:hover{
-    transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:transparent; background:var(--white);
-  }
-  .feature-icon{
-    width:44px; height:44px; border-radius:12px;
-    background:var(--red-light); color:var(--red);
-    display:flex; align-items:center; justify-content:center; margin-bottom:18px;
-  }
-  .feature-icon svg{width:22px; height:22px;}
-  .feature-card h3{font-size:16.5px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em;}
-  .feature-card p{font-size:14px; color:var(--gray); line-height:1.6;}
-
-  /* ---------------- HOW IT WORKS ---------------- */
-  .how{padding:120px 0;}
-  .steps{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative;
-  }
-  .step{position:relative; padding-right:24px;}
-  .step .num{
-    font-size:13px; font-weight:800; color:var(--red);
-    width:36px;height:36px;border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    background:var(--red-light); margin-bottom:20px;
-  }
-  .step h4{font-size:17px; font-weight:700; margin-bottom:8px;}
-  .step p{font-size:14px; color:var(--gray); line-height:1.6;}
-  .step-line{
-    position:absolute; top:18px; left:calc(100% - 12px); width:calc(100% - 24px); height:1.5px;
-    background:repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 12px);
-  }
-  .step:last-child .step-line{display:none;}
-
-  /* ---------------- BEFORE/AFTER ---------------- */
-  .compare{padding:120px 0; background:var(--white); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
-  .compare-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
-  .compare-card{border-radius:var(--radius-lg); padding:36px 32px;}
-  .compare-card.bad{background:#FBFAFA; border:1px solid var(--border);}
-  .compare-card.good{background:var(--text); color:var(--white); box-shadow:var(--shadow-lg);}
-  .compare-card h3{font-size:20px; margin-bottom:24px; font-weight:800;}
-  .compare-card.good h3{color:var(--white);}
-  .compare-list{display:flex; flex-direction:column; gap:16px;}
-  .compare-list li{display:flex; align-items:center; gap:12px; font-size:15px; font-weight:500;}
-  .compare-list.bad li{color:#6B6B6B;}
-  .compare-list.good li{color:#F2F2F2;}
-  .ico-x, .ico-check{
-    width:22px; height:22px; border-radius:50%; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .ico-x{background:#F1E7E7; color:#B23A3A;}
-  .ico-check{background:var(--red); color:#fff;}
-  .ico-x svg, .ico-check svg{width:12px; height:12px;}
-
-  /* ---------------- SHOWCASE ---------------- */
-  .showcase{padding:120px 0;}
-  .tabs-bar{
-    display:flex; gap:6px; justify-content:center; margin-bottom:36px; flex-wrap:wrap;
-  }
-  .tab-btn{
-    padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600;
-    color:var(--gray); border:1px solid var(--border); background:var(--white);
-    transition:all .2s;
-  }
-  .tab-btn.active{background:var(--text); color:var(--white); border-color:var(--text);}
-  .browser{
-    background:var(--white); border:1px solid var(--border); border-radius:20px;
-    box-shadow:var(--shadow-lg); overflow:hidden;
-  }
-  .browser-bar{
-    display:flex; align-items:center; gap:8px; padding:14px 18px; border-bottom:1px solid var(--border); background:#FCFCFC;
-  }
-  .browser-bar .dot{width:10px;height:10px;border-radius:50%; background:var(--border);}
-  .browser-url{
-    flex:1; margin-left:14px; background:var(--bg); border-radius:8px; padding:6px 14px;
-    font-size:12px; color:var(--gray-light); text-align:center;
-  }
-  .browser-body{min-height:420px; padding:32px; display:none;}
-  .browser-body.active{display:block;}
-  .showcase-placeholder{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-    min-height:356px; color:var(--gray);
-  }
-  .showcase-placeholder .icon-lg{width:56px;height:56px;color:var(--red);}
-  .showcase-placeholder h4{font-size:18px; color:var(--text); font-weight:700;}
-  .showcase-placeholder p{font-size:14px; max-width:380px; text-align:center; line-height:1.6;}
-
-  /* ---------------- STATS ---------------- */
-  .stats{padding:100px 0; background:var(--text); color:var(--white);}
-  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
-  .stat{padding:0 12px;}
-  .stat .big{font-size:clamp(32px,4vw,48px); font-weight:800; color:var(--white); letter-spacing:-0.02em;}
-  .stat .big .accent{color:var(--red);}
-  .stat .lbl{font-size:14px; color:#9CA3AF; margin-top:8px; font-weight:500;}
-
-  /* ---------------- TESTIMONIALS ---------------- */
-  .testimonials{padding:120px 0;}
-  .test-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .test-card{
-    background:var(--white); border:1px solid var(--border); border-radius:var(--radius-md);
-    padding:28px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:16px;
-  }
-  .stars{display:flex; gap:3px; color:var(--red);}
-  .stars svg{width:16px;height:16px;}
-  .test-card p{font-size:14.5px; line-height:1.65; color:var(--text); flex:1;}
-  .test-person{display:flex; align-items:center; gap:12px; padding-top:12px; border-top:1px solid var(--border);}
-  .test-person .name{font-size:14px; font-weight:700;}
-  .test-person .role{font-size:12.5px; color:var(--gray);}
-
-  /* ---------------- FAQ ---------------- */
-  .faq{padding:120px 0; background:var(--white); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
-  .faq-wrap{max-width:760px; margin:0 auto;}
-  .faq-item{border-bottom:1px solid var(--border);}
-  .faq-q{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
-    padding:22px 4px; text-align:left; font-size:16px; font-weight:600; color:var(--text);
-  }
-  .faq-q .plus{
-    width:22px; height:22px; flex-shrink:0; position:relative;
-  }
-  .faq-q .plus::before, .faq-q .plus::after{
-    content:''; position:absolute; background:var(--gray); border-radius:2px; transition:transform .3s var(--ease), opacity .3s;
-  }
-  .faq-q .plus::before{width:14px; height:2px; top:10px; left:4px;}
-  .faq-q .plus::after{width:2px; height:14px; top:4px; left:10px;}
-  .faq-item.open .faq-q .plus::after{transform:rotate(90deg); opacity:0;}
-  .faq-item.open .faq-q{color:var(--red);}
-  .faq-a{max-height:0; overflow:hidden; transition:max-height .35s var(--ease);}
-  .faq-a p{padding:0 4px 22px; font-size:14.5px; color:var(--gray); line-height:1.65; max-width:640px;}
-
-  /* ---------------- FINAL CTA ---------------- */
-  .final-cta{
-    padding:110px 0; background:linear-gradient(135deg, var(--red) 0%, #ff4d55 100%);
-    text-align:center; position:relative; overflow:hidden;
-  }
-  .final-cta::before{
-    content:''; position:absolute; inset:0;
-    background:radial-gradient(50% 80% at 50% 0%, rgba(255,255,255,0.18), transparent 70%);
-  }
-  .final-cta h2{color:var(--white); font-size:clamp(30px,4.4vw,46px); position:relative; max-width:680px; margin:0 auto;}
-  .final-cta p{color:rgba(255,255,255,0.9); font-size:17px; margin-top:18px; position:relative;}
-  .final-cta .btn-primary{
-    background:var(--white); color:var(--red); margin-top:34px; box-shadow:0 12px 32px rgba(0,0,0,0.15); position:relative;
-  }
-  .final-cta .btn-primary:hover{background:#fff; color:var(--red-dark); transform:translateY(-3px);}
-
-  /* ---------------- FOOTER ---------------- */
-  footer{padding:64px 0 32px; background:var(--text); color:#B7B7B7;}
-  .footer-top{display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:40px; padding-bottom:48px; border-bottom:1px solid #262626;}
-  .footer-brand .logo{color:var(--white);}
-  .footer-brand p{font-size:13.5px; line-height:1.7; margin-top:14px; max-width:260px; color:#8B8B8B;}
-  .footer-col h5{color:var(--white); font-size:13.5px; font-weight:700; margin-bottom:16px;}
-  .footer-col ul{display:flex; flex-direction:column; gap:11px;}
-  .footer-col a{font-size:13.5px; color:#8B8B8B; transition:color .2s;}
-  .footer-col a:hover{color:var(--white);}
-  .footer-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:28px; font-size:13px; color:#6B6B6B; flex-wrap:wrap; gap:12px;}
-
-  /* reveal animation */
-  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease);}
-  .reveal.in{opacity:1; transform:translateY(0);}
-
-  /* ---------------- RESPONSIVE ---------------- */
-  @media (max-width: 980px){
-    .hero-inner{grid-template-columns:1fr; gap:56px;}
-    .hero{padding-top:40px;}
-    .problem-grid{grid-template-columns:1fr; gap:64px;}
-    .chaos{max-width:420px; margin:0 auto; width:100%;}
-    .feature-grid{grid-template-columns:repeat(2,1fr);}
-    .steps{grid-template-columns:repeat(2,1fr); row-gap:40px;}
-    .step-line{display:none;}
-    .compare-grid{grid-template-columns:1fr;}
-    .stats-grid{grid-template-columns:repeat(2,1fr); row-gap:36px;}
-    .test-grid{grid-template-columns:1fr;}
-    .footer-top{grid-template-columns:1fr 1fr; row-gap:36px;}
-    .sim-fields{grid-template-columns:1fr;}
-    .tool-card{padding:32px 24px;}
-    .sim-breakdown{grid-template-columns:1fr;}
-  }
-  /* ---------------- HERO INTERACTIVITY ---------------- */
-  .try-hint{
-    position:absolute; top:-34px; right:8px; font-size:12.5px; font-weight:600; color:var(--gray);
-    background:var(--white); padding:6px 12px; border-radius:999px; border:1px solid var(--border);
-    box-shadow:var(--shadow-sm); z-index:2;
-  }
-  .chip{ border:none; padding:0; cursor:pointer; transition: transform .3s var(--ease), box-shadow .25s; }
-  .chip:hover{ transform:scale(1.12) translateY(-4px); box-shadow:var(--shadow-lg); }
-  .chip.pulsing{ animation: chipPulse .5s var(--ease); }
-  @keyframes chipPulse{ 0%{transform:scale(1);} 40%{transform:scale(1.3);} 100%{transform:scale(1);} }
-  .dash{ transition: box-shadow .3s; }
-  .dash.receiving{ box-shadow: 0 0 0 3px rgba(227,6,19,0.15), var(--shadow-lg); }
-  #demoConvItem, #demoChatPanel .bubble{ transition: opacity .25s, transform .25s; }
-  .fx-out{ opacity:0; transform:translateY(6px); }
-  .live-toast{
-    position:absolute; z-index:5; top:-14px; left:50%; transform:translateX(-50%) translateY(-8px);
-    background:var(--text); color:var(--white); font-size:12px; font-weight:600;
-    padding:7px 14px; border-radius:999px; opacity:0; pointer-events:none;
-    transition: opacity .3s, transform .3s;
-    white-space:nowrap;
-  }
-  .live-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-
-  /* ---------------- DIAGNOSTIC / SIMULATOR SHARED ---------------- */
-  .tool-section{padding:120px 0; background:var(--white); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
-  .tool-section.alt{background:var(--bg); border:none;}
-  .tool-card{
-    max-width:760px; margin:0 auto; background:var(--white); border:1px solid var(--border);
-    border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); padding:44px;
-  }
-  .progress-track{ height:6px; background:var(--border); border-radius:999px; overflow:hidden; margin-bottom:32px; }
-  .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--red), #ff7b82); border-radius:999px; transition: width .5s var(--ease); position:relative; overflow:hidden; }
-  .progress-fill.analyzing{ transition: width 2.6s cubic-bezier(.4,0,.2,1); }
-  .progress-fill.analyzing::after{
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-    width:40%; animation: scanShimmer 1s linear infinite;
-  }
-  @keyframes scanShimmer{ 0%{ transform:translateX(-120%); } 100%{ transform:translateX(280%); } }
-  .progress-caption{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--gray); font-weight:600; margin-top:-24px; margin-bottom:26px;}
-  .quiz-step{ display:none; }
-  .quiz-step.active{ display:block; animation: stepIn .4s var(--ease); }
-  @keyframes stepIn{ from{opacity:0; transform:translateX(12px);} to{opacity:1; transform:translateX(0);} }
-  .quiz-step h3{ font-size:21px; font-weight:700; margin-bottom:22px; letter-spacing:-0.01em; }
-  .quiz-options{ display:flex; flex-direction:column; gap:12px; }
-  .quiz-opt{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:16px 20px; border:1.5px solid var(--border); border-radius:14px;
-    font-size:15px; font-weight:600; color:var(--text); text-align:left; width:100%;
-    transition: border-color .2s, background .2s, transform .15s;
-  }
-  .quiz-opt:hover{ border-color:var(--red); background:var(--red-light); transform:translateX(4px); }
-  .quiz-opt svg{ width:18px; height:18px; color:var(--red); opacity:0; transition:opacity .2s; flex-shrink:0; }
-  .quiz-opt:hover svg{ opacity:1; }
-  .quiz-result{ display:none; text-align:center; }
-  .quiz-result.active{ display:block; animation: stepIn .4s var(--ease); }
-  .result-badge{
-    display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
-    padding:8px 18px; border-radius:999px; margin-bottom:18px;
-  }
-  .quiz-result h3{ font-size:24px; font-weight:800; margin-bottom:14px; letter-spacing:-0.01em; }
-  .quiz-result p{ font-size:15px; color:var(--gray); line-height:1.7; max-width:520px; margin:0 auto 28px; }
-  .tool-head{ text-align:center; margin-bottom:8px; }
-  .tool-eyebrow{ font-size:13px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:.04em; }
-  .tool-title{ font-size:clamp(24px,3.4vw,32px); font-weight:800; letter-spacing:-0.02em; margin-top:10px; }
-  .tool-sub{ font-size:15.5px; color:var(--gray); margin-top:12px; }
-
-  /* Simulator */
-  .sim-fields{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:8px; }
-  .sim-field label{ display:block; font-size:12.5px; font-weight:700; color:var(--gray); margin-bottom:8px; text-transform:uppercase; letter-spacing:.03em; }
-  .sim-field input[type="range"]{ width:100%; accent-color:var(--red); }
-  .sim-field .val{ font-size:22px; font-weight:800; margin-top:6px; }
-  .sim-result{
-    margin-top:32px; padding:28px; border-radius:16px; background:var(--text); color:var(--white); text-align:center;
-  }
-  .sim-result .hours{ font-size:clamp(30px,4vw,42px); font-weight:800; color:var(--white); }
-  .sim-result .hours span{ color:var(--red); }
-  .sim-result p{ color:#B7B7B7; font-size:14px; margin-top:8px; }
-  .sim-cta{ display:flex; justify-content:center; margin-top:26px; }
-
-  /* Simulator result breakdown */
-  .sim-breakdown{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:20px; }
-  .sim-metric{ background:rgba(255,255,255,0.06); border-radius:12px; padding:14px 10px; }
-  .sim-metric .n{ display:block; font-size:19px; font-weight:800; color:#fff; }
-  .sim-metric .l{ display:block; font-size:11.5px; color:#B7B7B7; margin-top:4px; line-height:1.4; }
-
-  /* Result gauge */
-  .gauge-wrap{ position:relative; width:140px; height:140px; margin:0 auto 20px; }
-  .gauge-svg{ width:140px; height:140px; transform:rotate(-90deg); }
-  .gauge-track{ fill:none; stroke:var(--border); stroke-width:10; }
-  .gauge-fill{
-    fill:none; stroke:var(--red); stroke-width:10; stroke-linecap:round;
-    stroke-dasharray:377; stroke-dashoffset:377;
-    transition: stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1);
-  }
-  .gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .gauge-score{ font-size:32px; font-weight:800; color:var(--text); letter-spacing:-0.02em; }
-  .gauge-max{ font-size:12px; color:var(--gray-light); font-weight:600; margin-top:-2px; }
-
-  .result-checklist{ list-style:none; text-align:left; max-width:340px; margin:0 auto 8px; display:flex; flex-direction:column; gap:10px; }
-  .result-checklist li{ font-size:14px; font-weight:600; color:var(--text); }
-
-  /* Confetti (subtle) */
-  .confetti-piece{
-    position:fixed; top:-10px; width:7px; height:12px; z-index:400; pointer-events:none;
-    border-radius:2px; opacity:0.9;
-    animation: confettiFall 1.8s ease-in forwards;
-  }
-  @keyframes confettiFall{
-    to{ transform: translateY(70vh) rotate(280deg); opacity:0; }
-  }
-
-  /* Reward toast (inside quiz card) */
-  .reward-toast{
-    position:absolute; left:50%; top:14px; transform:translateX(-50%) translateY(-10px);
-    background:var(--text); color:#fff; font-size:13px; font-weight:600;
-    padding:9px 16px; border-radius:999px; box-shadow:var(--shadow-lg);
-    opacity:0; transition: opacity .3s var(--ease), transform .3s var(--ease);
-    z-index:20; white-space:nowrap; pointer-events:none;
-  }
-  .reward-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-  #quizCard{ position:relative; overflow:visible; }
-
-  /* Ambient activity notifications */
-  .ambient-toast{
-    position:fixed; left:20px; bottom:24px; z-index:150;
-    background:var(--white); border:1px solid var(--border); box-shadow:var(--shadow-lg);
-    border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:10px;
-    font-size:13px; font-weight:600; color:var(--text); max-width:280px;
-    opacity:0; transform:translateY(14px); pointer-events:none;
-    transition: opacity .4s var(--ease), transform .4s var(--ease);
-  }
-  .ambient-toast.show{ opacity:1; transform:translateY(0); }
-  .ambient-toast .ic{ font-size:17px; flex-shrink:0; }
-  .ambient-toast .sub{ display:block; font-size:11px; color:var(--gray-light); font-weight:500; margin-top:1px; }
-
-  /* Smart popup (soft nudge, distinct from full chat window) */
-  .smart-popup{
-    position:fixed; bottom:98px; right:24px; z-index:190;
-    width:320px; max-width:calc(100vw - 32px);
-    background:var(--white); border:1px solid var(--border); border-radius:18px;
-    box-shadow:var(--shadow-lg); padding:20px 20px 18px;
-    opacity:0; transform:translateY(14px) scale(0.97); pointer-events:none;
-    transition: opacity .3s var(--ease), transform .3s var(--ease);
-  }
-  .smart-popup.show{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
-  .smart-popup .sp-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-  .smart-popup .sp-dot{ width:8px; height:8px; border-radius:50%; background:var(--red); box-shadow:0 0 0 3px rgba(227,6,19,0.18); }
-  .smart-popup .sp-title{ font-size:12.5px; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.03em; }
-  .smart-popup p{ font-size:14px; color:var(--text); line-height:1.55; margin-bottom:16px; }
-  .smart-popup .sp-actions{ display:flex; gap:8px; }
-  .smart-popup .sp-actions .btn{ flex:1; padding:10px 12px; font-size:13px; }
-  .smart-popup .sp-close{ position:absolute; top:12px; right:14px; color:var(--gray-light); }
-  .smart-popup{ position:fixed; }
-
-  /* Button glow pulse for primary CTAs */
-  @keyframes ctaGlow{
-    0%,100%{ box-shadow:var(--shadow-red); }
-    50%{ box-shadow:0 8px 30px rgba(227,6,19,0.45); }
-  }
-  .final-cta .btn-primary{ animation: ctaGlow 2.6s ease-in-out infinite; }
-
-
-  /* ---------------- CHAT WIDGET ---------------- */
-  .chat-fab{
-    position:fixed; bottom:24px; right:24px; z-index:200;
-    width:60px; height:60px; border-radius:50%;
-    background:var(--red); color:#fff; box-shadow:var(--shadow-red);
-    display:flex; align-items:center; justify-content:center;
-    transition: transform .25s var(--ease);
-  }
-  .chat-fab:hover{ transform:scale(1.08); }
-  .chat-fab svg{ width:26px; height:26px; }
-  .chat-fab .fab-dot{
-    position:absolute; top:2px; right:2px; width:12px; height:12px; border-radius:50%;
-    background:#22C55E; border:2px solid #fff;
-  }
-  .chat-window{
-    position:fixed; bottom:98px; right:24px; z-index:200;
-    width:360px; max-width:calc(100vw - 32px); max-height:min(560px, calc(100vh - 140px));
-    background:var(--white); border-radius:20px; border:1px solid var(--border);
-    box-shadow:var(--shadow-lg); overflow:hidden;
-    display:flex; flex-direction:column;
-    opacity:0; transform:translateY(16px) scale(0.98); pointer-events:none;
-    transition: opacity .25s var(--ease), transform .25s var(--ease);
-  }
-  .chat-window.open{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
-  .chat-head{
-    background:linear-gradient(135deg, var(--red), #ff4d55); color:#fff; padding:16px 18px;
-    display:flex; align-items:center; gap:10px;
-  }
-  .chat-head .av{ width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; }
-  .chat-head .av svg{ width:18px; height:18px; }
-  .chat-head strong{ display:block; font-size:14px; }
-  .chat-head span{ display:block; font-size:11.5px; opacity:.85; }
-  .chat-head .status-dot{ width:7px; height:7px; border-radius:50%; background:#4ADE80; display:inline-block; margin-right:5px; }
-  .chat-close{ margin-left:auto; color:#fff; opacity:.85; padding:4px; }
-  .chat-close:hover{ opacity:1; }
-  .chat-body{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; background:#FCFCFC; }
-  .chat-msg{ max-width:85%; font-size:13.5px; line-height:1.5; padding:10px 13px; border-radius:14px; animation: msgIn .3s var(--ease); }
-  @keyframes msgIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-  .chat-msg.bot{ background:#F1F1F3; align-self:flex-start; border-bottom-left-radius:4px; }
-  .chat-msg.user{ background:var(--red); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
-  .chat-options{ display:flex; flex-direction:column; gap:8px; margin-top:2px; }
-  .chat-opt-btn{
-    align-self:flex-start; border:1.5px solid var(--border); border-radius:12px; padding:9px 14px;
-    font-size:13px; font-weight:600; color:var(--text); background:var(--white); transition:.2s;
-  }
-  .chat-opt-btn:hover{ border-color:var(--red); background:var(--red-light); }
-  .chat-typing{ display:flex; gap:4px; align-self:flex-start; padding:12px 14px; background:#F1F1F3; border-radius:14px; }
-  .chat-typing span{ width:6px; height:6px; border-radius:50%; background:var(--gray-light); animation: typingDot 1.2s infinite ease-in-out; }
-  .chat-typing span:nth-child(2){ animation-delay:.15s; }
-  .chat-typing span:nth-child(3){ animation-delay:.3s; }
-  @keyframes typingDot{ 0%,60%,100%{ transform:translateY(0); opacity:.4; } 30%{ transform:translateY(-4px); opacity:1; } }
-
-  /* ---------------- EXIT INTENT MODAL ---------------- */
-  .modal-overlay{
-    position:fixed; inset:0; z-index:300; background:rgba(17,17,17,0.55);
-    display:flex; align-items:center; justify-content:center; padding:20px;
-    opacity:0; pointer-events:none; transition: opacity .3s var(--ease);
-  }
-  .modal-overlay.open{ opacity:1; pointer-events:auto; }
-  .modal-card{
-    background:var(--white); border-radius:var(--radius-lg); max-width:440px; width:100%;
-    padding:40px 36px; text-align:center; box-shadow:var(--shadow-lg);
-    transform:scale(0.94) translateY(10px); transition: transform .3s var(--ease);
-  }
-  .modal-overlay.open .modal-card{ transform:scale(1) translateY(0); }
-  .modal-close{ position:absolute; top:16px; right:16px; }
-  .modal-icon{
-    width:56px; height:56px; border-radius:50%; background:var(--red-light); color:var(--red);
-    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
-  }
-  .modal-icon svg{ width:26px; height:26px; }
-  .modal-card h3{ font-size:21px; font-weight:800; margin-bottom:12px; letter-spacing:-0.01em; }
-  .modal-card p{ font-size:14.5px; color:var(--gray); line-height:1.65; margin-bottom:26px; }
-  .modal-card .btn{ width:100%; }
-  .modal-card .skip{ display:block; margin-top:14px; font-size:12.5px; color:var(--gray-light); font-weight:600; }
-  .modal-card .skip:hover{ color:var(--gray); }
-  .modal-card{ position:relative; }
-
-  @media (max-width: 700px){
-    .nav-links{display:none;}
-    .nav-toggle{display:flex;}
-    .dash{grid-template-columns:48px 1fr; min-height:auto;}
-    .dash-main{display:none;}
-    .feature-grid{grid-template-columns:1fr;}
-    .steps{grid-template-columns:1fr;}
-    .hero-ctas .btn{flex:1;}
-    .logo-row{gap:28px 32px;}
-    .footer-top{grid-template-columns:1fr;}
-    .try-hint{display:none;}
-    .chat-window{right:16px; bottom:88px; width:calc(100vw - 32px);}
-    .chat-fab{right:16px; bottom:16px;}
-    .modal-card{padding:32px 24px;}
-    .ambient-toast{left:16px; bottom:16px; max-width:calc(100vw - 32px);}
-    .smart-popup{right:16px; bottom:88px; width:calc(100vw - 32px);}
-  }
-</style>
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" href="/logo.png" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Chati" />
-  <script src="/pwa.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chati — Perguntas do Mercado Livre respondidas em um só painel</title>
+<meta name="description" content="Todas as perguntas, pós-vendas e a sua equipe num painel só. Responda mais rápido as perguntas das suas contas do Mercado Livre com o Chati.">
+<meta name="theme-color" content="#09090c">
+<meta property="og:title" content="Chati — Todas as perguntas das suas lojas num painel só">
+<meta property="og:description" content="Perguntas, pós-vendas e desempenho da equipe de várias contas do Mercado Livre em um só lugar.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chatiapp.com.br/">
+<meta property="og:image" content="https://chatiapp.com.br/assets/site/img/tela-pendentes.webp">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Chati">
+<link rel="preload" href="/assets/site/fontes/InterDisplay-ExtraBold.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="/assets/site/estilo.css?v=1">
+<script src="/assets/site/site.js?v=1" defer></script>
+<script src="/pwa.js" defer></script>
 </head>
 <body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-<header class="nav">
-  <div class="container nav-inner">
-    <a href="#" class="logo" aria-label="Chati">
-      <img class="brand-wordmark" src="/assets/logo-chati-black.png" alt="Chati" />
-    </a>
-    <nav class="nav-links">
-      <a href="#produto">Produto</a>
+<header class="topo" id="topo">
+  <div class="caixa topo-linha">
+    <a href="/" class="marca" aria-label="Chati — início"><img src="/assets/logo-chati-white.png" alt="Chati" width="118" height="41"></a>
+    <nav class="nav" id="nav" aria-label="Seções">
+      <a href="#funcoes">Funções</a>
       <a href="#como-funciona">Como funciona</a>
-      <a href="#diagnostico">Diagnóstico grátis</a>
-      <a href="#depoimentos">Clientes</a>
-      <a href="#faq">Perguntas</a>
+      <a href="#equipe">Equipe</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="#duvidas">Dúvidas</a>
+      <a href="/login" class="nav-entrar" id="loginButton">Entrar</a>
+      <a href="#contato" class="btn btn-vermelho btn-p">Quero conhecer</a>
     </nav>
-    <div class="nav-actions">
-      <a href="/login" class="btn-ghost" id="loginButton">Entrar</a>
-      <a href="/login" class="btn btn-primary btn-sm auth-link">Testar grátis agora</a>
-    </div>
-    <button class="nav-toggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+    <button class="btn-menu" id="btn-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<main>
-  <!-- HERO -->
-  <section class="hero" id="produto">
-    <div class="container hero-inner">
-      <div class="hero-copy">
-        <span class="badge"><span class="dot"></span>Feito para quem não pode perder vendas</span>
-        <h1>Enquanto você troca de aba, <span class="accent">seu cliente já comprou</span> no concorrente.</h1>
-        <p class="sub">Seus clientes estão espalhados em WhatsApp, Mercado Livre, Shopee, Shopify e Nuvemshop — e cada minuto de demora é uma venda a menos. O Chati reúne tudo em um único painel para sua equipe responder em segundos, não em horas.</p>
-        <div class="hero-ctas">
-          <a href="/login" class="btn btn-primary auth-link">Testar grátis agora</a>
-          <a href="#" class="btn btn-secondary">Ver a plataforma em ação</a>
-        </div>
-        <div class="trust-row">
-          <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sem cartão de crédito</div>
-          <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ativo em 5 minutos</div>
-          <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Suporte que responde de verdade</div>
-        </div>
-      </div>
+<main id="conteudo">
 
-      <div class="hero-visual">
-        <span class="try-hint reveal">👆 Clique em um canal e veja a mensagem chegar</span>
-        <div class="channel-orbit">
-          <button class="chip c1" data-channel="whatsapp" aria-label="Simular mensagem do WhatsApp" style="color:#25D366"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.1.2-.3.3-.4.1-.2 0-.3 0-.5s-.6-1.5-.9-2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.3s1 2.7 1.1 2.9c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z"/></svg></button>
-          <button class="chip c2" data-channel="mercadolivre" aria-label="Simular mensagem do Mercado Livre" style="color:#FFE600"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 2 8l10 6 10-6-10-6z"/><path d="M2 16l10 6 10-6"/><path d="M2 8v8M22 8v8"/></svg></button>
-          <button class="chip c3" data-channel="shopify" aria-label="Simular mensagem do Shopify" style="color:#96BF48"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6a4 4 0 0 0-8 0H5l-1 15h16L19 6h-3z"/></svg></button>
-          <button class="chip c4" data-channel="instagram" aria-label="Simular mensagem do Instagram" style="color:#E1306C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></button>
-          <button class="chip c5" data-channel="messenger" aria-label="Simular mensagem do Messenger" style="color:#0866FF"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9c.9.2 1.9.4 2.9.4 5.5 0 10-4.1 10-9.2S17.5 2 12 2z"/></svg></button>
-        </div>
-
-        <div class="dash">
-          <div class="dash-side">
-            <div class="sq active"></div>
-            <div class="sq"></div>
-            <div class="sq"></div>
-            <div class="sq"></div>
-            <div class="sq"></div>
-          </div>
-          <div class="dash-list" id="demoInbox">
-            <h5>Caixa de entrada</h5>
-            <div class="conv-item active" id="demoConvItem">
-              <div class="avatar" id="demoAvatar" style="background:#E30613">MF</div>
-              <div class="conv-meta">
-                <div class="name"><span id="demoName">Marina Ferreira</span><span id="demoTime">agora</span></div>
-                <div class="preview" id="demoPreview">Qual o prazo de entrega?</div>
-                <span class="tag-pill" id="demoTag" style="background:#FDECEC;color:#B70510">Pré-venda</span>
-              </div>
-            </div>
-            <div class="conv-item">
-              <div class="avatar" style="background:#111">RT</div>
-              <div class="conv-meta">
-                <div class="name"><span>Rafael Torres</span><span>2m</span></div>
-                <div class="preview">Recebi o produto com defeito</div>
-                <span class="tag-pill" style="background:#F1F1F3;color:#6B7280">Suporte</span>
-              </div>
-            </div>
-            <div class="conv-item">
-              <div class="avatar" style="background:#6B7280">CL</div>
-              <div class="conv-meta">
-                <div class="name"><span>Camila Lopes</span><span>8m</span></div>
-                <div class="preview">Obrigada pela ajuda! 🙌</div>
-                <span class="tag-pill" style="background:#EAF7EE;color:#1F9D55">Resolvido</span>
-              </div>
-            </div>
-            <div class="conv-item">
-              <div class="avatar" style="background:#96BF48">JS</div>
-              <div class="conv-meta">
-                <div class="name"><span>João Silva</span><span>12m</span></div>
-                <div class="preview">Ainda está disponível?</div>
-              </div>
-            </div>
-          </div>
-          <div class="dash-main">
-            <div class="dash-cards">
-              <div class="stat-card"><div class="n">1m 42s</div><div class="l">Tempo médio</div></div>
-              <div class="stat-card"><div class="n">312</div><div class="l">Em atendimento</div></div>
-              <div class="stat-card"><div class="n">96%</div><div class="l">Satisfação</div></div>
-            </div>
-            <div class="chat-panel" id="demoChatPanel">
-              <div class="bubble in" id="demoBubbleIn">Oi! Qual o prazo de entrega para Curitiba?</div>
-              <div class="bubble out" id="demoBubbleOut">Olá, Marina! O prazo é de 3 a 5 dias úteis 🚀</div>
-              <div class="bubble in">Perfeito, muito obrigada!</div>
-              <div class="mini-chart">
-                <div class="bar" style="height:40%"></div>
-                <div class="bar" style="height:65%"></div>
-                <div class="bar" style="height:50%"></div>
-                <div class="bar" style="height:85%"></div>
-                <div class="bar" style="height:60%"></div>
-                <div class="bar" style="height:95%"></div>
-                <div class="bar" style="height:70%"></div>
-              </div>
-              <div class="online-row">
-                <div class="avatar" style="background:#E30613">A</div>
-                <div class="avatar" style="background:#111">B</div>
-                <div class="avatar" style="background:#6B7280">C</div>
-                <span style="font-size:11px;color:var(--gray);margin-left:6px;">+8 agentes online</span>
-              </div>
-            </div>
-          </div>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="brilho"></div><div class="grade"></div>
+  <div class="caixa hero-grid">
+    <div class="hero-texto">
+      <span class="selo-topo"><i class="ponto"></i> Integrado ao <b class="amarelo">Mercado Livre</b></span>
+      <h1>Todas as perguntas das suas lojas, <em>num painel só</em>.</h1>
+      <p class="lead">Perguntas, pós-vendas e o desempenho da equipe de <strong>todas as suas contas do Mercado Livre</strong> em um só lugar. Responda mais rápido e não perca venda por pergunta esquecida.</p>
+      <div class="hero-acoes">
+        <a href="#contato" class="btn btn-vermelho">Quero conhecer o Chati <span aria-hidden="true">→</span></a>
+        <a href="#como-funciona" class="btn btn-contorno">Ver como funciona</a>
       </div>
+      <ul class="hero-checks">
+        <li>Funciona no navegador e no celular</li>
+        <li>Várias contas do Mercado Livre</li>
+        <li>Aviso de pergunta nova na hora</li>
+      </ul>
     </div>
-  </section>
-
-  <!-- LOGO CLOUD -->
-  <section class="logocloud">
-    <div class="container">
-      <p>Seus clientes já estão nestes canais. Agora sua equipe também consegue estar.</p>
-      <div class="logo-row">
-        <span class="plat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z"/></svg>WhatsApp</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 2 8l10 6 10-6-10-6z"/></svg>Mercado Livre</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6a4 4 0 0 0-8 0H5l-1 15h16L19 6h-3z"/></svg>Shopee</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6a4 4 0 0 0-8 0H5l-1 15h16L19 6h-3z"/></svg>Shopify</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Nuvemshop</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>Tray</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>Instagram</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9c.9.2 1.9.4 2.9.4 5.5 0 10-4.1 10-9.2S17.5 2 12 2z"/></svg>Messenger</span>
-        <span class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>WooCommerce</span>
-      </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="note"><div class="note-tela"><img src="/assets/site/img/tela-pendentes.webp" alt="" width="1600" height="889"></div><div class="note-base"></div></div>
+      <div class="cel"><div class="cel-tela"><img src="/assets/site/img/celular-pendentes.webp" alt="" width="600" height="1298"></div></div>
+      <div class="flutua flutua-1"><b class="ml">ML</b> Pergunta nova · MJMOTOSPECAS</div>
+      <div class="flutua flutua-2"><span class="nota">34</span> respondidas hoje</div>
     </div>
-  </section>
+  </div>
+  <div class="caixa numeros">
+    <div><b>1 painel</b><span>para todas as suas contas do Mercado Livre</span></div>
+    <div><b>Na hora</b><span>a pergunta chega e o celular avisa</span></div>
+    <div><b>1 clique</b><span>para usar uma resposta pronta</span></div>
+    <div><b>Ranking</b><span>de respostas de cada pessoa da equipe</span></div>
+  </div>
+</section>
 
-  <!-- PROBLEM -->
-  <section class="problem">
-    <div class="container problem-grid">
-      <div class="chaos reveal">
-        <div class="tab-card t1"><div class="dots"><span></span><span></span><span></span></div><div class="line"></div><div class="line short"></div></div>
-        <div class="tab-card t3"><div class="dots"><span></span><span></span><span></span></div><div class="line"></div><div class="line short"></div></div>
-        <div class="tab-card t4"><div class="dots"><span></span><span></span><span></span></div><div class="line"></div><div class="line short"></div></div>
-        <div class="tab-card t5"><div class="dots"><span></span><span></span><span></span></div><div class="line"></div><div class="line short"></div></div>
-        <div class="tab-card t2" style="border:1.5px solid var(--red);">
-          <div class="dots"><span style="background:var(--red)"></span><span></span><span></span></div>
-          <div class="line" style="background:var(--red-light)"></div>
-          <div class="line short" style="background:var(--red-light)"></div>
-        </div>
-      </div>
-      <div class="problem-copy reveal">
-        <span class="section-label">O custo invisível</span>
-        <h2 class="section-title">Cada aba aberta é uma venda que você está deixando escapar sem perceber.</h2>
-        <p class="section-sub">Seu cliente manda mensagem no WhatsApp, pergunta no Instagram e cobra resposta no Mercado Livre — tudo ao mesmo tempo. Enquanto sua equipe corre entre telas, ele já está comprando de quem respondeu primeiro.</p>
-        <ul class="kpi-list">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            <div><b>A demora tem preço</b><span class="d">Mensagens se perdem entre canais e a resposta chega tarde demais para fechar a venda.</span></div>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
-            <div><b>Sua equipe trabalha no escuro</b><span class="d">Sem visão do todo, ninguém sabe quem já respondeu o quê — e o cliente recebe respostas repetidas ou nenhuma.</span></div>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
-            <div><b>Cada minuto de espera custa caro</b><span class="d">Estudos mostram que a maioria dos consumidores compra de quem responde primeiro — não de quem responde melhor.</span></div>
-          </li>
-        </ul>
-      </div>
+<!-- DOR -->
+<section class="secao dor">
+  <div class="caixa">
+    <p class="sobre">O dia a dia de quem vende no Mercado Livre</p>
+    <h2>Várias contas, muitas perguntas<br>e cliente esperando.</h2>
+    <div class="dor-grid">
+      <div class="dor-item"><span class="x">✕</span><h3>Troca de conta o dia inteiro</h3><p>Cada loja numa aba. Uma pergunta fica para trás e a venda vai para o concorrente.</p></div>
+      <div class="dor-item"><span class="x">✕</span><h3>A mesma resposta de novo</h3><p>"Tem pronta entrega?", "Serve na minha moto?". Escrever tudo do zero toma o dia.</p></div>
+      <div class="dor-item"><span class="x">✕</span><h3>Equipe sem acompanhamento</h3><p>Quem respondeu? Quantas? Quanto tempo o cliente esperou? Sem números, ninguém sabe.</p></div>
     </div>
-  </section>
+    <p class="virada">O <em>Chati</em> junta tudo isso num lugar só.</p>
+  </div>
+</section>
 
-  <!-- DIAGNOSTIC QUIZ -->
-  <section class="tool-section" id="diagnostico">
-    <div class="container">
-      <div class="tool-head reveal">
-        <span class="tool-eyebrow">Diagnóstico gratuito</span>
-        <h2 class="tool-title">Descubra o nível do seu atendimento</h2>
-        <p class="tool-sub">Responda apenas 4 perguntas e descubra quanto sua operação pode evoluir.</p>
-      </div>
-
-      <div class="tool-card reveal" id="quizCard">
-        <div class="progress-track"><div class="progress-fill" id="quizProgress"></div></div>
-        <div class="progress-caption"><span id="quizStepLabel">Pergunta 1 de 4</span><span id="quizPercent">25%</span></div>
-
-        <div class="quiz-step active" data-step="1" data-reward="💰 Você pode economizar até 12 horas por mês.">
-          <h3>Quantos canais você atende?</h3>
-          <div class="quiz-options">
-            <button class="quiz-opt" data-question="channels" data-value="1">Até 3<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="channels" data-value="2">Entre 4 e 7<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="channels" data-value="3">Mais de 7<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-        </div>
-
-        <div class="quiz-step" data-step="2" data-reward="🚀 Organização da equipe +18%">
-          <h3>Quantas pessoas respondem clientes?</h3>
-          <div class="quiz-options">
-            <button class="quiz-opt" data-question="team" data-value="1">Apenas eu<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="team" data-value="2">Pequena equipe<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="team" data-value="3">Grande equipe<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-        </div>
-
-        <div class="quiz-step" data-step="3" data-reward="😊 Cliente satisfeito · +1 oportunidade recuperada">
-          <h3>Você já perdeu uma venda porque respondeu tarde?</h3>
-          <div class="quiz-options">
-            <button class="quiz-opt" data-question="loss" data-value="3">Sim<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="loss" data-value="2">Algumas vezes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="loss" data-value="1">Nunca<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-        </div>
-
-        <div class="quiz-step" data-step="4" data-reward="📈 Centralização aumenta produtividade.">
-          <h3>Hoje você vê todas as conversas em um único painel?</h3>
-          <div class="quiz-options">
-            <button class="quiz-opt" data-question="unified" data-value="1">Sim<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="unified" data-value="3">Não<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-            <button class="quiz-opt" data-question="unified" data-value="2">Parcialmente<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-        </div>
-
-        <div class="quiz-result" id="quizResult">
-          <div class="gauge-wrap">
-            <svg viewBox="0 0 140 140" class="gauge-svg">
-              <circle cx="70" cy="70" r="60" class="gauge-track"/>
-              <circle cx="70" cy="70" r="60" class="gauge-fill" id="gaugeFill"/>
-            </svg>
-            <div class="gauge-center">
-              <span class="gauge-score" id="gaugeScore">0</span>
-              <span class="gauge-max">/100</span>
-            </div>
-          </div>
-          <span class="result-badge" id="resultBadge">Operação em crescimento 🟡</span>
-          <h3 id="resultTitle">Sua operação recebeu uma nota</h3>
-          <p id="resultText">Com o Chati você pode reduzir retrabalho e organizar todos os canais em um único painel.</p>
-          <ul class="result-checklist">
-            <li>✔ Centralizar seus canais</li>
-            <li>✔ Economizar dezenas de horas por mês</li>
-            <li>✔ Responder mais rápido</li>
-            <li>✔ Organizar sua equipe</li>
-            <li>✔ Melhorar a experiência dos clientes</li>
-          </ul>
-          <div class="sim-cta">
-            <a href="#cta" class="btn btn-primary">Quero organizar minha operação</a>
-          </div>
-        </div>
-      </div>
+<!-- FUNÇÕES -->
+<section class="secao" id="funcoes">
+  <div class="caixa">
+    <p class="sobre">Funções</p>
+    <h2>Tudo para responder<br><em>mais rápido</em> e vender mais.</h2>
+    <div class="cards">
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg></span><h3>Perguntas pendentes</h3><p>Todas as perguntas das lojas numa lista só, com produto, preço, estoque e há quanto tempo o cliente espera.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><h3>Respostas rápidas</h3><p>Salve as respostas que vocês mais usam e coloque na pergunta com um clique.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></span><h3>Perguntas anteriores</h3><p>Veja o que o mesmo comprador já perguntou e o que a equipe respondeu antes de responder de novo.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><h3>Aviso na hora</h3><p>Chegou pergunta, o computador toca e o celular recebe a notificação. Ninguém fica sem ver.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M8 11l3 3a2 2 0 0 0 3 0l2-2"/><path d="M3 8l4-4 5 2 5-2 4 4"/><path d="M3 8l4 8 3-2M21 8l-4 8-3-2"/></svg></span><h3>Pós-vendas</h3><p>Reclamações, mensagens e devoluções organizadas por situação, com o prazo de cada caso.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 13h6"/></svg></span><h3>Várias contas</h3><p>Conecte quantas contas do Mercado Livre tiver e veja de qual loja veio cada pergunta.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><h3>Estatísticas</h3><p>Respostas por hora, dia ou mês, por loja e por pessoa. Com horário de pico e destaque do período.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg></span><h3>Equipe e acessos</h3><p>Cada pessoa com o seu login, como administrador ou funcionário. Ative e desative quando quiser.</p></article>
+      <article class="card"><span class="ic"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span><h3>Modo claro e escuro</h3><p>Use do jeito mais confortável, no computador ou instalado como app no celular.</p></article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- SHOWCASE -->
-  <section class="showcase">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">Por dentro do painel</span>
-        <h2 class="section-title">Cada tela foi pensada para você fechar mais vendas, mais rápido.</h2>
-      </div>
-      <div class="tabs-bar reveal" role="tablist">
-        <button class="tab-btn active" data-tab="inbox">Inbox</button>
-        <button class="tab-btn" data-tab="analytics">Analytics</button>
-        <button class="tab-btn" data-tab="customer">Cliente</button>
-        <button class="tab-btn" data-tab="team">Equipe</button>
-        <button class="tab-btn" data-tab="tags">Etiquetas</button>
-        <button class="tab-btn" data-tab="reports">Relatórios</button>
-      </div>
-      <div class="browser reveal">
-        <div class="browser-bar">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <div class="browser-url">www.chatiapp.com.br</div>
-        </div>
-        <div class="browser-body active" data-panel="inbox">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <h4>Inbox unificado</h4>
-            <p>Todas as conversas de WhatsApp, marketplaces e redes sociais reunidas em uma única fila, priorizadas por tempo de espera.</p>
-          </div>
-        </div>
-        <div class="browser-body" data-panel="analytics">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>
-            <h4>Analytics em tempo real</h4>
-            <p>Tempo médio de resposta, volume por canal e satisfação do cliente, atualizados ao vivo em um único dashboard.</p>
-          </div>
-        </div>
-        <div class="browser-body" data-panel="customer">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
-            <h4>Perfil completo do cliente</h4>
-            <p>Histórico de pedidos, conversas anteriores e preferências, disponíveis para qualquer atendente em segundos.</p>
-          </div>
-        </div>
-        <div class="browser-body" data-panel="team">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <h4>Gestão de equipe</h4>
-            <p>Acompanhe a carga de trabalho de cada atendente e distribua conversas automaticamente por disponibilidade.</p>
-          </div>
-        </div>
-        <div class="browser-body" data-panel="tags">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.6 12.6 12.9 4.9a2 2 0 0 0-1.4-.6H5a2 2 0 0 0-2 2v6.4a2 2 0 0 0 .6 1.4l7.7 7.7a2 2 0 0 0 2.8 0l6.5-6.5a2 2 0 0 0 0-2.7z"/></svg>
-            <h4>Etiquetas personalizadas</h4>
-            <p>Classifique conversas por produto, urgência ou status e encontre qualquer atendimento em segundos.</p>
-          </div>
-        </div>
-        <div class="browser-body" data-panel="reports">
-          <div class="showcase-placeholder">
-            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-            <h4>Relatórios exportáveis</h4>
-            <p>Gere relatórios de desempenho por período, canal ou atendente e compartilhe com sua diretoria em um clique.</p>
-          </div>
-        </div>
-      </div>
+<!-- DESTAQUE PENDENTES -->
+<section class="secao destaque">
+  <div class="caixa destaque-grid">
+    <div>
+      <p class="sobre">Perguntas pendentes</p>
+      <h2>Pergunta chegou?<br>Responda <em>em segundos</em>.</h2>
+      <ul class="lista-check">
+        <li><b>Tudo na mesma tela</b>: produto, SKU, estoque, preço e frete ao lado da pergunta.</li>
+        <li><b>Tempo de espera</b> em destaque, para responder primeiro quem espera há mais tempo.</li>
+        <li><b>Respostas rápidas</b> e o histórico do comprador a um clique.</li>
+        <li><b>Excluir pergunta</b> ou <b>bloquear comprador</b> sem sair do Chati.</li>
+        <li><b>Aviso automático</b> de que não pode enviar contato, para não ter anúncio penalizado.</li>
+      </ul>
     </div>
-  </section>
+    <figure class="moldura"><img src="/assets/site/img/tela-pendentes-escuro.webp" alt="Tela de Perguntas pendentes do Chati com uma pergunta aberta para responder" width="1600" height="889" loading="lazy"></figure>
+  </div>
+</section>
 
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">O que você ganha</span>
-        <h2 class="section-title">Cada recurso existe para uma coisa: fazer você vender mais rápido.</h2>
-        <p class="section-sub">Nada de funcionalidade por funcionalidade. Cada ferramenta abaixo resolve um motivo real de venda perdida.</p>
-      </div>
-      <div class="feature-grid">
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
-          <h3>Nunca mais perca uma mensagem</h3>
-          <p>Responda todos os seus clientes em um único lugar — WhatsApp, Mercado Livre, Shopee, Shopify, Nuvemshop e redes sociais — sem trocar de aba nem deixar ninguém esperando.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <h3>Acabe com a resposta duplicada</h3>
-          <p>Distribua conversas automaticamente entre atendentes. Cada mensagem tem um dono e ninguém pisa no trabalho do outro.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M8 17l0-6M13 17l0-10M18 17l0-3"/></svg></div>
-          <h3>Venda para quem já te conhece</h3>
-          <p>Todo o histórico do cliente aparece na tela, mesmo que ele tenha começado no Instagram e voltado pelo WhatsApp. Contexto que fecha venda.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 12.6 12.9 4.9a2 2 0 0 0-1.4-.6H5a2 2 0 0 0-2 2v6.4a2 2 0 0 0 .6 1.4l7.7 7.7a2 2 0 0 0 2.8 0l6.5-6.5a2 2 0 0 0 0-2.7z"/><circle cx="8" cy="9" r="1"/></svg></div>
-          <h3>Priorize quem está prestes a comprar</h3>
-          <p>Etiquetas por status, produto ou urgência colocam a venda quase fechada na frente da dúvida genérica.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-          <h3>Responda em segundos, não em minutos</h3>
-          <p>Modelos prontos para as perguntas mais comuns cortam o tempo de resposta pela metade — sem parecer robotizado.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12l3-3 3 3 5-6"/></svg></div>
-          <h3>Saiba exatamente onde está perdendo venda</h3>
-          <p>Tempo de resposta, volume por canal e satisfação em tempo real — os números que mostram onde agir hoje, não no fim do mês.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
-          <h3>Coloque a equipe para produzir no primeiro dia</h3>
-          <p>Interface simples o bastante para um atendente novo assumir conversas na primeira hora, sem treinamento longo.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></div>
-          <h3>Cresça sem virar bagunça</h3>
-          <p>De 1 para 50 atendentes sem perder organização — a estrutura acompanha o tamanho da sua operação.</p>
-        </div>
-      </div>
+<!-- DESTAQUE ESTATÍSTICAS -->
+<section class="secao destaque inverso" id="equipe">
+  <div class="caixa destaque-grid">
+    <figure class="moldura"><img src="/assets/site/img/tela-estatisticas.webp" alt="Tela de Estatísticas do Chati com gráfico de respostas e ranking da equipe" width="1600" height="889" loading="lazy"></figure>
+    <div>
+      <p class="sobre">Estatísticas da equipe</p>
+      <h2>Saiba quem respondeu<br><em>e quanto</em>.</h2>
+      <ul class="lista-check">
+        <li><b>Respostas por período</b>: hoje, 7 dias, 30 dias, mês, ano ou datas que você escolher.</li>
+        <li><b>Ranking da equipe</b> com a participação de cada pessoa.</li>
+        <li><b>Por loja</b>: veja quais contas recebem mais perguntas.</li>
+        <li><b>Últimas respostas</b> enviadas, com o texto de cada uma.</li>
+      </ul>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- HOW IT WORKS -->
-  <section class="how" id="como-funciona">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">Do caos à venda</span>
-        <h2 class="section-title">Em 4 passos, você para de perder cliente por demora.</h2>
-      </div>
-      <div class="steps">
-        <div class="step reveal">
-          <div class="num">01</div>
-          <h4>Conecte seus canais em 5 minutos</h4>
-          <p>WhatsApp, marketplaces e redes sociais integrados sem precisar de time técnico nem de espera.</p>
-          <div class="step-line"></div>
-        </div>
-        <div class="step reveal">
-          <div class="num">02</div>
-          <h4>Veja tudo chegar em um só lugar</h4>
-          <p>Chega de procurar em qual app está a conversa. Tudo cai organizado, com histórico e contexto prontos.</p>
-          <div class="step-line"></div>
-        </div>
-        <div class="step reveal">
-          <div class="num">03</div>
-          <h4>Sua equipe responde antes do concorrente</h4>
-          <p>Distribuição automática e respostas rápidas colocam sua equipe na frente de quem ainda troca de aba.</p>
-          <div class="step-line"></div>
-        </div>
-        <div class="step reveal">
-          <div class="num">04</div>
-          <h4>O resultado aparece na conversão</h4>
-          <p>Menos espera, mais organização — e um aumento real nas vendas fechadas e na fidelização de clientes.</p>
-          <div class="step-line"></div>
-        </div>
-      </div>
+<!-- COMO FUNCIONA -->
+<section class="secao" id="como-funciona">
+  <div class="caixa">
+    <p class="sobre">Como funciona</p>
+    <h2>Da pergunta <em>à venda</em>.</h2>
+    <ol class="fluxo">
+      <li><span>1</span><b>Conecte</b><p>Autorize suas contas no site do Mercado Livre.</p></li>
+      <li><span>2</span><b>Equipe</b><p>Crie o acesso de cada pessoa.</p></li>
+      <li><span>3</span><b>Pergunta</b><p>Chega no Chati e o celular avisa.</p></li>
+      <li><span>4</span><b>Resposta</b><p>Com resposta rápida, em segundos.</p></li>
+      <li><span>5</span><b>Pós-venda</b><p>Reclamações e mensagens organizadas.</p></li>
+      <li class="fim"><span>6</span><b>Resultado</b><p>Acompanhe tudo nas estatísticas.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- INTEGRAÇÕES + SEGURANÇA -->
+<section class="secao" id="seguranca">
+  <div class="caixa duas">
+    <div class="painel">
+      <p class="sobre">Integrações</p>
+      <h2 class="h2p">Onde você vende.</h2>
+      <div class="integ"><b class="amarelo">Mercado Livre</b><span class="st st-ok">Ativa</span><p>Várias contas, perguntas, respostas e pós-vendas.</p></div>
+      <div class="integ"><b class="laranja">Shopee</b><span class="st st-breve">Em breve</span><p>O chat das suas lojas da Shopee no mesmo painel.</p></div>
     </div>
-  </section>
-
-  <!-- TIME LOSS SIMULATOR -->
-  <section class="tool-section alt" id="simulador">
-    <div class="container">
-      <div class="tool-head reveal">
-        <span class="tool-eyebrow">Simulador</span>
-        <h2 class="tool-title">Quanto tempo sua equipe pode recuperar?</h2>
-        <p class="tool-sub">Ajuste os campos abaixo com a realidade da sua operação.</p>
-      </div>
-
-      <div class="tool-card reveal">
-        <div class="sim-fields">
-          <div class="sim-field">
-            <label for="simChannels">Canais de atendimento</label>
-            <input type="range" id="simChannels" min="1" max="10" value="4">
-            <div class="val"><span id="simChannelsVal">4</span> canais</div>
-          </div>
-          <div class="sim-field">
-            <label for="simAgents">Atendentes</label>
-            <input type="range" id="simAgents" min="1" max="20" value="2">
-            <div class="val"><span id="simAgentsVal">2</span> pessoas</div>
-          </div>
-          <div class="sim-field">
-            <label for="simMessages">Mensagens por dia</label>
-            <input type="range" id="simMessages" min="20" max="500" step="10" value="150">
-            <div class="val"><span id="simMessagesVal">150</span> mensagens</div>
-          </div>
-        </div>
-
-        <div class="sim-result">
-          <div class="hours">Você pode recuperar aproximadamente <span id="simHours">32</span> horas por mês</div>
-          <div class="sim-breakdown">
-            <div class="sim-metric"><span class="n" id="simSavingsBRL">R$ 0</span><span class="l">Economia estimada</span></div>
-            <div class="sim-metric"><span class="n" id="simHoursWeek">0h</span><span class="l">Tempo economizado por semana</span></div>
-            <div class="sim-metric"><span class="n" id="simProductivity">0%</span><span class="l">Produtividade recuperada</span></div>
-          </div>
-          <p style="font-size:11.5px;color:#8B8B8B;margin-top:14px;">Estimativa ilustrativa com base nos dados informados.</p>
-        </div>
-        <div class="sim-cta">
-          <a href="#produto" class="btn btn-primary">Ver como funciona</a>
-        </div>
-      </div>
+    <div class="painel">
+      <p class="sobre">Segurança</p>
+      <h2 class="h2p">Seus dados protegidos.</h2>
+      <ul class="lista-check">
+        <li><b>Conexão oficial</b> com o Mercado Livre, sem guardar a sua senha da loja.</li>
+        <li><b>Login individual</b> para cada pessoa da equipe, com acesso que você controla.</li>
+        <li><b>Cada empresa vê só os seus dados</b>, separados das outras.</li>
+        <li><b>Conexão segura (HTTPS)</b> em todo o sistema.</li>
+      </ul>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- BEFORE / AFTER -->
-  <section class="compare">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">A diferença é a venda</span>
-        <h2 class="section-title">O que muda no seu caixa quando você para de fazer seu cliente esperar.</h2>
-      </div>
-      <div class="compare-grid">
-        <div class="compare-card bad reveal">
-          <h3>Sem Chati | Chati Inteligente</h3>
-          <ul class="compare-list bad">
-            <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Cliente esperando enquanto você acha a aba certa</li>
-            <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Mensagens que somem entre canais e nunca são respondidas</li>
-            <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Venda perdida para quem respondeu primeiro</li>
-            <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Equipe sem saber quem já respondeu o quê</li>
-            <li><span class="ico-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Crescimento travado pela própria bagunça</li>
-          </ul>
-        </div>
-        <div class="compare-card good reveal">
-          <h3>Com Chati | Chat Inteligente</h3>
-          <ul class="compare-list good">
-            <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Resposta em segundos, em qualquer canal</li>
-            <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Zero mensagem esquecida</li>
-            <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Você fecha a venda antes do concorrente</li>
-            <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Time trabalhando junto, sem retrabalho</li>
-            <li><span class="ico-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Estrutura pronta para escalar sem travar</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- DÚVIDAS -->
+<section class="secao" id="duvidas">
+  <div class="caixa estreita">
+    <p class="sobre">Dúvidas</p>
+    <h2>Perguntas frequentes</h2>
+    <details><summary>Preciso instalar alguma coisa?</summary><p>Não. O Chati funciona no navegador do computador e do celular. No celular dá para instalar como app, direto do navegador, para receber as notificações.</p></details>
+    <details><summary>Funciona com mais de uma conta do Mercado Livre?</summary><p>Sim. Você conecta quantas contas tiver e responde todas as perguntas num painel só, vendo de qual loja veio cada uma.</p></details>
+    <details><summary>Vocês precisam da senha da minha conta do Mercado Livre?</summary><p>Não. A conexão é feita pelo site oficial do Mercado Livre, onde você mesmo autoriza o acesso. Dá para desconectar quando quiser.</p></details>
+    <details><summary>A resposta vai direto para o Mercado Livre?</summary><p>Sim. A resposta enviada pelo Chati aparece para o comprador no anúncio, igual a quando você responde pelo Mercado Livre, e fica registrado quem respondeu.</p></details>
+    <details><summary>Minha equipe toda pode usar?</summary><p>Pode. Cada pessoa tem o seu login, como administrador ou funcionário, e o Chati mostra quantas respostas cada um enviou.</p></details>
+    <details><summary>Tem Shopee?</summary><p>A integração com o chat da Shopee está em desenvolvimento. Deixe seu contato para ser avisado quando estiver pronta.</p></details>
+    <details><summary>Quanto custa?</summary><p>Os planos são mensais e dependem de quantas lojas e usuários você precisa. Deixe seu contato abaixo que a gente apresenta o sistema e os valores.</p></details>
+  </div>
+</section>
 
-  <!-- STATS -->
-  <section class="stats">
-    <div class="container stats-grid">
-      <div class="stat reveal"><div class="big"><span class="counter" data-target="10000" data-suffix="+">0</span></div><div class="lbl">vendas atendidas sem cliente esperando</div></div>
-      <div class="stat reveal"><div class="big"><span class="counter" data-target="95" data-suffix="%">0</span></div><div class="lbl">dos clientes satisfeitos com a resposta</div></div>
-      <div class="stat reveal"><div class="big"><span class="counter" data-target="40" data-suffix="%">0</span></div><div class="lbl">mais produtividade por atendente</div></div>
-      <div class="stat reveal"><div class="big">24/7</div><div class="lbl">painel disponível, sem cliente sem resposta</div></div>
+<!-- CONTATO -->
+<section class="secao contato" id="contato">
+  <div class="brilho"></div>
+  <div class="caixa contato-grid">
+    <div>
+      <p class="sobre">Contato</p>
+      <h2>Quer ver o Chati<br><em>funcionando</em>?</h2>
+      <p class="lead">Deixe seu contato. A gente mostra o sistema com as suas lojas e explica os planos.</p>
+      <ul class="lista-check">
+        <li>Demonstração sem compromisso</li>
+        <li>Planos por quantidade de lojas e usuários</li>
+        <li>Ajuda para conectar as contas</li>
+      </ul>
     </div>
-  </section>
+    <form class="form" id="form-contato" data-email="contato@chatiapp.com.br" novalidate>
+      <label><span>Seu nome <b class="obr">*</b></span><input name="nome" autocomplete="name" maxlength="80" required></label>
+      <label><span>Nome da loja</span><input name="empresa" autocomplete="organization" maxlength="80"></label>
+      <div class="form-2">
+        <label><span>WhatsApp com DDD <b class="obr">*</b></span><input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="30" required></label>
+        <label><span>Contas no Mercado Livre</span>
+          <select name="contas"><option value="">Escolha</option><option>1</option><option>2 a 3</option><option>4 a 6</option><option>7 ou mais</option></select></label>
+      </div>
+      <label><span>Mensagem</span><textarea name="mensagem" rows="3" maxlength="1000" placeholder="Conte um pouco da sua operação (opcional)"></textarea></label>
+      <button class="btn btn-vermelho btn-cheio" type="submit">Quero conhecer o Chati <span aria-hidden="true">→</span></button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+      <p class="form-nota">Abrimos seu e-mail com a mensagem pronta para contato@chatiapp.com.br.</p>
+    </form>
+  </div>
+</section>
 
-  <!-- TESTIMONIALS -->
-  <section class="testimonials" id="depoimentos">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">Não é só a nossa opinião</span>
-        <h2 class="section-title">Empresas que pararam de perder venda por demora — e sentiram no faturamento.</h2>
-      </div>
-      <div class="test-grid">
-        <div class="test-card reveal">
-          <div class="stars">★★★★★</div>
-          <p>"Cortamos o tempo de resposta pela metade no primeiro mês. O time parou de perder mensagem no meio da correria e as vendas por WhatsApp subiram 30% no trimestre."</p>
-          <div class="test-person">
-            <div class="avatar" style="background:#E30613">BS</div>
-            <div><div class="name">Beatriz Souza</div><div class="role">Head de CS, Loja Ártico</div></div>
-          </div>
-        </div>
-        <div class="test-card reveal">
-          <div class="stars">★★★★★</div>
-          <p>"Eram cinco telas abertas o dia inteiro e clientes esperando até 40 minutos por resposta. Hoje isso caiu para menos de 3 minutos, no mesmo painel."</p>
-          <div class="test-person">
-            <div class="avatar" style="background:#111">DA</div>
-            <div><div class="name">Diego Almeida</div><div class="role">Fundador, Casa Nova Store</div></div>
-          </div>
-        </div>
-        <div class="test-card reveal">
-          <div class="stars">★★★★★</div>
-          <p>"Dobramos o time de atendimento sem perder qualidade nem organização. As etiquetas mudaram a forma como priorizamos quem está prestes a comprar."</p>
-          <div class="test-person">
-            <div class="avatar" style="background:#6B7280">PL</div>
-            <div><div class="name">Paula Lima</div><div class="role">Gerente de Operações, Vitrine Digital</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq" id="faq">
-    <div class="container">
-      <div class="section-head center reveal">
-        <span class="section-label">Antes de começar</span>
-        <h2 class="section-title">As dúvidas que ficam entre você e parar de perder venda.</h2>
-      </div>
-      <div class="faq-wrap reveal">
-        <div class="faq-item open">
-          <button class="faq-q"><span>Vou precisar de suporte técnico para configurar?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>Não. O Chati funciona direto do navegador. Você conecta seus canais e a equipe já pode começar a responder — sem TI, sem espera.</p></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q"><span>Funciona com os canais que eu já uso para vender?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>WhatsApp, Mercado Livre, Shopee, Shopify, Nuvemshop, Tray, Instagram, Facebook Messenger, WooCommerce e outros, com novas integrações lançadas regularmente.</p></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q"><span>E se minha equipe crescer? O sistema aguenta?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>Sim. Adicione quantos atendentes precisar, distribua conversas entre eles e acompanhe o desempenho de cada um — sem perder organização.</p></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q"><span>Preciso pagar para testar?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>Não. Você começa gratuitamente, sem cartão de crédito, e só decide depois de ver o impacto no seu atendimento.</p></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q"><span>Os dados dos meus clientes ficam seguros?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>Sim. Todas as conversas são armazenadas com criptografia e seguem boas práticas de segurança da informação.</p></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q"><span>E se eu quiser cancelar depois?</span><span class="plus"></span></button>
-          <div class="faq-a"><p>Cancele quando quiser, direto pelo painel. Sem fidelidade e sem burocracia.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="final-cta" id="cta">
-    <div class="container">
-      <h2>Cada dia sem o Chati é venda saindo pela porta dos fundos.</h2>
-      <p>Junte-se às empresas que já pararam de perder cliente por demora — e comece a sentir a diferença ainda essa semana.</p>
-      <a href="/login" class="btn btn-primary auth-link">Testar grátis agora</a>
-    </div>
-  </section>
 </main>
 
-<footer>
-  <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="#" class="logo" aria-label="Chati">
-          <img class="brand-wordmark" src="/assets/logo-chati-white.png" alt="Chati" />
-        </a>
-        <p>A plataforma que centraliza o atendimento dos seus canais de e-commerce em um único painel.</p>
-      </div>
-      <div class="footer-col">
-        <h5>Produto</h5>
-        <ul>
-          <li><a href="#produto">Recursos</a></li>
-          <li><a href="#como-funciona">Como funciona</a></li>
-          <li><a href="#faq">Perguntas frequentes</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Empresa</h5>
-        <ul>
-          <li><a href="#">Sobre</a></li>
-          <li><a href="#depoimentos">Clientes</a></li>
-          <li><a href="#">Contato</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Legal</h5>
-        <ul>
-          <li><a href="#">Termos de uso</a></li>
-          <li><a href="#">Privacidade</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Chati. Todos os direitos reservados.</span>
-      <span>Feito para e-commerces que querem vender mais.</span>
-    </div>
+<footer class="rodape">
+  <div class="caixa rodape-linha">
+    <a href="/" class="marca"><img src="/assets/logo-chati-white.png" alt="Chati" width="100" height="35"></a>
+    <p>Pergunte. Responda. <em>Venda mais.</em></p>
+    <nav aria-label="Rodapé"><a href="/login" class="auth-link">Entrar no sistema</a><a href="#contato">Contato</a></nav>
   </div>
+  <div class="caixa rodape-fim"><span>© <span id="ano">2026</span> Chati</span><span>Mercado Livre e Shopee são marcas de seus respectivos donos.</span></div>
 </footer>
 
-<!-- SMART POPUP (soft nudge) -->
-<div class="smart-popup" id="smartPopup" role="dialog" aria-label="Sugestão de diagnóstico">
-  <button class="sp-close" id="smartPopupClose" aria-label="Fechar" style="position:absolute;top:12px;right:14px;background:none;border:none;padding:4px;">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-  </button>
-  <div class="sp-head"><span class="sp-dot"></span><span class="sp-title">Chati</span></div>
-  <p>Olá 👋 Percebi que você está conhecendo nossa plataforma. Posso descobrir em menos de 1 minuto quanto sua operação pode melhorar?</p>
-  <div class="sp-actions">
-    <a href="#diagnostico" class="btn btn-primary btn-sm" id="smartPopupStart">Começar diagnóstico</a>
-    <button class="btn btn-secondary btn-sm" id="smartPopupSkip">Agora não</button>
-  </div>
-</div>
-
-<!-- AMBIENT ACTIVITY TOAST -->
-<div class="ambient-toast" id="ambientToast">
-  <span class="ic" id="ambientIcon">💰</span>
-  <span><span id="ambientText">Venda recuperada</span><span class="sub" id="ambientSub">agora mesmo</span></span>
-</div>
-
-<!-- CHAT WIDGET -->
-<button class="chat-fab" id="chatFab" type="button" aria-label="Abrir demonstração de atendimento" aria-expanded="false" aria-controls="chatWindow">
-  <span class="fab-dot"></span>
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
-
-<div class="chat-window" id="chatWindow" role="dialog" aria-modal="false" aria-label="Demonstração do Chati" aria-hidden="true">
-  <div class="chat-head">
-    <div class="av">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-    </div>
-    <div><strong>Chati</strong><span><span class="status-dot"></span>Assistente ativo agora</span></div>
-    <button class="chat-close" id="chatClose" type="button" aria-label="Fechar demonstração">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
-  </div>
-  <div class="chat-body" id="chatBody" aria-live="polite"></div>
-</div>
-
-<!-- EXIT INTENT MODAL -->
-<div class="modal-overlay" id="exitModal">
-  <div class="modal-card">
-    <button class="modal-close" id="exitModalClose" aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <div class="modal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
-    <h3>Antes de sair...</h3>
-    <p>Você sabia que empresas perdem vendas todos os dias porque clientes esperam resposta em canais diferentes?</p>
-    <a href="#cta" class="btn btn-primary" id="exitModalCta">Quero ver como resolver</a>
-    <button class="skip" id="exitModalSkip">Continuar sem ver</button>
-  </div>
-</div>
-
 <script>
-  /* ================= FEEDBACK SONORO LEVE ================= */
-  let audioContext;
-
-  function getAudioContext(){
-    if(audioContext) return audioContext;
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if(!AudioContextClass) return null;
-    audioContext = new AudioContextClass();
-    return audioContext;
-  }
-
-  function playTone({ frequency = 520, duration = 0.08, volume = 0.035 } = {}){
+  // Quem já está logado vai direto para o painel
+  (function () {
+    let logado = false;
     try {
-      const ctx = getAudioContext();
-      if(!ctx) return;
-      const oscillator = ctx.createOscillator();
-      const gain = ctx.createGain();
-      oscillator.type = 'sine';
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(volume, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-      oscillator.connect(gain);
-      gain.connect(ctx.destination);
-      oscillator.start();
-      oscillator.stop(ctx.currentTime + duration);
-    } catch(error) {
-      console.debug('Áudio indisponível:', error);
-    }
-  }
-
-  function playPopSound(){
-    playTone({ frequency: 620, duration: 0.09, volume: 0.04 });
-  }
-
-  function startScanSound(){
-    playTone({ frequency: 280, duration: 0.12, volume: 0.025 });
-  }
-
-  function stopScanSound(){
-    // O som é curto e termina automaticamente.
-  }
-
-  // Mobile nav toggle
-  const navToggle = document.querySelector('.nav-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  navToggle?.addEventListener('click', () => {
-    const isOpen = navLinks.style.display === 'flex';
-    navLinks.style.display = isOpen ? 'none' : 'flex';
-    navLinks.style.cssText = isOpen ? '' : 'display:flex;flex-direction:column;position:absolute;top:72px;left:0;right:0;background:#fff;padding:20px 24px;border-bottom:1px solid #ECECEC;gap:18px;';
-  });
-
-  // Reveal on scroll
-  const revealEls = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if(e.isIntersecting){ e.target.classList.add('in'); revealObserver.unobserve(e.target); }
-    });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => revealObserver.observe(el));
-
-  // Animated counters
-  const counters = document.querySelectorAll('.counter');
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(!entry.isIntersecting) return;
-      const el = entry.target;
-      const target = parseInt(el.dataset.target, 10);
-      const suffix = el.dataset.suffix || '';
-      const duration = 1400;
-      const start = performance.now();
-      function tick(now){
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const value = Math.floor(eased * target);
-        el.textContent = value.toLocaleString('pt-BR') + suffix;
-        if(progress < 1){ requestAnimationFrame(tick); }
-      }
-      requestAnimationFrame(tick);
-      counterObserver.unobserve(el);
-    });
-  }, { threshold: 0.5 });
-  counters.forEach(c => counterObserver.observe(c));
-
-  // FAQ accordion
-  document.querySelectorAll('.faq-item').forEach(item => {
-    const btn = item.querySelector('.faq-q');
-    const answer = item.querySelector('.faq-a');
-    if(item.classList.contains('open')){
-      answer.style.maxHeight = answer.scrollHeight + 'px';
-    }
-    btn.addEventListener('click', () => {
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(o => {
-        o.classList.remove('open');
-        o.querySelector('.faq-a').style.maxHeight = null;
-      });
-      if(!isOpen){
-        item.classList.add('open');
-        answer.style.maxHeight = answer.scrollHeight + 'px';
-      }
-    });
-  });
-
-  // Showcase tabs
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.browser-body').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelector(`.browser-body[data-panel="${btn.dataset.tab}"]`).classList.add('active');
-    });
-  });
-
-  /* ================= HERO INTERACTIVE DEMO ================= */
-  const channelDemos = {
-    whatsapp:    { name:'Cliente WhatsApp', initials:'WA', color:'#25D366', tag:'Pré-venda', tagBg:'#EAFBF0', tagColor:'#1F9D55', msgIn:'Gostaria de saber o prazo de entrega.', msgOut:'Olá! O prazo é de 3 a 5 dias úteis 🚀' },
-    mercadolivre:{ name:'Cliente Mercado Livre', initials:'ML', color:'#FFCC00', tag:'Pós-venda', tagBg:'#FFF7E0', tagColor:'#B98A00', msgIn:'Meu pedido já foi enviado?', msgOut:'Sim! Foi enviado hoje pela manhã 📦' },
-    shopify:     { name:'Cliente Shopify', initials:'SF', color:'#96BF48', tag:'Suporte', tagBg:'#F1F1F3', tagColor:'#6B7280', msgIn:'Posso trocar o tamanho do meu pedido?', msgOut:'Claro! Vou te ajudar com a troca agora mesmo.' },
-    instagram:   { name:'Cliente Instagram', initials:'IG', color:'#E1306C', tag:'Pré-venda', tagBg:'#FDECEC', tagColor:'#B70510', msgIn:'Vi o story, ainda tem em estoque?', msgOut:'Temos sim! Últimas unidades disponíveis 😉' },
-    messenger:   { name:'Cliente Messenger', initials:'MS', color:'#0866FF', tag:'Suporte', tagBg:'#EAF1FF', tagColor:'#0A4FCC', msgIn:'Recebi o produto errado, podem me ajudar?', msgOut:'Sinto muito! Já vou resolver isso pra você.' }
-  };
-
-  const dash = document.querySelector('.dash');
-  const chips = document.querySelectorAll('.chip[data-channel]');
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const data = channelDemos[chip.dataset.channel];
-      if(!data) return;
-
-      chips.forEach(c => c.classList.remove('pulsing'));
-      void chip.offsetWidth;
-      chip.classList.add('pulsing');
-      dash.classList.add('receiving');
-      setTimeout(() => dash.classList.remove('receiving'), 600);
-
-      const convItem = document.getElementById('demoConvItem');
-      const avatar = document.getElementById('demoAvatar');
-      const nameEl = document.getElementById('demoName');
-      const timeEl = document.getElementById('demoTime');
-      const previewEl = document.getElementById('demoPreview');
-      const tagEl = document.getElementById('demoTag');
-      const bubbleIn = document.getElementById('demoBubbleIn');
-      const bubbleOut = document.getElementById('demoBubbleOut');
-
-      [convItem, bubbleIn, bubbleOut].forEach(el => el.classList.add('fx-out'));
-
-      setTimeout(() => {
-        avatar.style.background = data.color;
-        avatar.textContent = data.initials;
-        nameEl.textContent = data.name;
-        timeEl.textContent = 'agora';
-        previewEl.textContent = data.msgIn;
-        tagEl.textContent = data.tag;
-        tagEl.style.background = data.tagBg;
-        tagEl.style.color = data.tagColor;
-        bubbleIn.textContent = data.msgIn;
-        bubbleOut.textContent = data.msgOut;
-        [convItem, bubbleIn, bubbleOut].forEach(el => el.classList.remove('fx-out'));
-      }, 220);
-    });
-  });
-
-  /* ================= DIAGNOSTIC QUIZ (GAMIFIED) ================= */
-  (function initQuiz(){
-    const steps = document.querySelectorAll('#diagnostico .quiz-step');
-    const result = document.getElementById('quizResult');
-    const progressFill = document.getElementById('quizProgress');
-    const stepLabel = document.getElementById('quizStepLabel');
-    const percentLabel = document.getElementById('quizPercent');
-    const quizCard = document.getElementById('quizCard');
-    if(!steps.length) return;
-
-    const answers = {};
-    const totalSteps = steps.length;
-
-    function updateProgress(step){
-      const pct = Math.round((Math.min(step, totalSteps) / totalSteps) * 100);
-      progressFill.style.width = pct + '%';
-      percentLabel.textContent = pct + '%';
-      stepLabel.textContent = step > totalSteps ? 'Concluído' : `Pergunta ${step} de ${totalSteps}`;
-    }
-    updateProgress(1);
-
-    let rewardTimeout;
-    function showReward(text){
-      let toast = quizCard.querySelector('.reward-toast');
-      if(!toast){
-        toast = document.createElement('div');
-        toast.className = 'reward-toast';
-        quizCard.appendChild(toast);
-      }
-      clearTimeout(rewardTimeout);
-      toast.textContent = text;
-      requestAnimationFrame(() => toast.classList.add('show'));
-      rewardTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
-
-    document.querySelectorAll('#diagnostico .quiz-opt').forEach(btn => {
-      btn.addEventListener('click', () => {
-        answers[btn.dataset.question] = parseInt(btn.dataset.value, 10);
-        const stepEl = btn.closest('.quiz-step');
-        const stepNum = parseInt(stepEl.dataset.step, 10);
-        const reward = stepEl.dataset.reward;
-        if(reward) showReward(reward);
-        playPopSound();
-
-        if(stepNum < totalSteps){
-          stepEl.classList.remove('active');
-          const nextStep = stepNum + 1;
-          document.querySelector(`#diagnostico .quiz-step[data-step="${nextStep}"]`).classList.add('active');
-          updateProgress(nextStep);
-        } else {
-          stepEl.classList.remove('active');
-          const raw = (answers.channels||0) + (answers.team||0) + (answers.loss||0) + (answers.unified||0);
-          const pct = Math.round(((raw - 4) / 8) * 100);
-
-          // Fase de "análise": a barra roda até 100% e o som toca só durante essa animação
-          const ANALYZE_MS = 2600;
-          progressFill.classList.add('analyzing');
-          stepLabel.textContent = 'Analisando sua operação...';
-          startScanSound();
-          requestAnimationFrame(() => {
-            progressFill.style.width = '100%';
-            percentLabel.textContent = '100%';
-          });
-
-          setTimeout(() => {
-            stopScanSound();
-            progressFill.classList.remove('analyzing');
-            stepLabel.textContent = 'Concluído';
-            renderResult(pct);
-            result.classList.add('active');
-            launchConfetti();
-          }, ANALYZE_MS);
-        }
-      });
-    });
-
-    function renderResult(score){
-      const badge = document.getElementById('resultBadge');
-      const title = document.getElementById('resultTitle');
-      const text = document.getElementById('resultText');
-      const gaugeFill = document.getElementById('gaugeFill');
-      const gaugeScore = document.getElementById('gaugeScore');
-
-      const circumference = 2 * Math.PI * 60;
-      requestAnimationFrame(() => {
-        gaugeFill.style.strokeDashoffset = circumference - (circumference * score / 100);
-      });
-      const start = performance.now();
-      function tick(now){
-        const progress = Math.min((now - start) / 1100, 1);
-        gaugeScore.textContent = Math.round(progress * score);
-        if(progress < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-
-      title.textContent = 'Sua operação recebeu uma nota';
-      if(score <= 35){
-        badge.textContent = 'Operação enxuta 🟢';
-        badge.style.background = '#EAF7EE'; badge.style.color = '#1F9D55';
-        text.textContent = 'Seu atendimento já está relativamente organizado. Ainda assim, centralizar os canais elimina o pouco retrabalho que resta.';
-      } else if(score <= 70){
-        badge.textContent = 'Operação em crescimento 🟡';
-        badge.style.background = '#FFF7E0'; badge.style.color = '#B98A00';
-        text.textContent = 'Com o Chati você pode reduzir retrabalho e organizar todos os canais em um único painel.';
-      } else {
-        badge.textContent = 'Alto potencial de evolução 🔴';
-        badge.style.background = '#FDECEC'; badge.style.color = '#B70510';
-        text.textContent = 'Sua operação tem muito a ganhar centralizando os canais agora — cada dia sem isso ainda custa tempo e vendas.';
-      }
-    }
-
-    function launchConfetti(){
-      const colors = ['#E30613', '#111111', '#6B7280', '#FFD1D1'];
-      const rect = quizCard.getBoundingClientRect();
-      const originX = rect.left + rect.width / 2;
-      for(let i = 0; i < 16; i++){
-        const piece = document.createElement('div');
-        piece.className = 'confetti-piece';
-        piece.style.left = (originX + (Math.random() * 160 - 80)) + 'px';
-        piece.style.top = (rect.top + 20) + 'px';
-        piece.style.background = colors[i % colors.length];
-        piece.style.animationDelay = (Math.random() * 0.25) + 's';
-        document.body.appendChild(piece);
-        setTimeout(() => piece.remove(), 2200);
-      }
-    }
+      logado = Boolean(localStorage.getItem("chati_session") || sessionStorage.getItem("chati_session"));
+    } catch (e) {}
+    if (!logado) return;
+    const entrar = document.getElementById("loginButton");
+    if (entrar) { entrar.href = "/app"; entrar.textContent = "Ir para o painel"; }
+    document.querySelectorAll(".auth-link").forEach((a) => { a.href = "/app"; a.textContent = "Ir para o painel"; });
   })();
-
-  /* ================= TIME LOSS SIMULATOR ================= */
-  (function initSimulator(){
-    const channelsInput = document.getElementById('simChannels');
-    const agentsInput = document.getElementById('simAgents');
-    const messagesInput = document.getElementById('simMessages');
-    if(!channelsInput) return;
-
-    const channelsVal = document.getElementById('simChannelsVal');
-    const agentsVal = document.getElementById('simAgentsVal');
-    const messagesVal = document.getElementById('simMessagesVal');
-    const hoursOut = document.getElementById('simHours');
-    const savingsOut = document.getElementById('simSavingsBRL');
-    const weekOut = document.getElementById('simHoursWeek');
-    const prodOut = document.getElementById('simProductivity');
-
-    function calculate(){
-      const channels = parseInt(channelsInput.value, 10);
-      const agents = parseInt(agentsInput.value, 10);
-      const messages = parseInt(messagesInput.value, 10);
-
-      channelsVal.textContent = channels;
-      agentsVal.textContent = agents;
-      messagesVal.textContent = messages;
-
-      const minutesPerAgentPerDay = channels * 8;
-      const messageFactor = Math.min(Math.max(messages / 100, 0.5), 2.2);
-      const totalMinutesPerDay = minutesPerAgentPerDay * agents * messageFactor;
-      const hoursPerMonth = Math.round((totalMinutesPerDay * 22) / 60);
-      const hoursPerWeek = Math.round((hoursPerMonth / 4.33) * 10) / 10;
-      const estimatedSavings = Math.round((hoursPerMonth * 28) / 10) * 10; // ~R$28/hora de atendente, arredondado
-      const productivityGain = Math.min(65, Math.round(10 + channels * 3 + (agents > 1 ? 8 : 0)));
-
-      animateNumber(hoursOut, hoursPerMonth);
-      weekOut.textContent = hoursPerWeek + 'h';
-      prodOut.textContent = '+' + productivityGain + '%';
-      savingsOut.textContent = 'R$ ' + estimatedSavings.toLocaleString('pt-BR');
-    }
-
-    function animateNumber(el, target){
-      const start = parseInt(el.textContent, 10) || 0;
-      const duration = 500;
-      const startTime = performance.now();
-      function tick(now){
-        const progress = Math.min((now - startTime) / duration, 1);
-        const value = Math.round(start + (target - start) * progress);
-        el.textContent = value;
-        if(progress < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
-
-    [channelsInput, agentsInput, messagesInput].forEach(input => input.addEventListener('input', calculate));
-    calculate();
-  })();
-
-  /* ================= CHAT WIDGET ================= */
-  (function initChatWidget(){
-    const fab = document.getElementById('chatFab');
-    const win = document.getElementById('chatWindow');
-    const closeBtn = document.getElementById('chatClose');
-    const body = document.getElementById('chatBody');
-    if(!fab) return;
-
-    let opened = false;
-
-    function addMsg(text, who){
-      const div = document.createElement('div');
-      div.className = 'chat-msg ' + who;
-      div.textContent = text;
-      body.appendChild(div);
-      body.scrollTop = body.scrollHeight;
-      return div;
-    }
-
-    function addOptions(options){
-      const wrap = document.createElement('div');
-      wrap.className = 'chat-options';
-      options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'chat-opt-btn';
-        btn.textContent = opt.label;
-        btn.addEventListener('click', () => {
-          wrap.remove();
-          addMsg(opt.label, 'user');
-          opt.onSelect();
-        });
-        wrap.appendChild(btn);
-      });
-      body.appendChild(wrap);
-      body.scrollTop = body.scrollHeight;
-    }
-
-    function showTyping(callback){
-      const typing = document.createElement('div');
-      typing.className = 'chat-typing';
-      typing.innerHTML = '<span></span><span></span><span></span>';
-      body.appendChild(typing);
-      body.scrollTop = body.scrollHeight;
-      setTimeout(() => {
-        typing.remove();
-        callback();
-      }, 700);
-    }
-
-    function startConversation(){
-      body.innerHTML = '';
-      showTyping(() => {
-        addMsg('Olá 👋 Posso ajudar você a descobrir como organizar seu atendimento?', 'bot');
-        addOptions([
-          { label:'Tenho uma loja virtual', onSelect: () => handlePersona('loja') },
-          { label:'Tenho uma equipe de atendimento', onSelect: () => handlePersona('equipe') },
-          { label:'Vendo em vários marketplaces', onSelect: () => handlePersona('marketplaces') }
-        ]);
-      });
-    }
-
-    function handlePersona(kind){
-      const replies = {
-        loja: 'Legal! Lojas virtuais costumam perder venda quando o cliente manda mensagem e a resposta demora a chegar em meio a tantos apps abertos.\n\nQuer descobrir quanto sua loja pode melhorar?',
-        equipe: 'Perfeito. Equipes de atendimento costumam perder tempo repassando conversa entre pessoas e sem saber quem já respondeu o quê.\n\nQuer descobrir quanto sua operação pode melhorar?',
-        marketplaces: 'Perfeito. Empresas que vendem em vários canais costumam perder tempo alternando entre plataformas e procurando mensagens.\n\nQuer descobrir quanto sua operação pode melhorar?'
-      };
-      showTyping(() => {
-        addMsg(replies[kind], 'bot');
-        addOptions([
-          { label:'Fazer diagnóstico rápido', onSelect: () => {
-              win.classList.remove('open');
-              document.getElementById('diagnostico').scrollIntoView({behavior:'smooth', block:'start'});
-            } },
-          { label:'Ver demonstração', onSelect: () => {
-              win.classList.remove('open');
-              document.getElementById('produto').scrollIntoView({behavior:'smooth', block:'start'});
-            } }
-        ]);
-      });
-    }
-
-    fab.addEventListener('click', () => {
-      opened = !opened;
-      win.classList.toggle('open', opened);
-      win.setAttribute('aria-hidden', String(!opened));
-      fab.setAttribute('aria-expanded', String(opened));
-      if(opened && body.children.length === 0) startConversation();
-    });
-    closeBtn.addEventListener('click', () => { opened = false; win.classList.remove('open'); });
-
-    // expose a hook so the smart popup can open the same conversation
-    window.__openChatiWidget = function(){
-      opened = true;
-      win.classList.add('open');
-      if(body.children.length === 0) startConversation();
-    };
-  })();
-
-  /* ================= SMART POPUP (soft nudge) ================= */
-  (function initSmartPopup(){
-    const popup = document.getElementById('smartPopup');
-    const closeBtn = document.getElementById('smartPopupClose');
-    const skipBtn = document.getElementById('smartPopupSkip');
-    const startBtn = document.getElementById('smartPopupStart');
-    const problemSection = document.querySelector('.problem');
-    if(!popup) return;
-
-    let shown = false;
-    function openPopup(){
-      if(shown) return;
-      shown = true;
-      popup.classList.add('show');
-    }
-    function closePopup(){ popup.classList.remove('show'); }
-
-    // Trigger 1: after ~12 seconds
-    const timer = setTimeout(openPopup, 12000);
-
-    // Trigger 2: when the visitor reaches the Problem section
-    if(problemSection){
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting){ openPopup(); obs.disconnect(); }
-        });
-      }, { threshold:0.4 });
-      obs.observe(problemSection);
-    }
-
-    closeBtn.addEventListener('click', () => { clearTimeout(timer); closePopup(); });
-    skipBtn.addEventListener('click', () => { clearTimeout(timer); closePopup(); });
-    startBtn.addEventListener('click', () => { closePopup(); });
-  })();
-
-  /* ================= AMBIENT ACTIVITY NOTIFICATIONS ================= */
-  (function initAmbientToasts(){
-    const toast = document.getElementById('ambientToast');
-    if(!toast) return;
-    const icon = document.getElementById('ambientIcon');
-    const text = document.getElementById('ambientText');
-    const sub = document.getElementById('ambientSub');
-
-    const events = [
-      { icon:'💰', text:'Venda recuperada', sub:'Loja Ártico · agora' },
-      { icon:'😊', text:'Cliente satisfeito', sub:'avaliação 5 estrelas' },
-      { icon:'⚡', text:'Atendimento respondido em 12s', sub:'WhatsApp' },
-      { icon:'📈', text:'Produtividade aumentou', sub:'+18% na equipe' },
-      { icon:'📦', text:'Pedido respondido', sub:'Mercado Livre' },
-      { icon:'🏆', text:'Equipe respondeu mais rápido', sub:'tempo médio: 1m 40s' },
-      { icon:'🚀', text:'Novo canal conectado', sub:'Instagram Direct' },
-      { icon:'✔', text:'Conversa centralizada', sub:'sem troca de aba' }
-    ];
-
-    let hideTimeout;
-    function showNext(){
-      const ev = events[Math.floor(Math.random() * events.length)];
-      icon.textContent = ev.icon;
-      text.textContent = ev.text;
-      sub.textContent = ev.sub;
-      toast.classList.add('show');
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => toast.classList.remove('show'), 4200);
-    }
-
-    function loop(){
-      const delay = 14000 + Math.random() * 11000; // a cada 14–25s
-      setTimeout(() => { showNext(); loop(); }, delay);
-    }
-    setTimeout(() => { showNext(); loop(); }, 9000);
-  })();
-
-  /* ================= EXIT INTENT MODAL ================= */
-  (function initExitIntent(){
-    const modal = document.getElementById('exitModal');
-    const closeBtn = document.getElementById('exitModalClose');
-    const skipBtn = document.getElementById('exitModalSkip');
-    const cta = document.getElementById('exitModalCta');
-    if(!modal) return;
-
-    let shown = false;
-
-    function openModal(){
-      if(shown) return;
-      shown = true;
-      modal.classList.add('open');
-    }
-    function closeModal(){ modal.classList.remove('open'); }
-
-    document.addEventListener('mouseout', (e) => {
-      if(e.clientY <= 0 && !e.relatedTarget){
-        openModal();
-      }
-    });
-
-    closeBtn.addEventListener('click', closeModal);
-    skipBtn.addEventListener('click', closeModal);
-    cta.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-  })();
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = Boolean(
-    localStorage.getItem("chati_session") ||
-    localStorage.getItem("chati_user") ||
-    sessionStorage.getItem("chati_session") ||
-    sessionStorage.getItem("chati_user")
-  );
-
-  const destination = isLoggedIn ? "/app" : "/login";
-  const loginButton = document.getElementById("loginButton");
-
-  if (loginButton) {
-    loginButton.href = destination;
-    loginButton.textContent = isLoggedIn ? "Ir para o painel" : "Entrar";
-  }
-
-  document.querySelectorAll(".auth-link").forEach((link) => {
-    link.href = destination;
-  });
-});
-
-
-
 </script>
-
 </body>
 </html>
