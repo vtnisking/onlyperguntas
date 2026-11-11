@@ -12714,6 +12714,11 @@ container.innerHTML = `
             container.innerHTML += buildMobileCard(item);
           });
         } catch (e) {
+          console.error("Erro ao carregar perguntas:", e);
+          if (!silent && !loadQuestions._retry) {
+            loadQuestions._retry = true;
+            setTimeout(() => loadQuestions(true).finally(() => (loadQuestions._retry = false)), 2000);
+          }
           container.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar perguntas.</div>`;
         }
       }
@@ -13079,9 +13084,14 @@ if (notificationBadge) {
             listEl.appendChild(wrapper.firstElementChild);
           });
         } catch (e) {
+          console.error("Erro ao carregar perguntas:", e);
           const listEl = document.getElementById("desktopQList");
           if (listEl)
             listEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Erro ao carregar.</div>`;
+          if (!loadDesktopQuestions._retry) {
+            loadDesktopQuestions._retry = true;
+            setTimeout(() => loadDesktopQuestions(true).finally(() => (loadDesktopQuestions._retry = false)), 2000);
+          }
         }
       }
 
@@ -17690,7 +17700,9 @@ function getChatiSession() {
 }
 
 
-let chatiRefreshPromise = null;
+// var (e não let): loadQuestions() roda no INIT, antes desta linha. Com let,
+// a renovação da sessão vencida (primeira abertura do dia) dava erro.
+var chatiRefreshPromise; // sem "= null": esta linha roda depois do INIT e apagaria a renovação em andamento
 
 // Cópias da sessão na chave da biblioteca do Supabase faziam outras telas
 // renovarem o mesmo refresh token e o Supabase cancelava o login. Limpa.
@@ -17713,7 +17725,7 @@ function saveChatiSession(session) {
   return session;
 }
 
-let chatiExpiring = false;
+var chatiExpiring;
 
 function chatiSessionExpired() {
   if (chatiExpiring) return;
