@@ -8,14 +8,9 @@
    Para mudar datas ou frequência, edite a lista AVISOS.
    ===================================================================== */
 (function () {
+  // Avisos de inauguração e do Chati ERP retirados a pedido (11/11/2026).
+  // As funções montarInauguracao/montarErp continuam abaixo para reuso.
   const AVISOS = [
-    {
-      id: "inauguracao-2026-12-01",
-      ate: "2026-12-01T23:59:59-03:00",
-      frequencia: "sempre",
-      obrigatorio: true,
-      montar: () => montarInauguracao(),
-    },
     {
       // mesma chave do modal anterior: quem já viu não vê de novo
       id: "novidades_2026-11-visual",
@@ -23,12 +18,6 @@
       ate: "2026-11-05T23:59:59-03:00",
       frequencia: "uma-vez",
       montar: () => montarNovidades(),
-    },
-    {
-      id: "chati-erp-lancamento",
-      ate: null,
-      frequencia: "diaria",
-      montar: () => montarErp(),
     },
   ];
 
