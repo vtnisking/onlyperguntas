@@ -1,6 +1,15 @@
 import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 import { AuthError, getAuthenticatedContext } from "../lib/auth.js";
+import {
+  ReservationError,
+  assertCanAct,
+  clearReservation,
+  getReservations,
+  publicReservation,
+  releaseQuestion,
+  reserveQuestion,
+} from "../lib/reservations.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -262,7 +271,7 @@ export default async function handler(req, res) {
 
     // A empresa nunca é confiada a partir do navegador.
     // Ela é derivada exclusivamente do usuário autenticado.
-    const { companyId } = await getAuthenticatedContext(req, supabase);
+    const { companyId, profile } = await getAuthenticatedContext(req, supabase);
 
  // ==========================================
 // AÇÕES DE PERGUNTAS
@@ -274,6 +283,34 @@ if (req.method === "POST") {
     buyer_id,
     store_id,
   } = req.body || {};
+
+  // ========================================
+  // RESERVAR / LIBERAR RESPOSTA
+  // ========================================
+  if (action === "reserve" || action === "unreserve") {
+    if (!question_id) {
+      return res.status(400).json({
+        success: false,
+        error: "question_id é obrigatório",
+      });
+    }
+
+    if (action === "reserve") {
+      const reservation = await reserveQuestion(
+        supabase,
+        companyId,
+        question_id,
+        profile,
+      );
+      return res.status(200).json({ success: true, reservation });
+    }
+
+    await releaseQuestion(supabase, companyId, question_id, profile);
+    return res.status(200).json({ success: true, reservation: null });
+  }
+
+  // Nenhuma ação na pergunta se outra pessoa reservou
+  await assertCanAct(supabase, companyId, question_id, profile);
 
   // ========================================
   // BLOQUEAR COMPRADOR
@@ -405,6 +442,8 @@ if (req.method === "POST") {
     });
   }
 
+  await clearReservation(supabase, companyId, question_id);
+
   return res.status(200).json({
     success: true,
     message:
@@ -431,6 +470,8 @@ if (req.method === "DELETE") {
         "question_id e store_id são obrigatórios",
     });
   }
+
+  await assertCanAct(supabase, companyId, question_id, profile);
 
   const {
     data: store,
@@ -513,6 +554,8 @@ if (req.method === "DELETE") {
       },
     );
 
+  await clearReservation(supabase, companyId, question_id);
+
   return res.status(200).json({
     success: true,
     message:
@@ -594,6 +637,11 @@ if (hiddenQuestionsError) {
     hiddenQuestionsError,
   );
 }
+
+const reservations = await getReservations(
+  supabase,
+  companyId,
+);
 
 const hiddenQuestionIds = new Set(
   (hiddenQuestions || []).map((item) =>
@@ -758,6 +806,11 @@ unavailable_reason:
 
   previous_questions: previousQuestions,
 
+  reservation: publicReservation(
+    reservations.get(String(question.id)),
+    profile,
+  ),
+
 });
         }
       } catch (storeError) {
@@ -779,6 +832,16 @@ unavailable_reason:
       "Erro em /api/questions:",
       error.response?.data || error,
     );
+
+    if (error instanceof ReservationError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        code: error.code,
+        error: error.message,
+        message: error.message,
+        reservation: error.reservation,
+      });
+    }
 
     const statusCode =
       error instanceof AuthError

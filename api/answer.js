@@ -4,6 +4,11 @@ import {
   AuthError,
   getAuthenticatedContext,
 } from "../lib/auth.js";
+import {
+  ReservationError,
+  assertCanAct,
+  clearReservation,
+} from "../lib/reservations.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -131,6 +136,13 @@ export default async function handler(req, res) {
       supabase,
     );
 
+    await assertCanAct(
+      supabase,
+      companyId,
+      question_id,
+      profile,
+    );
+
     const {
       data: store,
       error: storeError,
@@ -202,11 +214,27 @@ export default async function handler(req, res) {
       text,
     );
 
+    await clearReservation(
+      supabase,
+      companyId,
+      question_id,
+    );
+
     return res.status(200).json({
       success: true,
       data: response.data,
     });
   } catch (error) {
+    if (error instanceof ReservationError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        code: error.code,
+        error: error.message,
+        message: error.message,
+        reservation: error.reservation,
+      });
+    }
+
     if (error instanceof AuthError) {
       return res.status(error.statusCode).json({
         success: false,
