@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=14" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=15" />
   </head>
 
   <body>
@@ -8362,6 +8362,7 @@ body.ps-detail-open {
   <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
 </svg>
 
     <audio
@@ -11952,8 +11953,9 @@ function buildDesktopRow(item) {
 
   return `
     <div
-      class="ml-card"
+      class="ml-card ${reservedByOther(item) ? "is-reserved-other" : ""} ${item.reservation?.mine ? "is-reserved-mine" : ""}"
       id="${cardId}"
+      data-qid="${item.id}"
     >
 
       <!-- PRODUTO -->
@@ -12033,6 +12035,8 @@ function buildDesktopRow(item) {
                 ).text
               }
             </span>
+
+            ${renderReserveChip(item)}
 
           </div>
 
@@ -12274,8 +12278,11 @@ function buildDesktopRow(item) {
             : ""
         }
 
+        ${reservedByOther(item) ? renderReservedLock(item) : `
         <!-- AÇÕES DA PERGUNTA -->
         <div class="ml-question-actions">
+
+          ${renderReserveToggle(item)}
 
           <button
             type="button"
@@ -12300,7 +12307,8 @@ function buildDesktopRow(item) {
               blockMlBuyer(
                 '${item.from?.id || ""}',
                 '${item.store_id}',
-                this
+                this,
+                '${item.id}'
               );
             "
           >
@@ -12434,6 +12442,7 @@ function buildDesktopRow(item) {
               </div>
             `
         }
+        `}
 
       </div>
 
@@ -12589,6 +12598,7 @@ async function blockMlBuyer(
   buyerId,
   storeId,
   button,
+  questionId,
 ) {
   if (!buyerId) {
     showToast(
@@ -12621,6 +12631,7 @@ async function blockMlBuyer(
           action: "block_buyer",
           buyer_id: buyerId,
           store_id: storeId,
+          question_id: questionId || undefined,
           company_id: loggedUser.company_id,
         }),
       },
@@ -12660,6 +12671,195 @@ async function blockMlBuyer(
 window.deleteMlQuestion = deleteMlQuestion;
 window.blockMlBuyer = blockMlBuyer;
 
+// ──────────────────────────────────────
+// RESERVAR RESPOSTA
+// Quem reserva é o único que pode responder, excluir, remover
+// ou bloquear o comprador da pergunta. Administradores só liberam.
+// ──────────────────────────────────────
+var questionIndex = new Map();
+
+function indexQuestions(list) {
+  questionIndex = new Map(
+    (list || []).map((q) => [String(q.id), q]),
+  );
+}
+
+function reservedByOther(item) {
+  return Boolean(item?.reservation && !item.reservation.mine);
+}
+
+function reserveTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const hoje = new Date().toDateString() === d.toDateString();
+  const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return hoje ? `hoje às ${hora}` : `${d.toLocaleDateString("pt-BR")} às ${hora}`;
+}
+
+function isReserveAdmin() {
+  return ["owner", "admin", "superadmin"].includes(loggedUser?.role);
+}
+
+function renderReserveChip(item) {
+  const r = item?.reservation;
+  if (!r) return "";
+  const who = r.mine ? "você" : escapeHtml(r.user_name || "outro usuário");
+  return `
+    <span class="meta-chip reserve-chip ${r.mine ? "is-mine" : "is-other"}" title="Reservada ${escapeHtml(reserveTime(r.created_at))}">
+      <svg class="ui-i"><use href="#i-lock"/></svg> Reservada por ${who}
+    </span>`;
+}
+
+function renderReserveToggle(item) {
+  const mine = Boolean(item?.reservation?.mine);
+  return `
+    <label class="reserve-toggle ${mine ? "is-on" : ""}" onclick="event.stopPropagation()" title="Só você poderá responder, excluir ou bloquear esta pergunta">
+      <input type="checkbox" ${mine ? "checked" : ""}
+        onchange="toggleReservation('${item.id}', this)">
+      <span class="reserve-box"><svg class="ui-i"><use href="#i-check"/></svg></span>
+      <span class="reserve-text">Reservar resposta</span>
+    </label>`;
+}
+
+function renderReservedLock(item) {
+  const r = item.reservation || {};
+  return `
+    <div class="reserve-lock" onclick="event.stopPropagation()">
+      <span class="reserve-lock-icon"><svg class="ui-i"><use href="#i-lock"/></svg></span>
+      <div class="reserve-lock-text">
+        <strong>Reservada por ${escapeHtml(r.user_name || "outro usuário")}</strong>
+        <span>Desde ${escapeHtml(reserveTime(r.created_at))}. Só essa pessoa pode responder, excluir ou bloquear o comprador.</span>
+      </div>
+      ${
+        isReserveAdmin()
+          ? `<button type="button" class="reserve-release" onclick="releaseReservation('${item.id}', this)">Liberar reserva</button>`
+          : ""
+      }
+    </div>`;
+}
+
+function rerenderQuestionCard(questionId) {
+  const item = questionIndex.get(String(questionId));
+  if (!item) return;
+
+  const desk = document.getElementById(`ml-card-${questionId}`);
+  if (desk) {
+    const wasOpen = document
+      .getElementById(`ml-expanded-${questionId}`)
+      ?.classList.contains("open");
+    const draft = document.getElementById(`ml-ta-${questionId}`)?.value || "";
+    const tmp = document.createElement("div");
+    tmp.innerHTML = buildDesktopRow(item);
+    const novo = tmp.firstElementChild;
+    desk.replaceWith(novo);
+    if (wasOpen) {
+      document.getElementById(`ml-expanded-${questionId}`)?.classList.add("open");
+      document.getElementById(`ml-arrow-${questionId}`)?.classList.add("open");
+    }
+    const ta = document.getElementById(`ml-ta-${questionId}`);
+    if (ta && draft) {
+      ta.value = draft;
+      ta.dispatchEvent(new Event("input"));
+    }
+  }
+
+  const mob = document.querySelector(
+    `.mobile-question-card[data-qid="${CSS.escape(String(questionId))}"]`,
+  );
+  if (mob) {
+    const draft = document.getElementById(`answer-${questionId}`)?.value || "";
+    const tmp = document.createElement("div");
+    tmp.innerHTML = buildMobileCard(item);
+    mob.replaceWith(tmp.firstElementChild);
+    const ta = document.getElementById(`answer-${questionId}`);
+    if (ta && draft) {
+      ta.value = draft;
+      ta.dispatchEvent(new Event("input"));
+    }
+  }
+}
+
+function applyReservation(questionId, reservation) {
+  const item = questionIndex.get(String(questionId));
+  if (!item) {
+    loadQuestions(true);
+    return;
+  }
+  item.reservation = reservation;
+  rerenderQuestionCard(questionId);
+}
+
+async function callReservation(questionId, action) {
+  const response = await authenticatedIntegrationFetch("/api/questions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action,
+      question_id: questionId,
+      company_id: loggedUser.company_id,
+    }),
+  });
+  const data = await response.json().catch(() => ({}));
+  return { ok: response.ok && data.success, data };
+}
+
+async function toggleReservation(questionId, input) {
+  const wantReserve = input.checked;
+  input.disabled = true;
+
+  try {
+    const { ok, data } = await callReservation(
+      questionId,
+      wantReserve ? "reserve" : "unreserve",
+    );
+
+    if (!ok) {
+      input.checked = !wantReserve;
+      showToast(
+        data?.message || data?.error || "Não foi possível alterar a reserva.",
+        "error",
+      );
+      if (data?.code === "QUESTION_RESERVED" && data.reservation) {
+        applyReservation(questionId, data.reservation);
+      }
+      return;
+    }
+
+    showToast(
+      wantReserve
+        ? "Pergunta reservada. Só você pode responder."
+        : "Reserva cancelada.",
+      "success",
+    );
+    applyReservation(questionId, data.reservation || null);
+  } catch (e) {
+    input.checked = !wantReserve;
+    showToast("Erro ao alterar a reserva.", "error");
+  } finally {
+    input.disabled = false;
+  }
+}
+
+async function releaseReservation(questionId, button) {
+  const item = questionIndex.get(String(questionId));
+  const nome = item?.reservation?.user_name || "o usuário";
+  if (!confirm(`Liberar a reserva de ${nome}? Qualquer pessoa poderá responder esta pergunta.`)) return;
+
+  button.disabled = true;
+  try {
+    const { ok, data } = await callReservation(questionId, "unreserve");
+    if (!ok) throw new Error(data?.message || data?.error || "Não foi possível liberar.");
+    showToast("Reserva liberada.", "success");
+    applyReservation(questionId, null);
+  } catch (e) {
+    showToast(e.message || "Erro ao liberar a reserva.", "error");
+    button.disabled = false;
+  }
+}
+
+window.toggleReservation = toggleReservation;
+window.releaseReservation = releaseReservation;
+
 
       // ──────────────────────────────────────
       // SHARED: Load questions
@@ -12693,6 +12893,7 @@ window.blockMlBuyer = blockMlBuyer;
           }
           knownQuestionIds = new Set(currentIds);
           firstLoadDone = true;
+          indexQuestions(questions);
 
           document.getElementById("totalQuestions").innerText =
             questions.length;
@@ -12827,7 +13028,7 @@ container.innerHTML = `
     ).replace("MLB", "")}-_JM`;
 
   return `
-    <article class="mobile-question-card">
+    <article class="mobile-question-card ${reservedByOther(item) ? "is-reserved-other" : ""} ${item.reservation?.mine ? "is-reserved-mine" : ""}" data-qid="${item.id}">
 
       <div class="mobile-question-product">
 
@@ -12939,6 +13140,12 @@ container.innerHTML = `
 
 ${renderPreviousQuestions(item)}
 
+      ${reservedByOther(item) ? renderReservedLock(item) : `
+      <div class="mobile-question-reserve">
+        ${renderReserveChip(item)}
+        ${renderReserveToggle(item)}
+      </div>
+
       <div class="mobile-question-answer">
 
 <button
@@ -12982,6 +13189,7 @@ ${renderPreviousQuestions(item)}
         </button>
 
       </div>
+      `}
 
     </article>
   `;
@@ -13014,6 +13222,7 @@ ${renderPreviousQuestions(item)}
           knownQuestionIds = new Set(currentIds);
           firstLoadDone = true;
           allQuestionsCache = questions;
+          indexQuestions(questions);
 
           // Update counters
           const badge = document.getElementById("desktopBadge");
@@ -13352,6 +13561,12 @@ async function sendAnswer(questionId, storeId, button) {
         "error",
       );
 
+      return;
+    }
+
+    if (errorCode === "QUESTION_RESERVED") {
+      showToast(data.message, "error");
+      applyReservation(questionId, data.reservation || null);
       return;
     }
 
@@ -17548,6 +17763,9 @@ const ranking = Object.entries(data.by_user || {})
             setTimeout(() => {
               loadQuestions();
             }, 800);
+          } else if (data?.code === "QUESTION_RESERVED") {
+            showToast(data.message, "error");
+            applyReservation(questionId, data.reservation || null);
           } else {
         const errorCode =
         data?.error?.error || data?.error;

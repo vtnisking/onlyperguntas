@@ -5011,3 +5011,119 @@ body {
     padding: 0;
   }
 }
+
+/* =====================================================================
+   RESERVAR RESPOSTA
+   ===================================================================== */
+html body .meta-chip.reserve-chip .ui-i { color: currentColor; opacity: 1; }
+html body .meta-chip.reserve-chip.is-mine {
+  background: var(--green-soft);
+  border-color: transparent;
+  color: var(--green);
+  font-weight: 600;
+}
+html body .meta-chip.reserve-chip.is-other {
+  background: var(--yellow-soft);
+  border-color: transparent;
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+html body .ml-card.is-reserved-mine { box-shadow: inset 3px 0 0 var(--green), var(--card-shadow); }
+html body .ml-card.is-reserved-other { box-shadow: inset 3px 0 0 var(--yellow), var(--card-shadow); }
+
+/* caixinha */
+.reserve-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px 0 9px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .15s, background .15s, color .15s;
+}
+.reserve-toggle:hover { background: var(--surface2); color: var(--text); }
+.reserve-toggle input { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+.reserve-box {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 4px;
+  background: var(--surface);
+  transition: background .15s, border-color .15s;
+}
+.reserve-box .ui-i { width: 11px; height: 11px; stroke-width: 3; color: #fff; opacity: 0; }
+.reserve-toggle input:checked + .reserve-box { background: var(--green); border-color: var(--green); }
+.reserve-toggle input:checked + .reserve-box .ui-i { opacity: 1; }
+.reserve-toggle input:focus-visible + .reserve-box { outline: 2px solid var(--accent-ring, var(--accent)); outline-offset: 2px; }
+.reserve-toggle.is-on { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+.reserve-toggle input:disabled ~ .reserve-text { opacity: .6; }
+
+html body .ml-question-actions .reserve-toggle { margin-right: auto; }
+
+/* aviso para quem não reservou */
+.reserve-lock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 10px);
+  background: var(--yellow-soft);
+  color: var(--text);
+}
+.reserve-lock-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--yellow);
+}
+.reserve-lock-icon .ui-i { width: 17px; height: 17px; }
+.reserve-lock-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.reserve-lock-text strong { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.reserve-lock-text span { font-size: 12.5px; color: var(--text2); line-height: 1.4; }
+.reserve-release {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface);
+  color: var(--text2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.reserve-release:hover { color: var(--text); background: var(--surface2); }
+.reserve-release:disabled { opacity: .6; }
+
+/* celular */
+.mobile-question-reserve {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.mobile-question-reserve .reserve-toggle { margin-left: auto; }
+.mobile-question-card .reserve-lock { margin: 12px 0 0; flex-wrap: wrap; }
+.mobile-question-card .reserve-release { width: 100%; }
+.mobile-question-card.is-reserved-other { box-shadow: inset 3px 0 0 var(--yellow); }
+.mobile-question-card.is-reserved-mine { box-shadow: inset 3px 0 0 var(--green); }
