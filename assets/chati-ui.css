@@ -5161,3 +5161,13 @@ html body .mobile-question-card > div[id^="previous-"] { margin: 10px 0 0; }
 }
 html body .mobile-question-tools > * { font-weight: 600; color: var(--text2); }
 html body .mobile-question-tools .reserve-toggle.is-on { color: var(--green); }
+
+/* Card computador: anteriores, reservar e respostas rápidas lado a lado */
+html body .ml-tools-row { flex-wrap: wrap; row-gap: 8px; }
+html body .ml-tools-row .reserve-toggle { margin-right: 0; }
+html body .ml-tools-row .ml-tools-spacer { flex: 1 1 auto; }
+html body .ml-tools-row > button,
+html body .ml-tools-row > label { flex: 0 0 auto; white-space: nowrap; }
+html body .ml-tools-row + div[id^="ml-prev"],
+html body .ml-tools-row + div[id*="prev"] { margin: 0 0 12px; }
+html body .ml-answer-toolbar:has(> .ml-answer-toolbar-right:only-child) { justify-content: flex-end; }

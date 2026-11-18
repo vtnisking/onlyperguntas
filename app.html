@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=16" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=17" />
   </head>
 
   <body>
@@ -12166,13 +12166,10 @@ function buildDesktopRow(item) {
 
         </div>
 
-        <!-- PERGUNTAS ANTERIORES -->
-        ${
-          (item.previous_questions || [])
-            .length > 0
-            ? `
-              <div class="ml-previous-area">
+        <!-- ANTERIORES · RESERVAR · RESPOSTAS RÁPIDAS (mesma linha) -->
+        <div class="ml-question-actions ml-tools-row">
 
+          ${(item.previous_questions || []).length > 0 ? `
                 <button
                   type="button"
                   class="ml-previous-toggle"
@@ -12182,14 +12179,63 @@ function buildDesktopRow(item) {
                     )
                   "
                 >
-                  <svg class="ui-i"><use href="#i-history"/></svg> Ver
-                  ${
-                    item.previous_questions
-                      .length
-                  }
-                  pergunta(s) anterior(es)
-                </button>
+                  <svg class="ui-i"><use href="#i-history"/></svg> Ver ${item.previous_questions.length} ${item.previous_questions.length === 1 ? "anterior" : "anteriores"}
+                </button>` : ""}
 
+          ${reservedByOther(item) ? "" : renderReserveToggle(item)}
+
+          ${!reservedByOther(item) && item.can_answer ? `<button
+            type="button"
+            class="ml-quick-replies-btn"
+            onclick="
+              window.openQuickRepliesPicker(
+                '${taId}'
+              )
+            "
+          >
+            <svg class="ui-i"><use href="#i-zap"/></svg> Respostas rápidas
+            <svg class="ui-i"><use href="#i-chevron-down"/></svg>
+          </button>` : ""}
+
+          <span class="ml-tools-spacer"></span>
+
+          ${reservedByOther(item) ? "" : `
+
+          <button
+            type="button"
+            class="ml-question-action-delete"
+            onclick="
+              event.stopPropagation();
+              deleteMlQuestion(
+                '${item.id}',
+                '${item.store_id}',
+                this
+              );
+            "
+          >
+            Excluir pergunta
+          </button>
+
+          <button
+            type="button"
+            class="ml-question-action-block"
+            onclick="
+              event.stopPropagation();
+              blockMlBuyer(
+                '${item.from?.id || ""}',
+                '${item.store_id}',
+                this,
+                '${item.id}'
+              );
+            "
+          >
+            Bloquear comprador
+          </button>
+          `}
+
+        </div>
+
+        ${(item.previous_questions || []).length > 0 ? `
                 <div
                   id="${previousId}"
                   style="
@@ -12271,70 +12317,14 @@ function buildDesktopRow(item) {
                       `,
                     )
                     .join("")}
-                </div>
-
-              </div>
-            `
-            : ""
-        }
+                </div>` : ""}
 
         ${reservedByOther(item) ? renderReservedLock(item) : `
-        <!-- AÇÕES DA PERGUNTA -->
-        <div class="ml-question-actions">
-
-          ${renderReserveToggle(item)}
-
-          <button
-            type="button"
-            class="ml-question-action-delete"
-            onclick="
-              event.stopPropagation();
-              deleteMlQuestion(
-                '${item.id}',
-                '${item.store_id}',
-                this
-              );
-            "
-          >
-            Excluir pergunta
-          </button>
-
-          <button
-            type="button"
-            class="ml-question-action-block"
-            onclick="
-              event.stopPropagation();
-              blockMlBuyer(
-                '${item.from?.id || ""}',
-                '${item.store_id}',
-                this,
-                '${item.id}'
-              );
-            "
-          >
-            Bloquear comprador
-          </button>
-
-        </div>
-
         ${
           item.can_answer
             ? `
               <!-- BARRA DE RESPOSTA -->
               <div class="ml-answer-toolbar">
-
-                <button
-                  type="button"
-                  class="ml-quick-replies-btn"
-                  onclick="
-                    window.openQuickRepliesPicker(
-                      '${taId}'
-                    )
-                  "
-                >
-                  <svg class="ui-i"><use href="#i-zap"/></svg> Respostas rápidas
-                  <svg class="ui-i"><use href="#i-chevron-down"/></svg>
-                </button>
 
                 <div class="ml-answer-toolbar-right">
 
