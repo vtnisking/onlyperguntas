@@ -5127,3 +5127,37 @@ html body .ml-question-actions .reserve-toggle { margin-right: auto; }
 .mobile-question-card .reserve-release { width: 100%; }
 .mobile-question-card.is-reserved-other { box-shadow: inset 3px 0 0 var(--yellow); }
 .mobile-question-card.is-reserved-mine { box-shadow: inset 3px 0 0 var(--green); }
+
+/* Card celular: anteriores, reservar e respostas rápidas na mesma linha */
+html body .mobile-question-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+html body .mobile-question-tools:empty { display: none; }
+html body .mobile-question-tools > * {
+  flex: 0 0 auto;
+  width: auto;
+  height: 34px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 11px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+html body .mobile-question-tools .reserve-toggle { margin: 0; }
+html body .mobile-question-card > div[id^="previous-"] { margin: 10px 0 0; }
+@media (max-width: 420px) {
+  html body .mobile-question-tools { gap: 6px; }
+  html body .mobile-question-tools > * { padding: 0 9px; font-size: 12px; gap: 5px; }
+  html body .mobile-question-tools .ui-i { width: 13px; height: 13px; }
+}
+@media (max-width: 420px) {
+  html body .mobile-question-tools .hide-xs { display: none; }
+  html body .mobile-question-tools { flex-wrap: nowrap; }
+  html body .mobile-question-tools > * { flex: 1 1 auto; justify-content: center; min-width: 0; }
+}
+html body .mobile-question-tools > * { font-weight: 600; color: var(--text2); }
+html body .mobile-question-tools .reserve-toggle.is-on { color: var(--green); }
