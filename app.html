@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=15" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=16" />
   </head>
 
   <body>
@@ -12717,7 +12717,7 @@ function renderReserveToggle(item) {
       <input type="checkbox" ${mine ? "checked" : ""}
         onchange="toggleReservation('${item.id}', this)">
       <span class="reserve-box"><svg class="ui-i"><use href="#i-check"/></svg></span>
-      <span class="reserve-text">Reservar resposta</span>
+      <span class="reserve-text">Reservar<span class="hide-xs"> resposta</span></span>
     </label>`;
 }
 
@@ -13138,24 +13138,24 @@ container.innerHTML = `
 
       </div>
 
-${renderPreviousQuestions(item)}
-
-      ${reservedByOther(item) ? renderReservedLock(item) : `
-      <div class="mobile-question-reserve">
-        ${renderReserveChip(item)}
+      <div class="mobile-question-tools">
+        ${renderPreviousQuestions(item, "button")}
+        ${reservedByOther(item) ? "" : `
         ${renderReserveToggle(item)}
+        <button
+          type="button"
+          class="mobile-question-quick-button"
+          onclick="window.openQuickRepliesPicker('${answerId}')"
+        >
+          <svg class="ui-i"><use href="#i-zap"/></svg>
+          Respostas rápidas
+        </button>`}
       </div>
 
-      <div class="mobile-question-answer">
+      ${renderPreviousQuestions(item, "list")}
 
-<button
-  type="button"
-  class="mobile-question-quick-button"
-  onclick="window.openQuickRepliesPicker('${answerId}')"
->
-  <svg class="ui-i"><use href="#i-zap"/></svg>
-  Respostas rápidas
-</button>
+      ${reservedByOther(item) ? renderReservedLock(item) : `
+      <div class="mobile-question-answer">
 
         <div class="mobile-question-textarea-wrap">
 
@@ -17268,7 +17268,7 @@ async function deleteQuickReplyFromManager(replyId) {
       // ──────────────────────────────────────
       // SHARED: Helpers
       // ──────────────────────────────────────
-function renderPreviousQuestions(item) {
+function renderPreviousQuestions(item, part = "all") {
   const previous = item.previous_questions || [];
 
   if (previous.length === 0) {
@@ -17311,13 +17311,27 @@ function renderPreviousQuestions(item) {
     )
     .join("");
 
-  return `
+  const toggle = `
     <button
+      type="button"
       class="previous-toggle"
       onclick="togglePrevious('${item.id}')"
     >
-      <svg class="ui-i"><use href="#i-history"/></svg> Ver ${previous.length} pergunta(s) anterior(es)
-    </button>
+      <svg class="ui-i"><use href="#i-history"/></svg> <span><span class="hide-xs">Ver </span>${previous.length} ${previous.length === 1 ? "anterior" : "anteriores"}</span>
+    </button>`;
+  const list = `
+    <div
+      id="previous-${item.id}"
+      style="display:none;"
+    >
+      ${html}
+    </div>`;
+
+  if (part === "button") return toggle;
+  if (part === "list") return list;
+
+  return `
+    ${toggle}
 
     <div
       id="previous-${item.id}"
