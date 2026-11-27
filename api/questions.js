@@ -45,6 +45,80 @@ async function refreshStoreToken(store, supabase) {
   };
 }
 
+// Tempo médio de resposta (minutos) que o Mercado Livre calcula para
+// cada conta: últimos 14 dias, atualizado 1x por dia.
+async function fetchResponseTime(store, supabase) {
+  const url = `https://api.mercadolibre.com/users/${store.seller_id}/questions/response_time`;
+  const get = (token) =>
+    axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 8000 });
+
+  let response;
+  try {
+    response = await get(store.access_token);
+  } catch (error) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    if (status === 404) return { empty: true };
+    const expired =
+      status === 401 ||
+      data?.message === "invalid_token" ||
+      data?.error === "invalid_token";
+    if (!expired) throw error;
+    const fresh = await refreshStoreToken(store, supabase);
+    try {
+      response = await get(fresh.access_token);
+    } catch (e) {
+      if (e.response?.status === 404) return { empty: true };
+      throw e;
+    }
+  }
+
+  const d = response.data || {};
+  const pick = (k) =>
+    d[k]
+      ? {
+          minutes: d[k].response_time ?? null,
+          sales_percent_increase: d[k].sales_percent_increase ?? null,
+        }
+      : null;
+
+  return {
+    total: d.total?.response_time ?? null,
+    weekdays_working_hours: pick("weekdays_working_hours"),
+    weekdays_extra_hours: pick("weekdays_extra_hours"),
+    weekend: pick("weekend"),
+  };
+}
+
+async function handleResponseTimes(res, supabase, companyId) {
+  const { data: stores, error } = await supabase
+    .from("stores")
+    .select("id, name, platform, seller_id, access_token, refresh_token")
+    .eq("company_id", companyId)
+    .eq("platform", "mercadolivre");
+
+  if (error) {
+    return res.status(500).json({ success: false, error: "Erro ao carregar as lojas" });
+  }
+
+  const mlStores = (stores || []).filter((s) => s.seller_id);
+
+  const result = await Promise.all(
+    mlStores.map(async (store) => {
+      try {
+        const times = await fetchResponseTime(store, supabase);
+        return { store_id: store.id, store_name: store.name, ...times };
+      } catch (e) {
+        console.error(`Tempo de resposta (${store.name}):`, e.response?.data || e.message);
+        return { store_id: store.id, store_name: store.name, error: true };
+      }
+    }),
+  );
+
+  res.setHeader("Cache-Control", "private, max-age=600");
+  return res.status(200).json({ success: true, stores: result });
+}
+
 async function getProductData(itemId, accessToken) {
   try {
     const response = await axios.get(
@@ -272,6 +346,13 @@ export default async function handler(req, res) {
     // A empresa nunca é confiada a partir do navegador.
     // Ela é derivada exclusivamente do usuário autenticado.
     const { companyId, profile } = await getAuthenticatedContext(req, supabase);
+
+    // ==========================================
+    // TEMPO DE RESPOSTA DE CADA LOJA (Mercado Livre)
+    // ==========================================
+    if (req.method === "GET" && req.query.action === "response_times") {
+      return await handleResponseTimes(res, supabase, companyId);
+    }
 
  // ==========================================
 // AÇÕES DE PERGUNTAS
