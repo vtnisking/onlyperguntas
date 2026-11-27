@@ -10,6 +10,71 @@ import {
   clearReservation,
 } from "../lib/reservations.js";
 import { AiError, improveAnswer } from "../lib/ai.js";
+import {
+  AiSettingsError,
+  getAiSettings,
+  getAiUsageReport,
+  logAiUsage,
+  monthCostUsd,
+  saveAiSettings,
+} from "../lib/ai-usage.js";
+
+const AI_ADMIN_ROLES = ["owner", "admin", "superadmin"];
+
+function aiClient() {
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.CHATI_SUPABASE_SECRET_KEY,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+}
+
+function sendAiError(res, error) {
+  if (error instanceof AiError || error instanceof AiSettingsError) {
+    return res.status(error.statusCode).json({
+      success: false,
+      code: error.code || "AI_ERROR",
+      error: error.message,
+      message: error.message,
+    });
+  }
+  return null;
+}
+
+// Painel de custos e configurações da IA (só administradores)
+async function handleAiAdmin(req, res) {
+  const supabase = aiClient();
+  const { profile, companyId } = await getAuthenticatedContext(req, supabase);
+
+  if (!AI_ADMIN_ROLES.includes(profile.role)) {
+    return res.status(403).json({
+      success: false,
+      error: "Só administradores podem ver os custos e as configurações da IA.",
+    });
+  }
+
+  try {
+    if (req.method === "GET" && req.query.action === "ai_usage") {
+      const report = await getAiUsageReport(supabase, companyId, String(req.query.period || "month"));
+      return res.status(200).json({
+        success: true,
+        api_key_configured: Boolean(String(process.env.ANTHROPIC_API_KEY || "").trim()),
+        ...report,
+      });
+    }
+
+    if (req.method === "POST" && req.body?.action === "ai_settings") {
+      const settings = await saveAiSettings(supabase, companyId, req.body.settings || {}, profile);
+      return res.status(200).json({ success: true, settings });
+    }
+  } catch (error) {
+    const sent = sendAiError(res, error);
+    if (sent) return sent;
+    throw error;
+  }
+
+  return res.status(404).json({ success: false, error: "Ação não encontrada" });
+}
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -98,6 +163,13 @@ async function saveAnswerLog(
 
 export default async function handler(req, res) {
   try {
+    if (
+      (req.method === "GET" && req.query?.action === "ai_usage") ||
+      (req.method === "POST" && req.body?.action === "ai_settings")
+    ) {
+      return await handleAiAdmin(req, res);
+    }
+
     if (req.method !== "POST") {
       return res.status(405).json({
         success: false,
@@ -123,30 +195,65 @@ export default async function handler(req, res) {
         });
       }
 
-      const supabaseAi = createClient(
-        process.env.SUPABASE_URL,
-        process.env.CHATI_SUPABASE_SECRET_KEY,
-        { auth: { persistSession: false, autoRefreshToken: false } },
-      );
-      await getAuthenticatedContext(req, supabaseAi);
+      const supabaseAi = aiClient();
+      const { profile: aiProfile, companyId: aiCompany } =
+        await getAuthenticatedContext(req, supabaseAi);
+
+      const settings = await getAiSettings(supabaseAi, aiCompany);
+      if (!settings.enabled) {
+        return res.status(403).json({
+          success: false,
+          code: "AI_DISABLED",
+          error: "A IA está desligada para sua empresa. Um administrador pode ligar em Inteligência artificial → Configurações.",
+          message: "A IA está desligada para sua empresa. Um administrador pode ligar em Inteligência artificial → Configurações.",
+        });
+      }
+      if (settings.monthly_limit_usd > 0) {
+        const spent = await monthCostUsd(supabaseAi, aiCompany);
+        if (spent >= settings.monthly_limit_usd) {
+          const msg = `Limite de gasto com IA deste mês atingido (US$ ${settings.monthly_limit_usd.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}). Um administrador pode aumentar em Inteligência artificial → Configurações.`;
+          return res.status(429).json({ success: false, code: "AI_LIMIT", error: msg, message: msg });
+        }
+      }
+
+      const base = {
+        company_id: aiCompany,
+        user_id: aiProfile.id,
+        user_name: aiProfile.name || aiProfile.email,
+        feature: "melhorar_resposta",
+      };
 
       try {
-        const improved = await improveAnswer({
+        const result = await improveAnswer({
           text: draft,
           questions: Array.isArray(req.body.questions) ? req.body.questions.slice(0, 10) : [],
           question: req.body.question,
           product: req.body.product,
+          model: settings.model,
         });
-        return res.status(200).json({ success: true, text: improved });
+        await logAiUsage(supabaseAi, {
+          ...base,
+          model: result.model,
+          input_tokens: result.usage.input_tokens,
+          output_tokens: result.usage.output_tokens,
+          cost_usd: result.cost_usd,
+          ok: true,
+        });
+        return res.status(200).json({ success: true, text: result.text, model: result.model });
       } catch (error) {
         if (error instanceof AiError) {
-          return res.status(error.statusCode).json({
-            success: false,
-            code: error.code,
+          await logAiUsage(supabaseAi, {
+            ...base,
+            model: error.model || settings.model,
+            input_tokens: error.usage?.input_tokens || 0,
+            output_tokens: error.usage?.output_tokens || 0,
+            cost_usd: error.cost_usd || 0,
+            ok: false,
             error: error.message,
-            message: error.message,
           });
         }
+        const sent = sendAiError(res, error);
+        if (sent) return sent;
         throw error;
       }
     }
