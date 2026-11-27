@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=24" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=25" />
   </head>
 
   <body>
@@ -13768,13 +13768,7 @@ window.releaseReservation = releaseReservation;
           container.innerHTML = "";
 
 if (questions.length === 0) {
-container.innerHTML = `
-
-    <div id="monthlyRanking"></div>
-    <div id="responseTimes"></div>
-`;
-  loadMonthlyRanking("monthlyRanking");
-  loadResponseTimes("responseTimes");
+  renderPendingDashboard(container);
   return;
 }
 
@@ -14168,14 +14162,8 @@ if (notificationBadge) {
 
           if (questions.length === 0) {
             clearAllDrafts();
-            listEl.innerHTML = `
-
-        <div id="desktopMonthlyRanking"></div>
-        <div id="desktopResponseTimes"></div>
-      `;
             closeDetail();
-            loadMonthlyRanking("desktopMonthlyRanking");
-            loadResponseTimes("desktopResponseTimes");
+            renderPendingDashboard(listEl);
             return;
           }
 
@@ -18610,6 +18598,275 @@ async function loadResponseTimes(containerId) {
 }
 
 window.loadResponseTimes = loadResponseTimes;
+
+// ──────────────────────────────────────
+// PAINEL "TUDO EM DIA" (sem perguntas pendentes)
+// Recebidas/respondidas hoje, na semana e no mês; ranking da equipe;
+// e uma tabela das lojas com contagem + tempo de resposta do ML.
+// ──────────────────────────────────────
+var pdCache = { overview: null, ranking: null };
+const PD_TTL = 5 * 60 * 1000;
+
+async function pdFetchOverview(force) {
+  const c = pdCache.overview;
+  if (!force && c && Date.now() - c.at < PD_TTL) return c.data;
+  const r = await authenticatedIntegrationFetch(`/api/questions?action=overview&company_id=${loggedUser.company_id}`);
+  const d = await r.json();
+  if (!r.ok || !d.success) throw new Error(d?.error || `HTTP ${r.status}`);
+  pdCache.overview = { at: Date.now(), data: d };
+  return d;
+}
+
+async function pdFetchRanking(force) {
+  const c = pdCache.ranking;
+  if (!force && c && Date.now() - c.at < PD_TTL) return c.data;
+  const r = await authenticatedIntegrationFetch(`/api/app?action=stats&company_id=${loggedUser.company_id}&period=month`);
+  const d = await r.json();
+  const list = Object.entries(d.by_user || {})
+    .filter(([n]) => n)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+  pdCache.ranking = { at: Date.now(), data: list };
+  return list;
+}
+
+async function pdFetchTimes() {
+  if (responseTimesCache && Date.now() - responseTimesCache.at < 10 * 60 * 1000) {
+    return responseTimesCache.stores;
+  }
+  const r = await authenticatedIntegrationFetch(`/api/questions?action=response_times&company_id=${loggedUser.company_id}`);
+  const d = await r.json();
+  if (!r.ok || !d.success) throw new Error(d?.error || `HTTP ${r.status}`);
+  responseTimesCache = { at: Date.now(), stores: d.stores || [] };
+  return responseTimesCache.stores;
+}
+
+function pdNum(n) {
+  return Number(n || 0).toLocaleString("pt-BR");
+}
+
+function pdPct(a, b) {
+  return b > 0 ? Math.round((a / b) * 100) : null;
+}
+
+function pdSkeleton() {
+  const sk = `<div class="pd-sk"></div>`;
+  return `
+    <div class="pd pd-loading">
+      ${pdHero(null)}
+      <div class="pd-periods">${sk}${sk}${sk}</div>
+      <div class="pd-row">${sk}${sk}</div>
+    </div>`;
+}
+
+function pdHero(updatedAt) {
+  return `
+    <section class="pd-hero">
+      <div class="pd-hero-icon"><svg class="ui-i"><use href="#i-check"/></svg></div>
+      <div class="pd-hero-text">
+        <h2>Tudo em dia!</h2>
+        <p>Nenhuma pergunta pendente. Veja como está o atendimento das suas lojas.</p>
+      </div>
+      <div class="pd-hero-side">
+        ${updatedAt ? `<span>Atualizado às ${new Date(updatedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>` : ""}
+        <button type="button" class="pd-refresh" onclick="refreshPendingDashboard(this)" title="Atualizar números">
+          <svg class="ui-i"><use href="#i-refresh"/></svg>
+        </button>
+      </div>
+    </section>`;
+}
+
+function pdPeriodCard(label, sub, received, answered, chati) {
+  const pct = pdPct(answered, received);
+  return `
+    <article class="pd-period">
+      <header><span class="pd-period-label">${label}</span><span class="pd-period-sub">${sub}</span></header>
+      <div class="pd-period-main">
+        <strong>${pdNum(received)}</strong>
+        <span>${received === 1 ? "pergunta recebida" : "perguntas recebidas"}</span>
+      </div>
+      <div class="pd-period-bar"><span style="width:${pct ?? 0}%"></span></div>
+      <dl class="pd-period-stats">
+        <div><dt>Respondidas</dt><dd>${pdNum(answered)}${pct !== null ? ` <small>${pct}%</small>` : ""}</dd></div>
+        <div><dt>Pelo Chati</dt><dd>${pdNum(chati)}</dd></div>
+      </dl>
+    </article>`;
+}
+
+function pdRanking(list) {
+  if (!list || !list.length) {
+    return `<section class="pd-card"><header class="pd-card-head"><h3>Equipe no mês</h3></header><div class="pd-empty">Ninguém respondeu pelo Chati este mês ainda.</div></section>`;
+  }
+  const max = Number(list[0][1]) || 1;
+  const total = list.reduce((s, [, n]) => s + Number(n), 0);
+  return `
+    <section class="pd-card">
+      <header class="pd-card-head"><h3>Equipe no mês</h3><span>${pdNum(total)} respostas</span></header>
+      <ol class="pd-rank">
+        ${list
+          .slice(0, 6)
+          .map(
+            ([name, n], i) => `
+          <li>
+            <span class="pd-rank-pos" data-pos="${i + 1}">${i + 1}</span>
+            <span class="pd-avatar">${escapeHtml(statsInitials(name))}</span>
+            <div class="pd-rank-main">
+              <div class="pd-rank-line"><span>${escapeHtml(name)}</span><b>${pdNum(n)}</b></div>
+              <div class="pd-meter"><span style="width:${(Number(n) / max) * 100}%"></span></div>
+            </div>
+          </li>`,
+          )
+          .join("")}
+      </ol>
+    </section>`;
+}
+
+function pdTimeCell(min) {
+  const l = responseLevel(min);
+  return `<span class="pd-time ${l.cls}">${formatMinutes(min)}</span>`;
+}
+
+function pdStores(overview, times) {
+  const byId = new Map();
+  (overview?.stores || []).forEach((s) => byId.set(String(s.store_id), { ...s }));
+  (times || []).forEach((t) => {
+    const cur = byId.get(String(t.store_id)) || { store_id: t.store_id, store_name: t.store_name };
+    cur.times = t;
+    byId.set(String(t.store_id), cur);
+  });
+  const rows = [...byId.values()].sort(
+    (a, b) => (b.received?.month || 0) - (a.received?.month || 0),
+  );
+  if (!rows.length) return "";
+
+  const tip = (rows.map((r) => r.times) || [])
+    .flatMap((t) => (t ? ["weekdays_working_hours", "weekdays_extra_hours", "weekend"].map((k) => t[k]?.sales_percent_increase) : []))
+    .filter(Boolean)
+    .sort((a, b) => b - a)[0];
+
+  return `
+    <section class="pd-card pd-stores">
+      <header class="pd-card-head">
+        <h3>Lojas</h3>
+        <span>Tempo de resposta: média dos últimos 14 dias, calculada pelo Mercado Livre</span>
+      </header>
+      <div class="pd-table" role="table">
+        <div class="pd-tr pd-th" role="row">
+          <span role="columnheader">Loja</span>
+          <span role="columnheader" class="num">Hoje</span>
+          <span role="columnheader" class="num">Semana</span>
+          <span role="columnheader" class="num">Mês</span>
+          <span role="columnheader" class="num">Respondidas</span>
+          <span role="columnheader">Tempo médio</span>
+          <span role="columnheader" class="num" title="Segunda a sexta, 9h às 18h">Comercial</span>
+          <span role="columnheader" class="num" title="Segunda a sexta, 18h à 0h">Noite</span>
+          <span role="columnheader" class="num">Fim de semana</span>
+        </div>
+        ${rows
+          .map((r) => {
+            const t = r.times || {};
+            const lvl = responseLevel(t.total);
+            const pct = r.received ? pdPct(r.answered?.month || 0, r.received.month) : null;
+            const noTimes = !r.times || t.error || t.empty;
+            return `
+          <div class="pd-tr" role="row">
+            <span class="pd-store" role="cell" data-label="Loja">
+              <span class="pd-store-dot ${noTimes ? "is-none" : lvl.cls}"></span>
+              <span class="pd-store-name" title="${escapeHtml(rtStoreName(r.store_name))}">${escapeHtml(rtStoreName(r.store_name))}</span>
+            </span>
+            ${
+              r.error
+                ? `<span class="pd-muted pd-span3" role="cell">Não foi possível contar agora</span><span role="cell"></span>`
+                : `<span class="num" role="cell" data-label="Hoje">${pdNum(r.received?.today)}</span>
+                   <span class="num" role="cell" data-label="Semana">${pdNum(r.received?.week)}</span>
+                   <span class="num strong" role="cell" data-label="Mês">${pdNum(r.received?.month)}</span>
+                   <span class="num" role="cell" data-label="Respondidas">${pct === null ? "—" : `${pdNum(r.answered?.month)} <small>${pct}%</small>`}</span>`
+            }
+            <span role="cell" data-label="Tempo médio">${
+              t.empty
+                ? `<span class="pd-muted">Sem perguntas em 14 dias</span>`
+                : noTimes
+                  ? `<span class="pd-muted">—</span>`
+                  : `<span class="pd-total">${formatMinutes(t.total)}</span> <span class="rt-badge ${lvl.cls}">${lvl.label}</span>`
+            }</span>
+            <span class="num" role="cell" data-label="Comercial">${noTimes ? "—" : pdTimeCell(t.weekdays_working_hours?.minutes)}</span>
+            <span class="num" role="cell" data-label="Noite">${noTimes ? "—" : pdTimeCell(t.weekdays_extra_hours?.minutes)}</span>
+            <span class="num" role="cell" data-label="Fim de semana">${noTimes ? "—" : pdTimeCell(t.weekend?.minutes)}</span>
+          </div>`;
+          })
+          .join("")}
+      </div>
+      ${
+        tip
+          ? `<footer class="pd-tip"><svg class="ui-i"><use href="#i-zap"/></svg>Respondendo mais rápido, o Mercado Livre estima até <b>+${tip}%</b> em vendas nas lojas mais lentas.</footer>`
+          : ""
+      }
+      ${overview?.partial ? `<footer class="pd-note">Algumas lojas não puderam ser contadas por completo agora.</footer>` : ""}
+    </section>`;
+}
+
+function pdRender(container, { overview, ranking, times, updatedAt }) {
+  const t = overview?.totals;
+  const now = new Date();
+  const mes = now.toLocaleDateString("pt-BR", { month: "long" });
+  container.innerHTML = `
+    <div class="pd">
+      ${pdHero(updatedAt)}
+      <div class="pd-periods">
+        ${
+          t
+            ? pdPeriodCard("Hoje", now.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }), t.received.today, t.answered.today, t.chati.today) +
+              pdPeriodCard("Esta semana", "desde segunda-feira", t.received.week, t.answered.week, t.chati.week) +
+              pdPeriodCard("Este mês", `desde 1º de ${mes}`, t.received.month, t.answered.month, t.chati.month)
+            : `<div class="pd-card pd-empty pd-span-all">Não foi possível contar as perguntas agora.</div>`
+        }
+      </div>
+      <div class="pd-row">
+        ${pdRanking(ranking)}
+        ${pdStores(overview, times)}
+      </div>
+    </div>`;
+}
+
+async function renderPendingDashboard(container, force = false) {
+  if (!container || !loggedUser?.company_id) return;
+
+  const cached = pdCache.overview;
+  if (!container.querySelector(".pd")) {
+    container.innerHTML = cached
+      ? ""
+      : pdSkeleton();
+  }
+  if (cached && !force) {
+    pdRender(container, {
+      overview: cached.data,
+      ranking: pdCache.ranking?.data,
+      times: responseTimesCache?.stores,
+      updatedAt: cached.at,
+    });
+  }
+
+  const [overview, ranking, times] = await Promise.all([
+    pdFetchOverview(force).catch((e) => (console.error("Resumo:", e), null)),
+    pdFetchRanking(force).catch(() => []),
+    pdFetchTimes().catch(() => []),
+  ]);
+
+  // A lista pode ter ganhado perguntas enquanto carregava
+  if (!container.isConnected || container.querySelector(".ml-card, .mobile-question-card")) return;
+  pdRender(container, { overview, ranking, times, updatedAt: pdCache.overview?.at || Date.now() });
+
+  const dStores = document.getElementById("dStatStores");
+  if (dStores && overview?.stores) dStores.innerText = overview.stores.length;
+}
+
+async function refreshPendingDashboard(button) {
+  button?.classList.add("is-spinning");
+  responseTimesCache = null;
+  const container = button?.closest(".pd")?.parentElement;
+  await renderPendingDashboard(container, true);
+}
+
+window.refreshPendingDashboard = refreshPendingDashboard;
 
       // ──────────────────────────────────────
       // SHARED: Calendar

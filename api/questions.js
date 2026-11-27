@@ -90,6 +90,168 @@ async function fetchResponseTime(store, supabase) {
   };
 }
 
+// ==========================================
+// RESUMO: recebidas e respondidas por período
+// ==========================================
+const TZ_SP = "America/Sao_Paulo";
+
+function spDate(d = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ_SP }).format(d);
+}
+
+// Início de hoje, da semana (segunda) e do mês, no horário de Brasília (UTC-3)
+function periodStarts(now = new Date()) {
+  const today = spDate(now);
+  const [y, m, d] = today.split("-").map(Number);
+  const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); // 0 = domingo
+  const back = (weekday + 6) % 7; // dias desde segunda
+  const monday = new Date(Date.UTC(y, m - 1, d - back));
+  const at = (yy, mm, dd) => new Date(Date.UTC(yy, mm - 1, dd, 3)).getTime();
+  return {
+    today: at(y, m, d),
+    week: at(monday.getUTCFullYear(), monday.getUTCMonth() + 1, monday.getUTCDate()),
+    month: at(y, m, 1),
+  };
+}
+
+const PERIOD_KEYS = ["today", "week", "month"];
+const emptyCounts = () => ({ today: 0, week: 0, month: 0 });
+
+async function mlGetWithRefresh(store, supabase, url) {
+  try {
+    return await axios.get(url, {
+      headers: { Authorization: `Bearer ${store.access_token}` },
+      timeout: 9000,
+    });
+  } catch (error) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    const expired =
+      status === 401 || data?.message === "invalid_token" || data?.error === "invalid_token";
+    if (!expired) throw error;
+    const fresh = await refreshStoreToken(store, supabase);
+    store.access_token = fresh.access_token;
+    return await axios.get(url, {
+      headers: { Authorization: `Bearer ${fresh.access_token}` },
+      timeout: 9000,
+    });
+  }
+}
+
+// Percorre as perguntas da loja (mais novas primeiro) até o início do mês
+async function countStoreQuestions(store, supabase, starts) {
+  const received = emptyCounts();
+  const answered = emptyCounts();
+  const LIMIT = 50;
+  const MAX_PAGES = 30; // até 1.500 perguntas no mês por loja
+  let truncated = false;
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const url =
+      `https://api.mercadolibre.com/questions/search?seller_id=${store.seller_id}` +
+      `&sort_fields=date_created&sort_types=DESC&limit=${LIMIT}&offset=${page * LIMIT}&api_version=4`;
+    const { data } = await mlGetWithRefresh(store, supabase, url);
+    const list = data?.questions || [];
+    let reachedOld = false;
+
+    for (const q of list) {
+      const t = new Date(q.date_created).getTime();
+      if (!t || t < starts.month) {
+        reachedOld = true;
+        continue;
+      }
+      for (const k of PERIOD_KEYS) {
+        if (t >= starts[k]) {
+          received[k]++;
+          if (q.status === "ANSWERED") answered[k]++;
+        }
+      }
+    }
+
+    if (reachedOld || list.length < LIMIT) return { received, answered, truncated };
+    if (page === MAX_PAGES - 1) truncated = true;
+  }
+  return { received, answered, truncated };
+}
+
+async function handleOverview(res, supabase, companyId) {
+  const starts = periodStarts();
+
+  const { data: stores, error } = await supabase
+    .from("stores")
+    .select("id, name, platform, seller_id, access_token, refresh_token")
+    .eq("company_id", companyId)
+    .eq("platform", "mercadolivre");
+
+  if (error) {
+    return res.status(500).json({ success: false, error: "Erro ao carregar as lojas" });
+  }
+
+  // Respostas dadas pelo Chati (answer_logs), por loja e no total
+  const { data: logs } = await supabase
+    .from("answer_logs")
+    .select("store_id, created_at")
+    .eq("company_id", companyId)
+    .gte("created_at", new Date(starts.month).toISOString())
+    .limit(50000);
+
+  const chatiByStore = new Map();
+  const chatiTotal = emptyCounts();
+  (logs || []).forEach((l) => {
+    const t = new Date(l.created_at).getTime();
+    const c = chatiByStore.get(String(l.store_id)) || emptyCounts();
+    for (const k of PERIOD_KEYS) {
+      if (t >= starts[k]) {
+        c[k]++;
+        chatiTotal[k]++;
+      }
+    }
+    chatiByStore.set(String(l.store_id), c);
+  });
+
+  const perStore = await Promise.all(
+    (stores || [])
+      .filter((s) => s.seller_id)
+      .map(async (store) => {
+        try {
+          const counts = await countStoreQuestions(store, supabase, starts);
+          return {
+            store_id: store.id,
+            store_name: store.name,
+            ...counts,
+            chati: chatiByStore.get(String(store.id)) || emptyCounts(),
+          };
+        } catch (e) {
+          console.error(`Resumo (${store.name}):`, e.response?.data || e.message);
+          return {
+            store_id: store.id,
+            store_name: store.name,
+            error: true,
+            chati: chatiByStore.get(String(store.id)) || emptyCounts(),
+          };
+        }
+      }),
+  );
+
+  const totals = { received: emptyCounts(), answered: emptyCounts(), chati: chatiTotal };
+  perStore.forEach((s) => {
+    if (s.error) return;
+    for (const k of PERIOD_KEYS) {
+      totals.received[k] += s.received[k];
+      totals.answered[k] += s.answered[k];
+    }
+  });
+
+  res.setHeader("Cache-Control", "private, max-age=120");
+  return res.status(200).json({
+    success: true,
+    starts: Object.fromEntries(PERIOD_KEYS.map((k) => [k, new Date(starts[k]).toISOString()])),
+    totals,
+    stores: perStore,
+    partial: perStore.some((s) => s.error || s.truncated),
+  });
+}
+
 async function handleResponseTimes(res, supabase, companyId) {
   const { data: stores, error } = await supabase
     .from("stores")
@@ -352,6 +514,11 @@ export default async function handler(req, res) {
     // ==========================================
     if (req.method === "GET" && req.query.action === "response_times") {
       return await handleResponseTimes(res, supabase, companyId);
+    }
+
+    // Perguntas recebidas e respondidas (hoje, semana, mês) por loja
+    if (req.method === "GET" && req.query.action === "overview") {
+      return await handleOverview(res, supabase, companyId);
     }
 
  // ==========================================
