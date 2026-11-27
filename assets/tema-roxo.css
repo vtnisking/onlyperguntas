@@ -259,6 +259,7 @@ html body:where(.dark.purple) .cfg-channel-shopee .cfg-channel-logo, html body:w
 body.dark:where(.purple) .shopee-message-row.outgoing .shopee-message-bubble { background: linear-gradient(135deg, #ebddfe, #9346f7); }
 html body:where(.dark.purple) .mobile-integration-store-icon.is-shopee { background: linear-gradient(135deg, #ff7a45, #dbc4fa); }
 :where(body.dark.purple) .pd-rank li:first-child .pd-avatar { background: linear-gradient(135deg, var(--accent), #ebddfd); }
+html body:where(.dark.purple) [data-papel]:has(body.dark) { background: #0f0c13; }
 
 /* ---------- Paleta Dark purple (igual ao Chati ERP) ---------- */
 body.dark.purple {

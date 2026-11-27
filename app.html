@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=26" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=27" />
     <link rel="stylesheet" href="/assets/tema-roxo.css?v=1" />
   </head>
 
@@ -8358,6 +8358,7 @@ body.ps-detail-open {
   <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
   <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
   <symbol id="i-package" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
   <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></symbol>
@@ -10068,6 +10069,26 @@ body.ps-detail-open {
           </button>
         </section>
       </div>
+
+
+      <!-- Aparência: tema e papel de parede -->
+      <section class="cfg-card cfg-appearance">
+        <div class="cfg-card-head">
+          <div>
+            <h2>Aparência</h2>
+            <p>Tema e papel de parede. Fica salvo só neste navegador.</p>
+          </div>
+        </div>
+        <div class="ap-block">
+          <span class="ap-label">Tema</span>
+          <div class="st-segmented ap-themes" role="radiogroup" aria-label="Tema">
+            <button type="button" class="st-seg" data-theme-opt="light" onclick="setTheme('light')"><span class="theme-sw theme-sw-light"></span>Claro</button>
+            <button type="button" class="st-seg" data-theme-opt="dark" onclick="setTheme('dark')"><span class="theme-sw theme-sw-dark"></span>Escuro</button>
+            <button type="button" class="st-seg" data-theme-opt="purple" onclick="setTheme('purple')"><span class="theme-sw theme-sw-purple"></span>Dark purple</button>
+          </div>
+        </div>
+        <div class="ap-wallpapers" data-wallpapers></div>
+      </section>
 
       <!-- Integrações -->
       <section class="cfg-card cfg-integrations">
@@ -13881,6 +13902,161 @@ if (questions.length === 0) {
       window.setTheme = setTheme;
       window.toggleThemeMenu = toggleThemeMenu;
 
+      // ──────────────────────────────────────
+      // PAPEL DE PAREDE (igual ao Chati ERP)
+      // Fica atrás de tudo, com pouca opacidade: cartões e listas continuam por cima.
+      // "meu" = imagem enviada pela pessoa (guardada só neste navegador, já reduzida).
+      // ──────────────────────────────────────
+      const PAPEIS = [
+        ["01","Montanhas ao amanhecer","Paisagens"],["02","Montanhas à noite","Paisagens"],["03","Lago entre montanhas","Paisagens"],
+        ["04","Dunas do deserto","Paisagens"],["05","Praia no pôr do sol","Paisagens"],["06","Mar calmo","Paisagens"],
+        ["07","Floresta de pinheiros","Paisagens"],["08","Colinas verdes","Paisagens"],["09","Aurora boreal","Paisagens",1],
+        ["10","Vale com neblina","Paisagens"],["11","Montanhas nevadas","Paisagens"],["12","Ilha tropical","Paisagens"],
+        ["13","Savana ao entardecer","Paisagens"],["14","Campo de flores","Paisagens"],
+        ["15","Cidade à noite","Cidades e países"],["16","Cidade ao entardecer","Cidades e países"],["17","Paris","Cidades e países"],
+        ["18","Rio de Janeiro","Cidades e países"],["19","Japão — monte Fuji","Cidades e países"],["20","Egito — pirâmides","Cidades e países"],
+        ["21","Itália — Coliseu","Cidades e países"],["22","Londres","Cidades e países"],["23","Arranha-céus","Cidades e países"],
+        ["24","China — muralha","Cidades e países"],["25","Holanda — moinhos","Cidades e países"],["26","Bandeira do Brasil","Cidades e países"],
+        ["27","Estrada à noite (rastros de luz)","Carros e estrada"],["28","Estrada no deserto","Carros e estrada"],["29","Pista de corrida","Carros e estrada"],
+        ["30","Moto no pôr do sol","Carros e estrada"],["31","Carro esportivo neon","Carros e estrada"],["32","Estrada na serra","Carros e estrada"],
+        ["33","Velocímetro","Carros e estrada"],["34","Synthwave","Carros e estrada"],
+        ["35","Céu estrelado","Espaço",1],["36","Nebulosa","Espaço",1],["37","Planeta com anéis","Espaço"],["38","Lua cheia","Espaço"],
+        ["39","Galáxia","Espaço"],["40","Chuva de meteoros","Espaço",1],
+        ["41","Ondas","Abstratos",1],["42","Roxo suave","Abstratos"],["43","Vermelho Chati","Abstratos"],["44","Low poly azul","Abstratos"],
+        ["45","Hexágonos","Abstratos"],["46","Bokeh","Abstratos"],["47","Céu de nuvens (estilo anime)","Abstratos"],["48","Cerejeiras","Abstratos",1],
+        ["49","Linhas topográficas","Abstratos"],["50","Grafite claro","Abstratos"],
+      ].map(([id, nome, cat, animado]) => ({ id, nome, cat, animado: Boolean(animado) }));
+
+      const PAPEL_KEY = "chati_papel";
+      const PAPEL_INT_KEY = "chati_papel_int";
+      const PAPEL_MEU_KEY = "chati_papel_meu";
+
+      function lsGet(k, fallback = "") {
+        try { return localStorage.getItem(k) ?? fallback; } catch (e) { return fallback; }
+      }
+      function lsSet(k, v) {
+        try { localStorage.setItem(k, v); return true; } catch (e) { return false; }
+      }
+
+      function papelIntensidade() {
+        const n = Number(lsGet(PAPEL_INT_KEY, "22"));
+        return Math.min(60, Math.max(5, Number.isFinite(n) ? n : 22));
+      }
+
+      function aplicarPapel() {
+        const raiz = document.documentElement;
+        const id = lsGet(PAPEL_KEY, "");
+        let url = "";
+        if (id === "meu") url = lsGet(PAPEL_MEU_KEY, "");
+        else if (/^\d{2}$/.test(id)) {
+          const p = PAPEIS.find((x) => x.id === id);
+          const parado = p?.animado && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+          url = `/assets/papeis/${id}${parado ? "-p" : ""}.svg?v=1`;
+        }
+        if (!url) {
+          delete raiz.dataset.papel;
+          raiz.style.removeProperty("--papel");
+          return;
+        }
+        raiz.dataset.papel = id;
+        raiz.style.setProperty("--papel", `url("${url}")`);
+        raiz.style.setProperty("--papel-op", String(papelIntensidade() / 100));
+      }
+
+      function escolherPapel(id) {
+        lsSet(PAPEL_KEY, id);
+        aplicarPapel();
+        renderWallpapers();
+      }
+
+      function mudarIntensidade(input) {
+        lsSet(PAPEL_INT_KEY, input.value);
+        document.querySelectorAll("[data-papel-int-v]").forEach((e) => (e.textContent = `${input.value}%`));
+        document.querySelectorAll(".ap-int input").forEach((e) => { if (e !== input) e.value = input.value; });
+        aplicarPapel();
+      }
+
+      async function enviarPapel(input) {
+        const arq = input.files?.[0];
+        if (!arq) return;
+        try {
+          if (!/^image\//.test(arq.type)) throw new Error("Escolha uma imagem (JPG, PNG ou WEBP).");
+          const bmp = await createImageBitmap(arq);
+          const esc = Math.min(1, 1920 / Math.max(bmp.width, bmp.height));
+          const c = document.createElement("canvas");
+          c.width = Math.round(bmp.width * esc);
+          c.height = Math.round(bmp.height * esc);
+          c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+          let url = c.toDataURL("image/jpeg", 0.8);
+          if (url.length > 2500000) url = c.toDataURL("image/jpeg", 0.6);
+          if (!lsSet(PAPEL_MEU_KEY, url)) throw new Error("A imagem ficou grande demais para guardar neste navegador. Tente outra menor.");
+          escolherPapel("meu");
+          showToast("Papel de parede trocado pela sua imagem.", "success");
+        } catch (err) {
+          showToast(err.message || "Não foi possível usar essa imagem.", "error");
+        } finally {
+          input.value = "";
+        }
+      }
+
+      function renderWallpapers() {
+        const atual = lsGet(PAPEL_KEY, "");
+        const meu = lsGet(PAPEL_MEU_KEY, "");
+        const int = papelIntensidade();
+        const cats = [...new Set(PAPEIS.map((x) => x.cat))];
+        const html = `
+          <div class="ap-block ap-block-head">
+            <span class="ap-label">Papel de parede</span>
+            <label class="ap-int">
+              <span>Intensidade</span>
+              <input type="range" min="5" max="60" step="1" value="${int}" oninput="mudarIntensidade(this)" aria-label="Intensidade do papel de parede">
+              <b data-papel-int-v>${int}%</b>
+            </label>
+          </div>
+          <div class="ap-cat">
+            <b>Geral</b>
+            <div class="ap-grid">
+              <button type="button" class="ap-papel ap-papel-nenhum ${!atual ? "is-on" : ""}" onclick="escolherPapel('')"><span>Nenhum</span></button>
+              <label class="ap-papel ap-papel-enviar ${atual === "meu" ? "is-on" : ""}" title="Use uma imagem sua (fica só neste navegador)">
+                ${atual === "meu" && meu ? `<img src="${meu}" alt="">` : ""}
+                <span><svg class="ui-i"><use href="#i-upload"/></svg> Sua imagem</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" hidden onchange="enviarPapel(this)">
+              </label>
+            </div>
+          </div>
+          ${cats
+            .map(
+              (cat) => `
+            <div class="ap-cat">
+              <b>${cat}</b>
+              <div class="ap-grid">
+                ${PAPEIS.filter((x) => x.cat === cat)
+                  .map(
+                    (x) => `
+                  <button type="button" class="ap-papel ${atual === x.id ? "is-on" : ""}" onclick="escolherPapel('${x.id}')" title="${x.nome}">
+                    <img src="/assets/papeis/${x.id}.svg?v=1" alt="" loading="lazy">
+                    <span>${x.nome}</span>
+                    ${x.animado ? `<em class="ap-anim">animado</em>` : ""}
+                  </button>`,
+                  )
+                  .join("")}
+              </div>
+            </div>`,
+            )
+            .join("")}`;
+        document.querySelectorAll("[data-wallpapers]").forEach((box) => (box.innerHTML = html));
+        updateThemeButtons();
+      }
+
+      window.escolherPapel = escolherPapel;
+      window.mudarIntensidade = mudarIntensidade;
+      window.enviarPapel = enviarPapel;
+      window.renderWallpapers = renderWallpapers;
+
+      aplicarPapel();
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderWallpapers);
+      else renderWallpapers();
+
       window.openSuperadmin = function () {
         window.location.href = "/superadmin.html";
       };
@@ -17561,6 +17737,16 @@ async function createUser() {
           <button class="send-btn" onclick="logout()">Sair da conta</button>
         </div>
 
+<div class="settings-item mobile-appearance">
+  <div class="settings-label">Aparência</div>
+  <div class="st-segmented ap-themes" role="radiogroup" aria-label="Tema">
+    <button type="button" class="st-seg" data-theme-opt="light" onclick="setTheme('light')">Claro</button>
+    <button type="button" class="st-seg" data-theme-opt="dark" onclick="setTheme('dark')">Escuro</button>
+    <button type="button" class="st-seg" data-theme-opt="purple" onclick="setTheme('purple')">Dark purple</button>
+  </div>
+  <div class="ap-wallpapers" data-wallpapers></div>
+</div>
+
 <div class="mobile-integrations-card">
   <div class="mobile-integrations-header">
     <div>
@@ -17612,6 +17798,7 @@ async function createUser() {
   </div>
 </div>
     `;
+          renderWallpapers();
         }
       }
 
