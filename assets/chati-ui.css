@@ -5332,3 +5332,59 @@ html body .rt-head .monthly-ranking-title { margin-bottom: 0; }
 }
 .rt-tip b { color: var(--text); }
 .rt-empty { font-size: 12.5px; color: var(--text3); }
+
+/* =====================================================================
+   MELHORAR RESPOSTA (IA)
+   ===================================================================== */
+html body .ai-improve-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, #7c3aed 35%, var(--border2));
+  border-radius: var(--radius-sm, 10px);
+  background: color-mix(in srgb, #7c3aed 8%, var(--surface));
+  color: #6d28d9;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+html body.dark .ai-improve-btn { color: #c4b5fd; background: color-mix(in srgb, #7c3aed 16%, var(--surface)); }
+html body .ai-improve-btn:hover { background: color-mix(in srgb, #7c3aed 14%, var(--surface)); }
+html body .ai-improve-btn:active { transform: scale(.98); }
+html body .ai-improve-btn .ui-i { width: 15px; height: 15px; color: currentColor; }
+html body .ai-improve-btn.is-loading { cursor: progress; opacity: .85; }
+html body .ai-improve-btn.is-loading .ui-i { animation: ai-spin 1s linear infinite; }
+html body .ai-improve-btn.is-undo {
+  color: var(--text2);
+  background: var(--surface);
+  border-color: var(--border2);
+}
+@keyframes ai-spin { to { transform: rotate(360deg); } }
+
+html body textarea.ai-working { opacity: .6; }
+html body textarea.ai-done { animation: ai-flash 1.2s ease; }
+@keyframes ai-flash {
+  0% { box-shadow: 0 0 0 3px color-mix(in srgb, #7c3aed 45%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* celular: Melhorar + Responder lado a lado */
+html body .mobile-answer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+html body .mobile-answer-actions .ai-improve-btn {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+}
+html body .mobile-answer-actions .mobile-question-send-button { flex: 1 1 auto; width: auto; }

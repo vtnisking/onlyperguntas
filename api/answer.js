@@ -9,6 +9,7 @@ import {
   assertCanAct,
   clearReservation,
 } from "../lib/reservations.js";
+import { AiError, improveAnswer } from "../lib/ai.js";
 
 async function refreshStoreToken(store, supabase) {
   const response = await axios.post(
@@ -109,6 +110,46 @@ export default async function handler(req, res) {
       text,
       store_id,
     } = req.body || {};
+
+    // ========================================
+    // MELHORAR RESPOSTA COM IA (não envia nada ao ML)
+    // ========================================
+    if (req.body?.action === "improve") {
+      const draft = String(text || "").trim();
+      if (!draft) {
+        return res.status(400).json({
+          success: false,
+          error: "Digite uma resposta para melhorar.",
+        });
+      }
+
+      const supabaseAi = createClient(
+        process.env.SUPABASE_URL,
+        process.env.CHATI_SUPABASE_SECRET_KEY,
+        { auth: { persistSession: false, autoRefreshToken: false } },
+      );
+      await getAuthenticatedContext(req, supabaseAi);
+
+      try {
+        const improved = await improveAnswer({
+          text: draft,
+          questions: Array.isArray(req.body.questions) ? req.body.questions.slice(0, 10) : [],
+          question: req.body.question,
+          product: req.body.product,
+        });
+        return res.status(200).json({ success: true, text: improved });
+      } catch (error) {
+        if (error instanceof AiError) {
+          return res.status(error.statusCode).json({
+            success: false,
+            code: error.code,
+            error: error.message,
+            message: error.message,
+          });
+        }
+        throw error;
+      }
+    }
 
     if (!question_id || !text || !store_id) {
       return res.status(400).json({
