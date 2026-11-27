@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=20" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=21" />
   </head>
 
   <body>
@@ -12579,7 +12579,7 @@ async function deleteMlQuestion(
     });
 
     if (ok < total) {
-      if (ok) await loadQuestions();
+      if (ok) await loadQuestions(true);
       throw new Error(
         (ok ? `Excluídas ${ok} de ${total}. ` : "") +
         (data?.message ||
@@ -12596,7 +12596,7 @@ async function deleteMlQuestion(
     );
 
     closeDetail();
-    await loadQuestions();
+    dropQuestionCard(questionId);
 
   } catch (error) {
     console.error(error);
@@ -12838,10 +12838,14 @@ async function answerGroupIfNeeded(questionId, storeId, text, button) {
     button.innerText = originalText;
   }
 
-  setTimeout(() => {
-    closeDetail();
-    loadQuestions();
-  }, ok ? 800 : 0);
+  if (ok === ids.length) {
+    setTimeout(() => {
+      closeDetail();
+      dropQuestionCard(questionId);
+    }, 600);
+  } else {
+    loadQuestions(true);
+  }
   return true;
 }
 
@@ -13052,6 +13056,58 @@ async function releaseReservation(questionId, button) {
 window.toggleReservation = toggleReservation;
 
 // ──────────────────────────────────────
+// TIRAR SÓ O CARD RESPONDIDO / EXCLUÍDO
+// O card sai na hora (com animação) e a lista atualiza por trás,
+// sem "Carregando..." e sem mexer nos outros cards.
+// ──────────────────────────────────────
+var justHandled = new Map();
+
+function wasJustHandled(id) {
+  const t = justHandled.get(String(id));
+  if (!t) return false;
+  // O ML pode levar alguns segundos para tirar a pergunta da lista
+  if (Date.now() - t > 3 * 60 * 1000) {
+    justHandled.delete(String(id));
+    return false;
+  }
+  return true;
+}
+
+function dropQuestionCard(questionId) {
+  const cardId = cardOfQuestion(questionId);
+  const card = questionIndex.get(cardId);
+  const ids = (card?.group || [card || { id: cardId }]).map((q) => String(q.id));
+  if (!ids.includes(String(questionId))) ids.push(String(questionId));
+
+  ids.forEach((id) => {
+    justHandled.set(id, Date.now());
+    questionGroupOf.delete(id);
+    answerDrafts.delete(id);
+  });
+  questionIndex.delete(cardId);
+  saveDrafts();
+
+  const els = [
+    document.getElementById(`ml-card-${cardId}`),
+    document.querySelector(`.mobile-question-card[data-qid="${CSS.escape(cardId)}"]`),
+  ].filter(Boolean);
+
+  els.forEach((el) => {
+    el.style.height = `${el.offsetHeight}px`;
+    el.classList.add("is-leaving");
+    requestAnimationFrame(() => {
+      el.style.height = "0px";
+    });
+    setTimeout(() => el.remove(), 320);
+  });
+
+  // Atualiza contadores e a lista por trás (sem "Carregando...")
+  setTimeout(() => loadQuestions(true), 350);
+}
+
+window.dropQuestionCard = dropQuestionCard;
+
+// ──────────────────────────────────────
 // RASCUNHOS E CARDS ABERTOS
 // A lista é redesenhada a cada 1 min e depois de cada resposta.
 // Guarda o texto digitado em cada card e quais cards estavam abertos,
@@ -13240,7 +13296,7 @@ window.releaseReservation = releaseReservation;
 
         const container = document.getElementById("questions");
         if (!container) return;
-        if (!silent)
+        if (!silent && !container.querySelector(".mobile-question-card"))
           container.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando perguntas...</div>`;
 
         try {
@@ -13251,7 +13307,8 @@ window.releaseReservation = releaseReservation;
           const questions = data.questions
             .filter((i) => i.status === "UNANSWERED")
             .filter((i) => i.hold === false)
-            .filter((i) => i.deleted_from_listing === false);
+            .filter((i) => i.deleted_from_listing === false)
+            .filter((i) => !wasJustHandled(i.id));
 
           const currentIds = questions.map((i) => String(i.id));
           if (firstLoadDone) {
@@ -13589,7 +13646,7 @@ container.innerHTML = `
       async function loadDesktopQuestions(silent = false) {
         const listState = captureListState();
         const listEl = document.getElementById("desktopQList");
-        if (!silent && listEl)
+        if (!silent && listEl && !listEl.querySelector(".ml-card"))
           listEl.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
 
         try {
@@ -13600,7 +13657,8 @@ container.innerHTML = `
           const questions = data.questions
             .filter((i) => i.status === "UNANSWERED")
             .filter((i) => i.hold === false)
-            .filter((i) => i.deleted_from_listing === false);
+            .filter((i) => i.deleted_from_listing === false)
+            .filter((i) => !wasJustHandled(i.id));
 
           const currentIds = questions.map((i) => String(i.id));
           if (firstLoadDone) {
@@ -13930,8 +13988,8 @@ async function sendAnswer(questionId, storeId, button) {
 
       setTimeout(() => {
         closeDetail();
-        loadQuestions();
-      }, 800);
+        dropQuestionCard(questionId);
+      }, 600);
 
       return;
     }
@@ -13978,7 +14036,7 @@ async function sendAnswer(questionId, storeId, button) {
         "error",
       );
 
-      loadQuestions();
+      dropQuestionCard(questionId);
       return;
     }
 
@@ -14154,7 +14212,7 @@ const total = groupIdsOf(questionId).length;
 
     closeDetail();
 
-    await loadQuestions();
+    dropQuestionCard(questionId);
 
   } catch (error) {
     console.error(
@@ -18310,8 +18368,8 @@ window.loadResponseTimes = loadResponseTimes;
           if (data.success) {
             button.innerText = "✓ Respondido!";
             setTimeout(() => {
-              loadQuestions();
-            }, 800);
+              dropQuestionCard(questionId);
+            }, 600);
           } else if (data?.code === "QUESTION_RESERVED") {
             showToast(data.message, "error");
             applyReservation(questionId, data.reservation || null);
@@ -18327,7 +18385,8 @@ window.loadResponseTimes = loadResponseTimes;
 
         showToast(errorMessage, "error");
 
-        loadQuestions();
+        if (errorCode === "not_unanswered_question") dropQuestionCard(questionId);
+        else loadQuestions(true);
 
         button.disabled = false;
         button.innerText = originalText;

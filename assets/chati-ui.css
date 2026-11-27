@@ -5388,3 +5388,17 @@ html body .mobile-answer-actions .ai-improve-btn {
   border-radius: 14px;
 }
 html body .mobile-answer-actions .mobile-question-send-button { flex: 1 1 auto; width: auto; }
+
+/* Card respondido/excluído saindo da lista */
+html body .ml-card.is-leaving,
+html body .mobile-question-card.is-leaving {
+  opacity: 0;
+  transform: translateX(24px);
+  overflow: hidden;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease, height .3s ease, margin .3s ease, padding .3s ease;
+}
