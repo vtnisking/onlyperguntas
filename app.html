@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=21" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=22" />
   </head>
 
   <body>
@@ -8328,6 +8328,11 @@ body.ps-detail-open {
   <symbol id="icon-respostas-rapidas" viewBox="0 0 24 24">
     <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
     <path d="M13 6l-3 5h3l-2 5 5-7h-3z"/>
+  </symbol>
+
+  <symbol id="icon-ia" viewBox="0 0 24 24">
+    <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>
+    <path d="M19 3v4M17 5h4M5 17v3M3.5 18.5h3"/>
   </symbol>
 
   <symbol id="icon-ajustes" viewBox="0 0 24 24">
@@ -9001,6 +9006,23 @@ body.ps-detail-open {
         </span>
 
         <span class="nav-label">Usuários</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-item"
+        id="aiNavBtn"
+        style="display:none"
+        onclick="showDesktopTab('ai', this)"
+        title="Inteligência artificial"
+      >
+        <span class="nav-icon">
+          <svg aria-hidden="true">
+            <use href="#icon-ia"></use>
+          </svg>
+        </span>
+
+        <span class="nav-label">Inteligência artificial</span>
       </button>
 
       <button
@@ -9941,6 +9963,35 @@ body.ps-detail-open {
 </div>     
  
 
+<!-- Tab: Inteligência artificial (só administradores) -->
+<div class="desktop-tab" id="dt-ai">
+  <div class="questions-list">
+    <div class="st-page ai-page">
+      <header class="st-header">
+        <div class="page-hero">
+          <div class="page-hero-icon"><svg class="ui-i"><use href="#i-sparkle"/></svg></div>
+          <div>
+            <h1 class="st-title">Inteligência artificial</h1>
+            <p class="st-subtitle">Custos do botão "Melhorar resposta" e qual modelo usar</p>
+          </div>
+        </div>
+
+        <div class="st-controls">
+          <div class="st-segmented" role="tablist" aria-label="Seção">
+            <button type="button" class="st-seg active" data-ai-view="costs" onclick="setAiView('costs')">Custos</button>
+            <button type="button" class="st-seg" data-ai-view="settings" onclick="setAiView('settings')">Configurações</button>
+          </div>
+        </div>
+      </header>
+
+      <div id="aiBanners"></div>
+      <div id="aiContent">
+        <div class="st-card st-empty">Carregando...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="desktop-tab" id="dt-settings">
   <div class="questions-list">
 
@@ -10404,6 +10455,9 @@ function updateLoggedUserInterface() {
     loggedUser.role === "superadmin"
       ? "Administrador"
       : "Funcionário";
+
+  const aiNav = document.getElementById("aiNavBtn");
+  if (aiNav) aiNav.style.display = userRole === "Administrador" ? "" : "none";
 
   const elements = {
     desktopUserName: displayName,
@@ -13282,6 +13336,354 @@ async function improveAnswerText(questionId, taId, button) {
 }
 
 window.improveAnswerText = improveAnswerText;
+
+// ──────────────────────────────────────
+// INTELIGÊNCIA ARTIFICIAL: CUSTOS E CONFIGURAÇÕES (administradores)
+// ──────────────────────────────────────
+var aiView = "costs";
+var aiPeriod = "month";
+var aiReport = null;
+
+const AI_PERIODS = [
+  ["today", "Hoje"],
+  ["7days", "7 dias"],
+  ["30days", "30 dias"],
+  ["month", "Este mês"],
+];
+
+function fmtUsd(v) {
+  const n = Number(v || 0);
+  const digits = n > 0 && n < 0.01 ? 4 : 2;
+  return `US$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+}
+
+function fmtTokens(n) {
+  n = Number(n || 0);
+  if (n >= 1e6) return `${(n / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (n >= 1e4) return `${(n / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
+  return n.toLocaleString("pt-BR");
+}
+
+function aiModelLabel(id) {
+  const m = (aiReport?.models || []).find((x) => x.id === id);
+  return m ? m.label : id || "—";
+}
+
+function setAiView(view) {
+  aiView = view;
+  document
+    .querySelectorAll("[data-ai-view]")
+    .forEach((b) => b.classList.toggle("active", b.dataset.aiView === view));
+  renderAiPanel();
+}
+
+function setAiPeriod(period) {
+  aiPeriod = period;
+  loadAiPanel();
+}
+
+async function loadAiPanel() {
+  const content = document.getElementById("aiContent");
+  if (!content) return;
+  if (!aiReport) content.innerHTML = `<div class="st-card st-empty">Carregando...</div>`;
+
+  try {
+    const response = await authenticatedIntegrationFetch(
+      `/api/answer?action=ai_usage&period=${aiPeriod}`,
+    );
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) throw new Error(data?.error || "Erro ao carregar.");
+    aiReport = data;
+    renderAiPanel();
+  } catch (error) {
+    content.innerHTML = `<div class="st-card st-empty">${escapeHtml(error.message || "Não foi possível carregar.")}</div>`;
+  }
+}
+
+function renderAiBanners() {
+  const box = document.getElementById("aiBanners");
+  if (!box || !aiReport) return;
+  const items = [];
+  if (!aiReport.api_key_configured) {
+    items.push(`A chave da IA não está configurada no servidor. Falta <b>ANTHROPIC_API_KEY</b> na Vercel.`);
+  }
+  if (!aiReport.ready) {
+    items.push(`Os custos e as configurações ainda não estão sendo salvos: falta rodar o SQL <b>supabase/ai.sql</b> no Supabase. Até lá, o botão usa o Haiku sem limite.`);
+  }
+  if (!aiReport.settings?.enabled) {
+    items.push(`A IA está <b>desligada</b> para sua empresa. O botão "Melhorar resposta" mostra um aviso em vez de funcionar.`);
+  }
+  box.innerHTML = items.map((t) => `<div class="ai-banner"><svg class="ui-i"><use href="#i-info"/></svg><span>${t}</span></div>`).join("");
+}
+
+function aiDayBuckets() {
+  const tz = "America/Sao_Paulo";
+  const key = (d) => new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(d);
+  const days = new Map((aiReport.by_day || []).map((d) => [d.key, d]));
+  const since = new Date(aiReport.since);
+  const out = [];
+  for (let d = new Date(since.getTime() + 3 * 3600000); key(d) <= key(new Date()); d = new Date(d.getTime() + 86400000)) {
+    const k = key(d);
+    const g = days.get(k) || { uses: 0, cost_usd: 0 };
+    const [, m, dd] = k.split("-");
+    out.push({ key: k, label: `${dd}/${m}`, uses: g.uses, cost: g.cost_usd });
+    if (out.length > 62) break;
+  }
+  return out;
+}
+
+function renderAiChart(buckets) {
+  const max = Math.max(...buckets.map((b) => b.uses), 0);
+  const step = max <= 4 ? 1 : max <= 10 ? 2 : max <= 25 ? 5 : max <= 50 ? 10 : Math.ceil(max / 5 / 10) * 10;
+  const top = Math.max(step * Math.ceil(max / step), step * 2);
+  const ticks = [];
+  for (let v = 0; v <= top; v += step) ticks.push(v);
+  const every = buckets.length > 16 ? Math.ceil(buckets.length / 10) : 1;
+  return `
+    <div class="st-chart" style="--cols:${buckets.length}">
+      <div class="st-chart-grid">
+        ${ticks.map((t) => `<div class="st-chart-tick" style="bottom:${(t / top) * 100}%"><span>${t}</span></div>`).join("")}
+      </div>
+      <div class="st-chart-bars">
+        ${buckets
+          .map(
+            (b) => `
+          <div class="st-bar-col" tabindex="0" style="--h:${b.uses ? Math.max((b.uses / top) * 100, 1.5) : 0}%">
+            <div class="st-bar ${b.uses === 0 ? "is-zero" : ""}" style="height:var(--h)"></div>
+            <div class="st-bar-tip"><strong>${b.uses}</strong> ${b.uses === 1 ? "uso" : "usos"} · ${fmtUsd(b.cost)}<span>${b.label}</span></div>
+          </div>`,
+          )
+          .join("")}
+      </div>
+      <div class="st-chart-labels">
+        ${buckets.map((b, i) => `<span>${i % every === 0 ? b.label : ""}</span>`).join("")}
+      </div>
+    </div>
+    <div class="st-chart-foot">Usos por dia (passe o mouse para ver o custo)</div>`;
+}
+
+function renderAiCosts() {
+  const r = aiReport;
+  const t = r.totals;
+  const limit = Number(r.settings?.monthly_limit_usd || 0);
+  const pct = limit > 0 ? Math.min((r.month_cost_usd / limit) * 100, 100) : 0;
+  const periodLabel = (AI_PERIODS.find(([k]) => k === aiPeriod) || [, ""])[1].toLowerCase();
+
+  const kpi = (label, value, sub, icon) => `
+    <div class="st-kpi">
+      <div class="st-kpi-label"><svg class="ui-i"><use href="#${icon}"/></svg>${label}</div>
+      <div class="st-kpi-value">${value}</div>
+      <div class="st-kpi-sub">${sub}</div>
+    </div>`;
+
+  const maxUser = Math.max(...r.by_user.map((u) => u.cost_usd), 0) || 1;
+
+  return `
+    <div class="ai-toolbar">
+      <div class="st-segmented" role="tablist" aria-label="Período">
+        ${AI_PERIODS.map(([k, l]) => `<button type="button" class="st-seg ${k === aiPeriod ? "active" : ""}" onclick="setAiPeriod('${k}')">${l}</button>`).join("")}
+      </div>
+      <span class="ai-model-now">Modelo em uso: <b>${escapeHtml(aiModelLabel(r.settings?.model))}</b></span>
+    </div>
+
+    <section class="st-kpis">
+      ${kpi("Gasto", fmtUsd(t.cost_usd), `${periodLabel}`, "i-zap")}
+      ${kpi("Usos", t.uses.toLocaleString("pt-BR"), t.errors ? `${t.errors} com erro` : "sem erros", "i-sparkle")}
+      ${kpi("Custo médio", fmtUsd(t.avg_cost_usd), "por resposta melhorada", "i-send")}
+      ${kpi("Tokens", fmtTokens(t.input_tokens + t.output_tokens), `${fmtTokens(t.input_tokens)} entrada · ${fmtTokens(t.output_tokens)} saída`, "i-clock")}
+    </section>
+
+    <section class="st-card ai-month">
+      <div class="st-card-head">
+        <h2>Gasto deste mês</h2>
+        <span class="st-card-meta">${limit > 0 ? `limite ${fmtUsd(limit)}` : "sem limite definido"}</span>
+      </div>
+      <div class="ai-month-row">
+        <strong>${fmtUsd(r.month_cost_usd)}</strong>
+        ${limit > 0 ? `<span>${Math.round(pct)}% do limite</span>` : `<button type="button" class="ai-link" onclick="setAiView('settings')">Definir um limite</button>`}
+      </div>
+      ${limit > 0 ? `<div class="st-meter ai-meter ${pct >= 100 ? "is-full" : pct >= 80 ? "is-warn" : ""}"><span style="width:${pct}%"></span></div>` : ""}
+    </section>
+
+    ${
+      aiPeriod === "today"
+        ? ""
+        : `<section class="st-card">
+      <div class="st-card-head"><h2>Uso por dia</h2><span class="st-card-meta">${fmtUsd(t.cost_usd)}</span></div>
+      ${t.uses === 0 ? `<div class="st-empty">Ninguém usou a IA neste período.</div>` : renderAiChart(aiDayBuckets())}
+    </section>`
+    }
+
+    <div class="st-cols">
+      <section class="st-card">
+        <div class="st-card-head"><h2>Por pessoa</h2><span class="st-card-meta">${r.by_user.length} ${r.by_user.length === 1 ? "pessoa" : "pessoas"}</span></div>
+        ${
+          r.by_user.length === 0
+            ? `<div class="st-empty">Ninguém usou a IA neste período.</div>`
+            : `<ol class="st-rank">${r.by_user
+                .map(
+                  (u, i) => `
+            <li class="st-rank-row">
+              <span class="st-rank-pos ${i === 0 ? "is-first" : ""}">${i + 1}</span>
+              <span class="st-avatar">${escapeHtml(statsInitials(u.key))}</span>
+              <div class="st-rank-main">
+                <div class="st-rank-line">
+                  <span class="st-rank-name">${escapeHtml(u.key)}</span>
+                  <span class="st-rank-num">${fmtUsd(u.cost_usd)}<small> · ${u.uses} ${u.uses === 1 ? "uso" : "usos"}</small></span>
+                </div>
+                <div class="st-meter"><span style="width:${(u.cost_usd / maxUser) * 100}%"></span></div>
+              </div>
+            </li>`,
+                )
+                .join("")}</ol>`
+        }
+      </section>
+
+      <div class="st-side">
+        <section class="st-card">
+          <div class="st-card-head"><h2>Por modelo</h2></div>
+          ${
+            r.by_model.length === 0
+              ? `<div class="st-empty st-empty-sm">Sem uso no período.</div>`
+              : `<ul class="ai-mini">${r.by_model
+                  .map(
+                    (m) => `<li><span>${escapeHtml(aiModelLabel(m.key))}</span><span>${m.uses} ${m.uses === 1 ? "uso" : "usos"}</span><b>${fmtUsd(m.cost_usd)}</b></li>`,
+                  )
+                  .join("")}</ul>`
+          }
+        </section>
+
+        <section class="st-card">
+          <div class="st-card-head"><h2>Últimos usos</h2></div>
+          ${
+            r.recent.length === 0
+              ? `<div class="st-empty st-empty-sm">Nada por aqui ainda.</div>`
+              : `<ul class="ai-feed">${r.recent
+                  .map((u) => {
+                    const d = new Date(u.created_at);
+                    const when = d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+                    return `<li class="${u.ok === false ? "is-error" : ""}">
+                      <div class="ai-feed-top"><strong>${escapeHtml(u.user_name || "Sem usuário")}</strong><time>${when}</time></div>
+                      <div class="ai-feed-sub">
+                        <span>${escapeHtml(aiModelLabel(u.model))}</span>
+                        <span>${fmtTokens((u.input_tokens || 0) + (u.output_tokens || 0))} tokens</span>
+                        <b>${u.ok === false ? "erro" : fmtUsd(u.cost_usd)}</b>
+                      </div>
+                      ${u.ok === false && u.error ? `<div class="ai-feed-err">${escapeHtml(u.error)}</div>` : ""}
+                    </li>`;
+                  })
+                  .join("")}</ul>`
+          }
+        </section>
+      </div>
+    </div>
+
+    <p class="ai-foot">Valores estimados pelo Chati com os preços oficiais da Anthropic em dólar. A cobrança real aparece em console.anthropic.com.</p>`;
+}
+
+function renderAiSettings() {
+  const r = aiReport;
+  const s = r.settings || {};
+  const t = r.totals || {};
+  // Estimativa por 1.000 usos: média real ou um uso típico (600 entrada / 250 saída)
+  const inTok = t.ok ? t.avg_input_tokens : 600;
+  const outTok = t.ok ? t.avg_output_tokens : 250;
+
+  return `
+    <section class="st-card ai-settings">
+      <div class="st-card-head"><h2>Modelo da IA</h2><span class="st-card-meta">usado no botão "Melhorar resposta"</span></div>
+      <div class="ai-models">
+        ${(r.models || [])
+          .map((m) => {
+            const per1000 = ((inTok * m.input + outTok * m.output) / 1e6) * 1000;
+            const checked = m.id === s.model;
+            return `
+          <label class="ai-model ${checked ? "is-on" : ""}">
+            <input type="radio" name="aiModel" value="${m.id}" ${checked ? "checked" : ""} onchange="document.querySelectorAll('.ai-model').forEach(e=>e.classList.toggle('is-on', e.contains(this)))">
+            <div class="ai-model-top">
+              <strong>${escapeHtml(m.label)}</strong>
+              ${m.id === "claude-haiku-5-5" ? `<span class="ai-tag">Recomendado</span>` : ""}
+            </div>
+            <p>${escapeHtml(m.tagline)}</p>
+            <div class="ai-model-price">
+              <span><b>${fmtUsd(per1000)}</b> a cada 1.000 usos</span>
+              <small>US$ ${m.input.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} entrada · US$ ${m.output.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} saída por milhão de tokens</small>
+            </div>
+          </label>`;
+          })
+          .join("")}
+      </div>
+    </section>
+
+    <div class="st-cols ai-cols">
+      <section class="st-card">
+        <div class="st-card-head"><h2>Ligar ou desligar</h2></div>
+        <label class="ai-switch">
+          <input type="checkbox" id="aiEnabled" ${s.enabled !== false ? "checked" : ""}>
+          <span class="ai-switch-track"><span></span></span>
+          <span class="ai-switch-text">
+            <b>Botão "Melhorar resposta" ligado</b>
+            <small>Desligado, ninguém da empresa consegue usar a IA.</small>
+          </span>
+        </label>
+      </section>
+
+      <section class="st-card">
+        <div class="st-card-head"><h2>Limite de gasto por mês</h2></div>
+        <div class="ai-limit">
+          <span>US$</span>
+          <input type="text" inputmode="decimal" id="aiLimit" value="${Number(s.monthly_limit_usd || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}">
+        </div>
+        <small class="ai-hint">Ao chegar no limite, o botão para de funcionar até o mês seguinte. Use 0 para não ter limite. Gasto deste mês: <b>${fmtUsd(r.month_cost_usd)}</b>.</small>
+      </section>
+    </div>
+
+    <div class="ai-save-row">
+      ${s.updated_at ? `<span class="ai-updated">Última alteração: ${escapeHtml(s.updated_by_name || "—")}, ${new Date(s.updated_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>` : "<span></span>"}
+      <button type="button" class="ml-reply-btn ai-save" onclick="saveAiSettingsForm(this)">Salvar configurações</button>
+    </div>`;
+}
+
+function renderAiPanel() {
+  const content = document.getElementById("aiContent");
+  if (!content || !aiReport) return;
+  renderAiBanners();
+  content.innerHTML = aiView === "settings" ? renderAiSettings() : renderAiCosts();
+}
+
+async function saveAiSettingsForm(button) {
+  const model = document.querySelector('input[name="aiModel"]:checked')?.value;
+  const enabled = document.getElementById("aiEnabled")?.checked;
+  const limitRaw = (document.getElementById("aiLimit")?.value || "0").trim().replace(/\./g, "").replace(",", ".");
+
+  button.disabled = true;
+  const original = button.innerText;
+  button.innerText = "Salvando...";
+  try {
+    const response = await authenticatedIntegrationFetch("/api/answer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "ai_settings",
+        settings: { model, enabled, monthly_limit_usd: limitRaw || "0" },
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) throw new Error(data?.error || "Não foi possível salvar.");
+    aiReport.settings = data.settings;
+    showToast("Configurações da IA salvas.", "success");
+    renderAiPanel();
+  } catch (error) {
+    showToast(error.message || "Erro ao salvar.", "error");
+  } finally {
+    button.disabled = false;
+    button.innerText = original;
+  }
+}
+
+window.setAiView = setAiView;
+window.setAiPeriod = setAiPeriod;
+window.saveAiSettingsForm = saveAiSettingsForm;
 window.releaseReservation = releaseReservation;
 
 
@@ -15540,6 +15942,7 @@ async function loadShopeeConversations({
           shopee: "Shopee",
           stats: "Estatísticas",
           users: "Usuários",
+          ai: "Inteligência artificial",
           settings: "Ajustes",
 
 
@@ -15553,6 +15956,7 @@ async function loadShopeeConversations({
         if (tab === "users") {loadDesktopUsers();}
         if (tab === "post-sales") {loadPostSales();}
         if (tab === "shopee") {initializeShopeeChat();}
+        if (tab === "ai") loadAiPanel();
 
       }
 
