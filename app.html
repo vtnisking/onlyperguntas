@@ -13309,6 +13309,12 @@ async function improveAnswerText(questionId, taId, button) {
       throw new Error(data?.message || data?.error || "Não foi possível melhorar a resposta.");
     }
 
+    if (data.usage_log_error) {
+      showToast(`A resposta foi melhorada, mas o uso não entrou no painel de custos: ${data.usage_log_error}`, "error");
+    }
+    // O painel de custos recarrega na próxima vez que for aberto
+    if (typeof aiReport !== "undefined") aiReport = null;
+
     ta.dataset.beforeAi = ta.value;
     ta.value = data.text;
     ta.dispatchEvent(new Event("input"));

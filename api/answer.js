@@ -231,7 +231,7 @@ export default async function handler(req, res) {
           product: req.body.product,
           model: settings.model,
         });
-        await logAiUsage(supabaseAi, {
+        const logged = await logAiUsage(supabaseAi, {
           ...base,
           model: result.model,
           input_tokens: result.usage.input_tokens,
@@ -239,7 +239,14 @@ export default async function handler(req, res) {
           cost_usd: result.cost_usd,
           ok: true,
         });
-        return res.status(200).json({ success: true, text: result.text, model: result.model });
+        return res.status(200).json({
+          success: true,
+          text: result.text,
+          model: result.model,
+          usage_logged: logged.ok,
+          // Só administradores veem o motivo (para corrigir o banco)
+          usage_log_error: logged.ok || !AI_ADMIN_ROLES.includes(aiProfile.role) ? undefined : logged.error,
+        });
       } catch (error) {
         if (error instanceof AiError) {
           await logAiUsage(supabaseAi, {
