@@ -5628,3 +5628,57 @@ html body .mobile-integration-rename {
   html body .mobile-integration-store-bottom .mobile-integration-remove { flex: 1 1 auto; width: auto; }
 }
 html body .mobile-integration-store-icon.is-shopee { background: linear-gradient(135deg, #ff7a45, #ee4d2d); color: #fff; }
+
+/* =====================================================================
+   SKU: maior, selecionável e com botão de copiar
+   ===================================================================== */
+html body .sku-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  padding: 2px 3px 2px 9px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--surface2);
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  max-width: 100%;
+}
+html body .sku-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--text3);
+  user-select: none;
+  -webkit-user-select: none;
+}
+html body .sku-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+  -webkit-user-select: all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html body .sku-copy {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+html body .sku-copy:hover { background: var(--surface); color: var(--text); }
+html body .sku-copy.is-done { color: var(--green); }
+html body .sku-copy .ui-i { width: 15px; height: 15px; }
+html body .mobile-question-product-info .sku-chip { margin: 0 0 4px; }
