@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=18" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=19" />
   </head>
 
   <body>
@@ -13088,8 +13088,10 @@ if (questions.length === 0) {
 container.innerHTML = `
 
     <div id="monthlyRanking"></div>
+    <div id="responseTimes"></div>
 `;
   loadMonthlyRanking("monthlyRanking");
+  loadResponseTimes("responseTimes");
   return;
 }
 
@@ -13469,9 +13471,11 @@ if (notificationBadge) {
             listEl.innerHTML = `
 
         <div id="desktopMonthlyRanking"></div>
+        <div id="desktopResponseTimes"></div>
       `;
             closeDetail();
             loadMonthlyRanking("desktopMonthlyRanking");
+            loadResponseTimes("desktopResponseTimes");
             return;
           }
 
@@ -17766,6 +17770,143 @@ const ranking = Object.entries(data.by_user || {})
     `;
   }
 }
+
+// ──────────────────────────────────────
+// TEMPO DE RESPOSTA POR LOJA (calculado pelo Mercado Livre)
+// Média dos últimos 14 dias; o ML atualiza 1x por dia.
+// ──────────────────────────────────────
+var responseTimesCache = null;
+
+function formatMinutes(min) {
+  if (min === null || min === undefined || isNaN(min)) return "—";
+  const m = Math.round(Number(min));
+  if (m < 60) return `${m} min`;
+  if (m < 60 * 24) {
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return r ? `${h}h ${r}min` : `${h}h`;
+  }
+  const d = Math.floor(m / 1440);
+  const h = Math.round((m % 1440) / 60);
+  return h ? `${d}d ${h}h` : `${d} ${d === 1 ? "dia" : "dias"}`;
+}
+
+function responseLevel(min) {
+  if (min === null || min === undefined) return { cls: "is-none", label: "Sem dados" };
+  if (min <= 60) return { cls: "is-good", label: "Rápido" };
+  if (min <= 180) return { cls: "is-mid", label: "Pode melhorar" };
+  return { cls: "is-slow", label: "Lento" };
+}
+
+function rtStoreName(name) {
+  return String(name || "Loja")
+    .replace(/^\[|\]$/g, "")
+    .replace(/^Mercado Livre\s*-\s*/i, "")
+    .trim() || "Loja";
+}
+
+function renderResponseTimes(stores) {
+  const linhas = [
+    ["weekdays_working_hours", "Seg–sex, 9h às 18h"],
+    ["weekdays_extra_hours", "Seg–sex, 18h às 0h"],
+    ["weekend", "Fim de semana"],
+  ];
+
+  return `
+    <div class="rt-box">
+      <div class="rt-head">
+        <div class="monthly-ranking-title">Tempo de resposta por loja</div>
+        <span class="rt-note">Média dos últimos 14 dias · dados do Mercado Livre</span>
+      </div>
+      <div class="rt-grid">
+        ${stores
+          .map((s) => {
+            if (s.error) {
+              return `
+                <div class="rt-card">
+                  <div class="rt-store">${escapeHtml(rtStoreName(s.store_name))}</div>
+                  <div class="rt-empty">Não foi possível consultar agora.</div>
+                </div>`;
+            }
+            if (s.empty) {
+              return `
+                <div class="rt-card">
+                  <div class="rt-store">${escapeHtml(rtStoreName(s.store_name))}</div>
+                  <div class="rt-empty">Sem perguntas nos últimos 14 dias.</div>
+                </div>`;
+            }
+            const lvl = responseLevel(s.total);
+            const ganho = linhas
+              .map(([k]) => s[k]?.sales_percent_increase)
+              .filter((v) => v)
+              .sort((a, b) => b - a)[0];
+            return `
+              <div class="rt-card">
+                <div class="rt-top">
+                  <div class="rt-store" title="${escapeHtml(s.store_name || "")}">${escapeHtml(rtStoreName(s.store_name))}</div>
+                  <span class="rt-badge ${lvl.cls}">${lvl.label}</span>
+                </div>
+                <div class="rt-total">
+                  <strong>${formatMinutes(s.total)}</strong>
+                  <span>tempo médio</span>
+                </div>
+                <ul class="rt-list">
+                  ${linhas
+                    .map(([k, label]) => {
+                      const v = s[k];
+                      const l = responseLevel(v?.minutes);
+                      return `
+                        <li>
+                          <span class="rt-dot ${l.cls}"></span>
+                          <span class="rt-label">${label}</span>
+                          <span class="rt-val">${formatMinutes(v?.minutes)}</span>
+                        </li>`;
+                    })
+                    .join("")}
+                </ul>
+                ${
+                  ganho
+                    ? `<div class="rt-tip">Respondendo mais rápido, o ML estima até <b>+${ganho}%</b> em vendas.</div>`
+                    : ""
+                }
+              </div>`;
+          })
+          .join("")}
+      </div>
+    </div>`;
+}
+
+async function loadResponseTimes(containerId) {
+  const box = document.getElementById(containerId);
+  if (!box || !loggedUser?.company_id) return;
+
+  // O ML só atualiza 1x por dia: reaproveita por 10 minutos
+  if (responseTimesCache && Date.now() - responseTimesCache.at < 10 * 60 * 1000) {
+    box.innerHTML = responseTimesCache.stores.length
+      ? renderResponseTimes(responseTimesCache.stores)
+      : "";
+    return;
+  }
+
+  try {
+    const response = await authenticatedIntegrationFetch(
+      `/api/questions?action=response_times&company_id=${loggedUser.company_id}`,
+    );
+    const data = await response.json();
+    if (!response.ok || !data.success) throw new Error(data?.error || `HTTP ${response.status}`);
+
+    const stores = (data.stores || []).sort(
+      (a, b) => (a.total ?? 1e9) - (b.total ?? 1e9),
+    );
+    responseTimesCache = { at: Date.now(), stores };
+    box.innerHTML = stores.length ? renderResponseTimes(stores) : "";
+  } catch (error) {
+    console.error("Erro ao carregar tempo de resposta:", error);
+    box.innerHTML = "";
+  }
+}
+
+window.loadResponseTimes = loadResponseTimes;
 
       // ──────────────────────────────────────
       // SHARED: Calendar
