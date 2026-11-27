@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { createOAuthState } from "../lib/oauth.js";
+import { createOAuthState, returnOriginFromRequest } from "../lib/oauth.js";
 import {
   ShopeeError,
   shopeeConfig,
@@ -217,6 +217,7 @@ async function handleConnect({ req, res, context }) {
     profileId: context.profile.id,
     authId: context.authUser.id,
     redirectPath,
+    returnOrigin: returnOriginFromRequest(req),
   });
   return res.status(200).json({
     success: true,

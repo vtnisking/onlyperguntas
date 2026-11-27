@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { shopeeConfig, getTokens, getShopInfo } from "../lib/shopee.js";
 import {
   OAuthStateError,
+  safeReturnOrigin,
   verifyOAuthState,
 } from "../lib/oauth.js";
 
@@ -186,7 +187,11 @@ async function saveShopeeStore({
   };
 }
 
-function getApplicationUrl(req) {
+function getApplicationUrl(req, returnOrigin = null) {
+  // Volta para o mesmo endereço onde a conexão começou
+  const fromState = safeReturnOrigin(returnOrigin, req);
+  if (fromState) return fromState;
+
   if (process.env.APP_URL) {
     return process.env.APP_URL.replace(/\/+$/, "");
   }
@@ -234,8 +239,9 @@ function buildReturnUrl(
   req,
   redirectPath,
   parameters = {},
+  returnOrigin = null,
 ) {
-  const applicationUrl = getApplicationUrl(req);
+  const applicationUrl = getApplicationUrl(req, returnOrigin);
 
   const destination = new URL(
     getSafeRedirectPath(redirectPath),
@@ -261,6 +267,7 @@ function buildReturnUrl(
 
 export default async function handler(req, res) {
   let redirectPath = "/app";
+  let returnOrigin = null;
 
   try {
     if (req.method !== "GET") {
@@ -312,6 +319,7 @@ export default async function handler(req, res) {
     redirectPath = getSafeRedirectPath(
       statePayload.redirect_path,
     );
+    returnOrigin = statePayload.return_origin || null;
 
     const supabaseUrl =
       getRequiredEnvironment("SUPABASE_URL");
@@ -362,6 +370,7 @@ export default async function handler(req, res) {
         shop_id: result.store.seller_id,
         operation: result.operation,
       },
+      returnOrigin,
     );
 
     return res.redirect(302, returnUrl);
@@ -384,6 +393,7 @@ export default async function handler(req, res) {
           integration_status: "error",
           integration_message: message,
         },
+        returnOrigin,
       );
 
       return res.redirect(302, returnUrl);

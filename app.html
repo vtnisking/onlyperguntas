@@ -19607,7 +19607,7 @@ async function connectMercadoLivre() {
     }
 
   const response = await authenticatedIntegrationFetch(
-  "/api/app?action=meli_connect&redirect=/app",
+  `/api/app?action=meli_connect&redirect=/app&return_origin=${encodeURIComponent(window.location.origin)}`,
   {
     method: "GET",
   },
@@ -19671,7 +19671,7 @@ async function connectShopee() {
 
     const response =
       await authenticatedIntegrationFetch(
-        "/api/shopee?action=connect&redirect=/app",
+        `/api/shopee?action=connect&redirect=/app&return_origin=${encodeURIComponent(window.location.origin)}`,
         {
           method: "GET",
         },
