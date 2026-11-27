@@ -13052,6 +13052,99 @@ async function releaseReservation(questionId, button) {
 window.toggleReservation = toggleReservation;
 
 // ──────────────────────────────────────
+// RASCUNHOS E CARDS ABERTOS
+// A lista é redesenhada a cada 1 min e depois de cada resposta.
+// Guarda o texto digitado em cada card e quais cards estavam abertos,
+// e devolve tudo depois de redesenhar. Sobrevive a recarregar a aba.
+// ──────────────────────────────────────
+var answerDrafts = (function () {
+  try {
+    return new Map(Object.entries(JSON.parse(sessionStorage.getItem("chati_drafts") || "{}")));
+  } catch (e) {
+    return new Map();
+  }
+})();
+
+function saveDrafts() {
+  try {
+    sessionStorage.setItem("chati_drafts", JSON.stringify(Object.fromEntries(answerDrafts)));
+  } catch (e) {}
+}
+
+function clearAllDrafts() {
+  answerDrafts.clear();
+  saveDrafts();
+}
+
+function draftKeyOf(el) {
+  const m = String(el?.id || "").match(/^(?:ml-ta-|answer-)(.+)$/);
+  return m && el.tagName === "TEXTAREA" ? m[1] : null;
+}
+
+document.addEventListener(
+  "input",
+  (e) => {
+    const key = draftKeyOf(e.target);
+    if (!key) return;
+    if (e.target.value.trim()) answerDrafts.set(key, e.target.value);
+    else answerDrafts.delete(key);
+    saveDrafts();
+  },
+  true,
+);
+
+function captureListState() {
+  let open = [];
+  try {
+    open = JSON.parse(sessionStorage.getItem("chati_open_cards") || "[]");
+  } catch (e) {}
+  const now = [...document.querySelectorAll(".ml-card-expanded")];
+  if (now.length) {
+    open = now
+      .filter((el) => el.classList.contains("open"))
+      .map((el) => el.id.replace("ml-expanded-", ""));
+  }
+  try {
+    sessionStorage.setItem("chati_open_cards", JSON.stringify(open));
+  } catch (e) {}
+  return { open, scroll: window.scrollY };
+}
+
+function restoreListState(state) {
+  // Cards que estavam abertos
+  (state?.open || []).forEach((id) => {
+    const cardId = cardOfQuestion(id);
+    const expanded = document.getElementById(`ml-expanded-${cardId}`);
+    if (!expanded) return;
+    expanded.classList.add("open");
+    const arrow = document.getElementById(`ml-arrow-${cardId}`);
+    arrow?.classList.add("open");
+    arrow?.setAttribute("aria-expanded", "true");
+  });
+
+  // Rascunhos: devolve o texto; descarta os de perguntas que já saíram
+  [...answerDrafts.entries()].forEach(([key, text]) => {
+    if (!questionGroupOf.has(String(key))) {
+      answerDrafts.delete(key);
+      return;
+    }
+    const cardId = cardOfQuestion(key);
+    const ta =
+      document.getElementById(`ml-ta-${cardId}`) ||
+      document.getElementById(`answer-${cardId}`);
+    if (!ta) return;
+    if (!ta.value) {
+      ta.value = text;
+      ta.dispatchEvent(new Event("input"));
+    }
+    if (String(cardId) !== String(key)) answerDrafts.delete(key);
+  });
+  saveDrafts();
+
+  if (state?.scroll) window.scrollTo(0, state.scroll);
+}
+
+// ──────────────────────────────────────
 // MELHORAR RESPOSTA COM IA
 // Reescreve o texto digitado (mais claro e educado, mesmo sentido).
 // Depois de melhorar, o botão vira "Desfazer" por alguns segundos.
@@ -13141,9 +13234,9 @@ window.releaseReservation = releaseReservation;
       // ──────────────────────────────────────
       async function loadQuestions(silent = false) {
         if (isDesktop()) {
-          loadDesktopQuestions(silent);
-          return;
+          return loadDesktopQuestions(silent);
         }
+        const listState = captureListState();
 
         const container = document.getElementById("questions");
         if (!container) return;
@@ -13192,6 +13285,7 @@ container.innerHTML = `
           cards.forEach((item) => {
             container.innerHTML += buildMobileCard(item);
           });
+          restoreListState(listState);
         } catch (e) {
           console.error("Erro ao carregar perguntas:", e);
           if (!silent && !loadQuestions._retry) {
@@ -13493,6 +13587,7 @@ container.innerHTML = `
       // DESKTOP: Load questions
       // ──────────────────────────────────────
       async function loadDesktopQuestions(silent = false) {
+        const listState = captureListState();
         const listEl = document.getElementById("desktopQList");
         if (!silent && listEl)
           listEl.innerHTML = `<div class="empty"><span class="empty-icon">⏳</span>Carregando...</div>`;
@@ -13573,6 +13668,7 @@ if (notificationBadge) {
           listEl.innerHTML = "";
 
           if (questions.length === 0) {
+            clearAllDrafts();
             listEl.innerHTML = `
 
         <div id="desktopMonthlyRanking"></div>
@@ -13589,6 +13685,7 @@ if (notificationBadge) {
             wrapper.innerHTML = buildDesktopRow(item);
             listEl.appendChild(wrapper.firstElementChild);
           });
+          restoreListState(listState);
         } catch (e) {
           console.error("Erro ao carregar perguntas:", e);
           const listEl = document.getElementById("desktopQList");
