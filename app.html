@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=17" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=18" />
   </head>
 
   <body>
@@ -12012,6 +12012,12 @@ function buildDesktopRow(item) {
 
           <div class="question-meta">
 
+            ${
+              item.group
+                ? `<span class="meta-chip q-group-chip"><svg class="ui-i"><use href="#i-message"/></svg> ${item.group.length} perguntas</span>`
+                : ""
+            }
+
             <span class="meta-chip">
               <svg class="ui-i"><use href="#i-store"/></svg> ${storeName}
             </span>
@@ -12105,12 +12111,14 @@ function buildDesktopRow(item) {
           <div class="ml-question-content">
 
             <div class="ml-question-label">
-              Pergunta do comprador
+              ${item.group ? `${item.group.length} perguntas do comprador` : "Pergunta do comprador"}
             </div>
 
-            <div class="ml-question-text">
-              ${item.text || ""}
-            </div>
+            ${
+              item.group
+                ? renderGroupedQuestions(item)
+                : `<div class="ml-question-text">${item.text || ""}</div>`
+            }
 
           </div>
 
@@ -12213,7 +12221,7 @@ function buildDesktopRow(item) {
               );
             "
           >
-            Excluir pergunta
+            ${item.group ? "Excluir perguntas" : "Excluir pergunta"}
           </button>
 
           <button
@@ -12524,8 +12532,11 @@ async function deleteMlQuestion(
   storeId,
   button,
 ) {
+  const total = groupIdsOf(questionId).length;
   const confirmed = confirm(
-    "Deseja realmente excluir esta pergunta do Mercado Livre?",
+    total > 1
+      ? `Deseja realmente excluir as ${total} perguntas deste comprador do Mercado Livre?`
+      : "Deseja realmente excluir esta pergunta do Mercado Livre?",
   );
 
   if (!confirmed) return;
@@ -12536,34 +12547,40 @@ async function deleteMlQuestion(
   button.innerText = "Excluindo...";
 
   try {
-    const response = await authenticatedIntegrationFetch(
-      "/api/questions",
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
+    const { ok, data } = await forEachInGroup(questionId, async (id) => {
+      const response = await authenticatedIntegrationFetch(
+        "/api/questions",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "delete_question",
+            question_id: id,
+            store_id: storeId,
+            company_id: loggedUser.company_id,
+          }),
         },
-        body: JSON.stringify({
-          action: "delete_question",
-          question_id: questionId,
-          store_id: storeId,
-          company_id: loggedUser.company_id,
-        }),
-      },
-    );
+      );
+      const d = await response.json().catch(() => ({}));
+      return { ...d, success: response.ok && d.success };
+    });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
+    if (ok < total) {
+      if (ok) await loadQuestions();
       throw new Error(
-        data?.message ||
+        (ok ? `Excluídas ${ok} de ${total}. ` : "") +
+        (data?.message ||
         data?.error ||
-        "Não foi possível excluir a pergunta.",
+        "Não foi possível excluir a pergunta."),
       );
     }
 
     showToast(
-      "Pergunta excluída com sucesso.",
+      total > 1
+        ? `${total} perguntas excluídas.`
+        : "Pergunta excluída com sucesso.",
       "success",
     );
 
@@ -12667,11 +12684,168 @@ window.blockMlBuyer = blockMlBuyer;
 // ou bloquear o comprador da pergunta. Administradores só liberam.
 // ──────────────────────────────────────
 var questionIndex = new Map();
+var questionGroupOf = new Map();
 
 function indexQuestions(list) {
-  questionIndex = new Map(
-    (list || []).map((q) => [String(q.id), q]),
-  );
+  questionIndex = new Map();
+  questionGroupOf = new Map();
+  (list || []).forEach((card) => {
+    questionIndex.set(String(card.id), card);
+    (card.group || [card]).forEach((q) =>
+      questionGroupOf.set(String(q.id), String(card.id)),
+    );
+  });
+}
+
+// ──────────────────────────────────────
+// AGRUPAR PERGUNTAS
+// Perguntas pendentes do mesmo comprador, na mesma loja e no mesmo
+// anúncio viram um card só. Responder envia a mesma resposta para
+// todas; excluir, remover e reservar valem para todas.
+// ──────────────────────────────────────
+function groupQuestions(questions) {
+  const cards = [];
+  const byKey = new Map();
+
+  (questions || []).forEach((q) => {
+    const buyer = q.from?.id;
+    const key = buyer
+      ? `${q.store_id}|${buyer}|${q.item_id}`
+      : `solo|${q.id}`;
+    let card = byKey.get(key);
+    if (!card) {
+      card = { list: [] };
+      byKey.set(key, card);
+      cards.push(card);
+    }
+    card.list.push(q);
+  });
+
+  return cards.map(({ list }) => {
+    if (list.length === 1) return list[0];
+
+    const ordered = [...list].sort(
+      (a, b) => new Date(a.date_created) - new Date(b.date_created),
+    );
+    // A mais antiga representa o card (tempo de espera real)
+    const primary = { ...ordered[0] };
+    primary.group = ordered;
+    primary.reservation =
+      ordered.map((q) => q.reservation).find((r) => r && !r.mine) ||
+      ordered.map((q) => q.reservation).find((r) => r) ||
+      null;
+    primary.can_answer = ordered.some((q) => q.can_answer);
+    return primary;
+  });
+}
+
+function cardOfQuestion(questionId) {
+  return String(questionGroupOf.get(String(questionId)) || questionId);
+}
+
+function groupIdsOf(questionId) {
+  const card = questionIndex.get(cardOfQuestion(questionId));
+  return (card?.group || [card || { id: questionId }]).map((q) => String(q.id));
+}
+
+function renderGroupedQuestions(item, mobile = false) {
+  const list = item.group;
+  const hora = (iso) =>
+    new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return `
+    <ol class="q-group ${mobile ? "is-mobile" : ""}">
+      ${list
+        .map(
+          (q) => `
+        <li class="q-group-item">
+          <span class="q-group-time" title="${escapeHtml(formatQuestionAskedAt(q.date_created))}">${hora(q.date_created)}</span>
+          <span class="q-group-text">${escapeHtml(q.text || "")}</span>
+        </li>`,
+        )
+        .join("")}
+    </ol>`;
+}
+
+async function postAnswer(questionId, storeId, text) {
+  const response = await authenticatedIntegrationFetch("/api/answer", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      question_id: questionId,
+      store_id: storeId,
+      text,
+      user_id: loggedUser.id,
+      user_name: loggedUser.name,
+      user_email: loggedUser.email,
+    }),
+  });
+  return response.json().catch(() => ({}));
+}
+
+// Responde todas as perguntas do card com o mesmo texto.
+// Devolve true se tratou como grupo.
+async function answerGroupIfNeeded(questionId, storeId, text, button) {
+  const ids = groupIdsOf(questionId);
+  if (ids.length < 2) return false;
+
+  const originalText = button.innerText;
+  button.disabled = true;
+  let ok = 0;
+  let erro = null;
+
+  for (const [i, id] of ids.entries()) {
+    button.innerText = `Enviando ${i + 1}/${ids.length}...`;
+    try {
+      const data = await postAnswer(id, storeId, text);
+      const code = data?.code || data?.error?.error || data?.error;
+      if (data.success || code === "not_unanswered_question") {
+        ok++;
+      } else if (code === "QUESTION_RESERVED") {
+        erro = data.message;
+        break;
+      } else {
+        erro =
+          data?.message ||
+          data?.error?.message ||
+          (typeof data?.error === "string" ? data.error : null) ||
+          "Não foi possível responder.";
+      }
+    } catch (e) {
+      erro = e.message || "Erro no sistema.";
+    }
+  }
+
+  if (ok === ids.length) {
+    button.innerText = "✓ Respondido!";
+    showToast(`${ok} perguntas respondidas.`, "success");
+  } else {
+    showToast(
+      ok ? `Respondidas ${ok} de ${ids.length}. ${erro || ""}` : erro,
+      "error",
+    );
+    button.disabled = false;
+    button.innerText = originalText;
+  }
+
+  setTimeout(() => {
+    closeDetail();
+    loadQuestions();
+  }, ok ? 800 : 0);
+  return true;
+}
+
+// Executa a mesma ação em todas as perguntas do card
+async function forEachInGroup(questionId, fn) {
+  const ids = groupIdsOf(questionId);
+  let ok = 0;
+  let lastData = null;
+  for (const id of ids) {
+    const data = await fn(id);
+    lastData = data;
+    if (!data?.success) return { ok, total: ids.length, data };
+    ok++;
+  }
+  return { ok, total: ids.length, data: lastData };
 }
 
 function reservedByOther(item) {
@@ -12770,6 +12944,7 @@ function rerenderQuestionCard(questionId) {
 }
 
 function applyReservation(questionId, reservation) {
+  questionId = cardOfQuestion(questionId);
   const item = questionIndex.get(String(questionId));
   if (!item) {
     loadQuestions(true);
@@ -12798,10 +12973,24 @@ async function toggleReservation(questionId, input) {
   input.disabled = true;
 
   try {
-    const { ok, data } = await callReservation(
-      questionId,
-      wantReserve ? "reserve" : "unreserve",
-    );
+    const action = wantReserve ? "reserve" : "unreserve";
+    const ids = groupIdsOf(questionId);
+    let ok = true;
+    let data = {};
+    const feitas = [];
+    for (const id of ids) {
+      const r = await callReservation(id, action);
+      data = r.data;
+      if (!r.ok) {
+        ok = false;
+        break;
+      }
+      feitas.push(id);
+    }
+    // Reservou só parte do grupo: desfaz para não ficar pela metade
+    if (!ok && wantReserve) {
+      for (const id of feitas) await callReservation(id, "unreserve");
+    }
 
     if (!ok) {
       input.checked = !wantReserve;
@@ -12837,8 +13026,10 @@ async function releaseReservation(questionId, button) {
 
   button.disabled = true;
   try {
-    const { ok, data } = await callReservation(questionId, "unreserve");
-    if (!ok) throw new Error(data?.message || data?.error || "Não foi possível liberar.");
+    for (const id of groupIdsOf(questionId)) {
+      const { ok, data } = await callReservation(id, "unreserve");
+      if (!ok) throw new Error(data?.message || data?.error || "Não foi possível liberar.");
+    }
     showToast("Reserva liberada.", "success");
     applyReservation(questionId, null);
   } catch (e) {
@@ -12883,7 +13074,8 @@ window.releaseReservation = releaseReservation;
           }
           knownQuestionIds = new Set(currentIds);
           firstLoadDone = true;
-          indexQuestions(questions);
+          const cards = groupQuestions(questions);
+          indexQuestions(cards);
 
           document.getElementById("totalQuestions").innerText =
             questions.length;
@@ -12901,7 +13093,7 @@ container.innerHTML = `
   return;
 }
 
-          questions.forEach((item) => {
+          cards.forEach((item) => {
             container.innerHTML += buildMobileCard(item);
           });
         } catch (e) {
@@ -13110,8 +13302,12 @@ container.innerHTML = `
         </div>
       </div>
 
-      <div class="mobile-question-content">
+      <div class="mobile-question-content ${item.group ? "is-group" : ""}">
 
+        ${
+          item.group
+            ? `<div class="q-group-label">${item.group.length} perguntas do comprador</div>${renderGroupedQuestions(item, true)}`
+            : `
         <div class="mobile-question-content-main">
 
           <span class="mobile-question-dot"></span>
@@ -13120,7 +13316,8 @@ container.innerHTML = `
             ${escapeHtml(questionText)}
           </strong>
 
-        </div>
+        </div>`
+        }
 
         <span class="mobile-question-time">
           Há ${escapeHtml(timeAgo(item.date_created))}
@@ -13212,7 +13409,8 @@ container.innerHTML = `
           knownQuestionIds = new Set(currentIds);
           firstLoadDone = true;
           allQuestionsCache = questions;
-          indexQuestions(questions);
+          const cards = groupQuestions(questions);
+          indexQuestions(cards);
 
           // Update counters
           const badge = document.getElementById("desktopBadge");
@@ -13277,7 +13475,7 @@ if (notificationBadge) {
             return;
           }
 
-          questions.forEach((item) => {
+          cards.forEach((item) => {
             const wrapper = document.createElement("div");
             wrapper.innerHTML = buildDesktopRow(item);
             listEl.appendChild(wrapper.firstElementChild);
@@ -13498,6 +13696,8 @@ async function sendAnswer(questionId, storeId, button) {
     return;
   }
 
+  if (await answerGroupIfNeeded(questionId, storeId, text, button)) return;
+
   button.disabled = true;
   button.innerText = "Enviando...";
 
@@ -13714,25 +13914,26 @@ async function removePendingQuestion(
   }
 
   try {
-const response = await authenticatedIntegrationFetch(
-  "/api/questions",
-  {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
+const total = groupIdsOf(questionId).length;
+    const { ok, data } = await forEachInGroup(questionId, async (id) => {
+      const response = await authenticatedIntegrationFetch(
+        "/api/questions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question_id: id,
+            company_id: loggedUser.company_id,
+          }),
         },
+      );
+      const d = await response.json().catch(() => ({}));
+      return { ...d, success: response.ok && d.success };
+    });
 
-        body: JSON.stringify({
-          question_id: questionId,
-          company_id: loggedUser.company_id,
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
+    if (ok < total) {
       throw new Error(
         data?.message ||
           data?.error ||
@@ -17745,6 +17946,7 @@ const ranking = Object.entries(data.by_user || {})
           alert("Digite uma resposta.");
           return;
         }
+        if (await answerGroupIfNeeded(questionId, storeId, text, button)) return;
         const originalText = button.innerText;
         button.disabled = true;
         button.innerText = "Enviando...";

@@ -5171,3 +5171,71 @@ html body .ml-tools-row > label { flex: 0 0 auto; white-space: nowrap; }
 html body .ml-tools-row + div[id^="ml-prev"],
 html body .ml-tools-row + div[id*="prev"] { margin: 0 0 12px; }
 html body .ml-answer-toolbar:has(> .ml-answer-toolbar-right:only-child) { justify-content: flex-end; }
+
+/* =====================================================================
+   PERGUNTAS AGRUPADAS (mesmo comprador, loja e anúncio)
+   ===================================================================== */
+html body .meta-chip.q-group-chip {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+html body .meta-chip.q-group-chip .ui-i { color: currentColor; opacity: 1; }
+
+.q-group {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.q-group-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-left: 14px;
+}
+.q-group-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.q-group-item + .q-group-item::after {
+  content: "";
+  position: absolute;
+  left: 2.5px;
+  top: -14px;
+  width: 1px;
+  height: calc(.55em + 14px);
+  background: var(--border2);
+}
+.q-group-time {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+}
+.q-group-text {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text);
+}
+.q-group.is-mobile .q-group-text { font-size: 14px; }
+.q-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+html body .mobile-question-content.is-group { flex-direction: column; align-items: stretch; gap: 4px; }
