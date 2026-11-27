@@ -297,6 +297,83 @@ if (action === "list_stores") {
 }
 
 // ==========================================
+// RENOMEAR LOJA (nome mostrado no Chati)
+// ==========================================
+
+if (action === "rename_store") {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ success: false, error: "Método não permitido" });
+  }
+
+  try {
+    const { companyId, appUser } = await getAuthenticatedCompany(req, supabase);
+
+    if (!appUser || !["admin", "owner", "superadmin"].includes(appUser.role)) {
+      return res.status(403).json({
+        success: false,
+        error: "Só administradores podem renomear lojas",
+      });
+    }
+
+    const storeId = req.body?.store_id;
+    const name = String(req.body?.name || "").replace(/\s+/g, " ").trim();
+
+    if (!storeId) {
+      return res.status(400).json({ success: false, error: "store_id obrigatório" });
+    }
+    if (name.length < 2 || name.length > 60) {
+      return res.status(400).json({
+        success: false,
+        error: "O nome da loja precisa ter de 2 a 60 caracteres",
+      });
+    }
+
+    const { data: current } = await supabase
+      .from("stores")
+      .select("id, platform, name")
+      .eq("id", storeId)
+      .eq("company_id", companyId)
+      .maybeSingle();
+
+    if (!current) {
+      return res.status(404).json({ success: false, error: "Loja não encontrada" });
+    }
+
+    // Lojas do ML são guardadas como "[Mercado Livre - NOME]"; mantém o formato
+    const clean = name.replace(/^\[?Mercado Livre\s*-\s*/i, "").replace(/\]$/, "").trim() || name;
+    const finalName =
+      current.platform === "mercadolivre" && /^\[Mercado Livre\s*-/i.test(current.name || "[Mercado Livre -")
+        ? `[Mercado Livre - ${clean}]`
+        : clean;
+
+    const { data: updated, error: updateError } = await supabase
+      .from("stores")
+      .update({ name: finalName })
+      .eq("id", storeId)
+      .eq("company_id", companyId)
+      .select("id, name")
+      .maybeSingle();
+
+    if (updateError) {
+      console.error("Erro ao renomear loja:", updateError);
+      return res.status(500).json({ success: false, error: "Erro ao renomear a loja" });
+    }
+    if (!updated) {
+      return res.status(404).json({ success: false, error: "Loja não encontrada" });
+    }
+
+    return res.status(200).json({ success: true, store: updated });
+  } catch (error) {
+    const statusCode = error instanceof AuthError ? error.statusCode : 500;
+    return res.status(statusCode).json({
+      success: false,
+      error: error?.message || "Erro ao renomear a loja",
+    });
+  }
+}
+
+// ==========================================
 // DESCONECTAR LOJA
 // ==========================================
 

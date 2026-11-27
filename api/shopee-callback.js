@@ -131,7 +131,8 @@ async function saveShopeeStore({
       error: updateError,
     } = await supabase
       .from("stores")
-      .update(storeData)
+      // Mantém o nome que o cliente escolheu no Chati
+      .update(Object.fromEntries(Object.entries(storeData).filter(([k]) => k !== "name")))
       .eq("id", existingStore.id)
       .select(
         "id, name, platform, seller_id, company_id, connected_at",
