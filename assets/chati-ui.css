@@ -6103,3 +6103,21 @@ html[data-papel]:has(body.dark.purple) { background: #0b0910; }
 html[data-papel] body,
 html[data-papel] body.dark,
 html[data-papel] body.dark.purple { background: transparent !important; }
+
+/* Papel de parede também atrás do menu lateral e do topo (vidro fosco) */
+html[data-papel] body #desktopSidebar,
+html[data-papel] body .sidebar {
+  background: color-mix(in srgb, var(--surface) 68%, transparent) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  backdrop-filter: blur(18px) saturate(1.25);
+}
+html[data-papel] body .topbar {
+  background: color-mix(in srgb, var(--bg) 62%, transparent) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+html[data-papel] body .mobile-sidemenu {
+  background: color-mix(in srgb, var(--surface) 80%, transparent) !important;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
