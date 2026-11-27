@@ -6003,3 +6003,103 @@ html body .theme-caret { width: 13px !important; height: 13px !important; opacit
 .theme-sw-dark { background: linear-gradient(135deg, #0d0f12 0 45%, #ff1f4b 55% 100%); }
 .theme-sw-purple { background: linear-gradient(135deg, #0b0910 0 45%, #8b3dff 55% 100%); box-shadow: 0 0 0 1px rgba(139, 61, 255, 0.5); }
 .theme-toggle-mobile .theme-sw { width: 16px; height: 16px; }
+
+/* =====================================================================
+   PAPEL DE PAREDE (igual ao Chati ERP)
+   ===================================================================== */
+html[data-papel] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--papel) center / cover no-repeat;
+  opacity: var(--papel-op, 0.22);
+}
+/* Áreas que tinham fundo sólido ficam transparentes para o papel aparecer */
+html[data-papel] body .main-content,
+html[data-papel] body .app-layout,
+html[data-papel] body .desktop-main,
+html[data-papel] body .desktop-content { background: transparent !important; }
+
+/* Aparência (Ajustes) */
+.cfg-appearance { display: flex; flex-direction: column; gap: 16px; }
+.ap-block { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ap-block-head { justify-content: space-between; }
+.ap-label { font-size: 13px; font-weight: 700; color: var(--text); min-width: 110px; }
+html body .ap-themes .st-seg { display: inline-flex; align-items: center; gap: 7px; }
+html body .ap-themes .st-seg.is-on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm), 0 0 0 1px var(--border2); }
+.ap-wallpapers { display: flex; flex-direction: column; gap: 14px; }
+.ap-int { display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text2); }
+.ap-int input[type="range"] { width: 180px; accent-color: var(--accent); }
+.ap-int b { min-width: 34px; font-size: 12.5px; color: var(--text); font-variant-numeric: tabular-nums; }
+.ap-cat { display: flex; flex-direction: column; gap: 8px; }
+.ap-cat > b { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); }
+.ap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+.ap-papel {
+  position: relative;
+  display: grid;
+  place-items: end start;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.ap-papel:hover { border-color: var(--text3); transform: translateY(-1px); }
+.ap-papel.is-on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring, var(--accent-soft)); }
+.ap-papel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ap-papel > span {
+  position: relative;
+  max-width: calc(100% - 8px);
+  margin: 4px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ap-papel-nenhum, .ap-papel-enviar { place-items: center; }
+.ap-papel-nenhum > span, .ap-papel-enviar > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  color: var(--text2);
+  font-size: 12.5px;
+}
+.ap-papel-enviar:has(img) > span { background: rgba(0, 0, 0, 0.55); color: #fff; }
+.ap-papel-enviar .ui-i { width: 15px; height: 15px; }
+.ap-anim {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+}
+.mobile-appearance .ap-themes { margin: 6px 0 14px; width: 100%; display: flex; }
+.mobile-appearance .ap-themes .st-seg { flex: 1; justify-content: center; }
+@media (max-width: 560px) {
+  .ap-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ap-int input[type="range"] { width: 130px; }
+  .ap-label { min-width: 0; }
+}
+/* O fundo da página vai para o <html> (atrás do papel); o body fica transparente */
+html[data-papel] { background: #fafafa; }
+html[data-papel]:has(body.dark) { background: #0d0f12; }
+html[data-papel]:has(body.dark.purple) { background: #0b0910; }
+html[data-papel] body,
+html[data-papel] body.dark,
+html[data-papel] body.dark.purple { background: transparent !important; }
