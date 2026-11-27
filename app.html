@@ -8268,7 +8268,8 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=25" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=26" />
+    <link rel="stylesheet" href="/assets/tema-roxo.css?v=1" />
   </head>
 
   <body>
@@ -9114,13 +9115,28 @@ body.ps-detail-open {
   </div>
 
   <div class="topbar-right">
-    <button
-      class="topbar-btn"
-      onclick="toggleTheme()"
-      id="themeBtn"
-    >
-      <svg class="ui-i"><use href="#i-moon"/></svg><span>Escuro</span>
-    </button>
+    <div class="theme-menu-wrap">
+      <button
+        class="topbar-btn"
+        onclick="toggleThemeMenu(event)"
+        id="themeBtn"
+        aria-haspopup="menu"
+        aria-expanded="false"
+      >
+        <svg class="ui-i"><use href="#i-sun"/></svg><span>Claro</span>
+      </button>
+      <div class="theme-menu" id="themeMenu" role="menu" hidden>
+        <button type="button" role="menuitemradio" data-theme-opt="light" onclick="setTheme('light')">
+          <span class="theme-sw theme-sw-light"></span>Claro<svg class="ui-i theme-check"><use href="#i-check"/></svg>
+        </button>
+        <button type="button" role="menuitemradio" data-theme-opt="dark" onclick="setTheme('dark')">
+          <span class="theme-sw theme-sw-dark"></span>Escuro<svg class="ui-i theme-check"><use href="#i-check"/></svg>
+        </button>
+        <button type="button" role="menuitemradio" data-theme-opt="purple" onclick="setTheme('purple')">
+          <span class="theme-sw theme-sw-purple"></span>Dark purple<svg class="ui-i theme-check"><use href="#i-check"/></svg>
+        </button>
+      </div>
+    </div>
 
     <button
       class="topbar-btn primary"
@@ -13786,25 +13802,84 @@ if (questions.length === 0) {
         }
       }
 
-      function setThemeButtons(isDark, btnDesktop, btnMobile) {
-        const icon = isDark ? "i-sun" : "i-moon";
-        const svg = `<svg class="ui-i"><use href="#${icon}"/></svg>`;
-        if (btnDesktop)
-          btnDesktop.innerHTML = `${svg}<span>${isDark ? "Claro" : "Escuro"}</span>`;
-        if (btnMobile) btnMobile.innerHTML = svg;
+      // Temas: claro, escuro e "Dark purple" (escuro + roxo, igual ao Chati ERP)
+      const THEMES = {
+        light: { label: "Claro", icon: "i-sun" },
+        dark: { label: "Escuro", icon: "i-moon" },
+        purple: { label: "Dark purple", icon: "i-moon" },
+      };
+
+      function currentTheme() {
+        if (document.body.classList.contains("purple")) return "purple";
+        return document.body.classList.contains("dark") ? "dark" : "light";
       }
 
-      function toggleTheme() {
-        const isDark = document.body.classList.toggle("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-
+      function updateThemeButtons() {
+        const t = currentTheme();
+        const info = THEMES[t];
         const btnDesktop = document.getElementById("themeBtn");
         const btnMobile = document.getElementById("themeBtnMobile");
+        const svg = `<svg class="ui-i"><use href="#${info.icon}"/></svg>`;
+        if (btnDesktop) btnDesktop.innerHTML = `${t === "purple" ? `<span class="theme-sw theme-sw-purple"></span>` : svg}<span>${info.label}</span><svg class="ui-i theme-caret"><use href="#i-chevron-down"/></svg>`;
+        if (btnMobile) {
+          btnMobile.innerHTML = t === "purple" ? `<span class="theme-sw theme-sw-purple"></span>` : svg;
+          btnMobile.title = `Tema: ${info.label}`;
+        }
+        document.querySelectorAll("[data-theme-opt]").forEach((b) => {
+          const on = b.dataset.themeOpt === t;
+          b.classList.toggle("is-on", on);
+          b.setAttribute("aria-checked", on ? "true" : "false");
+        });
+      }
 
-        setThemeButtons(isDark, btnDesktop, btnMobile);
+      function setTheme(theme) {
+        if (!THEMES[theme]) theme = "light";
+        document.body.classList.toggle("dark", theme !== "light");
+        document.body.classList.toggle("purple", theme === "purple");
+        try {
+          localStorage.setItem("theme", theme);
+        } catch (e) {}
+        updateThemeButtons();
+        closeThemeMenu();
+      }
+
+      function closeThemeMenu() {
+        const menu = document.getElementById("themeMenu");
+        if (menu) menu.hidden = true;
+        document.getElementById("themeBtn")?.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleThemeMenu(event) {
+        event?.stopPropagation();
+        const menu = document.getElementById("themeMenu");
+        if (!menu) return;
+        menu.hidden = !menu.hidden;
+        document.getElementById("themeBtn")?.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
+      }
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".theme-menu-wrap")) closeThemeMenu();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeThemeMenu();
+      });
+
+      // Celular: o botão alterna Claro → Escuro → Dark purple
+      function toggleTheme() {
+        const order = ["light", "dark", "purple"];
+        const next = order[(order.indexOf(currentTheme()) + 1) % order.length];
+        setTheme(next);
+        if (typeof showToast === "function") showToast(`Tema: ${THEMES[next].label}`, "success");
+      }
+
+      // compatibilidade com chamadas antigas
+      function setThemeButtons() {
+        updateThemeButtons();
       }
 
       window.toggleTheme = toggleTheme;
+      window.setTheme = setTheme;
+      window.toggleThemeMenu = toggleThemeMenu;
 
       window.openSuperadmin = function () {
         window.location.href = "/superadmin.html";
@@ -13843,14 +13918,16 @@ if (questions.length === 0) {
 
       // Aplica o tema salvo ao carregar
       (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved === "dark") {
-          document.body.classList.add("dark");
-          document.addEventListener("DOMContentLoaded", () => {
-            const btnDesktop = document.getElementById("themeBtn");
-            const btnMobile = document.getElementById("themeBtnMobile");
-            setThemeButtons(true, btnDesktop, btnMobile);
-          });
+        let saved = "light";
+        try {
+          saved = localStorage.getItem("theme") || "light";
+        } catch (e) {}
+        document.body.classList.toggle("dark", saved === "dark" || saved === "purple");
+        document.body.classList.toggle("purple", saved === "purple");
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", updateThemeButtons);
+        } else {
+          updateThemeButtons();
         }
       })();
 
