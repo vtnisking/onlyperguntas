@@ -8268,7 +8268,7 @@ body.ps-detail-open {
 }
 
 </style>
-    <link rel="stylesheet" href="/assets/chati-ui.css?v=22" />
+    <link rel="stylesheet" href="/assets/chati-ui.css?v=23" />
   </head>
 
   <body>
@@ -19466,6 +19466,12 @@ async function loadIntegrationStores() {
 
             <span class="cfg-pill is-on"><span class="cfg-live"></span>Conectado</span>
 
+            ${
+              isStoreAdmin()
+                ? `<button type="button" class="cfg-btn" data-rename-store data-store-id="${storeId}">Renomear</button>`
+                : ""
+            }
+
             <button
               type="button"
               class="cfg-btn cfg-btn-danger"
@@ -19923,8 +19929,8 @@ async function loadMobileIntegrationStores() {
             data-store-id="${storeId}"
           >
             <div class="mobile-integration-store-top">
-              <div class="mobile-integration-store-icon">
-                ML
+              <div class="mobile-integration-store-icon ${store.platform === "shopee" ? "is-shopee" : ""}">
+                ${store.platform === "shopee" ? "S" : "ML"}
               </div>
 
               <div class="mobile-integration-store-info">
@@ -19967,6 +19973,12 @@ async function loadMobileIntegrationStores() {
 
             <div class="mobile-integration-store-bottom">
 
+        ${
+          isStoreAdmin()
+            ? `<button type="button" class="mobile-integration-rename" data-rename-store data-store-id="${storeId}">Renomear</button>`
+            : ""
+        }
+
         <button
         type="button"
         class="mobile-integration-remove"
@@ -19983,9 +19995,8 @@ async function loadMobileIntegrationStores() {
       })
       .join("");
 
-    bindIntegrationDisconnectButtons(
-      listElement,
-    );
+    // Desconectar e Renomear usam o clique delegado no document
+    if (loadingElement) loadingElement.style.display = "none";
   } catch (error) {
     console.error(
       "Erro ao carregar lojas no mobile:",
@@ -20180,6 +20191,97 @@ showToast(
   }
 }
 
+
+// ──────────────────────────────────────
+// RENOMEAR LOJA
+// O nome vira um campo ali mesmo: Enter salva, Esc cancela.
+// ──────────────────────────────────────
+function isStoreAdmin() {
+  return ["owner", "admin", "superadmin"].includes(loggedUser?.role);
+}
+
+function startRenameStore(button) {
+  const row = button.closest("[data-store-id]:not([data-rename-store])") || button.parentElement.closest("article, .mobile-integration-store");
+  const nameEl = row?.querySelector(".cfg-store-name, .mobile-integration-store-name");
+  if (!row || !nameEl || row.classList.contains("is-renaming")) return;
+
+  const storeId = button.dataset.storeId;
+  const current = nameEl.textContent.trim();
+  row.classList.add("is-renaming");
+
+  const box = document.createElement("div");
+  box.className = "store-rename";
+  box.innerHTML = `
+    <input type="text" maxlength="60" class="store-rename-input" aria-label="Novo nome da loja">
+    <button type="button" class="store-rename-save">Salvar</button>
+    <button type="button" class="store-rename-cancel">Cancelar</button>`;
+  const input = box.querySelector("input");
+  input.value = current;
+  nameEl.style.display = "none";
+  nameEl.after(box);
+  button.style.visibility = "hidden";
+  input.focus();
+  input.select();
+
+  const finish = (newName) => {
+    if (newName) {
+      nameEl.textContent = newName;
+      nameEl.title = newName;
+      row.querySelectorAll("[data-store-name]").forEach((b) => (b.dataset.storeName = newName));
+    }
+    box.remove();
+    nameEl.style.display = "";
+    button.style.visibility = "";
+    row.classList.remove("is-renaming");
+  };
+
+  const save = async () => {
+    const name = input.value.replace(/\s+/g, " ").trim();
+    if (name === current) return finish();
+    if (name.length < 2) {
+      showToast("Digite um nome com pelo menos 2 letras.", "error");
+      input.focus();
+      return;
+    }
+    box.querySelectorAll("button, input").forEach((el) => (el.disabled = true));
+    try {
+      const response = await authenticatedIntegrationFetch("/api/app?action=rename_store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ store_id: storeId, name }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data?.error || "Não foi possível renomear.");
+      finish(cleanStoreName(data.store?.name || name));
+      showToast("Nome da loja atualizado.", "success");
+      // Atualiza nomes nas perguntas e no tempo de resposta
+      responseTimesCache = null;
+      // No celular a lista de perguntas ocupa o mesmo espaço dos ajustes
+      if (isDesktop()) loadQuestions(true);
+    } catch (error) {
+      showToast(error.message || "Erro ao renomear a loja.", "error");
+      box.querySelectorAll("button, input").forEach((el) => (el.disabled = false));
+      input.focus();
+    }
+  };
+
+  box.querySelector(".store-rename-save").addEventListener("click", save);
+  box.querySelector(".store-rename-cancel").addEventListener("click", () => finish());
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); save(); }
+    if (e.key === "Escape") { e.preventDefault(); finish(); }
+  });
+}
+
+document.addEventListener("click", function (event) {
+  const renameBtn = event.target.closest("[data-rename-store]");
+  if (renameBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    startRenameStore(renameBtn);
+    return;
+  }
+});
 
 document.addEventListener("click", function (event) {
   const button = event.target.closest(
